@@ -1,4 +1,4 @@
-export function mockApi({ data, delay }: any) {
+export function mockApi({ data, delay }: any) : Promise<any>{
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(data);
