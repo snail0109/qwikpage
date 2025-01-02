@@ -1,0 +1,74 @@
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f2f2f9;
+}
+.login {
+  width: 1200px;
+  height: 540px;
+  background-color: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .left {
+    width: 727px;
+    height: 540px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .form {
+    margin: 0 auto;
+    width: 350px;
+  }
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 40px;
+    img {
+      margin-right: 10px;
+    }
+  }
+}
+// 密码重置
+.resetContainer {
+  height: 100vh;
+  background: #f2f2f9;
+  padding: 20px;
+  .header {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+  }
+  .content {
+    position: absolute;
+    width: 500px;
+    background-color: #fff;
+    margin-inline: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 50px;
+    border-radius: 15px;
+    .title {
+      font-size: 24px;
+      text-align: center;
+    }
+    .account {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}

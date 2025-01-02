@@ -1,0 +1,91 @@
+.header,
+.layoutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  background-color: var(--mars-theme-color);
+  height: 64px;
+  line-height: 64px;
+  padding: 0 20px;
+  font-size: 14px;
+  color: var(--mars-theme-text-color);
+}
+.layoutHeader {
+  border-bottom: 1px solid var(--mars-theme-border-color);
+}
+
+.logo {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.menu {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  :global {
+    .ant-menu-horizontal {
+      border-bottom: none;
+    }
+  }
+}
+.iconAction {
+  display: flex;
+  align-items: center;
+  a {
+    height: 63px;
+    padding: 0 20px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    .iconBlock {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      align-items: center;
+      height: 30px;
+      span {
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
+        color: #7d33ff;
+        font-weight: 500;
+      }
+      img,
+      svg {
+        transition: all 0.2s linear;
+      }
+      &:hover {
+        img,
+        svg {
+          margin-top: -30px;
+        }
+      }
+    }
+  }
+  img,
+  svg {
+    width: 30px;
+    vertical-align: middle;
+  }
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  .avatar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+}
+
+.publishPopover {
+  padding: 20px;
+  width: 100%;
+}
+
