@@ -7,7 +7,7 @@
     "preview": "vite preview",
     "dev": "pnpm tauri dev",
     "build": "pnpm tauri build",
-    "dev:editor": "pnpm --filter editor start",
+    "start:editor": "pnpm --filter editor start",
     "build:editor": "rimraf -rf dist/editor && pnpm --filter editor build",
     "start:admin": "pnpm --filter admin start",
     "build:admin": "rimraf -rf dist/admin && pnpm --filter admin build"

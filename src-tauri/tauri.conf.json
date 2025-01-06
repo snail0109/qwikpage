@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.qwikpage.iwhalecloud",
   "build": {
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "pnpm start:editor",
     "devUrl": "http://localhost:8080",
-    "beforeBuildCommand": "pnpm build",
+    "beforeBuildCommand": "pnpm build:editor",
     "frontendDist": "../dist/editor"
   },
   "app": {
