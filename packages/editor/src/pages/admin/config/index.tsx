@@ -1,14 +1,11 @@
-import { useEffect, useState, memo, useRef } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Input, Button, Space, Image, Radio, Switch, Tag, Modal } from 'antd';
 import { message } from '@/utils/AntdGlobal';
 import { RollbackOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import ColorPicker from '@/components/ColorPicker';
 import projectApi from '@/api/project';
-import MemberSetting from '@/layout/components/Menu/Member/MemberSetting';
-import api from '@/api/pageMember';
 import styles from './index.module.less';
-import { usePageStore } from '@/stores/pageStore';
 
 /**
  * 项目配置
@@ -16,10 +13,8 @@ import { usePageStore } from '@/stores/pageStore';
 const Config: React.FC = memo(() => {
   const [loading, setLoading] = useState<boolean>(false);
   const [delLoading, setDelLoading] = useState<boolean>(false);
-  const [ownerId, setOwnerId] = useState(0);
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<'detail' | 'edit' | 'create'>('detail');
-  const userId = usePageStore((state) => state.userInfo.userId);
 
   const { id } = useParams();
   const [form] = Form.useForm();
@@ -30,7 +25,6 @@ const Config: React.FC = memo(() => {
     if (!id) return;
     projectApi.getProjectDetail(parseInt(id)).then((res) => {
       form.setFieldsValue(res);
-      setOwnerId(res.userId);
     });
   }, []);
 
@@ -157,22 +151,6 @@ const Config: React.FC = memo(() => {
         <Form.Item label="页脚" name="footer" valuePropName="checked">
           <Switch {...props} />
         </Form.Item>
-        <h3>权限配置</h3>
-        <Form.Item
-          label="访问权限"
-          tooltip="项目访问权限"
-          extra="公开项目所有人可访问；私有项目可通过RBAC分配菜单权限。"
-          name="isPublic"
-          rules={[{ required: true, message: '请输入项目描述' }]}
-        >
-          <Radio.Group {...props}>
-            <Radio value={1}>公开</Radio>
-            <Radio value={2}>私有</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="开发权限" tooltip="项目配置修改权限" extra="只有开发者才能修改当前项目配置。">
-          <Developer ownerId={ownerId} />
-        </Form.Item>
         <div className={styles.editBtn}>
           {type === 'detail' ? (
             <Space>
@@ -202,7 +180,7 @@ const Config: React.FC = memo(() => {
         </div>
         <h3>危险区域</h3>
         <div className={styles.delBtn}>
-          <Button danger type="primary" onClick={handleDelConfirm} loading={delLoading} disabled={ownerId !== userId}>
+          <Button danger type="primary" onClick={handleDelConfirm} loading={delLoading} >
             删除项目
           </Button>
         </div>
@@ -240,52 +218,6 @@ const ImageFC = ({ value }: any) => {
   return <Image src={value} style={{ width: 100 }} />;
 };
 
-// 项目设置开发者
-const Developer = ({ ownerId }: { ownerId: number }) => {
-  const projectId = useParams().id as string;
-  const memberRef = useRef<{ open: (type: 1 | 2, projectId: number) => void }>();
-  const [list, setList] = useState<any[]>([]);
-  const userId = usePageStore((state) => state.userInfo.userId);
 
-  // 开发者权限
-  useEffect(() => {
-    if (projectId == '0') return;
-    getMemberList();
-  }, []);
-
-  // 获取用户列表
-  const getMemberList = async () => {
-    const res = await api.getMemberList({ pageId: parseInt(projectId) });
-    setList(res.list);
-  };
-
-  // 新增用户
-  const handleAdd = () => {
-    memberRef.current?.open(1, parseInt(projectId));
-  };
-
-  // 删除用户
-  const handleDelete = async (id: number) => {
-    await api.deletePageMember({ id });
-    setList(list.filter((item) => item.id != id));
-  };
-  return (
-    <>
-      <Space>
-        {list.map((item) => (
-          <Tag key={item.id} color="green" closable={ownerId === userId || item.userId === userId} onClose={() => handleDelete(item.id)}>
-            {item.userName}
-          </Tag>
-        ))}
-      </Space>
-      {userId == ownerId && (
-        <Button type="link" onClick={handleAdd}>
-          添加
-        </Button>
-      )}
-      <MemberSetting ref={memberRef} update={getMemberList} />
-    </>
-  );
-};
 
 export default Config;
