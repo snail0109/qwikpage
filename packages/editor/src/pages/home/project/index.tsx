@@ -26,7 +26,7 @@ function Category() {
 
   // 获取列表数据
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, { keyword }: { keyword: string }) => {
-    const promise = type === 'project' ? api.getCategoryList : pageApi.getPageList;
+    const promise = type === 'project' ? api.getProjectList : pageApi.getPageList;
     return promise({
       pageNum: current,
       pageSize: pageSize,

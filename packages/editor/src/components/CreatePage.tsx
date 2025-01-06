@@ -30,7 +30,7 @@ const CreatePage = (props: IModalProp) => {
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
     async open(action: 'create' | 'edit' | 'copy', record?: CreatePageParams) {
-      const { list = [] } = await projectApi.getCategoryList({
+      const { list = [] } = await projectApi.getProjectList({
         pageNum: 1,
         pageSize: 100,
       });
