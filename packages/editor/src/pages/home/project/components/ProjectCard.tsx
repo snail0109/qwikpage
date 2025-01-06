@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Typography, Avatar, Dropdown } from 'antd';
-import { UserOutlined, GlobalOutlined, MoreOutlined, SettingOutlined, DeploymentUnitOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { UserOutlined, GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Project } from '@/api/types';
 import styles from './../page.module.less';
@@ -29,30 +29,11 @@ export default function Category({ list }: { list: Project.ProjectItem[] }) {
       icon: <SettingOutlined />,
       label: '项目配置',
     },
-    {
-      type: 'divider',
-    },
-    {
-      key: 'stg',
-      icon: <DeploymentUnitOutlined />,
-      label: '测试环境',
-    },
-    {
-      key: 'pre',
-      icon: <DeploymentUnitOutlined />,
-      label: '预览环境',
-    },
-    {
-      key: 'prd',
-      icon: <DeploymentUnitOutlined />,
-      label: '生产环境',
-    },
   ];
 
   // 环境跳转
   const onClick = (key: string, id: number) => {
-    if (key === 'config') return handleOpenProject(id);
-    return window.open(`${import.meta.env.VITE_ADMIN_URL}/project/${id}?env=${key}`, '_blank');
+    return handleOpenProject(id);
   };
 
   // 项目列表
