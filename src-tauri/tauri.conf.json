@@ -10,6 +10,7 @@
     "frontendDist": "../dist/editor"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "qwikpage",

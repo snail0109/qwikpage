@@ -77,23 +77,14 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  .avatar {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
 }
-.github {
-  vertical-align: sub;
-}
+
 .publishPopover {
   padding: 20px;
   width: 100%;
 }
 
-.githubCorner:hover .octoArm {
-  animation: octocat-wave 560ms ease-in-out;
-}
+
 @keyframes octocat-wave {
   0%,
   100% {
@@ -106,13 +97,5 @@
   40%,
   80% {
     transform: rotate(10deg);
-  }
-}
-@media (max-width: 500px) {
-  .githubCorner:hover .octoArm {
-    animation: none;
-  }
-  .githubCorner .octoArm {
-    animation: octocat-wave 560ms ease-in-out;
   }
 }

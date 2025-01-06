@@ -1,7 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazyLoad } from './LazyLoad';
-import AuthLoader from './AuthLoader';
 import Root from './Root';
 import ErrorBoundary from './ErrorBoundary';
 
@@ -11,18 +10,13 @@ import ErrorBoundary from './ErrorBoundary';
 export const router = [
   {
     path: '/',
-    element: lazyLoad(React.lazy(() => import('@/pages/welcome/Welcome'))),
-  },
-  {
-    path: '/login',
-    element: lazyLoad(React.lazy(() => import('@/pages/login/Login'))),
-  },
-  {
-    path: '/',
-    loader: AuthLoader,
     element: <Root />,
     errorElement: <ErrorBoundary />,
     children: [
+      {
+        index: true,
+        element: <Navigate to="/projects" />,
+      },
       {
         path: '/projects',
         element: lazyLoad(React.lazy(() => import('@/pages/home/project/index'))),
