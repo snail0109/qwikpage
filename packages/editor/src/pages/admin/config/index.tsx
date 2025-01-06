@@ -1,11 +1,13 @@
 import { useEffect, useState, memo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Button, Space, Image, Radio, Switch, Tag, Modal } from 'antd';
+import { Form, Input, Button, Space, Radio, Switch, Modal } from 'antd';
 import { message } from '@/utils/AntdGlobal';
 import { RollbackOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import ColorPicker from '@/components/ColorPicker';
 import projectApi from '@/api/project';
 import styles from './index.module.less';
+import LR from '@/assets/image/LR.png'
+import UD from '@/assets/image/UD.png'
 
 /**
  * 项目配置
@@ -100,17 +102,14 @@ const Config: React.FC = memo(() => {
         <Form.Item label="项目描述" name="remark" rules={[{ required: true, message: '请输入项目描述' }]}>
           <Input.TextArea placeholder={'请输入项目描述'} rows={3} maxLength={100} showCount={type !== 'detail'} {...props} />
         </Form.Item>
-        <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: '请上传项目Logo' }]}>
-          <ImageFC />
-        </Form.Item>
         <h3>系统配置</h3>
         <Form.Item label="系统布局" name="layout">
           <Radio.Group {...props} onChange={(event) => form.setFieldValue('menuMode', event.target.value === 1 ? 'inline' : 'horizontal')}>
             <Radio value={1}>
-              <img style={{ width: 100 }} src="https://imgcloud.cdn.bcebos.com/f35323e9a2625a85909cb6f3c.png" alt="左右布局" />
+              <img style={{ width: 100 }} src={LR} alt="左右布局" />
             </Radio>
             <Radio value={2}>
-              <img style={{ width: 100 }} src="https://imgcloud.cdn.bcebos.com/f35323e9a2625a85909cb6f3d.png" alt="上左右下布局" />
+              <img style={{ width: 100 }} src={UD} alt="上左右下布局" />
             </Radio>
           </Radio.Group>
         </Form.Item>
@@ -212,12 +211,6 @@ const Config: React.FC = memo(() => {
     </>
   );
 });
-
-// 图片渲染
-const ImageFC = ({ value }: any) => {
-  return <Image src={value} style={{ width: 100 }} />;
-};
-
 
 
 export default Config;

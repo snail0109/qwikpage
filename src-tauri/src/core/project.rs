@@ -140,7 +140,7 @@ pub struct ProjectListResult {
 pub fn get_project_list() -> Result<ProjectListResult, String> {
     // mock 一些数据返回, 返回
     let mut project_list = ProjectList::new();
-    project_list.add_project("TestA".to_string(), "TestA Preoject description".to_string());
+    project_list.add_project("基础管理系统".to_string(), "Mars基础管理系统提供高效的企业级管理功能，支持数据可视化、数据管理，助力企业精细化管理。".to_string());
     project_list.add_project("TestB".to_string(), "TestB Preoject description".to_string());
     project_list.add_project("TestC".to_string(), "TestC Preoject description".to_string());
     project_list.add_project("TestD".to_string(), "TestD Preoject description".to_string());
