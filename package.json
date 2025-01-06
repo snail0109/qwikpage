@@ -9,7 +9,7 @@
     "dev": "pnpm --filter editor start",
     "build": "rimraf -rf dist/editor && pnpm --filter editor build",
     "start:admin": "pnpm --filter admin start",
-    "build:admin": "rimraf -rf dist/admin && pnpm --filter admin build",
+    "build:admin": "rimraf -rf dist/admin && pnpm --filter admin build"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
