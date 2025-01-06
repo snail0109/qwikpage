@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "preview": "vite preview",
-    "tauri": "tauri",
-    "dev": "pnpm --filter editor start",
-    "build": "rimraf -rf dist/editor && pnpm --filter editor build",
+    "dev": "pnpm tauri dev",
+    "build": "pnpm tauri build",
+    "dev:editor": "pnpm --filter editor start",
+    "build:editor": "rimraf -rf dist/editor && pnpm --filter editor build",
     "start:admin": "pnpm --filter admin start",
     "build:admin": "rimraf -rf dist/admin && pnpm --filter admin build"
   },
