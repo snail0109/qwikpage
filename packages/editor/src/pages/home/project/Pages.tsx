@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -17,7 +17,8 @@ import styles from './../index.module.less';
 export default function Index() {
   const [form] = Form.useForm();
   const createPageRef = useRef<CreatePageRef>();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const projectId = new URLSearchParams(location.search).get('projectId');
 
   // 判断是否是超大屏
   const isXLarge = useMediaQuery({ query: '(min-width: 1920px)' });
@@ -29,7 +30,7 @@ export default function Index() {
         pageNum: current,
         pageSize: pageSize,
         keyword,
-        projectId: Number(searchParams.get('projectId')),
+        projectId: projectId,
       })
       .then((res) => {
         return {

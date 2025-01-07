@@ -1,12 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { Col, Flex, Popover, Row, Space, Tabs, Tooltip } from 'antd';
+import { Col, Flex, Row, Space, Tabs, Tooltip } from 'antd';
 import {
   AppstoreOutlined,
   PartitionOutlined,
   CodeOutlined,
   ApiOutlined,
   FunctionOutlined,
-  UsergroupAddOutlined,
   ProjectOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
@@ -22,8 +21,6 @@ const OutlinePanel = lazy(() => import('./OutlinePanel'));
 const CodingPanel = lazy(() => import('./CodingPanel'));
 // 接口列表
 const ApiList = lazy(() => import('./ApiList/ApiList'));
-// 成员列表
-const MemberList = lazy(() => import('./Member/MemberList'));
 // 页面变量
 const VariableList = lazy(() => import('./Variable/VariableList'));
 /**
@@ -96,33 +93,6 @@ const panels = [
     title: '页面变量',
     children: () => {
       return <VariableList />;
-    },
-  },
-  {
-    key: 'Member',
-    icon: <UsergroupAddOutlined style={{ fontSize: 16 }} />,
-    label: '成员',
-    title: (
-      <Space>
-        <span>页面成员</span>
-        <Popover
-          style={{ padding: 0 }}
-          content={
-            <>
-              <p>1. 公开页面，所有人均可访问，但无法编辑。</p>
-              <p>2. 只有开发者才可修改页面。</p>
-              <p>3. 私有页面只有添加开发者或体验者才可访问。</p>
-            </>
-          }
-          title="页面权限"
-          placement="right"
-        >
-          <QuestionCircleOutlined />
-        </Popover>
-      </Space>
-    ),
-    children: () => {
-      return <MemberList />;
     },
   },
 ];

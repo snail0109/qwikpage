@@ -1,4 +1,3 @@
-import request from '@/utils/request';
 import { invoke } from "@tauri-apps/api/core";
 
 export default {

@@ -1,17 +1,15 @@
 import request from '@/utils/request';
+import { invoke } from "@tauri-apps/api/core";
+
 export default {
   // 获取页面列表
   getPageList(params: any) {
-    return request.get('/pages/list', params);
+    return invoke("get_page_list", params)
   },
 
-  // 获取页面模板列表
-  getPageTemplateList(params: any) {
-    return request.get('/pages/getPageTemplateList', params);
-  },
   // 获取页面详情
   getPageDetail(id: number) {
-    return request.get(`/pages/detail/${id}`);
+    return invoke("get_page_detail", { id })
   },
 
   // 复制页面数据

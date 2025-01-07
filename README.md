@@ -17,3 +17,8 @@ pnpm tauri dev
 ```bash
 pnpm tauri build
 ```
+
+
+## FAQ
+
+seachParams 丢失
