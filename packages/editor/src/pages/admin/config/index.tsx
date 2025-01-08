@@ -4,7 +4,7 @@ import { Form, Input, Button, Space, Radio, Switch, Modal } from 'antd';
 import { message } from '@/utils/AntdGlobal';
 import { RollbackOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import ColorPicker from '@/components/ColorPicker';
-import projectApi from '@/api/project';
+import projectApi from '@/invokeApi/project';
 import styles from './index.module.less';
 import LR from '@/assets/image/LR.png'
 import UD from '@/assets/image/UD.png'
@@ -25,7 +25,7 @@ const Config: React.FC = memo(() => {
   // 项目加载
   useEffect(() => {
     if (!id) return;
-    projectApi.getProjectDetail(parseInt(id)).then((res) => {
+    projectApi.getProjectDetail(id).then((res) => {
       form.setFieldsValue(res);
     });
   }, []);
@@ -53,9 +53,11 @@ const Config: React.FC = memo(() => {
   const handleOk = async (val?: string) => {
     setDelLoading(true);
     try {
-      await projectApi.delProject({ id: Number(id), type: val });
-      message.success('删除成功');
-      navigate('/projects');
+      if(id) {
+        await projectApi.delProject({ id, type: val });
+        message.success('删除成功');
+        navigate('/projects');
+      }
     } finally {
       setOpen(false);
       setDelLoading(false);

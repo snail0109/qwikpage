@@ -3,7 +3,7 @@ import { Button, Space, Tooltip } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { toBlob } from 'html-to-image';
 import { usePageStore } from '@/stores/pageStore';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import { message } from '@/utils/AntdGlobal';
 import styles from './index.module.less';
 

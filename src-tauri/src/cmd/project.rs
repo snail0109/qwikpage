@@ -1,22 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::{self, Error};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
-use uuid::Uuid;
 use tauri::command;
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Project {
-    id: Uuid,
-    name: String,
-    remark: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ProjectList {
-    projects: HashMap<Uuid, Project>,
-}
+use uuid::Uuid;
+use crate::types::project::{ Project, ProjectList }; 
 
 impl ProjectList {
     fn new() -> Self {
@@ -40,7 +29,12 @@ impl ProjectList {
         self.projects.remove(&project_id).is_some()
     }
 
-    fn update_project(&mut self, project_id: Uuid, name: Option<String>, remark: Option<String>) -> bool {
+    fn update_project(
+        &mut self,
+        project_id: Uuid,
+        name: Option<String>,
+        remark: Option<String>,
+    ) -> bool {
         if let Some(project) = self.projects.get_mut(&project_id) {
             if let Some(name) = name {
                 project.name = name;
@@ -65,7 +59,8 @@ impl ProjectList {
     fn save_to_file(&self, file_path: &str) -> Result<(), Error> {
         let json = serde_json::to_string_pretty(&self)?;
         let mut file = File::create(file_path).map_err(serde_json::Error::io)?;
-        file.write_all(json.as_bytes()).map_err(serde_json::Error::io)?;
+        file.write_all(json.as_bytes())
+            .map_err(serde_json::Error::io)?;
         Ok(())
     }
 
@@ -96,7 +91,11 @@ pub fn add_project(name: String, remark: String) -> Result<Uuid, String> {
 }
 
 #[command]
-pub fn update_project(project_id: Uuid, name: Option<String>, remark: Option<String>) -> Result<bool, String> {
+pub fn update_project(
+    project_id: Uuid,
+    name: Option<String>,
+    remark: Option<String>,
+) -> Result<bool, String> {
     let mut project_list = ProjectList::new();
     match ProjectList::load_from_file("project.json") {
         Ok(loaded_project_list) => {
@@ -129,11 +128,10 @@ pub fn delete_project(project_id: Uuid) -> Result<bool, String> {
     Ok(result)
 }
 
-
 #[derive(Serialize)]
 pub struct ProjectListResult {
     list: Vec<Project>,
-    total: usize
+    total: usize,
 }
 
 #[command]
@@ -141,8 +139,15 @@ pub fn get_project_list() -> Result<ProjectListResult, String> {
     // FIXME
     // mock 一些数据返回, 返回
     let mut project_list = ProjectList::new();
-    project_list.add_project("基础管理系统".to_string(), "Mars基础管理系统提供高效的企业级管理功能，支持数据可视化、数据管理，助力企业精细化管理。".to_string());
-    project_list.add_project("TestA".to_string(), "TestA Preoject description".to_string());
+    project_list.add_project(
+        "基础管理系统".to_string(),
+        "Mars基础管理系统提供高效的企业级管理功能，支持数据可视化、数据管理，助力企业精细化管理。"
+            .to_string(),
+    );
+    project_list.add_project(
+        "TestA".to_string(),
+        "TestA Preoject description".to_string(),
+    );
 
     let result = ProjectListResult {
         list: project_list.projects.values().cloned().collect(),
@@ -152,10 +157,9 @@ pub fn get_project_list() -> Result<ProjectListResult, String> {
 }
 
 #[command]
-pub fn get_project_detail(project_id: Uuid) -> serde_json::Value {
+pub fn get_project_detail(id: Uuid) -> serde_json::Value {
     serde_json::json!({
-        "data": {
-            "id": project_id,
+            "id": id,
             "name": "基础管理系统",
             "remark": "Mars基础管理系统提供高效的企业级管理功能,支持数据可视化、数据管理,助力企业精细化管理。",
             "layout": 1,
@@ -164,6 +168,5 @@ pub fn get_project_detail(project_id: Uuid) -> serde_json::Value {
             "breadcrumb": 1,
             "tag": 1,
             "footer": 0
-        }
     })
 }

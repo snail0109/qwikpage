@@ -1,17 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::command;
 use uuid::Uuid;
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Page {
-    pub id: u32,
-    pub name: String,
-    pub path: String,
-    pub description: String,
-    pub updated_at: String,
-    pub created_at: String,
-    pub project_id: Uuid,
-}
+use crate::types::page::Page; 
 
 #[command]
 pub fn get_page_list(project_id: Option<Uuid>) -> serde_json::Value {
@@ -32,7 +22,6 @@ pub fn get_page_list(project_id: Option<Uuid>) -> serde_json::Value {
                     "prdState": 1,
                     "projectId": project_id,
                     "updatedAt": "2024-12-27 14:23:55",
-                    "userName": "1121988099"
                   },
                   {
                     "id": 8554,
@@ -49,7 +38,6 @@ pub fn get_page_list(project_id: Option<Uuid>) -> serde_json::Value {
                     "prdState": 1,
                     "projectId": project_id,
                     "updatedAt": "2024-12-27 14:23:55",
-                    "userName": "1121988099"
                   }
                 ],
                 "total": 2,
@@ -68,7 +56,6 @@ pub fn get_page_detail(id: u32) -> serde_json::Value {
                 "id": id,
                 "name": "数据看板页面",
                 "userId": 3371,
-                "userName": "1121988099",
                 "remark": "数据看板页面",
                 "isPublic": 2,
                 "isEdit": 2,
@@ -91,7 +78,6 @@ pub fn get_page_detail(id: u32) -> serde_json::Value {
               "id": id,
               "name": "用户列表",
               "userId": 3371,
-              "userName": "1121988099",
               "remark": "",
               "isPublic": 2,
               "isEdit": 2,
@@ -110,3 +96,19 @@ pub fn get_page_detail(id: u32) -> serde_json::Value {
     }
 }
 
+
+// page
+#[command]
+pub fn create_page(item: Page ) ->Result<(), tauri::Error> {
+    Ok(())
+}
+
+#[command]
+pub fn update_page(page_id: String) -> Result<(), tauri::Error> {
+    Ok(())
+}
+
+#[command]
+pub fn delete_page(page_id: String) -> Result<(), tauri::Error> {
+    Ok(())
+}

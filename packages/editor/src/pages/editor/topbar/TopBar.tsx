@@ -4,7 +4,7 @@ import { EyeOutlined, LinkOutlined, SaveOutlined, SettingOutlined, LeftOutlined 
 import { usePageStore } from '@/stores/pageStore';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import ShareLink from './ShareLink';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import storage from '@/utils/storage';
 import styles from './index.module.less';
 

@@ -4,9 +4,9 @@ import { Tooltip, Image, Card } from 'antd';
 import { UserOutlined, EyeOutlined, CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import EnvTag from './EnvTag';
-import { PageItem } from '@/api/types';
+import { PageItem } from '@/invokeApi/types';
 import styles from './../../index.module.less';
 
 // 页面列表项

@@ -1,4 +1,4 @@
-import { Project } from '@/api/types';
+import { Project } from '@/invokeApi/types';
 import { MutableRefObject } from 'react';
 export type IAction = 'create' | 'edit' | 'delete';
 

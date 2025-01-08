@@ -1,6 +1,6 @@
 import { Input, Modal, Form, Button, Image } from 'antd';
 import { useImperativeHandle, useState, forwardRef, memo } from 'react';
-import api from '@/api/project';
+import api from '@/invokeApi/project';
 import { message } from '@/utils/AntdGlobal';
 import TextArea from 'antd/es/input/TextArea';
 

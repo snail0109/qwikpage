@@ -4,11 +4,11 @@ import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import { useMediaQuery } from 'react-responsive';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import SearchBar from '@/components/Searchbar/SearchBar';
 import PageCard from './components/PageCard';
-import { PageItem } from '@/api/types';
+import { PageItem } from '@/invokeApi/types';
 import styles from './../index.module.less';
 
 /**

@@ -1,7 +1,7 @@
 import { Button, Row } from 'antd';
 import Editor, { loader } from '@monaco-editor/react';
 import { useRef, useEffect, useState } from 'react';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import { usePageStore } from '@/stores/pageStore';
 import { message } from '@/utils/AntdGlobal';
 

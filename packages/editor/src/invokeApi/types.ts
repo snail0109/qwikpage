@@ -20,3 +20,24 @@ export namespace Menu {
     projectId?: number;
   }
 }
+
+
+export interface CreatePageParams {
+  id?: number;
+  name: string;
+  projectId: number;
+  // 其他必要的页面属性
+}
+
+export namespace Project {
+  export interface CreateParams {
+    name: string;
+  }
+
+  export interface ProjectItem {
+    id: number;
+    name: string;
+    logo: string;
+    remark: string;
+  }
+}

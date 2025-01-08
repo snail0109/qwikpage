@@ -3,7 +3,7 @@ import { Switch, Button, Input, Avatar, Tooltip, QRCode } from 'antd';
 import { LinkOutlined, CopyOutlined, UserOutlined, QrcodeOutlined, MutedOutlined } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
 import { usePageStore } from '@/stores/pageStore';
-import api from '@/api/page';
+import api from '@/invokeApi/page';
 import styles from './index.module.less';
 
 /**

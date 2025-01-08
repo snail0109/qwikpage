@@ -17,13 +17,13 @@ export default {
   },
 
   // 删除项目
-  delProject(params: { id: number; type?: string }) {
+  delProject(params: { id: string; type?: string }) {
     return invoke("get_project_list", params)
   },
 
   // 获取项目详情
-  getProjectDetail(id: number) {
-    return invoke("get_project_detail", { id})
+  getProjectDetail(id: string) {
+    return invoke("get_project_detail", { id })
   },
 
 };

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Form, Input, Button, Table, Select, Badge } from 'antd';
-import { Menu } from '@/api/types';
+import { Menu } from '@/invokeApi/types';
 import { IAction } from '@/pages/types';
 import { ColumnsType } from 'antd/es/table';
 import { Modal, message } from '@/utils/AntdGlobal';
 import CreateMenu from './CreateMenu';
 import SearchForm from '../components/SearchForm';
-import { getMenuList, delMenu, copyMenu } from '@/api';
+import { getMenuList, delMenu, copyMenu } from '@/invokeApi/menu';
 import { arrayToTree } from '@/utils/util';
 import * as icons from '@ant-design/icons';
 import BaseTable from '../components/BaseTable';

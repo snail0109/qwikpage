@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { CheckCircleOutlined, ExclamationCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { PageItem } from '@/api/types';
+import { PageItem } from '@/invokeApi/types';
 import { useLocation } from 'react-router-dom';
 
 // 页面状态标签

@@ -1,8 +1,8 @@
 import { Button, Flex, List, Spin, Tag } from 'antd';
 import { PlusOutlined, SyncOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { memo, useEffect, useRef, useState } from 'react';
-import { PageItem } from '@/api/types';
-import api from '@/api/page';
+import { PageItem } from '@/invokeApi/types';
+import api from '@/invokeApi/page';
 import { useNavigate } from 'react-router-dom';
 import { Modal, message } from '@/utils/AntdGlobal';
 import { usePageStore } from '@/stores/pageStore';

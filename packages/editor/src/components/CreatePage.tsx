@@ -1,8 +1,8 @@
 import { Input, Modal, Form, Select, Space, Flex, Button } from 'antd';
 import { useImperativeHandle, useState, MutableRefObject } from 'react';
-import projectApi from '@/api/project';
-import api from '@/api/page';
-import { CreatePageParams, Project } from '@/api/types';
+import projectApi from '@/invokeApi/project';
+import api from '@/invokeApi/page';
+import { CreatePageParams, Project } from '@/invokeApi/types';
 import { useSearchParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { usePageStore } from '@/stores/pageStore';

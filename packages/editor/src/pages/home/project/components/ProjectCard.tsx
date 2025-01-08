@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Typography, Avatar, Dropdown } from 'antd';
 import { UserOutlined, GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Project } from '@/api/types';
+import { Project } from '@/invokeApi/types';
 import styles from './../page.module.less';
 const { Paragraph } = Typography;
 
