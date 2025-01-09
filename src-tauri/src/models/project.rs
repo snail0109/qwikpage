@@ -2,7 +2,6 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
-use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum Layout {
@@ -28,7 +27,7 @@ pub struct Project {
     pub id: String,                       // 项目唯一标识
     pub name: String,                     // 项目名称
     pub remark: String,                   // 项目备注（可选）
-    pub logo: Option<String>,             // 项目 logo 的 URL（可选）
+    pub logo: String,             // 项目 logo 的 URL（可选）
     pub layout: Layout,                   // 系统布局
     pub menu_mode: MenuMode,              // 菜单模式
     pub menu_theme_color: MenuThemeColor, // 菜单主题
@@ -42,9 +41,12 @@ pub struct Project {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProjectSummary {
+    pub id: String,
     pub name: String,
     pub remark: String,
-    pub page_count: usize,
+    pub count: usize,
+    pub updated_at: String,
+    pub logo: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -54,14 +56,14 @@ pub struct ProjectList {
 }
 
 impl Project {
-    pub fn new(id:String , name: String, remark: String) -> Self {
+    pub fn new(id:String , name: String, remark: String, logo: String) -> Self {
         // 生成随机并且唯一的项目 ID
         let current_time = Utc::now().naive_utc();
         Project {
             id,
             name,
             remark,
-            logo: None,
+            logo,
             layout: Layout::Layout1,
             menu_mode: MenuMode::Horizontal,
             menu_theme_color: MenuThemeColor::Dark,

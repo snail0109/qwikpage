@@ -6,6 +6,7 @@ import { usePageStore } from '@/stores/pageStore';
 import Publish from './PublishPopover';
 import styles from './index.module.less';
 import storage from '@/utils/storage';
+import { invoke } from '@tauri-apps/api/core';
 
 /**
  * 编辑器顶部组件
@@ -88,13 +89,17 @@ const Header = memo(() => {
     setMode('edit');
   };
 
+  const onClick = async () => {
+    return await invoke<void>('open_app_config_dir')
+  }
+
   const isEditPage = pageFrom === `editor/${id}/edit` || pageFrom === `editor/${id}/template`;
 
   return (
     <>
       <Layout.Header className={styles.layoutHeader}>
         <div className={styles.logo} onClick={goHome}>
-          <img src={`${theme === 'dark' ? '/imgs/mars-logo-dark.png' : '/imgs/mars-logo.png'}`} width={42} />
+          <img src={`${theme === 'dark' ? '/imgs/qwikpage-logo.png' : '/imgs/qwikpage-logo.png'}`} width={42} />
           <span>QwikPage</span>
         </div>
         {/* 首页 - 导航菜单 */}

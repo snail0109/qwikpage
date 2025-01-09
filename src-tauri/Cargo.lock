@@ -3020,6 +3020,7 @@ dependencies = [
  "dunce",
  "log",
  "once_cell",
+ "open",
  "serde",
  "serde_json",
  "tauri",

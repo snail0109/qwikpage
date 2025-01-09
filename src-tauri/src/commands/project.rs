@@ -51,11 +51,14 @@ pub fn get_project_list(
                             }
                         }
 
-                        let page_count = count_pages_in_project(&project_path);
+                        let count = count_pages_in_project(&project_path);
                         project_list.push(ProjectSummary {
+                            id: project.id,
                             name: project.name,
                             remark: project.remark,
-                            page_count,
+                            updated_at: project.updated_at,
+                            logo: project.logo,
+                            count,
                         });
                     }
                 }
@@ -74,9 +77,9 @@ pub fn get_project_list(
 
 // 获取项目详情
 #[command]
-pub fn get_project_detail(project_id: String) -> Result<Project, String> {
+pub fn get_project_detail(id: String) -> Result<Project, String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_path = root_dir.join(&project_id);
+    let project_path = root_dir.join(&id);
     if let Some(project) = load_project(&project_path) {
         Ok(project)
     } else {
@@ -86,7 +89,7 @@ pub fn get_project_detail(project_id: String) -> Result<Project, String> {
 
 // 新建项目
 #[command]
-pub fn add_project(name: String, remark: String) -> Result<(), String> {
+pub fn add_project(name: String, remark: String, logo: String) -> Result<(), String> {
     info!("add_project");
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_id = uuid::Uuid::new_v4().to_string();
@@ -96,7 +99,7 @@ pub fn add_project(name: String, remark: String) -> Result<(), String> {
         return Err(format!("{} already exists", project_dir.display()));
     }
     fs::create_dir_all(&project_dir).unwrap();
-    let project = Project::new(project_id, name, remark);
+    let project = Project::new(project_id, name, remark, logo);
     project.save(&project_dir);
     println!("Project created successfully");
     Ok(())
