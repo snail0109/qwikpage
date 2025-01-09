@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::command;
 use uuid::Uuid;
-use crate::types::page::Page; 
+use crate::models::page::Page; 
 
 #[command]
 pub fn get_page_list(project_id: Option<Uuid>) -> serde_json::Value {

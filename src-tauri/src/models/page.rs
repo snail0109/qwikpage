@@ -1,11 +1,10 @@
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Menu {
+pub struct Page {
     id: String,
     name: String,
-    remark: String,
-    parent_id: String,
-    children: Vec<String>,
+    content: String,
+    created_at: String,
+    updated_at: String,
 }
