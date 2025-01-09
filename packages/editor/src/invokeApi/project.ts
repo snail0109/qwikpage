@@ -13,12 +13,12 @@ export default {
 
   // 更新项目
   updateProject(params: any) {
-    return invoke("get_project_list", params)
+    return invoke("update_project", { id: params.id,params })
   },
 
   // 删除项目
-  delProject(params: { id: string; type?: string }) {
-    return invoke("get_project_list", params)
+  delProject(params: { id: string; mode?: string }) {
+    return invoke("delete_project", params)
   },
 
   // 获取项目详情

@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Button, Space, Radio, Switch, Modal } from 'antd';
+import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from 'antd';
 import { message } from '@/utils/AntdGlobal';
 import { RollbackOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import ColorPicker from '@/components/ColorPicker';
@@ -34,9 +34,9 @@ const Config: React.FC = memo(() => {
   const handleSubmit = async () => {
     try {
       await form.validateFields();
-      const { breadcrumb, tag, footer, ...rest } = form.getFieldsValue();
+      const value = form.getFieldsValue();
       setLoading(true);
-      await projectApi.updateProject({ ...rest, tag: tag ? 1 : 0, footer: footer ? 1 : 0, breadcrumb: breadcrumb ? 1 : 0 });
+      await projectApi.updateProject({...value});
       message.success('更新成功');
       setLoading(false);
       setType('detail');
@@ -54,7 +54,7 @@ const Config: React.FC = memo(() => {
     setDelLoading(true);
     try {
       if(id) {
-        await projectApi.delProject({ id, type: val });
+        await projectApi.delProject({ id, mode: val });
         message.success('删除成功');
         navigate('/projects');
       }
@@ -104,6 +104,9 @@ const Config: React.FC = memo(() => {
         <Form.Item label="项目描述" name="remark" rules={[{ required: true, message: '请输入项目描述' }]}>
           <Input.TextArea placeholder={'请输入项目描述'} rows={3} maxLength={100} showCount={type !== 'detail'} {...props} />
         </Form.Item>
+        <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: '请上传项目Logo' }]}>
+          <ImageFC />
+        </Form.Item>
         <h3>系统配置</h3>
         <Form.Item label="系统布局" name="layout">
           <Radio.Group {...props} onChange={(event) => form.setFieldValue('menuMode', event.target.value === 1 ? 'inline' : 'horizontal')}>
@@ -126,7 +129,7 @@ const Config: React.FC = memo(() => {
                 </Radio.Group>
               </Form.Item>
             ) : (
-              <Form.Item label="菜单模式" name="menuMode">
+              <Form.Item label="菜单模式" name="menu_mode">
                 <Radio.Group {...props} buttonStyle="solid">
                   <Radio.Button value="horizontal">水平</Radio.Button>
                 </Radio.Group>
@@ -134,13 +137,13 @@ const Config: React.FC = memo(() => {
             );
           }}
         </Form.Item>
-        <Form.Item label="菜单主题" name="menuThemeColor">
+        <Form.Item label="菜单主题" name="menu_theme_color">
           <Radio.Group {...props}>
             <Radio value="dark">深色</Radio>
             <Radio value="light">浅色</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label="系统主题" name="systemThemeColor">
+        <Form.Item label="系统主题" name="system_theme_color">
           <ColorPicker {...props} />
         </Form.Item>
         <Form.Item label="面包屑" name="breadcrumb" valuePropName="checked">
@@ -213,6 +216,12 @@ const Config: React.FC = memo(() => {
     </>
   );
 });
+
+// 图片渲染
+const ImageFC = ({ value }: any) => {
+  return <Image src={value} style={{ width: 100 }} />;
+};
+
 
 
 export default Config;

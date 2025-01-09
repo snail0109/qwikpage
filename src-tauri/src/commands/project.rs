@@ -1,4 +1,4 @@
-use crate::models::project::{Project, ProjectList, ProjectSummary};
+use crate::models::project::{Project, ProjectList, ProjectSummary, UpdateProject};
 use crate::utils::dirs;
 use anyhow::Result;
 use log::{error, info};
@@ -46,7 +46,8 @@ pub fn get_project_list(
                     if let Some(project) = load_project(&project_path) {
                         // 如果keyword传入了值，只返回匹配的项目
                         if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword) && !project.remark.contains(keyword) {
+                            if !project.name.contains(keyword) && !project.remark.contains(keyword)
+                            {
                                 continue;
                             }
                         }
@@ -107,29 +108,30 @@ pub fn add_project(name: String, remark: String, logo: String) -> Result<(), Str
 
 // 更新项目
 #[command]
-pub fn update_project(project_id: String, name: String, remark: String) -> Result<(), String> {
+pub fn update_project(
+    id: String,
+    params: UpdateProject,
+) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_dir = root_dir.join(&project_id);
+    let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
         return Err(format!("{} does not found", project_dir.display()));
     }
     let mut project = Project::load(&project_dir);
-    project.name = name;
-    project.remark = remark;
-    project.save(&project_dir);
+    project.update(&project_dir, id, params);
     println!("Project updated successfully");
     Ok(())
 }
 
 // 删除项目
 #[command]
-pub fn delete_project(project_id: String) -> Result<(), String> {
+pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_dir = root_dir.join(&project_id);
+    let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
         return Err(format!("{} does not found", project_dir.display()));
     }
-    Project::delete(&project_dir);
+    Project::delete(&project_dir, mode);
     println!("Project deleted successfully");
     Ok(())
 }
