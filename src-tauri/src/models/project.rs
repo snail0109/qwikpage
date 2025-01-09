@@ -40,20 +40,25 @@ pub struct Project {
     pub updated_at: String,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProjectSummary {
     pub name: String,
     pub remark: String,
     pub page_count: usize,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ProjectList {
+    pub list: Vec<ProjectSummary>,
+    pub total: usize,
+}
 
 impl Project {
-    pub fn new(name: String, remark: String) -> Self {
+    pub fn new(id:String , name: String, remark: String) -> Self {
         // 生成随机并且唯一的项目 ID
         let current_time = Utc::now().naive_utc();
         Project {
-            id: Uuid::new_v4().to_string(),
+            id,
             name,
             remark,
             logo: None,

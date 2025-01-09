@@ -1,9 +1,9 @@
-use crate::models::project::{Project, ProjectSummary};
+use crate::models::project::{Project, ProjectList, ProjectSummary};
 use crate::utils::dirs;
+use anyhow::Result;
+use log::{error, info};
 use std::fs;
 use std::path::{Path, PathBuf};
-use anyhow::Result;
-use log::{info, error};
 use tauri::command;
 
 // 加载项目详情信息
@@ -30,7 +30,11 @@ fn count_pages_in_project(project_path: &Path) -> usize {
 
 // 获取项目列表
 #[command]
-pub fn get_project_list() -> Vec<ProjectSummary> {
+pub fn get_project_list(
+    page_num: usize,
+    page_size: usize,
+    keyword: Option<String>,
+) -> Result<ProjectList, String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let mut project_list = Vec::new();
 
@@ -40,6 +44,13 @@ pub fn get_project_list() -> Vec<ProjectSummary> {
                 let project_path = entry.path();
                 if project_path.is_dir() {
                     if let Some(project) = load_project(&project_path) {
+                        // 如果keyword传入了值，只返回匹配的项目
+                        if let Some(keyword) = &keyword {
+                            if !project.name.contains(keyword) && !project.remark.contains(keyword) {
+                                continue;
+                            }
+                        }
+
                         let page_count = count_pages_in_project(&project_path);
                         project_list.push(ProjectSummary {
                             name: project.name,
@@ -51,8 +62,14 @@ pub fn get_project_list() -> Vec<ProjectSummary> {
             }
         }
     }
+    // 分页逻辑
+    let start = (page_num - 1) * page_size;
+    let end = start + page_size;
+    let end = end.min(project_list.len());
 
-    project_list
+    let total = project_list.len();
+    let list = project_list[start..end].to_vec();
+    Ok(ProjectList { total, list })
 }
 
 // 获取项目详情
@@ -69,33 +86,33 @@ pub fn get_project_detail(project_id: String) -> Result<Project, String> {
 
 // 新建项目
 #[command]
-pub fn add_project(project_name: String, project_remark: String) -> Result<(), String> {
+pub fn add_project(name: String, remark: String) -> Result<(), String> {
     info!("add_project");
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_dir = root_dir.join(&project_name);
+    let project_id = uuid::Uuid::new_v4().to_string();
+    let project_dir = root_dir.join(&project_id);
     if project_dir.exists() {
         error!("project_dir already exists");
-        return Err(format!("{} already exists", project_dir.display()))
+        return Err(format!("{} already exists", project_dir.display()));
     }
     fs::create_dir_all(&project_dir).unwrap();
-    let project = Project::new(project_name, project_remark);
+    let project = Project::new(project_id, name, remark);
     project.save(&project_dir);
     println!("Project created successfully");
     Ok(())
 }
 
-
 // 更新项目
 #[command]
-pub fn update_project(project_id: String, project_name: String, project_remark: String) -> Result<(), String> {
+pub fn update_project(project_id: String, name: String, remark: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&project_id);
     if !project_dir.exists() {
-        return Err(format!("{} does not found", project_dir.display()))
+        return Err(format!("{} does not found", project_dir.display()));
     }
     let mut project = Project::load(&project_dir);
-    project.name = project_name;
-    project.remark = project_remark;
+    project.name = name;
+    project.remark = remark;
     project.save(&project_dir);
     println!("Project updated successfully");
     Ok(())
@@ -107,7 +124,7 @@ pub fn delete_project(project_id: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&project_id);
     if !project_dir.exists() {
-        return Err(format!("{} does not found", project_dir.display()))
+        return Err(format!("{} does not found", project_dir.display()));
     }
     Project::delete(&project_dir);
     println!("Project deleted successfully");
