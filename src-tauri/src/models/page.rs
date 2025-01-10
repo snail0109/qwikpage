@@ -1,10 +1,101 @@
+use chrono::Local;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
+use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Page {
-    id: String,
-    name: String,
-    content: String,
+    id: String,  
+    name: String,  // 页面名称    
+    remark: String,  // 页面描述
+    page_data: String,
+    project_id: String,
     created_at: String,
     updated_at: String,
+}
+
+
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PageParams {
+    pub name: String,  // 页面名称    
+    pub remark: String,  // 页面描述
+    pub page_data: String,
+    pub project_id: String,
+}
+
+
+
+impl Page {
+    pub fn new(id: String, name: String, remark: String, page_data: String, project_id: String) -> Self {
+        let now = Local::now().format(DATA_FORMAT).to_string();
+        Page {
+            id,
+            name,
+            remark,
+            page_data,
+            project_id,
+            created_at: now.clone(),
+            updated_at: now,
+        }
+    }
+
+    pub fn list(project_path: &Path, name: String) -> Vec<Self> {
+        let mut pages = vec![];
+        let page_dir = project_path.join(PAGE_DIR);
+        if !page_dir.exists() {
+            return pages;
+        }
+        let entries = fs::read_dir(page_dir).unwrap();
+        for entry in entries {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.is_file() {
+                let json = fs::read_to_string(&path).unwrap();
+                let page: Page = serde_json::from_str(&json).unwrap();
+                if name != "" && !page.name.contains(&name) {
+                    continue;
+                }
+                pages.push(page);
+            }
+        }
+        pages
+    }
+
+    pub fn save(&self, project_path: &Path) {
+        let page_file = project_path.join(PAGE_DIR).join(&self.id);
+        let json = serde_json::to_string(&self).unwrap();
+        fs::write(page_file, json).unwrap();
+    }
+
+    pub fn load(project_path: &Path, id: String) -> Self {
+        let page_file = project_path.join(PAGE_DIR).join(&id);
+        let json = fs::read_to_string(page_file).unwrap();
+        serde_json::from_str(&json).unwrap()
+    }
+
+    pub fn update(&self, project_path: &Path, id: String, params: PageParams) {
+        let mut page = Page::load(project_path, id.clone());
+        page.id = id;
+        page.name = params.name;
+        page.remark = params.remark;
+        page.page_data = params.page_data;
+        page.updated_at = Local::now().format(DATA_FORMAT).to_string();
+        page.save(project_path);
+    }
+
+    pub fn delete(project_path: &Path, id: String) {
+        let page_file = project_path.join(PAGE_DIR).join(&id);
+        fs::remove_file(page_file).unwrap();
+    }
+
+    pub fn copy(&self, project_path: &Path, id: String) {
+        let mut page = Page::load(project_path, id);
+        page.id = uuid::Uuid::new_v4().to_string();
+        page.created_at = Local::now().format(DATA_FORMAT).to_string();
+        page.updated_at = Local::now().format(DATA_FORMAT).to_string();
+        page.save(project_path);
+    }
+    
 }

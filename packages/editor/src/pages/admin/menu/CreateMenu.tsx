@@ -112,7 +112,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
             <Form.Item hidden name="projectId">
               <InputNumber />
             </Form.Item>
-            <Form.Item label="父级菜单" name="parentId">
+            <Form.Item label="父级菜单" name="parent_id">
               <TreeSelect
                 placeholder="请选择父级菜单"
                 allowClear
@@ -121,7 +121,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                 treeData={menuList}
               />
             </Form.Item>
-            <Form.Item label="菜单类型" name="type">
+            <Form.Item label="菜单类型" name="menu_type">
               <Radio.Group>
                 <Radio value={1}>菜单</Radio>
                 <Radio value={2}>按钮</Radio>
@@ -130,12 +130,12 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
             </Form.Item>
             <Form.Item noStyle shouldUpdate>
               {() => {
-                const type = form.getFieldValue('type');
-                return type === 1 ? (
+                const menu_type = form.getFieldValue('menu_type');
+                return menu_type === 1 ? (
                   <Form.Item label="菜单名称" name="name" rules={[{ required: true, message: '请输入菜单名称' }]}>
                     <Input placeholder="请输入菜单名称" allowClear maxLength={15} showCount />
                   </Form.Item>
-                ) : type === 2 ? (
+                ) : menu_type === 2 ? (
                   <Form.Item label="按钮名称" name="name" rules={[{ required: true, message: '请输入按钮名称' }]}>
                     <Input placeholder="请输入按钮名称" allowClear />
                   </Form.Item>
@@ -148,14 +148,14 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
             </Form.Item>
             <Form.Item noStyle shouldUpdate>
               {() => {
-                const type = form.getFieldValue('type');
-                return type === 2 ? (
+                const menu_type = form.getFieldValue('menu_type');
+                return menu_type === 2 ? (
                   <Form.Item label="权限标识" name="code" extra="同一个菜单下按钮标识不要重复，请根据语义定义。">
                     <Input placeholder="权限标识，例如: create、edit、export" />
                   </Form.Item>
                 ) : (
                   <>
-                    {type === 1 ? (
+                    {menu_type === 1 ? (
                       <Form.Item label="菜单图标" name="icon">
                         <CustomIconOptions />
                       </Form.Item>
@@ -187,7 +187,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                         ></Select>
                       </Form.Item>
                     ) : (
-                      <Form.Item label="生成页面" name="isCreate" extra="如果你创建的是末级菜单，请给它生成一个页面，父菜单不需要生成。">
+                      <Form.Item label="生成页面" name="is_create" extra="如果你创建的是末级菜单，请给它生成一个页面，父菜单不需要生成。">
                         <Radio.Group>
                           <Radio value={1}>是</Radio>
                           <Radio value={2}>否</Radio>
@@ -207,7 +207,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
               }}
             </Form.Item>
 
-            <Form.Item label="排序" name="sortNum" extra="排序值越大越靠后。">
+            <Form.Item label="排序" name="sort_num" extra="排序值越大越靠后。">
               <InputNumber placeholder="请输入排序值" />
             </Form.Item>
             <Form.Item label="菜单状态" name="status" extra="停用后，菜单不会在admin系统中展示。">

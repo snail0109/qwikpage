@@ -2,6 +2,8 @@ use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
+
+use crate::utils::constans::{DATA_FORMAT, PROJECT_CONFIG_FILE};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
     pub id: String,                         // 项目唯一标识
@@ -64,19 +66,19 @@ impl Project {
             tag: true,
             footer: true,
             system_theme_color: None,
-            created_at: current_time.format("%Y-%m-%d %H:%M:%S").to_string(),
-            updated_at: current_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+            created_at: current_time.format(DATA_FORMAT).to_string(),
+            updated_at: current_time.format(DATA_FORMAT).to_string(),
         }
     }
 
     pub fn save(&self, project_path: &Path) {
-        let project_file = project_path.join("project.json");
+        let project_file = project_path.join(PROJECT_CONFIG_FILE);
         let json = serde_json::to_string_pretty(&self).unwrap();
         fs::write(project_file, json).unwrap();
     }
 
     pub fn load(project_path: &Path) -> Self {
-        let project_file = project_path.join("project.json");
+        let project_file = project_path.join(PROJECT_CONFIG_FILE);
         let json = fs::read_to_string(project_file).unwrap();
         serde_json::from_str(&json).unwrap()
     }
@@ -93,7 +95,7 @@ impl Project {
         project.breadcrumb = params.breadcrumb;
         project.tag = params.tag;
         project.footer = params.footer;
-        project.updated_at = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+        project.updated_at = Local::now().format(DATA_FORMAT).to_string();
         project.save(project_path);
     }
 
@@ -104,7 +106,7 @@ impl Project {
                 fs::remove_dir_all(project_path).unwrap();
             }
         } else {
-            let project_file = project_path.join("project.json");
+            let project_file = project_path.join(PROJECT_CONFIG_FILE);
             fs::remove_file(project_file).unwrap();
         }
     }

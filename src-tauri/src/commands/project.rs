@@ -117,7 +117,7 @@ pub fn update_project(
     if !project_dir.exists() {
         return Err(format!("{} does not found", project_dir.display()));
     }
-    let mut project = Project::load(&project_dir);
+    let project = Project::load(&project_dir);
     project.update(&project_dir, id, params);
     println!("Project updated successfully");
     Ok(())
