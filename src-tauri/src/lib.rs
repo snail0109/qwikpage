@@ -44,7 +44,7 @@ pub fn run() {
             menu::delete_menu,
             page::get_page_list,
             page::get_page_detail,
-            page::create_page,
+            page::add_page,
             page::update_page,
             page::delete_page
         ])

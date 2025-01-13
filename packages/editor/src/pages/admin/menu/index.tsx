@@ -36,16 +36,16 @@ export default function MenuList() {
     if (!projectId) return;
     setLoading(true);
     const res = await getMenuList({
-      projectId: parseInt(projectId),
+      projectId,
       name,
       status,
     });
     setLoading(false);
     if (name || status > 0) {
       // 如果带条件搜索，直接返回，不需要生成树结构
-      setData(res.list || []);
+      setData(res || []);
     } else {
-      const menuData = arrayToTree(res.list);
+      const menuData = arrayToTree(res);
       setData(menuData || []);
     }
   };
@@ -219,7 +219,7 @@ export default function MenuList() {
             <Button type="link" danger onClick={() => handleDelete(record)}>
               删除
             </Button>
-            {record.pageId > 0 && <Link to={`/editor/${record.pageId}/edit`}>去设计</Link>}
+            {record.pageId  && <Link to={`/editor/${record.pageId}/edit`}>去设计</Link>}
           </>
         );
       },

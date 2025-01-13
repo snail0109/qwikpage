@@ -25,7 +25,7 @@ export namespace Menu {
 export interface CreatePageParams {
   id?: number;
   name: string;
-  projectId: number;
+  projectId?: string;
   // 其他必要的页面属性
 }
 

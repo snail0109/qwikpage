@@ -1,17 +1,18 @@
 use crate::commands::page::add_page;
 use crate::models::menu::{Menu, MenuParams};
-use crate::models::page::Page;
 use crate::utils::constans::MENU_DIR;
 use crate::utils::dirs;
 use anyhow::Result;
-use log::{error, info};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tauri::command;
 
-
 #[command]
-pub fn get_menu_list(project_id: String, name: String, status: i32) -> Result<Vec<Menu>, String> {
+pub fn get_menu_list(
+    project_id: String,
+    name: Option<String>,
+    status: i32,
+) -> Result<Vec<Menu>, String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&project_id);
     // project menu 目录下的文件
@@ -22,12 +23,16 @@ pub fn get_menu_list(project_id: String, name: String, status: i32) -> Result<Ve
             if let Ok(entry) = entry {
                 let path = entry.path();
                 if path.is_file() {
-                    let menu: Menu = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+                    let menu: Menu =
+                        serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
                     // 过滤
-                    if !name.is_empty() && !menu.name.contains(&name) {
-                        continue;
+                    if let Some(ref n) = name {
+                        if !menu.name.contains(n) {
+                            continue;
+                        }
                     }
-                    if status != 0 && menu.status != status {
+
+                    if status != -1 && menu.status != status {
                         continue;
                     }
                     menu_list.push(menu);
@@ -39,7 +44,7 @@ pub fn get_menu_list(project_id: String, name: String, status: i32) -> Result<Ve
 }
 
 #[command]
-pub fn get_menu_detail(project_id:String, id: String) -> Result<Menu, String> {
+pub fn get_menu_detail(project_id: String, id: String) -> Result<Menu, String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&project_id);
     let menu = Menu::load(&project_path, id);
@@ -48,20 +53,47 @@ pub fn get_menu_detail(project_id:String, id: String) -> Result<Menu, String> {
 
 // menu
 #[command]
-pub fn add_menu(project_id: String, is_create: i32 ,item: MenuParams) ->  Result<(), String> {
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_path = root_dir.join(project_id.clone());
-    // is_create 为1时，创建页面
-    let mut create_param = item;
+pub fn add_menu(is_create: i32, item: MenuParams) -> Result<(), String> {
+    println!("开始创建菜单");
+    // 获取根目录，使用proper错误处理
+    let root_dir = dirs::app_data_dir().unwrap();
+
+    // 避免多次clone project_id
+    let project_path = root_dir.join(&item.project_id);
+
+    // 如果需要创建页面
     if is_create == 1 {
         let page_id = uuid::Uuid::new_v4().to_string();
-        create_param.page_id = Some(page_id.clone());
-        add_page(page_id, create_param.name.clone(), "".to_string(), "".to_string(), project_id.clone());
+        add_page(
+            page_id.clone(),
+            item.name.clone(),
+            String::new(),
+            String::new(),
+            item.project_id.clone(),
+        )
+        .map_err(|e| format!("创建页面失败: {}", e))?;
+
+        // 更新MenuParams
+        let mut create_param = item;
+        create_param.page_id = Some(page_id);
+
+        // 创建并保存菜单
+        let menu_id = uuid::Uuid::new_v4().to_string();
+        let menu = Menu::new(menu_id, create_param);
+        menu.save(&project_path)
+            .map_err(|e| format!("保存菜单失败: {}", e))?;
+        println!("菜单创建成功");
+        Ok(())
+    } else {
+        // 直接创建菜单
+        let menu_id = uuid::Uuid::new_v4().to_string();
+        let menu = Menu::new(menu_id, item);
+        menu.save(&project_path)
+            .map_err(|e| format!("保存菜单失败: {}", e))?;
+
+        println!("菜单创建成功");
+        Ok(())
     }
-    let menu = Menu::new(create_param);
-    menu.save(&project_path);
-    println!("menu created successfully");
-    Ok(())
 }
 
 #[command]
@@ -75,7 +107,7 @@ pub fn update_menu(project_id: String, id: String, params: MenuParams) -> Result
 }
 
 #[command]
-pub fn delete_menu(project_id : String, id: String) -> Result<(), String> {
+pub fn delete_menu(project_id: String, id: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     Menu::delete(&project_path, id);
@@ -84,7 +116,7 @@ pub fn delete_menu(project_id : String, id: String) -> Result<(), String> {
 }
 
 #[command]
-pub fn copy_menu(project_id : String, id: String) -> Result<(), String> {
+pub fn copy_menu(project_id: String, id: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     let menu = Menu::load(&project_path, id.clone());

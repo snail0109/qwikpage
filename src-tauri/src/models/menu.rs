@@ -9,28 +9,27 @@ use crate::utils::constans::{DATA_FORMAT, MENU_DIR};
 pub struct Menu {
     pub id: String,                // 菜单id
     pub name: String,              // 菜单名称
-    pub icon: String,              // 菜单图标
+    pub icon: Option<String>,              // 菜单图标
     pub page_id: Option<String>,   // 绑定的页面id
     pub parent_id: Option<String>, // 父级菜单id
     pub project_id: String,        // 项目id
-    pub path: String,              // 菜单路径
-    pub sort_num: i32,             // 排序
+    pub path:  Option<String>,              // 菜单路径
+    pub sort_num:  Option<i32>,             // 排序
     pub status: i32,               // 状态 1-启用 2-禁用
     pub menu_type: i32,            // 类型: 1-菜单 2-按钮 3-页面
     created_at: String,
     updated_at: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MenuParams {
-    pub id: String,
     pub name: String,
-    pub icon: String,
+    pub icon: Option<String>,
     pub page_id: Option<String>,
     pub parent_id: Option<String>,
     pub project_id: String,
-    pub path: String,
-    pub sort_num: i32,
+    pub path: Option<String>,
+    pub sort_num: Option<i32>,
     pub status: i32,
     pub menu_type: i32,
     pub is_create: Option<bool>, // 是否创建页面
@@ -38,10 +37,10 @@ pub struct MenuParams {
 
 
 impl Menu {
-    pub fn new(params: MenuParams) -> Menu {
+    pub fn new(menu_id: String, params: MenuParams) -> Menu {
         let now = Local::now().format(DATA_FORMAT).to_string();
         Menu {
-            id: params.id,
+            id: menu_id,
             name: params.name,
             icon: params.icon,
             page_id: params.page_id,
@@ -56,14 +55,18 @@ impl Menu {
         }
     }
 
-    pub fn save(&self, project_path: &Path) {
+    pub fn save(&self, project_path: &Path) -> Result<(), String> {
         let menu_path = project_path.join(MENU_DIR);
         if !menu_path.exists() {
-            fs::create_dir_all(&menu_path).unwrap();
+            fs::create_dir_all(&menu_path)
+            .map_err(|e| format!("创建菜单目录失败: {}", e))?;
         }
         let menu_file = menu_path.join(format!("{}.json", self.id));
-        let menu_json = serde_json::to_string_pretty(&self).unwrap();
-        fs::write(menu_file, menu_json).unwrap();
+        let menu_json = serde_json::to_string_pretty(&self)
+        .map_err(|e| format!("序列化菜单数据失败: {}", e))?;
+        fs::write(menu_file, menu_json)
+        .map_err(|e| format!("写入菜单文件失败: {}", e))?;
+    Ok(())
     }
 
     // TODO 替换成menu_path
