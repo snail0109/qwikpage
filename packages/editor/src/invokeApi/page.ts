@@ -8,28 +8,28 @@ export default {
   },
 
   // 获取页面详情
-  getPageDetail(id: number) {
-    return invoke("get_page_detail", { id })
+  getPageDetail(id: string, projectId: string) {
+    return invoke("get_page_detail", { id, projectId })
   },
 
   // 复制页面数据
-  copyPageData(params: any) {
-    return request.post('/pages/copy', params);
+  copyPageData(params: { id: string, projectId: string}) {
+    return invoke('copy_page', params);
   },
 
   // 删除页面数据
-  delPageData(params: { id: number }) {
-    return request.post('/pages/delete', params);
+  delPageData(params: { id: string, projectId: string}) {
+    return invoke('delete_page', params);
   },
 
   // 创建页面数据
   createPageData(params: any) {
-    return request.post('/pages/create', params);
+    return invoke('add_page', params);
   },
 
   // 保存页面数据
   updatePageData(params: any) {
-    return request.post('/pages/update', params);
+    return invoke('update_page', params);
   },
 
   // 发布

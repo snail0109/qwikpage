@@ -46,7 +46,8 @@ pub fn run() {
             page::get_page_detail,
             page::add_page,
             page::update_page,
-            page::delete_page
+            page::delete_page,
+            page::copy_page,
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");

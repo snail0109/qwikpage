@@ -43,14 +43,6 @@ pub fn get_menu_list(
     Ok(menu_list)
 }
 
-#[command]
-pub fn get_menu_detail(project_id: String, id: String) -> Result<Menu, String> {
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_path = root_dir.join(&project_id);
-    let menu = Menu::load(&project_path, id);
-    Ok(menu)
-}
-
 // menu
 #[command]
 pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
@@ -65,10 +57,10 @@ pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
     if is_create == 1 {
         let page_id = uuid::Uuid::new_v4().to_string();
         add_page(
-            page_id.clone(),
+            Some(page_id.clone()),
             params.name.clone(),
             String::new(),
-            String::new(),
+            Some(String::new()),
             params.project_id.clone(),
         )
         .map_err(|e| format!("创建页面失败: {}", e))?;
@@ -107,7 +99,7 @@ pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
 }
 
 #[command]
-pub fn delete_menu(project_id: String, id: String) -> Result<(), String> {
+pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     Menu::delete(&project_path, id);
@@ -116,7 +108,7 @@ pub fn delete_menu(project_id: String, id: String) -> Result<(), String> {
 }
 
 #[command]
-pub fn copy_menu(project_id: String, id: String) -> Result<(), String> {
+pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     let menu = Menu::load(&project_path, id.clone());

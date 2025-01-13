@@ -61,7 +61,7 @@ impl Menu {
             fs::create_dir_all(&menu_path)
             .map_err(|e| format!("创建菜单目录失败: {}", e))?;
         }
-        let menu_file = menu_path.join(format!("{}.json", self.id));
+        let menu_file: std::path::PathBuf = menu_path.join(format!("{}.json", self.id));
         let menu_json = serde_json::to_string_pretty(&self)
         .map_err(|e| format!("序列化菜单数据失败: {}", e))?;
         fs::write(menu_file, menu_json)

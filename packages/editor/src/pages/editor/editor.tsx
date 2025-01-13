@@ -94,7 +94,7 @@ const Editor = () => {
     setLoaded(false);
     setCanvasWidth(storage.get('canvasWidth') || 'auto');
     api
-      .getPageDetail(parseInt(id))
+      .getPageDetail(id)
       .then((res) => {
         let pageData: any = {};
         try {
