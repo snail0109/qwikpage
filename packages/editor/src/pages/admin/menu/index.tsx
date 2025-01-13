@@ -20,7 +20,7 @@ export default function MenuList() {
   const [form] = Form.useForm();
   const [data, setData] = useState<Menu.MenuItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const projectId = useParams().id as string;
+  const project_id = useParams().id as string;
 
   const menuRef = useRef<{
     open: (type: IAction, data: Menu.EditParams | { parentId?: number; sortNum?: number }, list?: Menu.MenuItem[]) => void;
@@ -33,10 +33,10 @@ export default function MenuList() {
   // 获取菜单列表
   const getMenus = async () => {
     const { name, status } = form.getFieldsValue();
-    if (!projectId) return;
+    if (!project_id) return;
     setLoading(true);
     const res = await getMenuList({
-      projectId,
+      projectId: project_id,
       name,
       status,
     });
@@ -61,6 +61,7 @@ export default function MenuList() {
   const handleCopy = async (record: Menu.MenuItem) => {
     setLoading(true);
     await copyMenu({
+      projectId: record.project_id,
       id: record.id,
     });
     message.success('复制成功');
@@ -69,7 +70,7 @@ export default function MenuList() {
 
   // 创建子菜单
   const handleSubCreate = (record: Menu.MenuItem) => {
-    menuRef.current?.open('create', { parentId: record.id, sortNum: (record.children?.length || 0) + 1 });
+    menuRef.current?.open('create', { parent_id: record.id, sort_num: (record.children?.length || 0) + 1 });
   };
 
   // 编辑菜单
@@ -87,15 +88,15 @@ export default function MenuList() {
       title: '确认',
       content: `${text}删除后不可恢复，确认删除吗？`,
       onOk() {
-        handleDelSubmit(record.id);
+        handleDelSubmit(record.project_id, record.id);
       },
     });
   };
 
   // 删除提交
-  const handleDelSubmit = async (id: number) => {
+  const handleDelSubmit = async (project_id : string, id: string) => {
     setLoading(true);
-    await delMenu({ id });
+    await delMenu({ projectId: project_id, id });
     message.success('删除成功');
     getMenus();
   };
@@ -127,8 +128,8 @@ export default function MenuList() {
     },
     {
       title: '菜单类型',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'menu_type',
+      key: 'menu_type',
       align: 'center',
       width: 120,
       render(type: number) {
@@ -140,20 +141,9 @@ export default function MenuList() {
       },
     },
     {
-      title: '权限标识',
-      dataIndex: 'code',
-      key: 'code',
-      align: 'center',
-      width: 120,
-      render(code: string) {
-        if (!code) return '-';
-        return code;
-      },
-    },
-    {
       title: '绑定页面',
-      dataIndex: 'pageId',
-      key: 'pageId',
+      dataIndex: 'page_id',
+      key: 'page_id',
       align: 'center',
       width: 120,
       render(pageId: string) {
@@ -162,8 +152,8 @@ export default function MenuList() {
     },
     {
       title: '排序值',
-      dataIndex: 'sortNum',
-      key: 'sortNum',
+      dataIndex: 'sort_num',
+      key: 'sort_num',
       align: 'center',
       width: 100,
     },
@@ -180,24 +170,17 @@ export default function MenuList() {
     },
     {
       title: '更新时间',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       align: 'center',
       width: 180,
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'created_at',
+      key: 'created_at',
       align: 'center',
       width: 180,
-    },
-    {
-      title: '创建人',
-      dataIndex: 'userName',
-      key: 'userName',
-      align: 'center',
-      width: 200,
     },
     {
       title: '操作',
@@ -219,7 +202,7 @@ export default function MenuList() {
             <Button type="link" danger onClick={() => handleDelete(record)}>
               删除
             </Button>
-            {record.pageId  && <Link to={`/editor/${record.pageId}/edit`}>去设计</Link>}
+            {record.page_id  && <Link to={`/editor/${record.page_id}/edit`}>去设计</Link>}
           </>
         );
       },

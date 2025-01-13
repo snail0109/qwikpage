@@ -19,14 +19,14 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
     const [pageList, setPageList] = useState<PageItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const { id: projectId } = useParams();
+    const { id: project_id } = useParams();
 
     useImperativeHandle(props.mRef, () => ({
         open,
     }));
 
     // 打开弹框函数
-    const open = async (type: IAction, data?: Menu.EditParams | { parentId: string; code: string }) => {
+    const open = async (type: IAction, data?: Menu.EditParams | { parent_id: string }) => {
         setAction(type);
         setVisible(true);
         setLoading(true);
@@ -34,22 +34,22 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
         getMenus();
         type === "edit" && getMyPageList();
         setLoading(false);
-        if (data && projectId) {
-            form.setFieldsValue({ ...data, projectId, code: data.code?.split("_")[2] || "" });
+        if (data && project_id) {
+            form.setFieldsValue({ ...data, project_id });
         }
     };
 
     // 获取菜单列表，生成菜单树
     const getMenus = async () => {
-        if (!projectId) return;
+        if (!project_id) return;
         const res = await getMenuList({
-            projectId,
+            project_id,
             status: -1,
         });
         // 菜单编辑时，父菜单不能选择自身子菜单，会产生冲突。
-        const parentId = form.getFieldValue("parentId");
+        const parent_id = form.getFieldValue("parent_id");
         const filterList = res.list.filter((item: Menu.MenuItem) => {
-            return item.type === 1 && item.parentId != parentId;
+            return item.type === 1 && item.parent_id != parent_id;
         });
         const menuData = arrayToTree(filterList);
         setMenuList(menuData);
@@ -57,7 +57,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
 
     // 获取用户页面列表
     const getMyPageList = async () => {
-        const res = await api.getPageList({ pageNum: 1, pageSize: 50, projectId });
+        const res = await api.getPageList({ pageNum: 1, pageSize: 50, project_id });
         setPageList(res.list);
     };
 
@@ -68,23 +68,13 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
             setConfirmLoading(true);
             const values = form.getFieldsValue();
             try {
-                if (values.menuType === 2) {
-                    values.code = values.projectId + "_" + values.parentId + "_" + values.code;
-                } else {
-                    values.code = "";
-                }
+                const { id, isCreate, page_id, ...rest } = values;
+                const params = { ...rest };
+                params.page_id = page_id || "0";
                 if (action === "create") {
-                    const { projectId, isCreate, menuType, parentId, pageId, sortNum, ...rest } = values;
-                    const item = { ...rest}
-                    item.menu_type = menuType 
-                    item.sort_num = sortNum 
-                    item.menu_type = menuType 
-                    item.project_id = projectId 
-                    item.parent_id = parentId 
-                    item.page_id = pageId 
-                    await addMenu({ isCreate, item} );
+                    await addMenu({ isCreate, params });
                 } else {
-                    await updateMenu(values);
+                    await updateMenu({ id, params });
                 }
                 setConfirmLoading(false);
                 message.success("操作成功");
@@ -123,7 +113,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                         <Form.Item hidden name="id">
                             <Input />
                         </Form.Item>
-                        <Form.Item hidden name="projectId">
+                        <Form.Item hidden name="project_id">
                             <Input />
                         </Form.Item>
                         <Form.Item label="父级菜单" name="parent_id">
@@ -135,7 +125,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                 treeData={menuList}
                             />
                         </Form.Item>
-                        <Form.Item label="菜单类型" name="menuType">
+                        <Form.Item label="菜单类型" name="menu_type">
                             <Radio.Group>
                                 <Radio value={1}>菜单</Radio>
                                 <Radio value={2}>按钮</Radio>
@@ -144,8 +134,8 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                         </Form.Item>
                         <Form.Item noStyle shouldUpdate>
                             {() => {
-                                const menuType = form.getFieldValue("menuType");
-                                return menuType === 1 ? (
+                                const menu_type = form.getFieldValue("menu_type");
+                                return menu_type === 1 ? (
                                     <Form.Item
                                         label="菜单名称"
                                         name="name"
@@ -153,7 +143,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                     >
                                         <Input placeholder="请输入菜单名称" allowClear maxLength={15} showCount />
                                     </Form.Item>
-                                ) : menuType === 2 ? (
+                                ) : menu_type === 2 ? (
                                     <Form.Item
                                         label="按钮名称"
                                         name="name"
@@ -174,18 +164,10 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                         </Form.Item>
                         <Form.Item noStyle shouldUpdate>
                             {() => {
-                                const menuType = form.getFieldValue("menuType");
-                                return menuType === 2 ? (
-                                    <Form.Item
-                                        label="权限标识"
-                                        name="code"
-                                        extra="同一个菜单下按钮标识不要重复，请根据语义定义。"
-                                    >
-                                        <Input placeholder="权限标识，例如: create、edit、export" />
-                                    </Form.Item>
-                                ) : (
+                                const menu_type = form.getFieldValue("menu_type");
+                                return  (
                                     <>
-                                        {menuType === 1 ? (
+                                        {menu_type === 1 ? (
                                             <Form.Item label="菜单图标" name="icon">
                                                 <CustomIconOptions />
                                             </Form.Item>
@@ -199,9 +181,9 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                                         <a
                                                             onClick={() => {
                                                                 createRef.current?.open("create", {
-                                                                    id: 0,
+                                                                    id: "0",
                                                                     name: "",
-                                                                    projectId,
+                                                                    project_id,
                                                                 });
                                                             }}
                                                         >
@@ -209,7 +191,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                                         </a>
                                                     </span>
                                                 }
-                                                name="pageId"
+                                                name="page_id"
                                             >
                                                 <Select
                                                     placeholder="请选择关联页面"
@@ -218,7 +200,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                                     filterOption={(input, option) =>
                                                         (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
                                                     }
-                                                    options={[...pageList, { name: "空页面", id: 0 }]}
+                                                    options={[...pageList, { name: "空页面", id: "0" }]}
                                                     fieldNames={{ label: "name", value: "id" }}
                                                 ></Select>
                                             </Form.Item>

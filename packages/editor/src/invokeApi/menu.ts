@@ -11,7 +11,7 @@ export const addMenu = (params: any) => {
 };
 
 // 删除菜单
-export const delMenu = (params: { id: number }) => {
+export const delMenu = (params: any) => {
   return invoke("delete_menu", params)
 };
 
@@ -21,7 +21,7 @@ export const updateMenu = (params: any) => {
 };
 
 // 复制菜单
-export const copyMenu = (params: { id: number }) => {
+export const copyMenu = (params: { projectId: string, id : string }) => {
   return invoke("copy_menu", params)
 };
 

@@ -53,28 +53,28 @@ pub fn get_menu_detail(project_id: String, id: String) -> Result<Menu, String> {
 
 // menu
 #[command]
-pub fn add_menu(is_create: i32, item: MenuParams) -> Result<(), String> {
+pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
     println!("开始创建菜单");
     // 获取根目录，使用proper错误处理
     let root_dir = dirs::app_data_dir().unwrap();
 
     // 避免多次clone project_id
-    let project_path = root_dir.join(&item.project_id);
+    let project_path = root_dir.join(&params.project_id);
 
     // 如果需要创建页面
     if is_create == 1 {
         let page_id = uuid::Uuid::new_v4().to_string();
         add_page(
             page_id.clone(),
-            item.name.clone(),
+            params.name.clone(),
             String::new(),
             String::new(),
-            item.project_id.clone(),
+            params.project_id.clone(),
         )
         .map_err(|e| format!("创建页面失败: {}", e))?;
 
         // 更新MenuParams
-        let mut create_param = item;
+        let mut create_param = params;
         create_param.page_id = Some(page_id);
 
         // 创建并保存菜单
@@ -87,7 +87,7 @@ pub fn add_menu(is_create: i32, item: MenuParams) -> Result<(), String> {
     } else {
         // 直接创建菜单
         let menu_id = uuid::Uuid::new_v4().to_string();
-        let menu = Menu::new(menu_id, item);
+        let menu = Menu::new(menu_id, params);
         menu.save(&project_path)
             .map_err(|e| format!("保存菜单失败: {}", e))?;
 
@@ -97,11 +97,11 @@ pub fn add_menu(is_create: i32, item: MenuParams) -> Result<(), String> {
 }
 
 #[command]
-pub fn update_menu(project_id: String, id: String, params: MenuParams) -> Result<(), String> {
+pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
-    let project_path = root_dir.join(project_id);
+    let project_path = root_dir.join(&params.project_id);
     let menu = Menu::load(&project_path, id.clone());
-    menu.update(&project_path, id, params);
+    menu.update(&project_path, id, params).map_err(|e| format!("更新菜单失败: {}", e))?;
     println!("menu updated successfully");
     Ok(())
 }

@@ -77,7 +77,7 @@ impl Menu {
         serde_json::from_str(&menu_json).unwrap()
     }
 
-    pub fn update(&self, project_path: &Path, id: String, params: MenuParams) {
+    pub fn update(&self, project_path: &Path, id: String, params: MenuParams) -> Result<(), String> {
         let mut menu = Menu::load(project_path, id.clone());
         menu.id = id;
         menu.name = params.name;
@@ -89,7 +89,8 @@ impl Menu {
         menu.status = params.status;
         menu.menu_type = params.menu_type;
         menu.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        menu.save(project_path);
+        menu.save(project_path).map_err(|e| format!("更新菜单失败: {}", e))?;
+        Ok(())
     }
 
     pub fn delete(project_path: &Path, id: String) {

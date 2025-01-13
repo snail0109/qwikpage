@@ -119,7 +119,7 @@ export const formatDate = (date?: Date | string, rule?: string) => {
 };
 
 // 递归生成菜单
-export function arrayToTree(array: Menu.MenuItem[], parentId = null) {
+export function arrayToTree(array: any, parent_id = null) {
   if (!Array.isArray(array)) return [];
   // 创建一个映射，将id映射到节点对象
   const map: { [key: number]: Menu.MenuItem & { children?: Menu.MenuItem[] } } = {};
@@ -129,17 +129,17 @@ export function arrayToTree(array: Menu.MenuItem[], parentId = null) {
 
   // 找到每个节点的父节点
   array.forEach((item) => {
-    if (item.parentId !== null && map[item.parentId]) {
-      const parentItem = map[item.parentId];
+    if (item.parent_id !== null && map[item.parent_id]) {
+      const parentItem = map[item.parent_id];
       if (!parentItem.children) parentItem.children = [];
       parentItem.children?.push(map[item.id]);
       // 按照sortNum进行降序排序
-      parentItem.children = parentItem.children.sort((a, b) => a.sortNum - b.sortNum);
+      parentItem.children = parentItem.children.sort((a: any, b : any) => a.sort_num - b.sort_num);
     }
   });
   return Object.values(map)
-    .filter((item) => (parentId ? item.parentId === parentId : !item.parentId))
-    .sort((a, b) => a.sortNum - b.sortNum);
+    .filter((item) => (parent_id ? item.parent_id === parent_id : !item.parent_id))
+    .sort((a: any, b: any) => a.sort_num - b.sort_num);
 }
 
 /**
