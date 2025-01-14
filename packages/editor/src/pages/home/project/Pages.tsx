@@ -8,7 +8,7 @@ import api from '@/invokeApi/page';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import SearchBar from '@/components/Searchbar/SearchBar';
 import PageCard from './components/PageCard';
-import { PageItem } from '@/invokeApi/types';
+import { Page } from '@/invokeApi/types';
 import styles from './../index.module.less';
 
 /**
@@ -18,7 +18,7 @@ export default function Index() {
   const [form] = Form.useForm();
   const createPageRef = useRef<CreatePageRef>();
   const location = useLocation();
-  const projectId = new URLSearchParams(location.search).get('projectId');
+  const projectId = new URLSearchParams(location.search).get('projectId') || undefined;
 
   // 判断是否是超大屏
   const isXLarge = useMediaQuery({ query: '(min-width: 1920px)' });
@@ -30,7 +30,7 @@ export default function Index() {
         pageNum: current,
         pageSize: pageSize,
         keyword,
-        projectId: projectId,
+        projectId,
       })
       .then((res) => {
         return {
@@ -51,7 +51,7 @@ export default function Index() {
   };
 
   // 复制页面
-  const handleCopy = (item: PageItem) => {
+  const handleCopy = (item: Page) => {
     createPageRef.current?.open('copy', item);
   };
 

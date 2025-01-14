@@ -3,20 +3,20 @@ import { useParams } from "react-router-dom";
 import { Modal, Form, TreeSelect, Input, Select, InputNumber, Radio, Spin } from "antd";
 import { message } from "@/utils/AntdGlobal";
 import { IAction, IModalProp } from "@/pages/types";
-import { Menu, PageItem } from "@/invokeApi/types";
+import { EditParams, MenuItem, Page } from "@/invokeApi/types";
 import { getMenuList, addMenu, updateMenu } from "@/invokeApi/menu";
 import api from "@/invokeApi/page";
 import { arrayToTree } from "@/utils/util";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import CustomIconOptions from "@/components/CustomIconList";
 
-export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
+export default function CreateMenu(props: IModalProp<EditParams>) {
     const [form] = Form.useForm();
     const createRef = useRef<CreatePageRef>();
     const [action, setAction] = useState<IAction>("create");
     const [visible, setVisible] = useState(false);
-    const [menuList, setMenuList] = useState<Menu.MenuItem[]>([]);
-    const [pageList, setPageList] = useState<PageItem[]>([]);
+    const [menuList, setMenuList] = useState<MenuItem[]>([]);
+    const [pageList, setPageList] = useState<Page[]>([]);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const { id: project_id } = useParams();
@@ -26,7 +26,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
     }));
 
     // 打开弹框函数
-    const open = async (type: IAction, data?: Menu.EditParams | { parent_id: string }) => {
+    const open = async (type: IAction, data?: EditParams | { parent_id: string }) => {
         setAction(type);
         setVisible(true);
         setLoading(true);
@@ -48,8 +48,8 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
         });
         // 菜单编辑时，父菜单不能选择自身子菜单，会产生冲突。
         const parent_id = form.getFieldValue("parent_id");
-        const filterList = res.list.filter((item: Menu.MenuItem) => {
-            return item.type === 1 && item.parent_id != parent_id;
+        const filterList = res.list.filter((item: MenuItem) => {
+            return item.menu_type === 1 && item.parent_id != parent_id;
         });
         const menuData = arrayToTree(filterList);
         setMenuList(menuData);
@@ -57,7 +57,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
 
     // 获取用户页面列表
     const getMyPageList = async () => {
-        const res = await api.getPageList({ pageNum: 1, pageSize: 50, project_id });
+        const res = await api.getPageList({ pageNum: 1, pageSize: 50,  projectId: project_id! });
         setPageList(res.list);
     };
 
@@ -183,6 +183,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                                                                 createRef.current?.open("create", {
                                                                     id: "0",
                                                                     name: "",
+                                                                    // @ts-ignore
                                                                     project_id,
                                                                 });
                                                             }}

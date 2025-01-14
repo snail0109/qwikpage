@@ -18,7 +18,7 @@ export interface PageState {
     id: string;
     name: string;
     remark: string;
-    projectId: number;
+    projectId: string;
     isPublic: 1 | 2;
     stgState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
     preState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
@@ -107,7 +107,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
     id: "0",
     name: '',
     remark: '',
-    projectId: 0,
+    projectId: "0",
     isPublic: 2,
     userId: 0,
     userName: '',

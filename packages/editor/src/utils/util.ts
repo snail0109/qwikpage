@@ -1,4 +1,4 @@
-import { Menu } from '@/invokeApi/types';
+import { MenuItem } from '@/invokeApi/types';
 import components from '@/config/components';
 import { ComponentType, ComItemType } from '@/packages/types';
 import dayjs from 'dayjs';
@@ -122,7 +122,7 @@ export const formatDate = (date?: Date | string, rule?: string) => {
 export function arrayToTree(array: any, parent_id = null) {
   if (!Array.isArray(array)) return [];
   // 创建一个映射，将id映射到节点对象
-  const map: { [key: number]: Menu.MenuItem & { children?: Menu.MenuItem[] } } = {};
+  const map: { [key: string]: MenuItem & { children?: MenuItem[] } } = {};
   array.forEach((item) => {
     map[item.id] = { ...item };
   });

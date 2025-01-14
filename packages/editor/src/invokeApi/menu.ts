@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 
 // 获取菜单列表
-export const getMenuList = (params: any) => {
+export const getMenuList = (params: any): Promise<any> => {
   return invoke("get_menu_list", params)
 };
 

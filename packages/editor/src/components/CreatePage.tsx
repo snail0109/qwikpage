@@ -2,7 +2,7 @@ import { Input, Modal, Form, Select, Space, Flex, Button } from 'antd';
 import { useImperativeHandle, useState, MutableRefObject } from 'react';
 import projectApi from '@/invokeApi/project';
 import api from '@/invokeApi/page';
-import { CreatePageParams, Project } from '@/invokeApi/types';
+import { Page, Project } from '@/invokeApi/types';
 import { useSearchParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { usePageStore } from '@/stores/pageStore';
@@ -10,32 +10,32 @@ import { usePageStore } from '@/stores/pageStore';
  * 创建页面
  */
 export interface CreatePageRef {
-  open: (action: 'create' | 'edit' | 'copy', record?: CreatePageParams) => void;
+  open: (action: 'create' | 'edit' | 'copy', record?: Page) => void;
 }
 export interface IModalProp {
-  createRef: MutableRefObject<{ open: (action: 'create' | 'edit' | 'copy', record?: CreatePageParams) => void } | undefined>;
+  createRef: MutableRefObject<{ open: (action: 'create' | 'edit' | 'copy', record?: Page) => void } | undefined>;
   update?: (status?: string) => void;
-  copy?: (record: CreatePageParams) => void;
+  copy?: (record: Project) => void;
 }
 
 const CreatePage = (props: IModalProp) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState<'create' | 'edit' | 'copy'>('create');
-  const [recordId, setRecordId] = useState(0);
+  const [recordId, setRecordId] = useState("0");
   const [loading, setLoading] = useState(false);
-  const [projectList, setProjectList] = useState<Project.ProjectItem[]>([]);
+  const [projectList, setProjectList] = useState<Project[]>([]);
   const [searchParams] = useSearchParams();
   const savePageInfo = usePageStore((state) => state.savePageInfo);
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
-    async open(action: 'create' | 'edit' | 'copy', record?: CreatePageParams) {
+    async open(action: 'create' | 'edit' | 'copy', record?: Page) {
       const { list = [] } = await projectApi.getProjectList({
         pageNum: 1,
         pageSize: 100,
       });
       setProjectList(
-        list.map((item: Project.ProjectItem) => {
+        list.map((item: Project) => {
           return {
             name: item.name,
             id: item.id,
@@ -46,15 +46,15 @@ const CreatePage = (props: IModalProp) => {
       );
       setType(action);
       if (action === 'edit') {
-        record && setRecordId(record.id);
+        record && setRecordId(record.id!);
         form.setFieldsValue(record);
       } else if (action === 'copy') {
-        record && setRecordId(record.id);
+        record && setRecordId(record.id!);
         form.setFieldsValue({ ...record, name: `${record?.name}-副本` });
       } else {
-        const projectId = searchParams.get('projectId') || record?.projectId;
+        const projectId = searchParams.get('projectId') || record?.id;
         setType('create');
-        setRecordId(0);
+        setRecordId("0");
         if (projectId) form.setFieldValue('projectId', projectId);
       }
       setVisible(true);
@@ -81,7 +81,6 @@ const CreatePage = (props: IModalProp) => {
             projectId: params?.projectId,
           });
         } else {
-          debugger
           const param = {
             ...params,
             id: recordId,

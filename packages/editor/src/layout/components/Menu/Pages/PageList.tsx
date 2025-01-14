@@ -1,7 +1,7 @@
 import { Button, Flex, List, Spin, Tag } from 'antd';
 import { PlusOutlined, SyncOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { memo, useEffect, useRef, useState } from 'react';
-import { PageItem } from '@/invokeApi/types';
+import { Page } from '@/invokeApi/types';
 import api from '@/invokeApi/page';
 import { useNavigate } from 'react-router-dom';
 import { Modal, message } from '@/utils/AntdGlobal';
@@ -14,7 +14,7 @@ import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 export default memo(() => {
   const createRef = useRef<CreatePageRef>();
   const [loading, setLoading] = useState(true);
-  const [list, setList] = useState<PageItem[]>([]);
+  const [list, setList] = useState<Page[]>([]);
   const { pageId, projectId } = usePageStore((state) => ({
     pageId: state.page.id,
     projectId: state.page.projectId,
@@ -55,7 +55,7 @@ export default memo(() => {
   };
 
   // 新增页面
-  const handleAdd = (item?: PageItem) => {
+  const handleAdd = (item?: Page) => {
     if (item) {
       createRef.current?.open('edit', item);
     } else {
@@ -64,7 +64,7 @@ export default memo(() => {
   };
 
   // 删除页面
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     Modal.confirm({
       title: '确认',
       content: '删除后，将无法恢复，请谨慎操作？',
@@ -82,7 +82,7 @@ export default memo(() => {
   };
 
   // 在编辑器中，打开当前页面
-  const handleOpen = async (event: React.MouseEvent, id: number) => {
+  const handleOpen = async (event: React.MouseEvent, id: string) => {
     event.preventDefault();
     navigate(`/editor/${id}/edit`);
   };

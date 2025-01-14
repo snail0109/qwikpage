@@ -13,7 +13,7 @@ export interface IModalPropData<T = any> {
 }
 
 export interface ProjectCardItemProps {
-  item: Project.ProjectItem;
+  item: Project;
   type: number;
   getList: () => void;
 }

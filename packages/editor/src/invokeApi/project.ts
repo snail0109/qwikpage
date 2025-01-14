@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export default {
 
-  getProjectList(params: any) {
+  getProjectList(params: any): Promise<any> {
     return invoke("get_project_list", params)
   },
 

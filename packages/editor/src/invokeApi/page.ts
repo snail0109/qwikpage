@@ -1,10 +1,10 @@
 import request from "@/utils/request";
 import { invoke } from "@tauri-apps/api/core";
-import { Page } from '@/invokeApi/types'
+import { Page, PaginationInfo } from "@/invokeApi/types";
 
 export default {
     // 获取页面列表
-    getPageList(params: Partial<Page>) {
+    getPageList(params: { keyword?: string, projectId?: string; pageNum: number; pageSize: number }) : Promise<{ list: Page[], total: number }> {
         return invoke("get_page_list", params);
     },
 

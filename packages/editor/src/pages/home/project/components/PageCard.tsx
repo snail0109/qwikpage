@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
-import { UserOutlined, EyeOutlined, CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
+import { EyeOutlined, CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
 import api from '@/invokeApi/page';
-import EnvTag from './EnvTag';
-import { PageItem } from '@/invokeApi/types';
+import { Page } from '@/invokeApi/types';
 import styles from './../../index.module.less';
 
 // 页面列表项
-const PageCard = ({ list, copy, refresh }: { list: PageItem[]; copy: (item: PageItem) => void; refresh: () => void }) => {
+const PageCard = ({ list, copy, refresh }: { list: Page[]; copy: (item: Page) => void; refresh: () => void }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const navigate = useNavigate();
 
   // 页面操作
-  const handleAction = async (type: string, params: PageItem) => {
+  const handleAction = async (type: string, params: Page) => {
     if (type === 'preview') {
       if (!params.previewImg) {
         return message.warning('该页面未生成预览图');
@@ -58,10 +57,10 @@ const PageCard = ({ list, copy, refresh }: { list: PageItem[]; copy: (item: Page
           gap: 20,
         }}
       >
-        {list.map((item: PageItem, index: number) => {
+        {list.map((item: Page, index: number) => {
           return (
             <Card
-              key={item.id || item.userName + index}
+              key={item.id + index}
               actions={[
                 <Tooltip title="预览">
                   <EyeOutlined style={{ fontSize: 16 }} onClick={() => handleAction('preview', item)} />
@@ -83,16 +82,9 @@ const PageCard = ({ list, copy, refresh }: { list: PageItem[]; copy: (item: Page
               ]}
             >
               <div className={styles.cardBody} onClick={() => handleAction('edit', item)}>
-                <div className={styles.itemEnv}>
-                  <EnvTag item={item} />
-                </div>
                 <div className={styles.itemTitle}>{item.name}</div>
                 <div className={styles.itemRemark}>{item.remark || '暂无描述'}</div>
                 <div className={styles.updateUser}>
-                  <span style={{ marginRight: 10 }}>
-                    <UserOutlined style={{ fontSize: 15, marginRight: 5 }} />
-                    <span>{item.userName}</span>
-                  </span>
                   <span>更新于 {dayjs(item.updatedAt).fromNow()}</span>
                 </div>
               </div>

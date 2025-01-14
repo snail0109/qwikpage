@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Form, Input, Button, Table, Select, Badge } from "antd";
-import { Menu } from "@/invokeApi/types";
+import { EditParams, MenuItem } from "@/invokeApi/types";
 import { IAction } from "@/pages/types";
 import { ColumnsType } from "antd/es/table";
 import { Modal, message } from "@/utils/AntdGlobal";
@@ -18,15 +18,15 @@ import BaseTable from "../components/BaseTable";
  */
 export default function MenuList() {
     const [form] = Form.useForm();
-    const [data, setData] = useState<Menu.MenuItem[]>([]);
+    const [data, setData] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(false);
     const project_id = useParams().id as string;
 
     const menuRef = useRef<{
         open: (
             type: IAction,
-            data: Menu.EditParams | { parentId?: number; sortNum?: number },
-            list?: Menu.MenuItem[]
+            data: EditParams | { parentId?: string; sortNum?: number },
+            list?: MenuItem[]
         ) => void;
     }>();
 
@@ -62,7 +62,7 @@ export default function MenuList() {
     };
 
     // 复制菜单
-    const handleCopy = async (record: Menu.MenuItem) => {
+    const handleCopy = async (record: MenuItem) => {
         setLoading(true);
         await copyMenu({
             projectId: record.project_id,
@@ -73,21 +73,23 @@ export default function MenuList() {
     };
 
     // 创建子菜单
-    const handleSubCreate = (record: Menu.MenuItem) => {
+    const handleSubCreate = (record: MenuItem) => {
+        // @ts-ignore
         menuRef.current?.open("create", { parent_id: record.id, sort_num: (record.children?.length || 0) + 1 });
     };
 
     // 编辑菜单
-    const handleEdit = (record: Menu.MenuItem) => {
+    const handleEdit = (record: MenuItem) => {
+        // @ts-ignore
         menuRef.current?.open("edit", record, data);
     };
 
     // 删除菜单
-    const handleDelete = (record: Menu.MenuItem) => {
+    const handleDelete = (record: MenuItem) => {
         let text = "";
-        if (record.type == 1) text = "菜单";
-        if (record.type == 2) text = "按钮";
-        if (record.type == 3) text = "页面";
+        if (record.menu_type == 1) text = "菜单";
+        if (record.menu_type == 2) text = "按钮";
+        if (record.menu_type == 3) text = "页面";
         Modal.confirm({
             title: "确认",
             content: `${text}删除后不可恢复，确认删除吗？`,
@@ -105,7 +107,7 @@ export default function MenuList() {
         getMenus();
     };
 
-    const columns: ColumnsType<Menu.MenuItem> = [
+    const columns: ColumnsType<MenuItem> = [
         {
             title: "菜单名称",
             dataIndex: "name",
@@ -206,7 +208,9 @@ export default function MenuList() {
                         <Button type="link" danger onClick={() => handleDelete(record)}>
                             删除
                         </Button>
+                        {/* @ts-ignore */}
                         {record.page_id && record.page_id !== "0" && (
+                            // @ts-ignore
                             <Link to={`/editor/${record.page_id}/edit`}>去设计</Link>
                         )}
                     </>
