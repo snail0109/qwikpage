@@ -1,9 +1,11 @@
+// FIXME
 export interface PageItem {
     id: number;
     name: string;
     // 其他必要的页面属性
 }
 
+// FIXME
 export namespace Menu {
     export interface MenuItem {
         id: string;
@@ -24,6 +26,7 @@ export namespace Menu {
     }
 }
 
+// FIXME
 export interface CreatePageParams {
     id?: string;
     name: string;
@@ -42,4 +45,14 @@ export namespace Project {
         logo: string;
         remark: string;
     }
+}
+
+// 新类型从下面开始
+
+export interface Page {
+    id: string,
+    name: string,
+    remark?: string,
+    projectId: string,
+    pageData?: string
 }

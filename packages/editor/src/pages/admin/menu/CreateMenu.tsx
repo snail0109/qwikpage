@@ -108,7 +108,7 @@ export default function CreateMenu(props: IModalProp<Menu.EditParams>) {
                         labelAlign="right"
                         labelCol={{ span: 4 }}
                         wrapperCol={{ span: 18 }}
-                        initialValues={{ menuType: 1, status: 1, isCreate: 2 }}
+                        initialValues={{ menu_type: 1, status: 1, isCreate: 2 }}
                     >
                         <Form.Item hidden name="id">
                             <Input />

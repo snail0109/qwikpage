@@ -59,7 +59,7 @@ pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
         add_page(
             Some(page_id.clone()),
             params.name.clone(),
-            String::new(),
+            Some(String::new()),
             Some(String::new()),
             params.project_id.clone(),
         )

@@ -1,19 +1,20 @@
 use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
+use crate::utils::dirs;
 use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::Path;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Page {
-    id: String,
-    name: String,   // 页面名称
-    remark: String, // 页面描述
-    page_data: String,
-    project_id: String,
-    created_at: String,
-    updated_at: String,
+    pub id: String,
+    pub name: String,   // 页面名称
+    pub remark: Option<String> , // 页面描述
+    pub page_data: String,
+    pub project_id: String,
+    pub created_at: String,
+    pub updated_at: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -28,7 +29,7 @@ pub struct PageList {
 pub struct PageParams {
     pub name: String,   // 页面名称
     pub remark: String, // 页面描述
-    pub page_data: String,
+    pub page_data: Option<String>,
     pub project_id: String,
 }
 
@@ -36,7 +37,7 @@ impl Page {
     pub fn new(
         id: String,
         name: String,
-        remark: String,
+        remark: Option<String>,
         page_data: Option<String>,
         project_id: String,
     ) -> Self {
@@ -52,12 +53,24 @@ impl Page {
         }
     }
 
-    pub fn list(project_path: &Path, keyword: Option<String>) -> Vec<Self> {
-        let mut pages = vec![];
-        let page_dir = project_path.join(PAGE_DIR);
+    pub fn get_page_dir() -> PathBuf {
+        let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+        let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+        page_dir
+    }
+
+    pub fn list(
+        page_num: usize,
+        page_size: usize,
+        project_id: Option<String>,
+        keyword: Option<String>,
+    ) -> Result<PageList, String> {
+        let mut pages_list = vec![];
+        let page_dir = Self::get_page_dir();
         if !page_dir.exists() {
-            return pages;
+            fs::create_dir_all(&page_dir).map_err(|e| format!("创建页面目录失败: {}", e))?;
         }
+
         let entries = fs::read_dir(page_dir).unwrap();
         for entry in entries {
             let entry = entry.unwrap();
@@ -70,52 +83,43 @@ impl Page {
                         continue;
                     }
                 }
+                if let Some(project_id) = &project_id {
+                    if page.project_id != *project_id {
+                        continue;
+                    }
+                }
 
-                pages.push(page);
+                pages_list.push(page);
             }
         }
-        pages
+        // 分页逻辑
+        let start = (page_num - 1) * page_size;
+        let end = start + page_size;
+        let end = end.min(pages_list.len());
+
+        let total = pages_list.len();
+        let list = pages_list[start..end].to_vec();
+        Ok(PageList { total, list })
     }
 
-    pub fn save(&self, project_path: &Path) -> Result<(), String> {
-        let page_dir = project_path.join(PAGE_DIR);
-        if !page_dir.exists() {
-            fs::create_dir_all(&page_dir).map_err(|e| format!("创建页面目录失败: {}", e))?;
-        }
-        let page_file: std::path::PathBuf = page_dir.join(format!("{}.json", self.id));
+    pub fn save(&self, page_file: PathBuf) -> Result<(), String> {
         let json = serde_json::to_string_pretty(&self).unwrap();
         fs::write(page_file, json).unwrap();
         Ok(())
     }
 
-    pub fn load(project_path: &Path, id: String) -> Page {
-        let page_path = project_path.join(PAGE_DIR);
-        let page_file = page_path.join(format!("{}.json", id));
+    pub fn load(page_file: &PathBuf) -> Page {
+        println!("{}", page_file.display());
         let json = fs::read_to_string(page_file).unwrap();
         let page = serde_json::from_str(&json).unwrap();
         page
     }
 
-    pub fn update(&self, project_path: &Path, id: String, params: PageParams) {
-        let mut page = Page::load(project_path, id.clone());
-        page.id = id;
-        page.name = params.name;
-        page.remark = params.remark;
-        page.page_data = params.page_data;
-        page.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        page.save(project_path);
+    pub fn delete(id: String) -> Result<(), String> {
+        let page_dir = Self::get_page_dir();
+        let page_file = page_dir.join(format!("{}.json", id));
+        fs::remove_file(page_file).map_err(|e| format!("删除页面失败: {}", e))?;
+        Ok(())
     }
 
-    pub fn delete(project_path: &Path, id: String) {
-        let page_file = project_path.join(PAGE_DIR).join(&id);
-        fs::remove_file(page_file).unwrap();
-    }
-
-    pub fn copy(&self, project_path: &Path, id: String) {
-        let mut page = Page::load(project_path, id);
-        page.id = uuid::Uuid::new_v4().to_string();
-        page.created_at = Local::now().format(DATA_FORMAT).to_string();
-        page.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        page.save(project_path);
-    }
 }

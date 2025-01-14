@@ -62,7 +62,7 @@ const Editor = () => {
   const [hoverTarget, setHoverTarget] = useState<HTMLElement | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [canvasWidth, setCanvasWidth] = useState('auto');
-  const { id, projectId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   // 监听页面变动，在路由切换的时候提示未修改
@@ -94,8 +94,8 @@ const Editor = () => {
     setLoaded(false);
     setCanvasWidth(storage.get('canvasWidth') || 'auto');
     api
-      .getPageDetail({id, projectId})
-      .then((res) => {
+      .getPageDetail({id})
+      .then((res: any) => {
         let pageData: any = {};
         try {
           pageData = res.pageData ? JSON.parse(res.pageData) : { config: PageConfig.config };

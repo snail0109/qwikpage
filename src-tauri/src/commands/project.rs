@@ -42,6 +42,10 @@ pub fn get_project_list(
         for entry in entries {
             if let Ok(entry) = entry {
                 let project_path = entry.path();
+                // 过滤页面目录
+                if project_path.file_name().map_or(false, |name| name == "page") {
+                    continue;
+                }
                 if project_path.is_dir() {
                     if let Some(project) = load_project(&project_path) {
                         // 如果keyword传入了值，只返回匹配的项目
@@ -51,7 +55,6 @@ pub fn get_project_list(
                                 continue;
                             }
                         }
-
                         let count = count_pages_in_project(&project_path);
                         project_list.push(ProjectSummary {
                             id: project.id,

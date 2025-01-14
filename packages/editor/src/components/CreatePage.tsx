@@ -81,10 +81,13 @@ const CreatePage = (props: IModalProp) => {
             projectId: params?.projectId,
           });
         } else {
-          await api.copyPageData({
+          debugger
+          const param = {
             ...params,
             id: recordId,
-          });
+          }
+          
+          await api.copyPageData(param);
         }
         // 编辑器界面 - 左侧菜单修改后刷新
         props.update?.('success');
