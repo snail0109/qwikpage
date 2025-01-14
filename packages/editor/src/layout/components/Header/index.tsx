@@ -18,9 +18,8 @@ const Header = memo(() => {
   const { id } = useParams();
   const location = useLocation();
 
-  const { userInfo, page, mode, theme, setMode, setTheme } = usePageStore((state) => {
+  const { page, mode, theme, setMode, setTheme } = usePageStore((state) => {
     return {
-      userInfo: state.userInfo,
       page: state.page,
       mode: state.mode,
       theme: state.theme,
@@ -76,7 +75,7 @@ const Header = memo(() => {
       document.documentElement.setAttribute('data-theme', 'light');
     }
     setTheme(isDark ? 'dark' : 'light');
-  }, [userInfo]);
+  }, []);
 
   // Tab切换点击
   const handleTab: MenuProps['onClick'] = (e) => {

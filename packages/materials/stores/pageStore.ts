@@ -2,15 +2,7 @@ import { create } from 'zustand';
 import { produce } from 'immer';
 import { ComponentType, ApiType, PageVariable, EventType, ComItemType } from '@materials/types';
 
-export interface UserInfoStore {
-  userId: number;
-  userName: string;
-  nickName: string;
-  avatar: string;
-  identifier: string;
-}
 export interface PageState {
-  userInfo: UserInfoStore;
   page: {
     id: number;
     name: string;
@@ -66,20 +58,12 @@ export interface PageState {
   };
 }
 export interface PageAction {
-  saveUserInfo: (userInfo: UserInfoStore) => void;
   savePageInfo: (pageInfo: any) => void;
   setVariableData: (payload: any) => void;
   setFormData: (payload: any) => void;
   clearPageInfo: () => void;
 }
 export const usePageStore = create<PageState & PageAction>((set) => ({
-  userInfo: {
-    userId: 0,
-    userName: '',
-    nickName: '',
-    avatar: '',
-    identifier: '',
-  },
   selectedElement: undefined,
   page: {
     id: 0,
@@ -128,12 +112,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       },
     },
   },
-  saveUserInfo: (userInfo: UserInfoStore) =>
-    set(
-      produce((state) => {
-        state.userInfo = userInfo;
-      }),
-    ),
   // 保存页面信息
   savePageInfo: (payload: any) =>
     set(

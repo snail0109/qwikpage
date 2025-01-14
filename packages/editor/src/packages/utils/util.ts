@@ -212,7 +212,6 @@ export function renderFormula(formula: string, eventParams: any = {}) {
     const fnParams: Array<string> = ['context', 'eventParams'];
     const {
       page: { pageData },
-      userInfo,
     } = usePageStore.getState();
     const formData = cloneDeep(pageData.formData || {});
     originIds.forEach((id: string) => {
@@ -229,7 +228,6 @@ export function renderFormula(formula: string, eventParams: any = {}) {
       return dayjs(date).format(fmt);
     };
     const context = {
-      store: userInfo,
       variable: variableData,
       eventParams,
       FORMAT,

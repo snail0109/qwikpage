@@ -7,14 +7,8 @@ import { merge } from 'lodash-es';
 /**
  * 页面信息存储
  */
-export interface UserInfoStore {
-  userId: number;
-  userName: string;
-  nickName: string;
-  avatar: string;
-}
+
 export interface PageState {
-  userInfo: UserInfoStore;
   mode: 'edit' | 'preview';
   theme: 'light' | 'dark';
   selectedElement: { type: string; id: string } | undefined;
@@ -76,7 +70,6 @@ export interface PageState {
   };
 }
 export interface PageAction {
-  saveUserInfo: (userInfo: UserInfoStore) => void;
   savePageInfo: (pageInfo: any) => void;
   updatePageState: (payload: any) => void;
   updateEditState: (isEdit: boolean) => void;
@@ -104,12 +97,6 @@ export interface PageAction {
   clearPageInfo: () => void;
 }
 export const usePageStore = create<PageState & PageAction>((set) => ({
-  userInfo: {
-    userId: 0,
-    userName: '',
-    nickName: '',
-    avatar: '',
-  },
   mode: 'edit',
   // 是否编辑了页面
   isEdit: false,
@@ -164,12 +151,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       },
     },
   },
-  saveUserInfo: (userInfo: UserInfoStore) =>
-    set(
-      produce((state) => {
-        state.userInfo = userInfo;
-      }),
-    ),
   // 保存页面信息
   savePageInfo: (payload: any) =>
     set(

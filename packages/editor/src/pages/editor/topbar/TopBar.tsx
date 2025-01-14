@@ -18,10 +18,9 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   const createRef = useRef<CreatePageRef>();
   const timer = useRef<any>(null);
 
-  const { mode, userInfo, id, name, remark, projectId, pageData, isEdit, setMode, updatePageState, updateEditState, savePageInfo } = usePageStore(
+  const { mode, id, name, remark, projectId, pageData, isEdit, setMode, updatePageState, updateEditState, savePageInfo } = usePageStore(
     (state) => ({
       mode: state.mode,
-      userInfo: state.userInfo,
       id: state.page.id,
       name: state.page.name,
       remark: state.page.remark,

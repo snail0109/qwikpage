@@ -11,8 +11,7 @@ import { message } from '@/utils/AntdGlobal';
 const CodingPanel = () => {
   const editorRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
-  const { userInfo, theme, page, savePageInfo } = usePageStore((state) => ({
-    userInfo: state.userInfo,
+  const { theme, page, savePageInfo } = usePageStore((state) => ({
     theme: state.theme,
     page: state.page,
     savePageInfo: state.savePageInfo,
@@ -27,11 +26,11 @@ const CodingPanel = () => {
 
   function handleEditorDidMount(editor: { getValue: () => string }) {
     editorRef.current = editor;
-    editorRef.current?.setValue(JSON.stringify({ userInfo, page }, null, 2));
+    editorRef.current?.setValue(JSON.stringify({ page }, null, 2));
   }
 
   useEffect(() => {
-    editorRef.current?.setValue(JSON.stringify({ userInfo, page }, null, 2));
+    editorRef.current?.setValue(JSON.stringify({ page }, null, 2));
   }, [page]);
 
   // 保存页面状态
