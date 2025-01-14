@@ -114,11 +114,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
           </Button>
         </Space>
         <Space>
-          <Popover style={{ padding: 0 }} content={<ShareLink />} title={<h3>分享页面</h3>} trigger="click" arrow={false} placement="bottomRight">
-            <Button type="text" icon={<LinkOutlined />}>
-              分享
-            </Button>
-          </Popover>
           <Space>
             <Tooltip title={!openAutoSave ? '自动保存已关闭' : '自动保存已开启'} placement="bottom">
               <Switch size="small" checked={openAutoSave} onChange={setOpenAutoSave}></Switch>

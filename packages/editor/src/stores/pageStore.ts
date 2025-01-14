@@ -21,7 +21,7 @@ export interface PageState {
   isUpdateToolbar: boolean; // 更新遮罩
   isEdit: boolean; // 是否编辑了页面
   page: {
-    id: number;
+    id: string;
     name: string;
     remark: string;
     projectId: number;
@@ -117,7 +117,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   selectedElement: undefined,
   isUpdateToolbar: false,
   page: {
-    id: 0,
+    id: "0",
     name: '',
     remark: '',
     projectId: 0,

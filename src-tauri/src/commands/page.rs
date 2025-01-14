@@ -51,19 +51,27 @@ pub fn add_page(
 #[command]
 pub fn update_page(
     id: String,
-    name: String,
+    name: Option<String>,
     remark: Option<String>,
     page_data: Option<String>,
-    project_id: String,
+    project_id: Option<String>,
 ) -> Result<(), String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
     let mut page = Page::load(&page_file);
-    page.project_id = project_id;
-    page.name = name;
-    page.remark = remark;
-    page.page_data = page_data.unwrap_or_else(|| String::new());
+    if let Some(project_id) = project_id {
+        page.project_id = project_id;
+    }
+    if let Some(name) = name{
+        page.name = name;
+    }
+    if let Some(remark) = remark {
+        page.remark = Some(remark);
+    }
+    if let Some(page_data) = page_data {
+        page.page_data = page_data;
+    }
     page.updated_at = Local::now().format(DATA_FORMAT).to_string();
     page.save(page_file)
         .map_err(|e| format!("更新页面失败: {}", e))?;

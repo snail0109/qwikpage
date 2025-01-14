@@ -1,9 +1,8 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Layout, Menu, MenuProps, Button, Popover, Space, Switch } from 'antd';
+import { Layout, Menu, MenuProps, Button, Space, Switch, message } from 'antd';
 import { ProjectOutlined, CaretDownFilled, SunOutlined, MoonFilled, OneToOneOutlined } from '@ant-design/icons';
 import { usePageStore } from '@/stores/pageStore';
-import Publish from './PublishPopover';
 import styles from './index.module.less';
 import storage from '@/utils/storage';
 import { invoke } from '@tauri-apps/api/core';
@@ -95,6 +94,11 @@ const Header = memo(() => {
 
   const isEditPage = pageFrom === `editor/${id}/edit` || pageFrom === `editor/${id}/template`;
 
+
+  const onPublishClick = () => {
+    message.info("功能开发中")
+  }
+
   return (
     <>
       <Layout.Header className={styles.layoutHeader}>
@@ -125,12 +129,10 @@ const Header = memo(() => {
             />
             {isEditPage && mode === 'edit' && (
               <>
-                <Popover placement="bottom" content={<Publish />} trigger="click">
-                  <Button type="primary">
+                 <Button type="primary" onClick={onPublishClick}>
                     发布
                     <CaretDownFilled />
                   </Button>
-                </Popover>
               </>
             )}
           </Space>

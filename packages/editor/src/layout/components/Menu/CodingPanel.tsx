@@ -47,9 +47,6 @@ const CodingPanel = () => {
       return;
     }
     const { name, remark, pageData } = value.page;
-    /**
-     * 页面ID和用户信息不允许修改
-     */
     const params = {
       id: page.id,
       name,
