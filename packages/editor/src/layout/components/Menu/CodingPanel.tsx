@@ -21,7 +21,7 @@ const CodingPanel = () => {
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
   loader.config({
     paths: {
-      vs: `${import.meta.env.VITE_CDN_URL}/static/monaco-editor/vs`,
+      vs: `https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/dev/vs`,
     },
   });
 
