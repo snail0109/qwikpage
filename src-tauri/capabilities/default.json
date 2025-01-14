@@ -9,6 +9,11 @@
     "core:default",
     "opener:default",
     "os:default",
-    "log:default"
+    "log:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "dialog:allow-ask",
+    "dialog:allow-confirm"
   ]
 }

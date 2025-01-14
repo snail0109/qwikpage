@@ -3,8 +3,7 @@ use tauri_plugin_log::{Target, TargetKind};
 mod commands;
 mod models;
 mod utils;
-
-use crate::commands::{menu, page, project};
+use crate::commands::{menu, page, project, dsl };
 use utils::setup;
 
 pub fn run() {
@@ -21,7 +20,8 @@ pub fn run() {
                 .build(),
         )
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_opener::init());
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init());
 
     builder
         // .setup(|app|
@@ -46,6 +46,7 @@ pub fn run() {
             page::update_page,
             page::delete_page,
             page::copy_page,
+            dsl::export_json,
         ])
         .setup(|app| setup::init(app))
         .run(tauri::generate_context!())
