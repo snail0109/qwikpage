@@ -3,6 +3,7 @@ use crate::models::menu::{Menu, MenuParams};
 use crate::utils::constans::MENU_DIR;
 use crate::utils::dirs;
 use anyhow::Result;
+use log::info;
 use std::fs;
 use std::path::PathBuf;
 use tauri::command;
@@ -13,6 +14,7 @@ pub fn get_menu_list(
     name: Option<String>,
     status: i32,
 ) -> Result<Vec<Menu>, String> {
+    info!("Menu::get_menu_list start, project_id: {}, name: {:?}, status: {}", project_id, name, status);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&project_id);
     // project menu 目录下的文件
@@ -46,7 +48,7 @@ pub fn get_menu_list(
 // menu
 #[command]
 pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
-    println!("开始创建菜单");
+    info!("Menu::add_menu start, is_create: {}, params: {:?}", is_create, params);
     // 获取根目录，使用proper错误处理
     let root_dir = dirs::app_data_dir().unwrap();
 
@@ -74,7 +76,7 @@ pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
         let menu = Menu::new(menu_id, create_param);
         menu.save(&project_path)
             .map_err(|e| format!("保存菜单失败: {}", e))?;
-        println!("菜单创建成功");
+        info!("add_menu success");
         Ok(())
     } else {
         // 直接创建菜单
@@ -82,37 +84,39 @@ pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
         let menu = Menu::new(menu_id, params);
         menu.save(&project_path)
             .map_err(|e| format!("保存菜单失败: {}", e))?;
-
-        println!("菜单创建成功");
+        info!("add_menu success");
         Ok(())
     }
 }
 
 #[command]
 pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
+    info!("Menu::update_menu start, id: {}, params: {:?}", id, params);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&params.project_id);
     let menu = Menu::load(&project_path, id.clone());
     menu.update(&project_path, id, params).map_err(|e| format!("更新菜单失败: {}", e))?;
-    println!("menu updated successfully");
+    info!("update_menu success");
     Ok(())
 }
 
 #[command]
 pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
+    info!("Menu::delete_menu start, id: {}, project_id: {}", id, project_id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     Menu::delete(&project_path, id);
-    println!("menu deleted successfully");
+    info!("delete_menu success");
     Ok(())
 }
 
 #[command]
 pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
+    info!("Menu::copy_menu start, id: {}, project_id: {}", id, project_id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
     let menu = Menu::load(&project_path, id.clone());
     menu.copy(&project_path, id);
-    println!("menu copied successfully");
+    info!("copy_menu success");
     Ok(())
 }

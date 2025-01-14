@@ -103,7 +103,7 @@ export default {
   config: {
     // 组件默认属性值
     props: {
-      text: '欢迎使用Marsview低代码系统',
+      text: '欢迎使用QwikPage设计器',
       type: '',
       script: `function render(value){
     return value;

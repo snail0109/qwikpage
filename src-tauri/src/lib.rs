@@ -8,8 +8,6 @@ use crate::commands::{menu, page, project};
 use utils::setup;
 
 pub fn run() {
-    setup::init().expect("failed to initialize qwikpage app");
-
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
         .plugin(
@@ -49,6 +47,7 @@ pub fn run() {
             page::delete_page,
             page::copy_page,
         ])
+        .setup(|app| setup::init(app))
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
 }

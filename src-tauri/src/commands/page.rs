@@ -3,6 +3,7 @@ use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
 use crate::utils::dirs;
 use anyhow::Result;
 use chrono::Local;
+use log::info;
 use std::path::PathBuf;
 use tauri::command;
 use uuid::Uuid;
@@ -14,6 +15,10 @@ pub fn get_page_list(
     keyword: Option<String>,
     project_id: Option<String>,
 ) -> Result<PageList, String> {
+    info!(
+        "Page::get_page_list start, page_num: {}, page_size: {}, keyword: {:?}, project_id: {:?}",
+        page_num, page_size, keyword, project_id
+    );
     let pages_list =
         Page::list(page_num, page_size, project_id, keyword).map_err(|e| e.to_string())?;
     Ok(pages_list)
@@ -21,6 +26,7 @@ pub fn get_page_list(
 
 #[command]
 pub fn get_page_detail(id: String) -> Result<Page, String> {
+    info!("Page::get_page_detail start, id: {}", id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
@@ -37,6 +43,10 @@ pub fn add_page(
     page_data: Option<String>,
     project_id: String,
 ) -> Result<(), String> {
+    info!(
+        "Page::add_page start, id: {:?}, name: {}, remark: {:?}, project_id: {}",
+        id, name, remark, project_id
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_id = id.unwrap_or_else(|| Uuid::new_v4().to_string());
@@ -44,7 +54,7 @@ pub fn add_page(
     let page_file = page_dir.join(format!("{}.json", page_id.clone()));
     page.save(page_file)
         .map_err(|e| format!("创建页面失败: {}", e))?;
-    println!("创建页面成功");
+    info!("add_page success");
     Ok(())
 }
 
@@ -56,6 +66,10 @@ pub fn update_page(
     page_data: Option<String>,
     project_id: Option<String>,
 ) -> Result<(), String> {
+    info!(
+        "Page::update_page start, id: {}, name: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
+        id, name, remark, page_data, project_id
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
@@ -75,14 +89,15 @@ pub fn update_page(
     page.updated_at = Local::now().format(DATA_FORMAT).to_string();
     page.save(page_file)
         .map_err(|e| format!("更新页面失败: {}", e))?;
-    println!("page updated successfully");
+    info!("update_page success");
     Ok(())
 }
 
 #[command]
 pub fn delete_page(id: String) -> Result<(), String> {
+    info!("Page::delete_page start, id: {}", id);
     Page::delete(id).map_err(|e| format!("删除页面失败: {}", e))?;
-    println!("page deleted successfully");
+    info!("delete_page success");
     Ok(())
 }
 
@@ -93,6 +108,10 @@ pub fn copy_page(
     remark: Option<String>,
     project_id: String,
 ) -> Result<(), String> {
+    info!(
+        "Page::copy_page start, id: {}, name: {}, remark: {:?}, project_id: {}",
+        id, name, remark, project_id
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
@@ -108,6 +127,6 @@ pub fn copy_page(
     );
     page.save(new_page_file)
         .map_err(|e| format!("复制页面失败: {}", e))?;
-    println!("复制页面成功");
+    info!("copy_page success");
     Ok(())
 }

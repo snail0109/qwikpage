@@ -5,6 +5,7 @@ use std::path::Path;
 
 use crate::utils::constans::{DATA_FORMAT, MENU_DIR};
 
+// TODO 参考 page rename_all
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Menu {
     pub id: String,                // 菜单id
@@ -98,7 +99,7 @@ impl Menu {
         let menu_file = menu_path.join(format!("{}.json", id));
         fs::remove_file(menu_file).unwrap();
     }
-
+    #[allow(unused)]
     pub fn copy(&self, project_path: &Path, id: String) {
         let mut menu = Menu::load(project_path, id);
         menu.id = uuid::Uuid::new_v4().to_string();

@@ -1,3 +1,4 @@
+use crate::models::page::count_pages_in_project;
 use crate::models::project::{Project, ProjectList, ProjectSummary, UpdateProject};
 use crate::utils::dirs;
 use anyhow::Result;
@@ -18,15 +19,6 @@ fn load_project(project_path: &Path) -> Option<Project> {
     }
 }
 
-// 统计项目中的页面数量
-fn count_pages_in_project(project_path: &Path) -> usize {
-    let pages_dir = project_path.join("pages");
-    if pages_dir.exists() {
-        fs::read_dir(pages_dir).unwrap().count()
-    } else {
-        0
-    }
-}
 
 // 获取项目列表
 #[command]
@@ -35,6 +27,10 @@ pub fn get_project_list(
     page_size: usize,
     keyword: Option<String>,
 ) -> Result<ProjectList, String> {
+    info!(
+        "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
+        page_num, page_size, keyword
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let mut project_list = Vec::new();
 
@@ -43,7 +39,10 @@ pub fn get_project_list(
             if let Ok(entry) = entry {
                 let project_path = entry.path();
                 // 过滤页面目录
-                if project_path.file_name().map_or(false, |name| name == "page") {
+                if project_path
+                    .file_name()
+                    .map_or(false, |name| name == "page")
+                {
                     continue;
                 }
                 if project_path.is_dir() {
@@ -55,7 +54,7 @@ pub fn get_project_list(
                                 continue;
                             }
                         }
-                        let count = count_pages_in_project(&project_path);
+                        let count = count_pages_in_project(&project.id);
                         project_list.push(ProjectSummary {
                             id: project.id,
                             name: project.name,
@@ -76,17 +75,21 @@ pub fn get_project_list(
 
     let total = project_list.len();
     let list = project_list[start..end].to_vec();
+    info!("Project::get_project_list end");
     Ok(ProjectList { total, list })
 }
 
 // 获取项目详情
 #[command]
 pub fn get_project_detail(id: String) -> Result<Project, String> {
+    info!("Project::get_project_detail start, id: {}", id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&id);
     if let Some(project) = load_project(&project_path) {
+        info!("Project::get_project_detail end");
         Ok(project)
     } else {
+        error!("project does not found");
         Err(format!("{} does not found", project_path.display()))
     }
 }
@@ -94,7 +97,7 @@ pub fn get_project_detail(id: String) -> Result<Project, String> {
 // 新建项目
 #[command]
 pub fn add_project(name: String, remark: String, logo: String) -> Result<(), String> {
-    info!("add_project");
+    info!("Project::add_project start name: {}, remark: {}, logo: {}", name, remark, logo);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_id = uuid::Uuid::new_v4().to_string();
     let project_dir = root_dir.join(&project_id);
@@ -105,36 +108,37 @@ pub fn add_project(name: String, remark: String, logo: String) -> Result<(), Str
     fs::create_dir_all(&project_dir).unwrap();
     let project = Project::new(project_id, name, remark, logo);
     project.save(&project_dir);
-    println!("Project created successfully");
+    info!("Project::add_project successfully");
     Ok(())
 }
 
 // 更新项目
 #[command]
-pub fn update_project(
-    id: String,
-    params: UpdateProject,
-) -> Result<(), String> {
+pub fn update_project(id: String, params: UpdateProject) -> Result<(), String> {
+    info!("Project::update_project start, id: {}, params: {:?}", id, params);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
+        error!("project does not found");
         return Err(format!("{} does not found", project_dir.display()));
     }
     let project = Project::load(&project_dir);
     project.update(&project_dir, id, params);
-    println!("Project updated successfully");
+    info!("Project::update_project successfully");
     Ok(())
 }
 
 // 删除项目
 #[command]
 pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
+    info!("Project::delete_project start, id: {}, mode: {:?}", id, mode);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
+        error!("project does not found");
         return Err(format!("{} does not found", project_dir.display()));
     }
     Project::delete(&project_dir, mode);
-    println!("Project deleted successfully");
+    info!("Project::delete_project successfully");
     Ok(())
 }

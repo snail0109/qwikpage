@@ -33,6 +33,24 @@ pub struct PageParams {
     pub project_id: String,
 }
 
+pub fn count_pages_in_project(project_id: &str) -> usize {
+    let page_dir = Page::get_page_dir();
+    let entries = fs::read_dir(page_dir).unwrap();
+    let mut count = 0;
+    for entry in entries {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if path.is_file() {
+            let json = fs::read_to_string(&path).unwrap();
+            let page: Page = serde_json::from_str(&json).unwrap();
+            if page.project_id == project_id {
+                count += 1;
+            }
+        }
+    }
+    count
+}
+
 impl Page {
     pub fn new(
         id: String,
