@@ -55,7 +55,7 @@ const CreatePage = (props: IModalProp) => {
         const projectId = searchParams.get('projectId') || record?.projectId;
         setType('create');
         setRecordId(0);
-        if (projectId) form.setFieldValue('projectId', Number(projectId));
+        if (projectId) form.setFieldValue('projectId', projectId);
       }
       setVisible(true);
     },
