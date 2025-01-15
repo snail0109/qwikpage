@@ -20,7 +20,7 @@ export default function MenuList() {
     const [form] = Form.useForm();
     const [data, setData] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(false);
-    const project_id = useParams().id as string;
+    const projectId = useParams().id as string;
 
     const menuRef = useRef<{
         open: (
@@ -37,10 +37,10 @@ export default function MenuList() {
     // 获取菜单列表
     const getMenus = async () => {
         const { name, status } = form.getFieldsValue();
-        if (!project_id) return;
+        if (!projectId) return;
         setLoading(true);
         const res = await getMenuList({
-            projectId: project_id,
+            projectId,
             name,
             status,
         });
@@ -65,7 +65,7 @@ export default function MenuList() {
     const handleCopy = async (record: MenuItem) => {
         setLoading(true);
         await copyMenu({
-            projectId: record.project_id,
+            projectId: record.projectId,
             id: record.id,
         });
         message.success("复制成功");
@@ -75,7 +75,7 @@ export default function MenuList() {
     // 创建子菜单
     const handleSubCreate = (record: MenuItem) => {
         // @ts-ignore
-        menuRef.current?.open("create", { parent_id: record.id, sort_num: (record.children?.length || 0) + 1 });
+        menuRef.current?.open("create", { parentId: record.id, sortNum: (record.children?.length || 0) + 1 });
     };
 
     // 编辑菜单
@@ -87,22 +87,22 @@ export default function MenuList() {
     // 删除菜单
     const handleDelete = (record: MenuItem) => {
         let text = "";
-        if (record.menu_type == 1) text = "菜单";
-        if (record.menu_type == 2) text = "按钮";
-        if (record.menu_type == 3) text = "页面";
+        if (record.menuType == 1) text = "菜单";
+        if (record.menuType == 2) text = "按钮";
+        if (record.menuType == 3) text = "页面";
         Modal.confirm({
             title: "确认",
             content: `${text}删除后不可恢复，确认删除吗？`,
             onOk() {
-                handleDelSubmit(record.project_id, record.id);
+                handleDelSubmit(record.projectId, record.id);
             },
         });
     };
 
     // 删除提交
-    const handleDelSubmit = async (project_id: string, id: string) => {
+    const handleDelSubmit = async (projectId: string, id: string) => {
         setLoading(true);
-        await delMenu({ projectId: project_id, id });
+        await delMenu({ projectId, id });
         message.success("删除成功");
         getMenus();
     };
@@ -134,8 +134,8 @@ export default function MenuList() {
         },
         {
             title: "菜单类型",
-            dataIndex: "menu_type",
-            key: "menu_type",
+            dataIndex: "menuType",
+            key: "menuType",
             align: "center",
             width: 120,
             render(type: number) {
@@ -148,8 +148,8 @@ export default function MenuList() {
         },
         {
             title: "绑定页面",
-            dataIndex: "page_id",
-            key: "page_id",
+            dataIndex: "pageId",
+            key: "pageId",
             align: "center",
             width: 120,
             render(pageId: string) {
@@ -158,8 +158,8 @@ export default function MenuList() {
         },
         {
             title: "排序值",
-            dataIndex: "sort_num",
-            key: "sort_num",
+            dataIndex: "sortNum",
+            key: "sortNum",
             align: "center",
             width: 100,
         },
@@ -176,15 +176,15 @@ export default function MenuList() {
         },
         {
             title: "更新时间",
-            dataIndex: "updated_at",
-            key: "updated_at",
+            dataIndex: "updatedAt",
+            key: "updatedAt",
             align: "center",
             width: 180,
         },
         {
             title: "创建时间",
-            dataIndex: "created_at",
-            key: "created_at",
+            dataIndex: "createdAt",
+            key: "createdAt",
             align: "center",
             width: 180,
         },
@@ -209,9 +209,9 @@ export default function MenuList() {
                             删除
                         </Button>
                         {/* @ts-ignore */}
-                        {record.page_id && record.page_id !== "0" && (
+                        {record.pageId && record.pageId !== "0" && (
                             // @ts-ignore
-                            <Link to={`/editor/${record.page_id}/edit`}>去设计</Link>
+                            <Link to={`/editor/${record.pageId}/edit`}>去设计</Link>
                         )}
                     </>
                 );

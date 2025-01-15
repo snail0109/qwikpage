@@ -24,10 +24,10 @@ export interface Project {
 export interface MenuItem {
     id: string;
     name: string;
-    parent_id: string;
-    menu_type: number;
-    project_id: string;
-    sort_num: string;
+    parentId: string;
+    menuType: number;
+    projectId: string;
+    sortNum: string;
 }
 
 export interface EditParams {

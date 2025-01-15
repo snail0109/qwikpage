@@ -24,15 +24,6 @@ pub struct PageList {
     pub total: usize,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "snake_case")]
-pub struct PageParams {
-    pub name: String,   // 页面名称
-    pub remark: String, // 页面描述
-    pub page_data: Option<String>,
-    pub project_id: String,
-}
-
 pub fn count_pages_in_project(project_id: &str) -> usize {
     let page_dir = Page::get_page_dir();
     let entries = fs::read_dir(page_dir).unwrap();

@@ -5,8 +5,8 @@ use std::path::Path;
 
 use crate::utils::constans::{DATA_FORMAT, MENU_DIR};
 
-// TODO 参考 page rename_all
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Menu {
     pub id: String,                // 菜单id
     pub name: String,              // 菜单名称
