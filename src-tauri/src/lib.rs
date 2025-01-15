@@ -1,10 +1,18 @@
+#[macro_use] extern crate rocket;
+
 use tauri_plugin_log::{Target, TargetKind};
 
 mod commands;
 mod models;
 mod utils;
-use crate::commands::{menu, page, project, dsl };
+mod services;
+use crate::commands::{dsl, menu, page, project};
+use crate::services::demo;
 use utils::setup;
+
+use rocket::fs::{relative, FileServer};
+use rocket::http::Method;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
 
 pub fn run() {
     #[allow(unused_mut)]
@@ -48,7 +56,18 @@ pub fn run() {
             page::copy_page,
             dsl::export_json,
         ])
-        .setup(|app| setup::init(app))
+        .setup(|app| {
+            setup::init(app);
+            // mount the rocket instance
+            tauri::async_runtime::spawn(async move {
+                let _rocket = rocket::build()
+                    .mount("/", FileServer::from(relative!("../dist/editor")))
+                    .mount("/hello", routes![demo::hello])
+                    .launch()
+                    .await;
+            });
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
 }
