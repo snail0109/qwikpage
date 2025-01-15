@@ -438,7 +438,7 @@ export const getEnv = () => {
  */
 export function getPageId(pageId: string | undefined, pageMap: Record<number, any>): number {
   if (!pageId || !pageMap) return 0;
-  const id = isNaN(Number(pageId))
+  const id = pageId
     ? Object.values(pageMap).filter((item) => {
         return item.path.startsWith('/') ? item.path.slice(1) === pageId : item.path === pageId;
       })?.[0]?.pageId
