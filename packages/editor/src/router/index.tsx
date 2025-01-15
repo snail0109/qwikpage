@@ -22,7 +22,7 @@ export const router = [
       },
       {
         path: '*',
-        element: lazyLoad(React.lazy(() => import('@/pages/project'))),
+        element: lazyLoad(React.lazy(() => import('@/pages/preview'))),
       },
     ],
   },
