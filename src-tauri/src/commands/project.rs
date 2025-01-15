@@ -1,5 +1,5 @@
 use crate::models::page::count_pages_in_project;
-use crate::models::project::{Project, ProjectList, ProjectSummary, UpdateProject};
+use crate::models::project::{Project, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::dirs;
 use anyhow::Result;
 use log::{error, info};
@@ -114,7 +114,7 @@ pub fn add_project(name: String, remark: String, logo: String) -> Result<(), Str
 
 // 更新项目
 #[command]
-pub fn update_project(id: String, params: UpdateProject) -> Result<(), String> {
+pub fn update_project(id: String, params: ProjectUpdateParams) -> Result<(), String> {
     info!("Project::update_project start, id: {}, params: {:?}", id, params);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&id);

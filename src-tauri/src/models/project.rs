@@ -5,6 +5,7 @@ use std::path::Path;
 
 use crate::utils::constans::{DATA_FORMAT, PROJECT_CONFIG_FILE};
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Project {
     pub id: String,                         // 项目唯一标识
     pub name: String,                       // 项目名称
@@ -22,7 +23,7 @@ pub struct Project {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UpdateProject {
+pub struct ProjectUpdateParams {
     pub name: String,                       // 项目名称
     pub remark: String,                     // 项目备注（可选）
     pub layout: u32,                        // 系统布局 1 2
@@ -35,6 +36,7 @@ pub struct UpdateProject {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ProjectSummary {
     pub id: String,
     pub name: String,
@@ -45,6 +47,7 @@ pub struct ProjectSummary {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ProjectList {
     pub list: Vec<ProjectSummary>,
     pub total: usize,
@@ -62,9 +65,9 @@ impl Project {
             layout: 1,
             menu_mode: "horizontal".to_string(),
             menu_theme_color: "light".to_string(),
-            breadcrumb: true,
-            tag: true,
-            footer: true,
+            breadcrumb: false,
+            tag: false,
+            footer: false,
             system_theme_color: None,
             created_at: current_time.format(DATA_FORMAT).to_string(),
             updated_at: current_time.format(DATA_FORMAT).to_string(),
@@ -83,7 +86,7 @@ impl Project {
         serde_json::from_str(&json).unwrap()
     }
 
-    pub fn update(&self, project_path: &Path, id: String, params: UpdateProject) {
+    pub fn update(&self, project_path: &Path, id: String, params: ProjectUpdateParams) {
         let mut project = Project::load(project_path);
         project.id = id;
         project.name = params.name;
