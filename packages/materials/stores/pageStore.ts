@@ -4,10 +4,10 @@ import { ComponentType, ApiType, PageVariable, EventType, ComItemType } from '@m
 
 export interface PageState {
   page: {
-    id: number;
+    id: string;
     name: string;
     remark: string;
-    projectId: number;
+    projectId: string;
     stgState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
     preState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
     prdState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
@@ -66,10 +66,10 @@ export interface PageAction {
 export const usePageStore = create<PageState & PageAction>((set) => ({
   selectedElement: undefined,
   page: {
-    id: 0,
+    id: "0",
     name: '',
     remark: '',
-    projectId: 0,
+    projectId: "0",
     userId: 0,
     userName: '',
     previewImg: '',

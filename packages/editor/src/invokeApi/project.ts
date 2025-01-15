@@ -22,7 +22,7 @@ export default {
   },
 
   // 获取项目详情
-  getProjectDetail(id: string) {
+  getProjectDetail(id: string): Promise<any> {
     return invoke("get_project_detail", { id })
   },
 

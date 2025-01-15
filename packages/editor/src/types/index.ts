@@ -3,11 +3,11 @@
  */
 
 export interface IMenuItem {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
   name: string;
-  parentId: number;
-  type: number;
+  parentId: string;
+  menuType: number;
   icon: string;
   path: string;
   pageId: number;

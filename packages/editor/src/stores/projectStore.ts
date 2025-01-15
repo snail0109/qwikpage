@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import { IMenuItem } from '@/types/index';
 
 export interface ProjectInfo {
-  id?: number;
+  id?: string;
   footer?: number;
   layout?: number;
   logo?: string;
@@ -20,8 +20,8 @@ export interface PageState {
   collapsed: boolean;
   menuTree: any[];
   buttons: any[];
-  pageMap: { [key: number]: IMenuItem };
-  menuMap: { [key: number]: IMenuItem };
+  pageMap: { [key: string]: IMenuItem };
+  menuMap: { [key: string]: IMenuItem };
 }
 
 export interface ProjectAction {
