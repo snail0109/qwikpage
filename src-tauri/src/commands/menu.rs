@@ -47,7 +47,7 @@ pub fn get_menu_list(
 
 // menu
 #[command]
-pub fn add_menu(is_create: i32, params: MenuParams) -> Result<(), String> {
+pub fn add_menu(is_create: u32, params: MenuParams) -> Result<(), String> {
     info!("Menu::add_menu start, is_create: {}, params: {:?}", is_create, params);
     // 获取根目录，使用proper错误处理
     let root_dir = dirs::app_data_dir().unwrap();

@@ -15,9 +15,9 @@ pub struct Menu {
     pub parent_id: Option<String>, // 父级菜单id
     pub project_id: String,        // 项目id
     pub path:  Option<String>,              // 菜单路径
-    pub sort_num:  Option<i32>,             // 排序
+    pub sort_num:  Option<u32>,             // 排序
     pub status: i32,               // 状态 1-启用 2-禁用
-    pub menu_type: i32,            // 类型: 1-菜单 2-按钮 3-页面
+    pub menu_type: u32,            // 类型: 1-菜单 2-按钮 3-页面
     created_at: String,
     updated_at: String,
 }
@@ -30,9 +30,9 @@ pub struct MenuParams {
     pub parent_id: Option<String>,
     pub project_id: String,
     pub path: Option<String>,
-    pub sort_num: Option<i32>,
+    pub sort_num: Option<u32>,
     pub status: i32,
-    pub menu_type: i32,
+    pub menu_type: u32,
     pub is_create: Option<bool>, // 是否创建页面
 }
 
