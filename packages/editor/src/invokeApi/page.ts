@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 import { invoke } from "@tauri-apps/api/core";
-import { Page, PaginationInfo } from "@/invokeApi/types";
+import { Page } from "@/invokeApi/types";
 
 export default {
     // 获取页面列表
@@ -33,18 +33,4 @@ export default {
         return invoke("update_page", params);
     },
 
-    // 发布
-    publishPage(params: any) {
-        return request.post("/page/publish/create", params);
-    },
-
-    // 发布记录
-    publishList(params: any) {
-        return request.post("/page/publish/list", params);
-    },
-
-    // 页面回滚
-    rollbackPage(params: any) {
-        return request.post("/pages/rollback", params);
-    },
 };
