@@ -9,24 +9,6 @@ import ErrorBoundary from './ErrorBoundary';
  */
 export const router = [
   {
-    path: '/preview/:projectId',
-    element: lazyLoad(React.lazy(() => import('@/layout/previewLayout'))),
-    children: [
-      {
-        path: 'welcome',
-        element: lazyLoad(React.lazy(() => import('@/pages/welcome/welcome'))),
-      },
-      {
-        path: 'notPublish',
-        element: lazyLoad(React.lazy(() => import('@/pages/500'))),
-      },
-      {
-        path: '*',
-        element: lazyLoad(React.lazy(() => import('@/pages/preview'))),
-      },
-    ],
-  },
-  {
     path: '/',
     element: <Root />,
     errorElement: <ErrorBoundary />,
