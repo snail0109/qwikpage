@@ -8,10 +8,15 @@ mod models;
 mod services;
 mod utils;
 use crate::commands::{dsl, menu, page, project};
-use crate::services::{demo, preview};
+use crate::services::{preview};
 use utils::setup;
+use rocket::fs::{FileServer, relative, NamedFile};
 
-use rocket::fs::{relative, FileServer};
+#[catch(404)]
+async fn not_found() -> Option<NamedFile> {
+    // 返回 SPA 的入口文件，例如 index.html
+    NamedFile::open(relative!("../dist/editor/index.html")).await.ok()
+}
 
 pub fn run() {
     #[allow(unused_mut)]
@@ -66,6 +71,7 @@ pub fn run() {
                     .mount("/page/detail", routes![preview::get_page_detail])
                     // 其他的都走这个
                     .mount("/", FileServer::from(relative!("../dist/editor")))
+                    .register("/", catchers![not_found])
                     .launch()
                     .await;
             });
