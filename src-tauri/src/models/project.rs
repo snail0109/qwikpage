@@ -1,9 +1,9 @@
-use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 
-use crate::utils::constans::{DATA_FORMAT, PROJECT_CONFIG_FILE};
+use crate::utils::constans::PROJECT_CONFIG_FILE;
+use crate::utils::help::get_current_time;
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Project {
@@ -56,7 +56,6 @@ pub struct ProjectList {
 impl Project {
     pub fn new(id: String, name: String, remark: String, logo: String) -> Self {
         // 生成随机并且唯一的项目 ID
-        let current_time = Local::now();
         Project {
             id,
             name,
@@ -69,8 +68,8 @@ impl Project {
             tag: false,
             footer: false,
             system_theme_color: None,
-            created_at: current_time.format(DATA_FORMAT).to_string(),
-            updated_at: current_time.format(DATA_FORMAT).to_string(),
+            created_at: get_current_time(),
+            updated_at: get_current_time(),
         }
     }
 
@@ -86,20 +85,17 @@ impl Project {
         serde_json::from_str(&json).unwrap()
     }
 
-    pub fn update(&self, project_path: &Path, id: String, params: ProjectUpdateParams) {
-        let mut project = Project::load(project_path);
-        project.id = id;
-        project.name = params.name;
-        project.remark = params.remark;
-        project.layout = params.layout;
-        project.menu_mode = params.menu_mode;
-        project.menu_theme_color = params.menu_theme_color;
-        project.system_theme_color = params.system_theme_color;
-        project.breadcrumb = params.breadcrumb;
-        project.tag = params.tag;
-        project.footer = params.footer;
-        project.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        project.save(project_path);
+    pub fn update(&mut self, params: ProjectUpdateParams) {
+        self.name = params.name;
+        self.remark = params.remark;
+        self.layout = params.layout;
+        self.menu_mode = params.menu_mode;
+        self.menu_theme_color = params.menu_theme_color;
+        self.system_theme_color = params.system_theme_color;
+        self.breadcrumb = params.breadcrumb;
+        self.tag = params.tag;
+        self.footer = params.footer;
+        self.updated_at = get_current_time();
     }
 
     pub fn delete(project_path: &Path, mode: Option<String>) {

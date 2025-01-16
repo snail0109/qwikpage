@@ -7,18 +7,29 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::command;
 
+const PROJECT_CONFIG_FILE: &str = "project.json";
+
 // 加载项目详情信息
 fn load_project(project_path: &Path) -> Option<Project> {
-    let project_file = project_path.join("project.json");
+    let project_file = project_path.join(PROJECT_CONFIG_FILE);
     if project_file.exists() {
-        let json = fs::read_to_string(project_file).unwrap();
-        let project: Project = serde_json::from_str(&json).unwrap();
-        Some(project)
+        match fs::read_to_string(&project_file) {
+            Ok(json) => match serde_json::from_str(&json) {
+                Ok(project) => Some(project),
+                Err(e) => {
+                    error!("Failed to deserialize project file: {}", e);
+                    None
+                }
+            },
+            Err(e) => {
+                error!("Failed to read project file: {}", e);
+                None
+            }
+        }
     } else {
         None
     }
 }
-
 
 // 获取项目列表
 #[command]
@@ -75,7 +86,6 @@ pub fn get_project_list(
 
     let total = project_list.len();
     let list = project_list[start..end].to_vec();
-    info!("Project::get_project_list end");
     Ok(ProjectList { total, list })
 }
 
@@ -86,7 +96,6 @@ pub fn get_project_detail(id: String) -> Result<Project, String> {
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&id);
     if let Some(project) = load_project(&project_path) {
-        info!("Project::get_project_detail end");
         Ok(project)
     } else {
         error!("project does not found");
@@ -97,7 +106,10 @@ pub fn get_project_detail(id: String) -> Result<Project, String> {
 // 新建项目
 #[command]
 pub fn add_project(name: String, remark: String, logo: String) -> Result<(), String> {
-    info!("Project::add_project start name: {}, remark: {}, logo: {}", name, remark, logo);
+    info!(
+        "Project::add_project start name: {}, remark: {}, logo: {}",
+        name, remark, logo
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_id = uuid::Uuid::new_v4().to_string();
     let project_dir = root_dir.join(&project_id);
@@ -108,30 +120,35 @@ pub fn add_project(name: String, remark: String, logo: String) -> Result<(), Str
     fs::create_dir_all(&project_dir).unwrap();
     let project = Project::new(project_id, name, remark, logo);
     project.save(&project_dir);
-    info!("Project::add_project successfully");
     Ok(())
 }
 
 // 更新项目
 #[command]
 pub fn update_project(id: String, params: ProjectUpdateParams) -> Result<(), String> {
-    info!("Project::update_project start, id: {}, params: {:?}", id, params);
+    info!(
+        "Project::update_project start, id: {}, params: {:?}",
+        id, params
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
         error!("project does not found");
         return Err(format!("{} does not found", project_dir.display()));
     }
-    let project = Project::load(&project_dir);
-    project.update(&project_dir, id, params);
-    info!("Project::update_project successfully");
+    let mut project = Project::load(&project_dir);
+    project.update(params);
+    project.save(&project_dir);
     Ok(())
 }
 
 // 删除项目
 #[command]
 pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
-    info!("Project::delete_project start, id: {}, mode: {:?}", id, mode);
+    info!(
+        "Project::delete_project start, id: {}, mode: {:?}",
+        id, mode
+    );
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_dir = root_dir.join(&id);
     if !project_dir.exists() {
@@ -139,6 +156,5 @@ pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
         return Err(format!("{} does not found", project_dir.display()));
     }
     Project::delete(&project_dir, mode);
-    info!("Project::delete_project successfully");
     Ok(())
 }
