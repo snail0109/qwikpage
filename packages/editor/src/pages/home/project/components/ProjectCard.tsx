@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Typography, Avatar, Dropdown } from "antd";
-import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined } from "@ant-design/icons";
+import { Typography, Avatar, Dropdown, Tooltip } from "antd";
+import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Project } from "@/invokeApi/types";
 import styles from "./../page.module.less";
@@ -71,6 +71,13 @@ export default function Category({ list }: { list: Project[] }) {
                                     <MoreOutlined className={styles.moreIcon} />
                                 </Dropdown>
                             </div>
+                            {/* 卡片预览 */}
+                            <div className={styles.moreInfo} style={{ right: 40 }}>
+                                <Tooltip title="预览">
+                                    <EyeOutlined className={styles.moreIcon} />
+                                </Tooltip>
+                            </div>
+
                             {/* 项目Logo */}
                             <Avatar src={project.logo} className={styles.projectLogo} />
                         </div>

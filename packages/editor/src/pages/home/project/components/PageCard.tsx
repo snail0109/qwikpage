@@ -62,22 +62,11 @@ const PageCard = ({ list, copy, refresh }: { list: Page[]; copy: (item: Page) =>
             <Card
               key={item.id + index}
               actions={[
-                <Tooltip title="预览">
-                  <EyeOutlined style={{ fontSize: 16 }} onClick={() => handleAction('preview', item)} />
-                </Tooltip>,
                 <Tooltip title="复制">
                   <CopyOutlined style={{ fontSize: 16 }} onClick={() => handleAction('copy', item)} />
                 </Tooltip>,
                 <Tooltip title="删除">
                   <DeleteOutlined style={{ fontSize: 16 }} onClick={() => handleAction('delete', item)} />
-                </Tooltip>,
-                <Tooltip title="访问STG">
-                  <GlobalOutlined
-                    style={{ fontSize: 16 }}
-                    onClick={() => {
-                      window.open(`${import.meta.env.VITE_ADMIN_URL}/page/${item.id}?env=stg`, '_blank');
-                    }}
-                  />
                 </Tooltip>,
               ]}
             >
