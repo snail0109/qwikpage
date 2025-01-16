@@ -1,18 +1,17 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 use tauri_plugin_log::{Target, TargetKind};
 
 mod commands;
 mod models;
-mod utils;
 mod services;
+mod utils;
 use crate::commands::{dsl, menu, page, project};
-use crate::services::demo;
+use crate::services::{demo, preview};
 use utils::setup;
 
 use rocket::fs::{relative, FileServer};
-use rocket::http::Method;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
 
 pub fn run() {
     #[allow(unused_mut)]
@@ -61,8 +60,12 @@ pub fn run() {
             // mount the rocket instance
             tauri::async_runtime::spawn(async move {
                 let _rocket = rocket::build()
+                    .mount("/project/detail", routes![preview::get_project_detail])
+                    .mount("/project/menu", routes![preview::get_project_menus])
+                    .mount("/menu/detail", routes![preview::get_menu_detail])
+                    .mount("/page/detail", routes![preview::get_page_detail])
+                    // 其他的都走这个
                     .mount("/", FileServer::from(relative!("../dist/editor")))
-                    .mount("/hello", routes![demo::hello])
                     .launch()
                     .await;
             });

@@ -120,3 +120,13 @@ pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
     info!("copy_menu success");
     Ok(())
 }
+
+#[command]
+pub fn get_menu_detail(id: String, project_id: String) -> Result<Menu, String> {
+    info!("Menu::get_menu_detail start, id: {}, project_id: {}", id, project_id);
+    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+    let project_path = root_dir.join(project_id);
+    let menu = Menu::load(&project_path, id);
+    info!("get_menu_detail success");
+    Ok(menu)
+}
