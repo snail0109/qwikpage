@@ -1,9 +1,9 @@
-use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 
-use crate::utils::constans::{DATA_FORMAT, MENU_DIR};
+use crate::utils::constans::MENU_DIR;
+use crate::utils::help::get_current_time;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -39,7 +39,6 @@ pub struct MenuParams {
 
 impl Menu {
     pub fn new(menu_id: String, params: MenuParams) -> Menu {
-        let now = Local::now().format(DATA_FORMAT).to_string();
         Menu {
             id: menu_id,
             name: params.name,
@@ -51,8 +50,8 @@ impl Menu {
             sort_num: params.sort_num,
             status: params.status,
             menu_type: params.menu_type,
-            created_at: now.clone(),
-            updated_at: now,
+            created_at: get_current_time(),
+            updated_at: get_current_time(),
         }
     }
 
@@ -78,20 +77,16 @@ impl Menu {
         serde_json::from_str(&menu_json).unwrap()
     }
 
-    pub fn update(&self, project_path: &Path, id: String, params: MenuParams) -> Result<(), String> {
-        let mut menu = Menu::load(project_path, id.clone());
-        menu.id = id;
-        menu.name = params.name;
-        menu.icon = params.icon;
-        menu.page_id = params.page_id;
-        menu.parent_id = params.parent_id;
-        menu.path = params.path;
-        menu.sort_num = params.sort_num;
-        menu.status = params.status;
-        menu.menu_type = params.menu_type;
-        menu.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        menu.save(project_path).map_err(|e| format!("更新菜单失败: {}", e))?;
-        Ok(())
+    pub fn update(&mut self, params: MenuParams) {
+        self.name = params.name;
+        self.icon = params.icon;
+        self.page_id = params.page_id;
+        self.parent_id = params.parent_id;
+        self.path = params.path;
+        self.sort_num = params.sort_num;
+        self.status = params.status;
+        self.menu_type = params.menu_type;
+        self.updated_at = get_current_time();
     }
 
     pub fn delete(project_path: &Path, id: String) {
@@ -100,11 +95,9 @@ impl Menu {
         fs::remove_file(menu_file).unwrap();
     }
     #[allow(unused)]
-    pub fn copy(&self, project_path: &Path, id: String) {
-        let mut menu = Menu::load(project_path, id);
-        menu.id = uuid::Uuid::new_v4().to_string();
-        menu.created_at = Local::now().format(DATA_FORMAT).to_string();
-        menu.updated_at = Local::now().format(DATA_FORMAT).to_string();
-        menu.save(project_path);
+    pub fn copy(&mut self) {
+        self.id = uuid::Uuid::new_v4().to_string();
+        self.created_at = get_current_time();
+        self.updated_at = get_current_time();
     }
 }

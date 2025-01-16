@@ -94,8 +94,9 @@ pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
     info!("Menu::update_menu start, id: {}, params: {:?}", id, params);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(&params.project_id);
-    let menu = Menu::load(&project_path, id.clone());
-    menu.update(&project_path, id, params).map_err(|e| format!("更新菜单失败: {}", e))?;
+    let mut menu = Menu::load(&project_path , id.clone());
+    menu.update(params);
+    menu.save(&project_path).map_err(|e| format!("更新菜单失败: {}", e))?;
     info!("update_menu success");
     Ok(())
 }
@@ -115,8 +116,9 @@ pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
     info!("Menu::copy_menu start, id: {}, project_id: {}", id, project_id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
-    let menu = Menu::load(&project_path, id.clone());
-    menu.copy(&project_path, id);
+    let mut menu = Menu::load(&project_path , id.clone());
+    menu.copy();
+    menu.save(&project_path).map_err(|e| format!("复制保存菜单失败: {}", e))?;
     info!("copy_menu success");
     Ok(())
 }
