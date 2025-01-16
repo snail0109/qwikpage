@@ -31,7 +31,7 @@ const MenuComponent: React.FC = () => {
       if (item.menuType === 1 && item.status === 1) {
         const iconsList: { [key: string]: any } = Icons;
         if (item.buttons?.length || !item.children) {
-          const path = `/project/${projectId}/${item.path.startsWith('/') ? item.path.slice(1) : item.path || item.pageId || -item.id}`;
+          const path = `/project/${projectId}/${item.path && item.path.startsWith('/') ? item.path.slice(1) : item.path || item.pageId || -item.id}`;
           return treeList.push(getMenuItem(item.name, path, iconsList[item.icon] && React.createElement(iconsList[item.icon])));
         }
         const path = `${projectId}-${item.id}`;
