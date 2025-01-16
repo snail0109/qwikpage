@@ -8,19 +8,38 @@ mod models;
 mod services;
 mod utils;
 use crate::commands::{dsl, menu, page, project};
-use crate::services::{preview};
+use crate::services::preview;
+use rocket::fs::{relative, FileServer, NamedFile};
 use utils::setup;
-use rocket::fs::{FileServer, relative, NamedFile};
+
+const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
 #[catch(404)]
 async fn not_found() -> Option<NamedFile> {
     // 返回 SPA 的入口文件，例如 index.html
-    NamedFile::open(relative!("../dist/editor/index.html")).await.ok()
+    NamedFile::open(relative!("../dist/editor/index.html"))
+        .await
+        .ok()
+}
+
+fn configure_rocket() -> rocket::Rocket<rocket::Build> {
+    let static_path = relative!("../dist/editor");
+    rocket::build()
+        .mount(
+            "/api",
+            routes![
+                preview::get_project_detail,
+                preview::get_project_menus,
+                preview::get_menu_detail,
+                preview::get_page_detail
+            ],
+        )
+        .mount("/", FileServer::from(static_path))
+        .register("/", catchers![not_found])
 }
 
 pub fn run() {
-    #[allow(unused_mut)]
-    let mut builder = tauri::Builder::default()
+    tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([
@@ -33,14 +52,7 @@ pub fn run() {
         )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_dialog::init());
-
-    builder
-        // .setup(|app|
-        //     // /Users/**/Library/Application Support/com.qwikpage.iwhalecloud
-        //     let app_data_dir = app.path().app_data_dir().unwrap();
-        //     create_dir_all(app_data_dir.clone()).expect("Problem creating App directory!");
-        // )
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             project::get_project_list,
             project::add_project,
@@ -61,22 +73,13 @@ pub fn run() {
             dsl::export_json,
         ])
         .setup(|app| {
-            setup::init(app);
+            setup::init(app)?;
             // mount the rocket instance
             tauri::async_runtime::spawn(async move {
-                let _rocket = rocket::build()
-                    .mount("/project/detail", routes![preview::get_project_detail])
-                    .mount("/project/menu", routes![preview::get_project_menus])
-                    .mount("/menu/detail", routes![preview::get_menu_detail])
-                    .mount("/page/detail", routes![preview::get_page_detail])
-                    // 其他的都走这个
-                    .mount("/", FileServer::from(relative!("../dist/editor")))
-                    .register("/", catchers![not_found])
-                    .launch()
-                    .await;
+                let _rocket = configure_rocket().launch().await;
             });
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running qwikpage application");
+        .expect(APP_ERROR_MSG);
 }

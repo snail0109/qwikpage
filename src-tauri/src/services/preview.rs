@@ -8,7 +8,7 @@ use anyhow::Result;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 
-#[get("/<id>")]
+#[get("/project/detail/<id>")]
 pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
     match project::get_project_detail(id) {
         Ok(project) => Ok(Json(project)),
@@ -17,7 +17,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 }
 
 
-#[get("/<id>")]
+#[get("/project/menus/<id>")]
 pub fn get_project_menus(id: String) -> Result<Json<Vec<Menu>>, Status> {
     match menu::get_menu_list(id, None, -1) {
         Ok(menus) => Ok(Json(menus)),
@@ -27,7 +27,7 @@ pub fn get_project_menus(id: String) -> Result<Json<Vec<Menu>>, Status> {
 
 
 
-#[get("/<project_id>/<id>")]
+#[get("/menu/detail/<project_id>/<id>")]
 pub fn get_menu_detail(project_id:String, id: String) -> Result<Json<Menu>, Status> {
     match menu::get_menu_detail(id, project_id) {
         Ok(menu) => Ok(Json(menu)),
@@ -36,7 +36,7 @@ pub fn get_menu_detail(project_id:String, id: String) -> Result<Json<Menu>, Stat
 }
 
 
-#[get("/<id>")]
+#[get("/page/detail/<id>")]
 pub fn get_page_detail(id: String) -> Result<Json<Page>, Status> {
     match page::get_page_detail(id) {
         Ok(page) => Ok(Json(page)),
