@@ -7,7 +7,7 @@ import { message } from '@/utils/AntdGlobal';
 import NotFound from './notFound';
 import Page from '@marsview/materials/Page/Page';
 import { useShallow } from 'zustand/react/shallow';
-import { ComItemType, ConfigType } from '@materials/types/index';
+import { ComItemType, ConfigType } from '@marsview/materials/types/index';
 import { getPageId } from '@/utils/util';
 
 export default function () {

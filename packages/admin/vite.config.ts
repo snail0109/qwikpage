@@ -19,6 +19,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@materials': path.resolve(__dirname, './../materials'),
     },
   },
   plugins: [

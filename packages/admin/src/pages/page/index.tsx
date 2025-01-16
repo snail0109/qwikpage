@@ -8,7 +8,7 @@ import { message } from '@/utils/AntdGlobal';
 import { getPageDetail } from '@/api/index';
 import locale from 'antd/locale/zh_CN';
 import 'dayjs/locale/zh-cn';
-import { ComItemType, ConfigType } from '@materials/types/index';
+import { ComItemType, ConfigType } from '@marsview/materials/types/index';
 
 export default function () {
   const [theme, setTheme] = useState('');

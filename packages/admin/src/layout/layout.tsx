@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from 'react';
-import { Outlet, useParams, useNavigate, useLoaderData, useLocation } from 'react-router-dom';
+import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout } from 'antd';
 import Header from '../components/Header/Header';
 import Menu from '../components/Menu/Menu';
 import { useProjectStore } from '@/stores/projectStore';
-import { UserInfoStore, usePageStore } from '@marsview/materials/stores/pageStore';
 import { getProjectDetail, getProjectMenu } from '@/api/index';
 import Tab from '../components/Tab';
 import Logo from '@/components/Logo/Logo';
@@ -23,17 +22,9 @@ const AdminLayout = () => {
       projectInfo: state.projectInfo,
     };
   });
-  const saveUserInfo = usePageStore((state) => state.saveUserInfo);
-  const loaderData = useLoaderData();
   const navigate = useNavigate();
   const { projectId } = useParams();
   const { pathname } = useLocation();
-
-  // 初始化用户信息
-  useEffect(() => {
-    if (!loaderData) return;
-    saveUserInfo(loaderData as UserInfoStore);
-  }, []);
 
   // 获取项目信息
   useEffect(() => {
