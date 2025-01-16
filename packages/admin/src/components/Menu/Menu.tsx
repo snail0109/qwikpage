@@ -28,7 +28,7 @@ const MenuComponent: React.FC = () => {
   // 递归生成菜单
   const getTreeMenu = (menuList: IMenuItem[], treeList: MenuItem[] = []) => {
     menuList.forEach((item) => {
-      if (item.type === 1 && item.status === 1) {
+      if (item.menuType === 1 && item.status === 1) {
         const iconsList: { [key: string]: any } = Icons;
         if (item.buttons?.length || !item.children) {
           const path = `/project/${projectId}/${item.path.startsWith('/') ? item.path.slice(1) : item.path || item.pageId || -item.id}`;

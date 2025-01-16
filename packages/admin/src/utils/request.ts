@@ -2,12 +2,6 @@ import axios, { AxiosError } from 'axios';
 import { message } from './AntdGlobal';
 import router from '@/router';
 
-interface IResult {
-  code: number;
-  data: any;
-  message: string;
-}
-
 const ErrorMsg = '服务异常，请稍后再试';
 
 /**
@@ -34,24 +28,10 @@ instance.interceptors.request.use(
 // 响应拦截
 instance.interceptors.response.use(
   async (response) => {
-    const res: IResult = await response.data;
+    const res: any = await response.data;
     if (!res) {
       message.error(ErrorMsg);
       return Promise.reject(ErrorMsg);
-    }
-    if (res.code === 0) {
-      return res.data;
-    }
-    if (res.code === 10018) {
-      message.error('登录已过期，请重新登录');
-      setTimeout(() => {
-        window.location.replace(`/login?callback=${window.location.href}`);
-        return null;
-      }, 2000);
-      return Promise.reject(res.message);
-    } else if (res.code != 0) {
-      message.error(res.message);
-      return Promise.reject(res.message);
     }
     return res;
   },

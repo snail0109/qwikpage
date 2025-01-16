@@ -31,7 +31,7 @@ function Tab() {
     if (!projectId) return;
     const pageId = pathname.split(projectId)[1].slice(1);
     const id = getPageId(pageId, pageMap);
-    const menuItem = pageMap[Number(id)];
+    const menuItem = pageMap[id];
     if (!menuItem) return;
     if (!tabsList.find((item) => item.key.includes(pathname))) {
       tabsList.push({
@@ -62,6 +62,7 @@ function Tab() {
 
   // 切换页签
   const onChange = (tabKey: string) => {
+    setActiveKey(tabKey);
     if (tabKey === 'welcome') return navigate('welcome');
     navigate(tabKey);
   };

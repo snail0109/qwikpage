@@ -16,7 +16,7 @@ export default function BreadList() {
     const pageId = pathname.split(projectId)[1].slice(1);
     const id = getPageId(pageId, pageMap);
     if (!id) return;
-    const menuItem = pageMap[Number(id)];
+    const menuItem = pageMap[id];
     if (pathname.endsWith('/welcome')) {
       setMenuPath([{ title: '欢迎页' }]);
       return;

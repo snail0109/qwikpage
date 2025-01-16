@@ -29,7 +29,7 @@ const AdminLayout = () => {
   // 获取项目信息
   useEffect(() => {
     // 判断项目ID是否合法
-    if (projectId && isNaN(+projectId)) return navigate('/404?type=project');
+    // if (projectId && isNaN(+projectId)) return navigate('/404?type=project');
     const fetchProjectDetail = async () => {
       if (projectId) {
         const detail = await getProjectDetail(projectId).catch(() => {
@@ -43,10 +43,9 @@ const AdminLayout = () => {
           return navigate('/403?type=project');
         });
         if (!menus) return;
-
         // 如果没有页面路径，跳转到欢迎页
         if (!/project\/\d+\/\w+/.test(pathname)) navigate(`/project/${projectId}/welcome`);
-        const { menuTree, buttons, pageMap, menuMap } = arrayToTree(menus.list);
+        const { menuTree, buttons, pageMap, menuMap } = arrayToTree(menus || []);
         storage.set('buttons', buttons);
         storage.set('pageMap', pageMap);
         setProjectInfo({
@@ -98,7 +97,7 @@ const AdminLayout = () => {
             <div style={{ width: collapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 256px)' }}>
               <Header />
               {/* 加载页签 */}
-              {projectInfo.tag === 1 && <Tab />}
+              {projectInfo.tag && <Tab />}
               {/* 加载内容 */}
               <div style={{ height: calcHeight, overflow: 'auto' }}>
                 <Outlet></Outlet>
@@ -115,7 +114,7 @@ const AdminLayout = () => {
             {projectInfo.tag ? <Tab /> : null}
             <Layout style={{ padding: 20, backgroundColor: '#f3f5f9', height: calcHeight, overflow: 'auto' }}>
               {/* 加载面包屑 */}
-              {projectInfo.breadcrumb === 1 && <BreadList />}
+              {projectInfo.breadcrumb && <BreadList />}
               <Outlet></Outlet>
               {projectInfo.footer === 1 && <Footer />}
             </Layout>

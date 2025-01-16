@@ -25,7 +25,7 @@ export default function () {
   const navigate = useNavigate();
   useEffect(() => {
     if (id) {
-      getPageDetail(0, Number(id))
+      getPageDetail(id)
         .then((res: any) => {
           if (!res.id) {
             return navigate('/404');

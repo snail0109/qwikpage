@@ -35,7 +35,7 @@ const Header = memo(() => {
               <MenuFoldOutlined style={{ color: isLight ? '#000' : '#fff' }} />
             )}
           </div>
-          {projectInfo.breadcrumb === 1 && <BreadList />}
+          {projectInfo.breadcrumb && <BreadList />}
         </Flex>
       ) : null}
 

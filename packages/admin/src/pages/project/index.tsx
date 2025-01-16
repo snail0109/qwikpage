@@ -36,7 +36,7 @@ export default function () {
       setNotFound(true);
       return;
     }
-    getPageDetail(Number(projectId), Number(id))
+    getPageDetail(id)
       .then((res: any) => {
         let pageData: any = {};
         try {

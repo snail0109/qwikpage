@@ -12,12 +12,12 @@ export function isEnv(env?: string) {
  * @param pageMap 菜单映射对象
  * @returns
  */
-export function getPageId(pageId: string | undefined, pageMap: Record<number, any>): number {
-  if (!pageId || !pageMap) return 0;
-  const id = isNaN(Number(pageId))
+export function getPageId(pageId: string, pageMap: Record<string, any>): string {
+  if (!pageId || !pageMap) return '';
+  const id = pageId !== 'welcome'
     ? Object.values(pageMap).filter((item) => {
-        return item.path.startsWith('/') ? item.path.slice(1) === pageId : item.path === pageId;
-      })?.[0]?.pageId
+      return item.path && item.path.startsWith('/') ? item.path.slice(1) === pageId : item.path === pageId;
+    })?.[0]?.pageId
     : pageId;
   return id;
 }
@@ -31,14 +31,14 @@ export function getPageId(pageId: string | undefined, pageMap: Record<number, an
  */
 export function arrayToTree(array: IMenuItem[] = []) {
   const buttons: IMenuItem[] = [];
-  const pageMap: { [key: number]: Pick<IMenuItem, 'id' | 'pageId' | 'parentId' | 'name' | 'path'> } = {};
-  const menuMap: { [key: number]: IMenuItem } = {};
+  const pageMap: { [key: string]: Pick<IMenuItem, 'id' | 'pageId' | 'parentId' | 'name' | 'path'> } = {};
+  const menuMap: { [key: string]: IMenuItem } = {};
   // 创建一个映射，将id映射到节点对象
-  const map: { [key: number]: IMenuItem & { children?: IMenuItem[] } } = {};
+  const map: { [key: string]: IMenuItem & { children?: IMenuItem[] } } = {};
   array.forEach((item) => {
     map[item.id] = { ...item };
-    if (item.type === 2) buttons.push(item);
-    if (item.type === 1 || item.type === 3) {
+    if (item.menuType === 2) buttons.push(item);
+    if (item.menuType === 1 || item.menuType === 3) {
       if (item.pageId) {
         pageMap[item.pageId] = { id: item.id, pageId: item.pageId, parentId: item.parentId, name: item.name, path: item.path };
       } else {
@@ -51,7 +51,7 @@ export function arrayToTree(array: IMenuItem[] = []) {
   array.forEach((item) => {
     if (item.parentId && map[item.parentId]) {
       const parentItem = map[item.parentId];
-      if (item.type === 1 || item.type === 3) {
+      if (item.menuType === 1 || item.menuType === 3) {
         if (!parentItem.children) parentItem.children = [];
         parentItem.children?.push(map[item.id]);
         // 按照sortNum进行降序排序
