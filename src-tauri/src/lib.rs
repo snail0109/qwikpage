@@ -17,13 +17,13 @@ const APP_ERROR_MSG: &str = "error while running qwikpage application";
 #[catch(404)]
 async fn not_found() -> Option<NamedFile> {
     // 返回 SPA 的入口文件，例如 index.html
-    NamedFile::open(relative!("../dist/admin/index.html"))
+    NamedFile::open(relative!("./assets/admin/index.html"))
         .await
         .ok()
 }
 
 fn configure_rocket() -> rocket::Rocket<rocket::Build> {
-    let static_path = relative!("../dist/admin");
+    let static_path = relative!("./assets/admin");
     rocket::build()
         .mount(
             "/api",
