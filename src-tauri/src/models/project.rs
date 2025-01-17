@@ -62,7 +62,7 @@ impl Project {
             remark,
             logo,
             layout: 1,
-            menu_mode: "horizontal".to_string(),
+            menu_mode: "vertical".to_string(),
             menu_theme_color: "light".to_string(),
             breadcrumb: false,
             tag: false,
