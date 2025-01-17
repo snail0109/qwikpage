@@ -68,7 +68,7 @@ pub static IS_PORTABLE: Lazy<bool> = Lazy::new(|| {
 #[allow(unused)]
 #[cfg(target_os = "windows")]
 pub fn get_portable_flag() -> bool {
-    *crate::consts::IS_PORTABLE
+    *IS_PORTABLE
 }
 
 pub fn app_config_dir() -> Result<PathBuf> {
@@ -130,3 +130,11 @@ pub fn app_data_dir() -> Result<PathBuf> {
     })
 }
 
+pub fn app_install_dir() -> Result<PathBuf> {
+    let exe = tauri::utils::platform::current_exe()?;
+    let exe = dunce::canonicalize(exe)?;
+    let dir = exe
+        .parent()
+        .ok_or(anyhow::anyhow!("failed to get the app install dir"))?;
+    Ok(PathBuf::from(dir))
+}

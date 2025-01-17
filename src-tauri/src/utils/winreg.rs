@@ -1,0 +1,32 @@
+use std::{
+    io::ErrorKind,
+    path::{Path, PathBuf},
+};
+
+use super::dirs::APP_DIR_PLACEHOLDER;
+use anyhow::Result;
+use once_cell::sync::Lazy;
+use winreg::{enums::*, RegKey};
+
+static SOFTWARE_KEY: Lazy<&'static str> = Lazy::new(|| {
+    let key = format!("Software\\{}", *APP_DIR_PLACEHOLDER);
+    Box::leak(key.into_boxed_str()) // safe to leak
+});
+
+pub fn get_app_dir() -> Result<Option<PathBuf>> {
+    let hcu = RegKey::predef(HKEY_CURRENT_USER);
+    let key = match hcu.open_subkey(*SOFTWARE_KEY) {
+        Ok(key) => key,
+        Err(e) => {
+            if let ErrorKind::NotFound = e.kind() {
+                return Ok(None);
+            }
+            return Err(e.into());
+        }
+    };
+    let path: String = key.get_value("AppDir")?;
+    if path.is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(PathBuf::from(path)))
+}
