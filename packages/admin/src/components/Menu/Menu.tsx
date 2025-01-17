@@ -31,7 +31,8 @@ const MenuComponent: React.FC = () => {
       if (item.menuType === 1 && item.status === 1) {
         const iconsList: { [key: string]: any } = Icons;
         if (item.buttons?.length || !item.children) {
-          const path = `/project/${projectId}/${item.path && item.path.startsWith('/') ? item.path.slice(1) : item.path || item.pageId || -item.id}`;
+          // 没绑定页面的 pageId 是 "0"
+          const path = `/project/${projectId}/${item.path && item.path.startsWith('/') ? item.path.slice(1) : item.path || item.pageId}`;
           return treeList.push(getMenuItem(item.name, path, iconsList[item.icon] && React.createElement(iconsList[item.icon])));
         }
         const path = `${projectId}-${item.id}`;
@@ -59,7 +60,7 @@ const MenuComponent: React.FC = () => {
   const onClick: MenuProps['onClick'] = (e: { key: string }) => {
     const key = e.key;
     if (pathname === key) return;
-    if (Number(e.key.split('/').slice(-1)[0]) < 0) {
+    if (e.key.split('/').slice(-1)[0] === "0") {
       navigate('notPublish');
     } else {
       navigate(key);
