@@ -1,2 +1,0 @@
-import{r as t,j as e}from"./index-CrRWnIjq.js";import{F as d,M as l}from"./Page-kYXsiZfv.js";import"./index-BFS5rlf2.js";import"./index-BTSRI9HO.js";import"./index-BCFTpXN0.js";const u=({id:m,type:a,config:r,elements:i},n)=>{const[p,s]=t.useState(!0);t.useImperativeHandle(n,()=>({show(){s(!0)},hide(){s(!1)}}));const o=r.props.formItem;return p&&e.jsx(d.Item,{...o,name:o.name||void 0,"data-id":m,"data-type":a,children:e.jsx("span",{style:r.style,children:e.jsx(l,{elements:i||[]})})})},h=t.forwardRef(u);export{h as default};
-//# sourceMappingURL=FormItem-DY4C-Eza.js.map

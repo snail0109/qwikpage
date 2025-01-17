@@ -1,0 +1,1 @@
+import{a,j as t,B as e}from"./index-Ba8_Z7I5.js";import{R as o}from"./index-DzTVI9Lo.js";import"./index-C2BeiomC.js";function u(){const s=a();return t.jsx(o,{status:500,title:"500",subTitle:"当前页面暂未发布，请到编辑器端发布后访问。",extra:t.jsx(e,{type:"primary",onClick:()=>s("/"),children:"回首页"})})}export{u as default};

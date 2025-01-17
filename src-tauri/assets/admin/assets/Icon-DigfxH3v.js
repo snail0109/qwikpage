@@ -1,2 +1,0 @@
-import{r,R as m}from"./index-CrRWnIjq.js";import{i as n}from"./index-B1Ox7m8n.js";import"./index-BFS5rlf2.js";import"./index-BCFTpXN0.js";import"./MinusOutlined-BsLWaGMW.js";import"./RedoOutlined-B-c2Dsb9.js";const c=({config:t,onClick:e},o)=>{const[a,s]=r.useState(!0);r.useImperativeHandle(o,()=>({show(){s(!0)},hide(){s(!1)}}));const i=()=>{e==null||e()},p=n;return a&&m.createElement(p[t.props.icon],{style:t.style,...t.props,onClick:i})},R=r.forwardRef(c);export{R as default};
-//# sourceMappingURL=Icon-DigfxH3v.js.map

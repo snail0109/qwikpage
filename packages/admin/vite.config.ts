@@ -6,7 +6,6 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   build: {
     outDir: '../../dist/admin',
-    sourcemap: true
   },
   server: {
     host: '127.0.0.1',

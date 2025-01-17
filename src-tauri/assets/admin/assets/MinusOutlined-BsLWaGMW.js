@@ -1,2 +1,0 @@
-import{r as e,I as a,_ as r}from"./index-CrRWnIjq.js";var s={icon:{tag:"svg",attrs:{viewBox:"64 64 896 896",focusable:"false"},children:[{tag:"path",attrs:{d:"M872 474H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h720c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"}}]},name:"minus",theme:"outlined"},i=function(t,n){return e.createElement(a,r({},t,{ref:n,icon:s}))},u=e.forwardRef(i);export{u as R};
-//# sourceMappingURL=MinusOutlined-BsLWaGMW.js.map
