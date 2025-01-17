@@ -94,10 +94,6 @@ const Header = memo(() => {
   const isEditPage = pageFrom === `editor/${id}/edit` || pageFrom === `editor/${id}/template`;
 
 
-  const onPublishClick = () => {
-    message.info("功能开发中")
-  }
-
   return (
     <>
       <Layout.Header className={styles.layoutHeader}>
@@ -126,14 +122,6 @@ const Header = memo(() => {
                 document.documentElement.setAttribute('data-theme', val ? 'dark' : 'light');
               }}
             />
-            {isEditPage && mode === 'edit' && (
-              <>
-                 <Button type="primary" onClick={onPublishClick}>
-                    发布
-                    <CaretDownFilled />
-                  </Button>
-              </>
-            )}
           </Space>
 
           {/* 预览模式 */}
