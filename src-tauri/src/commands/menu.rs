@@ -8,6 +8,7 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::command;
 
+// 获取菜单列表
 #[command]
 pub fn get_menu_list(
     project_id: String,
@@ -45,7 +46,7 @@ pub fn get_menu_list(
     Ok(menu_list)
 }
 
-// menu
+// 新建菜单
 #[command]
 pub fn add_menu(is_create: u32, params: MenuParams) -> Result<(), String> {
     info!("Menu::add_menu start, is_create: {}, params: {:?}", is_create, params);
@@ -89,6 +90,7 @@ pub fn add_menu(is_create: u32, params: MenuParams) -> Result<(), String> {
     }
 }
 
+// 更新菜单
 #[command]
 pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
     info!("Menu::update_menu start, id: {}, params: {:?}", id, params);
@@ -101,16 +103,23 @@ pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
     Ok(())
 }
 
+// 删除菜单
 #[command]
 pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
     info!("Menu::delete_menu start, id: {}, project_id: {}", id, project_id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
+    let menu_path: PathBuf = root_dir.join(id);
+    if !menu_path.exists() {
+        error!("menu does not found");
+        return Err(format!("{} does not found", menu_path.display()));
+    }
     Menu::delete(&project_path, id);
     info!("delete_menu success");
     Ok(())
 }
 
+// 复制菜单
 #[command]
 pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
     info!("Menu::copy_menu start, id: {}, project_id: {}", id, project_id);
@@ -123,6 +132,7 @@ pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
     Ok(())
 }
 
+// 获取菜单详情
 #[command]
 pub fn get_menu_detail(id: String, project_id: String) -> Result<Menu, String> {
     info!("Menu::get_menu_detail start, id: {}, project_id: {}", id, project_id);
