@@ -3,10 +3,11 @@ use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
 use crate::utils::dirs;
 use anyhow::Result;
 use chrono::Local;
-use log::{ info, error };
 use std::path::PathBuf;
 use tauri::command;
 use uuid::Uuid;
+use crate::models::response::ErrorResponse;
+use log::{error, info};
 
 #[command]
 pub fn get_page_list(
@@ -25,22 +26,16 @@ pub fn get_page_list(
 }
 
 #[command]
-pub fn get_page_detail(id: String) -> Result<Page, String> {
+pub fn get_page_detail(id: String) -> Result<Page, ErrorResponse> {
     info!("Page::get_page_detail start, id: {}", id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
-    // 如果页面不存在，返回错误
     if !page_dir.exists() {
-        error!("page dir not exists");
-        return Err("page dir not exists".to_string());
+        error!("页面目录不存在");
+        return Err(ErrorResponse::not_found("页面目录不存在".to_string()));
     }
     let page_file = page_dir.join(format!("{}.json", id));
-    // 如果页面不存在，返回错误
-    if !page_file.exists() {
-        error!("page file not exists");
-        return Err("page file not exists".to_string());
-    }
-    let page = Page::load(&page_file);
+    let page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
     Ok(page)
 }
 
@@ -75,7 +70,7 @@ pub fn update_page(
     remark: Option<String>,
     page_data: Option<String>,
     project_id: Option<String>,
-) -> Result<(), String> {
+) -> Result<(), ErrorResponse> {
     info!(
         "Page::update_page start, id: {}, name: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
         id, name, remark, page_data, project_id
@@ -83,7 +78,7 @@ pub fn update_page(
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
-    let mut page = Page::load(&page_file);
+    let mut page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
     if let Some(project_id) = project_id {
         page.project_id = project_id;
     }
@@ -98,7 +93,7 @@ pub fn update_page(
     }
     page.updated_at = Local::now().format(DATA_FORMAT).to_string();
     page.save(page_file)
-        .map_err(|e| format!("更新页面失败: {}", e))?;
+        .map_err(|e| ErrorResponse::not_found(e))?;
     info!("update_page success");
     Ok(())
 }
@@ -125,7 +120,7 @@ pub fn copy_page(
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
-    let source_page = Page::load(&page_file);
+    let source_page = Page::load(&page_file)?;
     let new_page_id = Uuid::new_v4().to_string();
     let new_page_file = page_dir.join(format!("{}.json", new_page_id));
     let page = Page::new(

@@ -4,6 +4,7 @@ use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use log::warn;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -117,11 +118,16 @@ impl Page {
         Ok(())
     }
 
-    pub fn load(page_file: &PathBuf) -> Page {
-        println!("{}", page_file.display());
-        let json = fs::read_to_string(page_file).unwrap();
-        let page = serde_json::from_str(&json).unwrap();
-        page
+    pub fn load(page_file: &PathBuf) -> Result<Page, String> {
+        if !page_file.exists() {
+            warn!("页面文件不存在");
+            return Err("页面文件不存在".to_string());
+        }
+        let json = fs::read_to_string(page_file)
+            .map_err(|e| format!("读取页面文件失败: {}", e))?;
+        let page: Page = serde_json::from_str(&json)
+            .map_err(|e| format!("解析页面数据失败: {}", e))?;
+        Ok(page)
     }
 
     pub fn delete(id: String) -> Result<(), String> {
