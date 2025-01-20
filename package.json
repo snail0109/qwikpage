@@ -77,5 +77,6 @@
       "react": "$react",
       "react-dom": "$react-dom"
     }
-  }
+  },
+  "packageManager": "pnpm@9.12.3"
 }
