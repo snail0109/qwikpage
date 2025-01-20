@@ -168,6 +168,7 @@ export interface VariableAction {
   assignmentWay: 'static' | 'dynamic';
   name: string;
   value: any;
+  variableType: string;
 }
 
 /**

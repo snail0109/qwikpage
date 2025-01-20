@@ -166,6 +166,34 @@ export function renderTemplate(template: string, data: any) {
 }
 
 /**
+ * 根据变量类型赋值变量
+ * @param variableType 变量类型
+ * @param data 变量值
+ */
+export const defaultVariable = (variableType: string, data: any) => {
+  let newData = data;
+  switch (variableType) {
+    case 'number':
+      newData = Number(data)
+      break;
+    case 'boolean':
+      newData = Boolean(data)
+      break;
+    case 'array':
+      newData = Array.isArray(data) ? data : [data]
+      break;
+    case 'object':
+      newData = new Object(data)
+      break;
+    case 'string':
+    default:
+      newData = String(data)
+      break;
+  }
+  return newData
+}
+
+/**
  * 获取页面变量
  */
 export function getPageVariable(name?: string) {

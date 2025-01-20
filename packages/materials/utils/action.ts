@@ -14,6 +14,7 @@ import { handleApi } from './handleApi';
 import { usePageStore } from '@materials/stores/pageStore';
 import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate } from './util';
 import { Modal, message, notification } from '@materials/utils/AntdGlobal';
+import { defaultVariable } from '@materials/utils/util'
 import request from './request';
 import router from '../../admin/src/router/index';
 
@@ -392,7 +393,7 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
     if (action.assignmentWay === 'static') {
       value = action.value;
     } else {
-      value = data;
+      value = defaultVariable(action.variableType, data.data);
     }
   }
   usePageStore.getState().setVariableData({
