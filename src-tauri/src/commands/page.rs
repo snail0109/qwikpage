@@ -3,7 +3,7 @@ use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
 use crate::utils::dirs;
 use anyhow::Result;
 use chrono::Local;
-use log::info;
+use log::{ info, error };
 use std::path::PathBuf;
 use tauri::command;
 use uuid::Uuid;
@@ -29,7 +29,17 @@ pub fn get_page_detail(id: String) -> Result<Page, String> {
     info!("Page::get_page_detail start, id: {}", id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    // 如果页面不存在，返回错误
+    if !page_dir.exists() {
+        error!("page dir not exists");
+        return Err("page dir not exists".to_string());
+    }
     let page_file = page_dir.join(format!("{}.json", id));
+    // 如果页面不存在，返回错误
+    if !page_file.exists() {
+        error!("page file not exists");
+        return Err("page file not exists".to_string());
+    }
     let page = Page::load(&page_file);
     Ok(page)
 }
