@@ -89,11 +89,13 @@ impl Menu {
         self.updated_at = get_current_time();
     }
 
-    pub fn delete(project_path: &Path, id: String) {
+    pub fn delete(project_path: &Path, id: String) -> Result<(), String> {
         let menu_path = project_path.join(MENU_DIR);
         let menu_file = menu_path.join(format!("{}.json", id));
-        fs::remove_file(menu_file).unwrap();
+        fs::remove_file(menu_file).map_err(|e| format!("删除菜单失败: {}", e))?;
+        Ok(())
     }
+
     #[allow(unused)]
     pub fn copy(&mut self) {
         self.id = uuid::Uuid::new_v4().to_string();

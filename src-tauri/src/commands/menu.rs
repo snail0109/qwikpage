@@ -109,12 +109,12 @@ pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
     info!("Menu::delete_menu start, id: {}, project_id: {}", id, project_id);
     let root_dir: PathBuf = dirs::app_data_dir().unwrap();
     let project_path = root_dir.join(project_id);
-    let menu_path: PathBuf = root_dir.join(&id);
-    if !menu_path.exists() {
-        error!("menu does not found");
-        return Err(format!("{} does not found", menu_path.display()));
+    let menu_dir: PathBuf = root_dir.join(MENU_DIR);
+    if !menu_dir.exists() {
+        error!("菜单目录不存在");
+        return Err(format!("{} does not found", menu_dir.display()));
     }
-    Menu::delete(&project_path, id);
+    Menu::delete(&project_path, id).map_err(|e| format!("删除菜单失败: {}", e))?;
     info!("delete_menu success");
     Ok(())
 }

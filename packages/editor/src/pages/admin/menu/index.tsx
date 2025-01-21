@@ -102,9 +102,13 @@ export default function MenuList() {
     // 删除提交
     const handleDelSubmit = async (projectId: string, id: string) => {
         setLoading(true);
-        await delMenu({ projectId, id });
-        message.success("删除成功");
-        getMenus();
+        try {
+            await delMenu({ projectId, id });
+            message.success("删除成功");
+            getMenus();
+        } finally {
+            setLoading(false);
+        }
     };
 
     const columns: ColumnsType<MenuItem> = [
