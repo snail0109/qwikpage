@@ -8,7 +8,7 @@ mod commands;
 mod models;
 mod services;
 mod utils;
-use crate::commands::{dsl, menu, page, project};
+use crate::commands::{dsl, menu, page, project, config};
 use crate::services::preview;
 use rocket::fs::{FileServer, NamedFile};
 use utils::setup;
@@ -76,8 +76,14 @@ pub fn run() {
             page::delete_page,
             page::copy_page,
             dsl::export_json,
+            config::open_folder,
         ])
         .setup(|app| {
+            // .setup(|app|
+        //     // /Users/**/Library/Application Support/com.qwikpage.iwhalecloud
+        //     let app_data_dir = app.path().app_data_dir().unwrap();
+        //     create_dir_all(app_data_dir.clone()).expect("Problem creating App directory!");
+        // )
             setup::init(app)?;
             let handle = app.handle().clone(); // 克隆 AppHandle
             // mount the rocket instance

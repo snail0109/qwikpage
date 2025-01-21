@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Layout, Menu, MenuProps, Button, Space, Switch, message } from "antd";
-import { ProjectOutlined, CaretDownFilled, SunOutlined, MoonFilled, OneToOneOutlined } from "@ant-design/icons";
+import { ProjectOutlined, SunOutlined, MoonFilled, OneToOneOutlined, SettingOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import storage from "@/utils/storage";
@@ -87,8 +87,8 @@ const Header = memo(() => {
         setMode("edit");
     };
 
-    const onClick = async () => {
-        return await invoke<void>("open_app_config_dir");
+    const onOpenSettingClick = async () => {
+        return await invoke<void>("open_folder");
     };
 
     const isEditPage = pageFrom === `editor/${id}/edit` || pageFrom === `editor/${id}/template`;
@@ -120,6 +120,8 @@ const Header = memo(() => {
 
                 {/* 用户信息&发布&发布记录 */}
                 <div className={styles.user}>
+                    {/* 系统设置的按钮图标 */}
+                    <SettingOutlined onClick={onOpenSettingClick}/>
                     <Space>
                         <Switch
                             checkedChildren={<MoonFilled />}
