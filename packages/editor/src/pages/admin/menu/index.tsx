@@ -64,12 +64,16 @@ export default function MenuList() {
     // 复制菜单
     const handleCopy = async (record: MenuItem) => {
         setLoading(true);
-        await copyMenu({
-            projectId: record.projectId,
-            id: record.id,
-        });
-        message.success("复制成功");
-        getMenus();
+        try {
+            await copyMenu({
+                projectId: record.projectId,
+                id: record.id,
+            });
+            message.success("复制成功");
+            getMenus();
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 创建子菜单

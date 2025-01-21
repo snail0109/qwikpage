@@ -10,12 +10,12 @@ use crate::utils::help::get_current_time;
 pub struct Menu {
     pub id: String,                // 菜单id
     pub name: String,              // 菜单名称
-    pub icon: Option<String>,              // 菜单图标
+    pub icon: Option<String>,      // 菜单图标
     pub page_id: Option<String>,   // 绑定的页面id
     pub parent_id: Option<String>, // 父级菜单id
     pub project_id: String,        // 项目id
-    pub path:  Option<String>,              // 菜单路径
-    pub sort_num:  Option<u32>,             // 排序
+    pub path: Option<String>,      // 菜单路径
+    pub sort_num: Option<u32>,     // 排序
     pub status: i32,               // 状态 1-启用 2-禁用
     pub menu_type: u32,            // 类型: 1-菜单 2-按钮 3-页面
     created_at: String,
@@ -35,7 +35,6 @@ pub struct MenuParams {
     pub menu_type: u32,
     pub is_create: Option<bool>, // 是否创建页面
 }
-
 
 impl Menu {
     pub fn new(menu_id: String, params: MenuParams) -> Menu {
@@ -58,23 +57,32 @@ impl Menu {
     pub fn save(&self, project_path: &Path) -> Result<(), String> {
         let menu_path = project_path.join(MENU_DIR);
         if !menu_path.exists() {
-            fs::create_dir_all(&menu_path)
-            .map_err(|e| format!("创建菜单目录失败: {}", e))?;
+            fs::create_dir_all(&menu_path).map_err(|e| format!("创建菜单目录失败: {}", e))?;
         }
         let menu_file: std::path::PathBuf = menu_path.join(format!("{}.json", self.id));
         let menu_json = serde_json::to_string_pretty(&self)
-        .map_err(|e| format!("序列化菜单数据失败: {}", e))?;
-        fs::write(menu_file, menu_json)
-        .map_err(|e| format!("写入菜单文件失败: {}", e))?;
-    Ok(())
+            .map_err(|e| format!("序列化菜单数据失败: {}", e))?;
+        fs::write(menu_file, menu_json).map_err(|e| format!("写入菜单文件失败: {}", e))?;
+        Ok(())
     }
 
     // TODO 替换成menu_path
-    pub fn load(project_path: &Path, id: String) -> Menu {
+    pub fn load(project_path: &Path, id: String) -> Result<Menu, String> {
         let menu_path = project_path.join(MENU_DIR);
+        if !menu_path.exists() {
+            warn!("菜单目录不存在");
+            return Err("菜单目录不存在".to_string());
+        }
         let menu_file = menu_path.join(format!("{}.json", id));
-        let menu_json = fs::read_to_string(menu_file).unwrap();
-        serde_json::from_str(&menu_json).unwrap()
+        if !menu_file.exists() {
+            warn!("菜单文件不存在");
+            return Err("菜单文件不存在".to_string());
+        }
+        let menu_json =
+            fs::read_to_string(menu_file).map_err(|e| format!("读取菜单文件失败: {}", e))?;
+        let menu = serde_json::from_str(&menu_json).map_err(|e| format!("解析菜单数据失败: {}", e))?;
+
+        Ok(menu)
     }
 
     pub fn update(&mut self, params: MenuParams) {
@@ -89,9 +97,9 @@ impl Menu {
         self.updated_at = get_current_time();
     }
 
-    pub fn delete(project_path: &Path, id: String) -> Result<(), String> {
-        let menu_path = project_path.join(MENU_DIR);
-        let menu_file = menu_path.join(format!("{}.json", id));
+    pub fn delete(menu_file: &Path) -> Result<(), String> {
+        // let menu_path = project_path.join(MENU_DIR);
+        // let menu_file = menu_path.join(format!("{}.json", id));
         fs::remove_file(menu_file).map_err(|e| format!("删除菜单失败: {}", e))?;
         Ok(())
     }
