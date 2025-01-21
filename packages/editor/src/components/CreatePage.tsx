@@ -34,6 +34,7 @@ const CreatePage = (props: IModalProp) => {
         pageNum: 1,
         pageSize: 100,
       });
+      debugger
       setProjectList(
         list.map((item: Project) => {
           return {
@@ -52,7 +53,7 @@ const CreatePage = (props: IModalProp) => {
         record && setRecordId(record.id!);
         form.setFieldsValue({ ...record, name: `${record?.name}-副本` });
       } else {
-        const projectId = searchParams.get('projectId') || record?.id;
+        const projectId = searchParams.get('projectId') || record?.projectId;
         setType('create');
         setRecordId("0");
         if (projectId) form.setFieldValue('projectId', projectId);
