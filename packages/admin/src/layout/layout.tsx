@@ -69,7 +69,7 @@ const AdminLayout = () => {
   const Footer = () => (
     <Layout.Footer>
       <div className="footnote">
-        <span>Copyright © 2024 Marsview. All Rights Reserved. </span>
+        <span>QwikPage</span>
       </div>
     </Layout.Footer>
   );

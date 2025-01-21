@@ -1,2 +1,2 @@
-export * from '@marsview/materials/utils/AntdGlobal';
-export { default } from '@marsview/materials/utils/AntdGlobal';
+export * from '@qwikpage/materials/utils/AntdGlobal';
+export { default } from '@qwikpage/materials/utils/AntdGlobal';

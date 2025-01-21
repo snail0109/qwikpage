@@ -135,7 +135,7 @@ importers:
 
   packages/admin:
     dependencies:
-      '@marsview/materials':
+      '@qwikpage/materials':
         specifier: workspace:^
         version: link:../materials
       dayjs:
@@ -187,12 +187,12 @@ importers:
       '@bytemd/react':
         specifier: ^1.21.0
         version: 1.21.0(react@18.3.1)
-      '@marsview/materials':
-        specifier: workspace:^
-        version: link:../materials
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.52.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@qwikpage/materials':
+        specifier: workspace:^
+        version: link:../materials
       '@xyflow/react':
         specifier: ^12.3.0
         version: 12.3.6(@types/react@18.3.18)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

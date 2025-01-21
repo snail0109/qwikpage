@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@marsview/materials",
+  "name": "@qwikpage/materials",
   "scripts": {
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'"
   },

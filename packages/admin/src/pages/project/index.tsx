@@ -1,13 +1,13 @@
 import { getPageDetail } from '@/api/index';
 import { useLocation, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { usePageStore } from '@marsview/materials/stores/pageStore';
+import { usePageStore } from '@qwikpage/materials/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { message } from '@/utils/AntdGlobal';
 import NotFound from './notFound';
-import Page from '@marsview/materials/Page/Page';
+import Page from '@qwikpage/materials/Page/Page';
 import { useShallow } from 'zustand/react/shallow';
-import { ComItemType, ConfigType } from '@marsview/materials/types/index';
+import { ComItemType, ConfigType } from '@qwikpage/materials/types/index';
 import { getPageId } from '@/utils/util';
 
 export default function () {

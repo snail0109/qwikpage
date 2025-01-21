@@ -1,5 +1,5 @@
 {
-  "name": "@marsview/admin",
+  "name": "@qwikpage/admin",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -20,7 +20,7 @@
     ]
   },
   "dependencies": {
-    "@marsview/materials": "workspace:^",
+    "@qwikpage/materials": "workspace:^",
     "dayjs": "^1.11.10",
     "immer": "^10.0.3"
   },

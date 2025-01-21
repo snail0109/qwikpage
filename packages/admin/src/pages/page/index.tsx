@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
-import Page from '@marsview/materials/Page/Page';
-import { usePageStore } from '@marsview/materials/stores/pageStore';
+import Page from '@qwikpage/materials/Page/Page';
+import { usePageStore } from '@qwikpage/materials/stores/pageStore';
 import { message } from '@/utils/AntdGlobal';
 import { getPageDetail } from '@/api/index';
 import locale from 'antd/locale/zh_CN';
 import 'dayjs/locale/zh-cn';
-import { ComItemType, ConfigType } from '@marsview/materials/types/index';
+import { ComItemType, ConfigType } from '@qwikpage/materials/types/index';
 
 export default function () {
   const [theme, setTheme] = useState('');
