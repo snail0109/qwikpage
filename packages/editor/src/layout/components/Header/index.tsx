@@ -33,7 +33,7 @@ const Header = memo(() => {
         setMode("edit");
         // 点击Logo返回最近操作的列表，对用户友好
         const isProject = /projects\/\d+\/\w+/.test(location.pathname);
-        const isPage = /editor\/\d+\/(edit|publishHistory)/.test(location.pathname);
+        const isPage = /editor\/[a-f0-9\\-]+\/(edit|publishHistory)/.test(location.pathname)
         if (isProject) return navigate("/projects");
         if (isPage) return navigate("/pages");
         navigate("/projects");
