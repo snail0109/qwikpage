@@ -9,10 +9,12 @@ mod models;
 mod services;
 mod utils;
 mod core;
-use crate::commands::{dsl, menu, page, project, config};
-use crate::services::preview;
+use crate::{
+    commands::{dsl, menu, page, project, config},
+    services::preview,
+    core::setup
+};
 use rocket::fs::{FileServer, NamedFile};
-use utils::setup;
 use rocket::{ State, Request};
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";

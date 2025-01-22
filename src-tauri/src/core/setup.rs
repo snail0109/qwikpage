@@ -3,11 +3,10 @@ use anyhow::Result;
 use log::info;
 use std::fs;
 
-use super::constans::PAGE_DIR;
+use crate::utils::constans::PAGE_DIR;
 
 #[allow(unused_variables)]
 pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    info!("qwikpage app start");
     let handle = app.handle();
     let conf = &AppConf::load(handle)?;
     

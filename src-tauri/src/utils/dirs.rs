@@ -3,8 +3,7 @@ use std::{borrow::Cow, fs, path::PathBuf};
 use anyhow::Result;
 use dirs::{config_dir, data_dir};
 
-pub const APP_NAME: &str = "Qwikpage";
-
+use super::constans::APP_NAME;
 
 /// Suggest a directory for configuration files.
 /// * - Linux: Resolves to $XDG_CONFIG_HOME/{placeholder} or $HOME/.config/{placeholder}.

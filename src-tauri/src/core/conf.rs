@@ -8,11 +8,13 @@ use std::{
 };
 use tauri::{AppHandle, Manager, Theme};
 
+use crate::utils::constans::APP_NAME;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppConf {
     pub theme: String,
 }
-
+// 应用级别配置
 impl AppConf {
     pub fn new() -> Self {
         Self {
@@ -24,7 +26,7 @@ impl AppConf {
         let config_dir = app
             .path()
             .config_dir()?
-            .join("Qwikpage")
+            .join(APP_NAME)
             .join("config.json");
         Ok(config_dir)
     }
