@@ -1,7 +1,7 @@
 use once_cell::sync::Lazy;
 use std::{borrow::Cow, fs, path::PathBuf};
 use anyhow::Result;
-use dirs::{config_dir, data_local_dir};
+use dirs::{config_dir, data_dir};
 
 pub const APP_NAME: &str = "Qwikpage";
 
@@ -28,7 +28,7 @@ pub fn suggest_config_dir(placeholder: &str) -> Option<PathBuf> {
 /// * - macOS: Resolves to $HOME/Library/Application Support/{placeholder}/data.
 /// * - Windows: Resolves to {FOLDERID_LocalAppData}/{placehholder}/data.
 pub fn suggest_data_dir(placeholder: &str) -> Option<PathBuf> {
-    let path = data_local_dir()?;
+    let path = data_dir()?;
     #[cfg(target_os = "linux")]
     {
         Some(path.join(placeholder))
