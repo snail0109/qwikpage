@@ -26,7 +26,7 @@ pub fn suggest_config_dir(placeholder: &str) -> Option<PathBuf> {
 /// Suggest a directory for configuration files.
 /// * - Linux: Resolves to $XDG_DATA_HOME/{placeholder} or $HOME/.local/share/{placeholder}.
 /// * - macOS: Resolves to $HOME/Library/Application Support/{placeholder}/data.
-/// * - Windows: Resolves to {FOLDERID_LocalAppData}/{placehholder}/data.
+/// * - Windows: Resolves to {FOLDERID_RoamingAppData}/{placehholder}/data.
 pub fn suggest_data_dir(placeholder: &str) -> Option<PathBuf> {
     let path = data_dir()?;
     #[cfg(target_os = "linux")]

@@ -10,7 +10,6 @@ import { merge } from 'lodash-es';
 
 export interface PageState {
   mode: 'edit' | 'preview';
-  theme: 'light' | 'dark';
   selectedElement: { type: string; id: string } | undefined;
   isUpdateToolbar: boolean; // 更新遮罩
   isEdit: boolean; // 是否编辑了页面
@@ -77,7 +76,6 @@ export interface PageAction {
   updateApi: (api: ApiType) => void;
   removeApi: (name: string) => void;
   setMode: (mode: 'edit' | 'preview') => void;
-  setTheme: (theme: 'light' | 'dark') => void;
   addElement: (element: any) => void;
   addChildElements: (element: any) => void;
   editElement: (payload: any) => void;
@@ -100,7 +98,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   mode: 'edit',
   // 是否编辑了页面
   isEdit: false,
-  theme: 'light',
   selectedElement: undefined,
   isUpdateToolbar: false,
   page: {
@@ -220,7 +217,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   // 切换编辑模式
   setMode: (mode: 'edit' | 'preview') => set({ mode }),
   // 切换主题
-  setTheme: (theme: 'light' | 'dark') => set({ theme }),
   // 添加组件
   addElement: (element: ComponentType) => {
     set(

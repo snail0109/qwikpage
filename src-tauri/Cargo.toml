@@ -33,6 +33,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 open = "5.0.1"
 rocket = { version = "0.5.1", features = ["json"] }
 async-trait = "0.1.85"
+dark-light = "1.1.1"
 
 # Algorithms
 uuid = { version = "1.11.0", features = ["v4"] }

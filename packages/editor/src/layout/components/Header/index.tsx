@@ -6,6 +6,7 @@ import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import storage from "@/utils/storage";
 import { invoke } from "@tauri-apps/api/core";
+import useAppConfigStore from "@/stores/appConfigStore";
 
 /**
  * 编辑器顶部组件
@@ -17,14 +18,13 @@ const Header = memo(() => {
     const navigate = useNavigate();
     const { id } = useParams();
     const location = useLocation();
+    const { theme, setTheme } = useAppConfigStore();
 
-    const { page, mode, theme, setMode, setTheme } = usePageStore((state) => {
+    const { page, mode, setMode } = usePageStore((state) => {
         return {
             page: state.page,
             mode: state.mode,
-            theme: state.theme,
             setMode: state.setMode,
-            setTheme: state.setTheme,
         };
     });
 
@@ -129,6 +129,7 @@ const Header = memo(() => {
                             defaultChecked
                             checked={theme == "dark" ? true : false}
                             onChange={(val) => {
+                                invoke("set_theme", { theme: val ? "dark" : "light" })
                                 storage.set("marsview-theme", val);
                                 setTheme(val ? "dark" : "light");
                                 document.documentElement.setAttribute("data-theme", val ? "dark" : "light");

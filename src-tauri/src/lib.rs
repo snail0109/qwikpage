@@ -8,6 +8,7 @@ mod commands;
 mod models;
 mod services;
 mod utils;
+mod core;
 use crate::commands::{dsl, menu, page, project, config};
 use crate::services::preview;
 use rocket::fs::{FileServer, NamedFile};
@@ -77,6 +78,8 @@ pub fn run() {
             page::copy_page,
             dsl::export_json,
             config::open_folder,
+            config::set_theme,
+            config::get_app_conf,
         ])
         .setup(|app| {
             // .setup(|app|
