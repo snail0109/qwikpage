@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Form, Input, Button, Table, Select, Badge } from "antd";
-import { EditParams, MenuItem } from "@/invokeApi/types";
+import { EditParams, MenuItem, Page } from "@/invokeApi/types";
 import { IAction } from "@/pages/types";
 import { ColumnsType } from "antd/es/table";
 import { Modal, message } from "@/utils/AntdGlobal";
 import CreateMenu from "./CreateMenu";
 import SearchForm from "../components/SearchForm";
 import { getMenuList, delMenu, copyMenu } from "@/invokeApi/menu";
+import pageApi from "@/invokeApi/page";
 import { arrayToTree } from "@/utils/util";
 import * as icons from "@ant-design/icons";
 import BaseTable from "../components/BaseTable";
@@ -23,33 +24,43 @@ export default function MenuList() {
     const projectId = useParams().id as string;
 
     const menuRef = useRef<{
-        open: (
-            type: IAction,
-            data: EditParams | { parentId?: string; sortNum?: number },
-            list?: MenuItem[]
-        ) => void;
+        open: (type: IAction, data: EditParams | { parentId?: string; sortNum?: number }, list?: MenuItem[]) => void;
     }>();
 
     useEffect(() => {
         getMenus();
     }, []);
 
+    const handleMenuPage = (menus: MenuItem[], pages: Page[]) => {
+        return menus.map((menu) => {
+            const targetPage = pages.find((page) => page.id === menu.pageId);
+            if (targetPage) {
+                menu.pageName = targetPage.name;
+            } else {
+                menu.pageName = "空页面";
+            }
+            return menu;
+        });
+    };
+
     // 获取菜单列表
     const getMenus = async () => {
         const { name, status } = form.getFieldsValue();
         if (!projectId) return;
         setLoading(true);
+        const pageData = await pageApi.getPageList({ pageNum: 1, pageSize: 50, projectId: projectId! });
         const res = await getMenuList({
             projectId,
             name,
             status,
         });
         setLoading(false);
+        const newMenus = handleMenuPage(res, pageData.list);
         if (name || status > 0) {
             // 如果带条件搜索，直接返回，不需要生成树结构
-            setData(res || []);
+            setData(newMenus || []);
         } else {
-            const menuData = arrayToTree(res);
+            const menuData = arrayToTree(newMenus);
             setData(menuData || []);
         }
     };
@@ -160,8 +171,8 @@ export default function MenuList() {
             key: "pageId",
             align: "center",
             width: 120,
-            render(pageId: string) {
-                return pageId;
+            render(_, record) {
+                return record.pageName;
             },
         },
         {

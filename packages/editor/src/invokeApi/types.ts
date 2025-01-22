@@ -27,6 +27,8 @@ export interface MenuItem {
     parentId: string;
     menuType: number;
     projectId: string;
+    pageId: string;
+    pageName?: string;
     sortNum: string;
 }
 
