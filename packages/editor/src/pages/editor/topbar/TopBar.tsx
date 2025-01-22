@@ -6,6 +6,7 @@ import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import api from '@/invokeApi/page';
 import storage from '@/utils/storage';
 import styles from './index.module.less';
+import { message } from '@/utils/AntdGlobal';
 
 /**
  * 编辑器顶部工具条
@@ -73,6 +74,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
       updateEditState(false);
       updatePageState({ env: 'all' });
     } finally {
+      message.success('页面保存成功');
       setLoading(false);
     }
   };
