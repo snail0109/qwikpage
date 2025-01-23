@@ -1,13 +1,10 @@
-#[macro_use]
-extern crate rocket;
-
-use tauri_plugin_log::{Target, TargetKind};
-
 mod commands;
 mod core;
 mod models;
 mod services;
 mod utils;
+use log::info;
+use tauri_plugin_log::{Target, TargetKind};
 use crate::{
     commands::{config, dsl, menu, page, project},
     core::setup,
@@ -35,8 +32,8 @@ pub fn run() {
         .setup(|app| {
             info!("============== Start App ==============");
             setup::init(app)?;
-            let handle = app.handle().clone(); // 克隆 AppHandle
-                                               // mount the rocket instance
+            let handle = app.handle().clone(); 
+            // mount the rocket instance
             tauri::async_runtime::spawn(async move {
                 let rocket = preview::configure_rocket(handle);
                 let _ = rocket.launch().await;

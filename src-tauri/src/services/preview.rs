@@ -1,10 +1,17 @@
+
 use crate::commands::{menu, page, project};
-use crate::{models::menu::Menu, models::page::Page, models::project::Project};
+use crate::models::{menu::Menu, page::Page, project::Project};
 use anyhow::Result;
-use rocket::fs::{FileServer, NamedFile};
-use rocket::http::Status;
-use rocket::serde::json::Json;
-use rocket::{Request, State};
+use rocket::{
+    fs::{FileServer, NamedFile},
+    http::Status,
+    serde::json::Json,
+    Request, State, fairing::AdHoc,
+    catchers,
+    catch,
+    routes,
+    get
+};
 use tauri::{AppHandle, Manager};
 
 #[catch(404)]
@@ -36,7 +43,11 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
         )
         .mount("/", FileServer::from(admin_path))
         .register("/", catchers![not_found])
-        .manage(handle) // 将 AppHandle 注入 Rocket 状态
+        .manage(handle) 
+        .attach(AdHoc::on_shutdown("Shutdown Printer", |_| Box::pin(async move {
+            println!("...shutdown has commenced!");
+            std::process::exit(0);
+        })))
 }
 
 #[get("/project/detail/<id>")]

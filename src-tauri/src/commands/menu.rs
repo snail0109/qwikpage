@@ -3,7 +3,7 @@ use crate::models::menu::{Menu, MenuParams};
 use crate::utils::constans::MENU_DIR;
 use crate::utils::dirs;
 use anyhow::Result;
-use log::info;
+use log::{error, info, warn};
 use std::fs;
 use std::path::PathBuf;
 use tauri::command;
