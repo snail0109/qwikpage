@@ -6,7 +6,7 @@ export default function Root() {
 
   const { initConfig }  = useAppConfigStore();
   useEffect(() => {
-    initConfig();
+    // initConfig();
   }, [])
 
   return (
