@@ -99,8 +99,6 @@ impl Menu {
     }
 
     pub fn delete(menu_file: &Path) -> Result<(), String> {
-        // let menu_path = project_path.join(MENU_DIR);
-        // let menu_file = menu_path.join(format!("{}.json", id));
         fs::remove_file(menu_file).map_err(|e| format!("删除菜单失败: {}", e))?;
         Ok(())
     }

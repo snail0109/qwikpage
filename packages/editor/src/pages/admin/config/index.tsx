@@ -66,6 +66,9 @@ const Config: React.FC = memo(() => {
                 message.success("删除成功");
                 navigate("/projects");
             }
+        } catch (error) {
+            console.error("删除项目失败:", error);
+            message.error("删除失败，请稍后重试");
         } finally {
             setOpen(false);
             setDelLoading(false);

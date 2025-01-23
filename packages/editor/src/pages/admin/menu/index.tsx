@@ -82,6 +82,9 @@ export default function MenuList() {
             });
             message.success("复制成功");
             getMenus();
+        } catch (error) {
+            console.error("复制菜单失败:", error);
+            message.error("复制失败，请稍后重试");
         } finally {
             setLoading(false);
         }
@@ -121,6 +124,9 @@ export default function MenuList() {
             await delMenu({ projectId, id });
             message.success("删除成功");
             getMenus();
+        } catch (error) {
+            console.error("删除菜单失败:", error);
+            message.error("删除失败，请稍后重试");
         } finally {
             setLoading(false);
         }
