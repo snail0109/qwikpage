@@ -3,13 +3,14 @@ mod core;
 mod models;
 mod services;
 mod utils;
-use log::info;
-use tauri_plugin_log::{Target, TargetKind};
 use crate::{
     commands::{config, dsl, menu, page, project},
     core::setup,
     services::preview,
 };
+use log::{info, error};
+use tauri_plugin_log::{Target, TargetKind};
+use utils::help::is_port_in_use;
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
@@ -32,12 +33,19 @@ pub fn run() {
         .setup(|app| {
             info!("============== Start App ==============");
             setup::init(app)?;
-            let handle = app.handle().clone(); 
+            let handle = app.handle().clone();
             // mount the rocket instance
-            tauri::async_runtime::spawn(async move {
-                let rocket = preview::configure_rocket(handle);
-                let _ = rocket.launch().await;
-            });
+            let port = 8000;
+            if is_port_in_use(port) {
+                error!("Port {} is already in use", port);
+            } else {
+                info!("Port {} ", port);
+                tauri::async_runtime::spawn(async move {
+                    let rocket = preview::configure_rocket(handle);
+                    let _ = rocket.launch().await;
+                });
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
