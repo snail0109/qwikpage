@@ -1,7 +1,8 @@
 use chrono::Local;
-use std::net::TcpStream;
+use std::{net::TcpStream, path::PathBuf};
+use dirs;
 
-use super::constans::DATA_FORMAT;
+use crate::constans::{APP_IDENTIFIER, DATA_FORMAT};
 
 // 获取当前时间
 pub fn get_current_time() -> String {
@@ -21,4 +22,13 @@ pub fn paginate<T: Clone>(items: Vec<T>, page_num: usize, page_size: usize) -> (
 pub fn is_port_in_use(port: u16) -> bool {
     let address = format!("127.0.0.1:{}", port);
     TcpStream::connect(address).is_ok()
+}
+
+
+pub fn get_app_root_dir() -> PathBuf {
+    let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
+    if !root_dir.exists() {
+        std::fs::create_dir_all(&root_dir).unwrap();
+    }
+    root_dir
 }

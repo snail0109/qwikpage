@@ -1,5 +1,6 @@
-use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
-use crate::utils::dirs;
+use crate::constans::{APP_IDENTIFIER, DATA_FORMAT, PAGE_DIR};
+use crate::utils::paginate;
+use dirs;
 use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -64,7 +65,7 @@ impl Page {
     }
 
     pub fn get_page_dir() -> PathBuf {
-        let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+        let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
         let page_dir: PathBuf = root_dir.join(PAGE_DIR);
         page_dir
     }
@@ -103,12 +104,7 @@ impl Page {
             }
         }
         // 分页逻辑
-        let start = (page_num - 1) * page_size;
-        let end = start + page_size;
-        let end = end.min(pages_list.len());
-
-        let total = pages_list.len();
-        let list = pages_list[start..end].to_vec();
+        let ( list , total) = paginate(pages_list, page_num, page_size);
         Ok(PageList { total, list })
     }
 

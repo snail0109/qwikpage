@@ -25,6 +25,18 @@ pub async fn not_found(req: &Request<'_>) -> Option<NamedFile> {
     NamedFile::open(index_path).await.ok()
 }
 
+
+#[catch(500)]
+pub async fn internal_error(req: &Request<'_>) -> Option<NamedFile> {
+    let handle = req.guard::<&State<AppHandle>>().await.unwrap();
+    let resource_dir = handle
+        .path()
+        .resource_dir()
+        .expect("Failed to get resource directory");
+    let index_path = resource_dir.join("assets").join("admin").join("index.html");
+    NamedFile::open(index_path).await.ok()
+}
+
 pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Build> {
     let resource_dir = handle
         .path()
@@ -42,7 +54,7 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
             ],
         )
         .mount("/", FileServer::from(admin_path))
-        .register("/", catchers![not_found])
+        .register("/", catchers![not_found, internal_error])
         .manage(handle) 
         .attach(AdHoc::on_shutdown("Shutdown Printer", |_| Box::pin(async move {
             println!("...shutdown has commenced!");

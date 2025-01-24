@@ -1,16 +1,17 @@
 mod commands;
 mod core;
 mod models;
-mod services;
+mod service;
 mod utils;
+mod constans;
 use crate::{
     commands::{config, dsl, menu, page, project},
     core::setup,
-    services::preview,
+    service::configure_rocket,
+    utils::is_port_in_use
 };
 use log::{info, error};
 use tauri_plugin_log::{Target, TargetKind};
-use utils::help::is_port_in_use;
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
@@ -41,7 +42,7 @@ pub fn run() {
             } else {
                 info!("Port {} ", port);
                 tauri::async_runtime::spawn(async move {
-                    let rocket = preview::configure_rocket(handle);
+                    let rocket = configure_rocket(handle);
                     let _ = rocket.launch().await;
                 });
             }

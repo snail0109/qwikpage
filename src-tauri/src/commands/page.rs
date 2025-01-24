@@ -1,6 +1,6 @@
 use crate::models::page::{Page, PageList};
-use crate::utils::constans::{DATA_FORMAT, PAGE_DIR};
-use crate::utils::dirs;
+use crate::constans::{DATA_FORMAT, PAGE_DIR};
+use crate::utils::get_app_root_dir;
 use anyhow::Result;
 use chrono::Local;
 use std::path::PathBuf;
@@ -28,7 +28,7 @@ pub fn get_page_list(
 #[command]
 pub fn get_page_detail(id: String) -> Result<Page, ErrorResponse> {
     info!("Page::get_page_detail start, id: {}", id);
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+    let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     if !page_dir.exists() {
         error!("页面目录不存在");
@@ -52,7 +52,7 @@ pub fn add_page(
         "Page::add_page start, id: {:?}, name: {}, remark: {:?}, project_id: {}",
         id, name, remark, project_id
     );
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+    let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_id = id.unwrap_or_else(|| Uuid::new_v4().to_string());
     let page = Page::new(page_id.clone(), name, remark, page_data, project_id);
@@ -75,7 +75,7 @@ pub fn update_page(
         "Page::update_page start, id: {}, name: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
         id, name, remark, page_data, project_id
     );
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+    let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
     let mut page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
@@ -117,7 +117,7 @@ pub fn copy_page(
         "Page::copy_page start, id: {}, name: {}, remark: {:?}, project_id: {}",
         id, name, remark, project_id
     );
-    let root_dir: PathBuf = dirs::app_data_dir().unwrap();
+    let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
     let source_page = Page::load(&page_file)?;

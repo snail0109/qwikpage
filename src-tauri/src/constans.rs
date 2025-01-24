@@ -7,4 +7,4 @@ pub const MENU_DIR: &str = "menus";
 
 pub const DATA_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
-pub const APP_NAME: &str = "Qwikpage";
+pub const APP_IDENTIFIER: &str = "com.qwikpage.desktop";

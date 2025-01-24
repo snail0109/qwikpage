@@ -6,9 +6,7 @@ use std::{
     fs,
     path::PathBuf,
 };
-use tauri::{AppHandle, Manager, Theme};
-
-use crate::utils::constans::APP_NAME;
+use tauri::{AppHandle, Manager};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppConf {
@@ -25,8 +23,7 @@ impl AppConf {
     pub fn get_conf_path(app: &AppHandle) -> Result<PathBuf, Box<dyn std::error::Error>> {
         let config_dir = app
             .path()
-            .config_dir()?
-            .join(APP_NAME)
+            .app_config_dir()?
             .join("config.json");
         Ok(config_dir)
     }
@@ -86,16 +83,4 @@ impl AppConf {
         })
     }
 
-    pub fn get_theme(app: &AppHandle) -> Theme {
-        let theme = Self::load(app).unwrap().theme;
-        match theme.as_str() {
-            "system" => match dark_light::detect() {
-                dark_light::Mode::Dark => Theme::Dark,
-                dark_light::Mode::Light => Theme::Light,
-                dark_light::Mode::Default => Theme::Light,
-            },
-            "dark" => Theme::Dark,
-            _ => Theme::Light,
-        }
-    }
 }
