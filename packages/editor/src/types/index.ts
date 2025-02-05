@@ -1,7 +1,10 @@
-/**
- * 菜单类型
- */
-
+export interface IProject {
+  id: string;
+  name: string;
+  logo: string;
+  remark: string;
+  count: number;
+}
 export interface IMenuItem {
   id: string;
   projectId: string;
@@ -10,7 +13,8 @@ export interface IMenuItem {
   menuType: number;
   icon: string;
   path: string;
-  pageId: number;
+  pageId: string;
+  pageName: string;
   sortNum: number;
   status: number;
   createdAt: string;
@@ -18,13 +22,26 @@ export interface IMenuItem {
   children?: IMenuItem[];
 }
 
-export interface ProjectItem {
-  id: number;
+export interface IPage {
+  id: string,
+  name: string,
+  remark?: string,
+  projectId: string,
+  pageData?: string,
+  updatedAt?: string,
+  previewImg?: string,
+}
+
+export interface PaginationInfo {
+  pageNum: number,
+  pageSize: number,
+}
+
+export interface MenuEditParams {
+  id?: number;
   name: string;
-  remark: string;
-  logo: string;
-  userName: string;
-  userId: string;
-  updatedAt: string;
-  createdAt: string;
+  parent_id?: string;
+  code?: string;
+  project_id?: number;
+  sort_num: string;
 }

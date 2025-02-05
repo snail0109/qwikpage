@@ -6,12 +6,13 @@ import { ProjectOutlined, MenuOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { usePageStore } from '@/stores/pageStore';
 
+type MenuItem = Required<MenuProps>['items'][number];
+
 const SideMenu = () => {
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const navigate = useNavigate();
   const theme = usePageStore((state) => state.theme);
-  type MenuItem = Required<MenuProps>['items'][number];
   // 生成每一个菜单项
   function getItem(label: string, key: string, icon: React.ReactNode, children?: MenuItem[]): MenuItem {
     return {

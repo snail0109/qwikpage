@@ -20,12 +20,6 @@ export interface PageState {
     remark: string;
     projectId: string;
     isPublic: 1 | 2;
-    stgState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    preState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    prdState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    stgPublishId: number;
-    prePublishId: number;
-    prdPublishId: number;
     previewImg?: string;
     userId: number;
     userName: string;
@@ -71,7 +65,6 @@ export interface PageState {
 }
 export interface PageAction {
   savePageInfo: (pageInfo: any) => void;
-  updatePageState: (payload: any) => void;
   updateEditState: (isEdit: boolean) => void;
   addApi: (api: ApiType) => void;
   updateApi: (api: ApiType) => void;
@@ -112,12 +105,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
     userId: 0,
     userName: '',
     previewImg: '',
-    stgState: 1,
-    preState: 1,
-    prdState: 1,
-    stgPublishId: 0,
-    prePublishId: 0,
-    prdPublishId: 0,
     pageData: {
       config: {
         props: {},
@@ -173,19 +160,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
         }
       }),
     ),
-  updatePageState: ({ env, pageState }) => {
-    set(
-      produce((state) => {
-        if (env === 'all') {
-          state.page.stgState = 2;
-          state.page.preState = 2;
-          state.page.prdState = 2;
-        } else {
-          state.page[env] = pageState;
-        }
-      }),
-    );
-  },
   updateEditState: (isEdit: boolean) => {
     set(
       produce((state) => {
@@ -555,12 +529,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
           userId: 0,
           userName: '',
           previewImg: '',
-          stgState: 1,
-          preState: 1,
-          prdState: 1,
-          stgPublishId: 0,
-          prePublishId: 0,
-          prdPublishId: 0,
           pageData: {
             config: {
               props: {},

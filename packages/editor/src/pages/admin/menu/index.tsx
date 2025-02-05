@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Form, Input, Button, Table, Select, Badge } from "antd";
-import { EditParams, MenuItem, Page } from "@/services/types";
+import { MenuEditParams, IMenuItem, IPage } from "@/types";
 import { IAction } from "@/pages/types";
 import { ColumnsType } from "antd/es/table";
 import { Modal, message } from "@/utils/AntdGlobal";
@@ -18,19 +18,19 @@ import BaseTable from "../components/BaseTable";
  */
 export default function MenuList() {
     const [form] = Form.useForm();
-    const [data, setData] = useState<MenuItem[]>([]);
+    const [data, setData] = useState<IMenuItem[]>([]);
     const [loading, setLoading] = useState(false);
     const projectId = useParams().id as string;
 
     const menuRef = useRef<{
-        open: (type: IAction, data: EditParams | { parentId?: string; sortNum?: number }, list?: MenuItem[]) => void;
+        open: (type: IAction, data: MenuEditParams | { parentId?: string; sortNum?: number }, list?: IMenuItem[]) => void;
     }>();
 
     useEffect(() => {
         getMenus();
     }, []);
 
-    const handleMenuPage = (menus: MenuItem[], pages: Page[]) => {
+    const handleMenuPage = (menus: IMenuItem[], pages: IPage[]) => {
         return menus.map((menu) => {
             const targetPage = pages.find((page) => page.id === menu.pageId);
             if (targetPage) {
@@ -72,7 +72,7 @@ export default function MenuList() {
     };
 
     // 复制菜单
-    const handleCopy = async (record: MenuItem) => {
+    const handleCopy = async (record: IMenuItem) => {
         setLoading(true);
         try {
             await menuService.copyMenu({
@@ -90,19 +90,19 @@ export default function MenuList() {
     };
 
     // 创建子菜单
-    const handleSubCreate = (record: MenuItem) => {
+    const handleSubCreate = (record: IMenuItem) => {
         // @ts-ignore
         menuRef.current?.open("create", { parentId: record.id, sortNum: (record.children?.length || 0) + 1 });
     };
 
     // 编辑菜单
-    const handleEdit = (record: MenuItem) => {
+    const handleEdit = (record: IMenuItem) => {
         // @ts-ignore
         menuRef.current?.open("edit", record, data);
     };
 
     // 删除菜单
-    const handleDelete = (record: MenuItem) => {
+    const handleDelete = (record: IMenuItem) => {
         let text = "";
         if (record.menuType == 1) text = "菜单";
         if (record.menuType == 2) text = "按钮";
@@ -131,7 +131,7 @@ export default function MenuList() {
         }
     };
 
-    const columns: ColumnsType<MenuItem> = [
+    const columns: ColumnsType<IMenuItem> = [
         {
             title: "菜单名称",
             dataIndex: "name",

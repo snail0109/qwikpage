@@ -6,11 +6,11 @@ import { ConfigProvider, Splitter } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { usePageStore } from '@/stores/pageStore';
 import SpinLoading from '@/components/SpinLoading';
-import './layout.less';
-import Notice from './components/Notice';
+import Notice from '../components/Notice';
+import './index.less';
 
-const Menu = lazy(() => import('./components/Menu'));
-const ConfigPanel = lazy(() => import('./components/ConfigPanel/ConfigPanel'));
+const Menu = lazy(() => import('../components/Menu'));
+const ConfigPanel = lazy(() => import('../components/ConfigPanel/ConfigPanel'));
 /**
  * 编辑器布局组件
  */

@@ -8,7 +8,7 @@ import { pageService } from '@/services';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import SearchBar from '@/components/Searchbar/SearchBar';
 import PageCard from './components/PageCard';
-import { Page } from '@/services/types';
+import { IPage } from '@/types';
 import styles from './../index.module.less';
 
 /**
@@ -51,7 +51,7 @@ export default function Index() {
   };
 
   // 复制页面
-  const handleCopy = (item: Page) => {
+  const handleCopy = (item: IPage) => {
     createPageRef.current?.open('copy', item);
   };
 

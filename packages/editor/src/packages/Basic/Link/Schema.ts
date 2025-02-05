@@ -37,8 +37,8 @@ export default {
   config: {
     // 组件默认属性值
     props: {
-      text: '打开Marsview系统',
-      href: 'https://www.marsview.com.cn',
+      text: '',
+      href: '',
       target: '_blank',
     },
     style: {},

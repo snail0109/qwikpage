@@ -206,7 +206,7 @@ export default {
         {
           week: '周一',
           value: 45,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周二',
@@ -216,7 +216,7 @@ export default {
         {
           week: '周二',
           value: 56,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周三',
@@ -226,7 +226,7 @@ export default {
         {
           week: '周三',
           value: 82,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周四',
@@ -236,7 +236,7 @@ export default {
         {
           week: '周四',
           value: 82,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周五',
@@ -246,7 +246,7 @@ export default {
         {
           week: '周五',
           value: 85,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周六',
@@ -256,7 +256,7 @@ export default {
         {
           week: '周六',
           value: 68,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
         {
           week: '周日',
@@ -266,7 +266,7 @@ export default {
         {
           week: '周日',
           value: 58,
-          name: 'Marsview',
+          name: 'QwikPage',
         },
       ],
     },

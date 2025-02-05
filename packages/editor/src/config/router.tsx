@@ -1,8 +1,8 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazyLoad } from './LazyLoad';
-import Root from './Root';
-import ErrorBoundary from './ErrorBoundary';
+import { lazyLoad } from '@/components/LazyLoad';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import RootLayout from '@/layout/RootLayout';
 
 /**
  * 定义页面路由
@@ -10,7 +10,7 @@ import ErrorBoundary from './ErrorBoundary';
 export const router = [
   {
     path: '/',
-    element: <Root />,
+    element: <RootLayout />,
     errorElement: <ErrorBoundary />,
     children: [
       {

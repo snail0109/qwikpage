@@ -54,7 +54,6 @@ const Editor = () => {
       removeElements: state.removeElements,
       clearPageInfo: state.clearPageInfo,
       updateToolbar: state.updateToolbar,
-      updatePageState: state.updatePageState,
       updateEditState: state.updateEditState,
     };
   });

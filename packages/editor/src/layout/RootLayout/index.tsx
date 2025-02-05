@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import Header from '@/layout/components/Header';
+import Header from '../components/Header';
 import { useEffect } from 'react';
 import useAppConfigStore from '@/stores/appConfigStore';
 export default function Root() {

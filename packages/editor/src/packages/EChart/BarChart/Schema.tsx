@@ -269,12 +269,12 @@ export default {
         },
         {
           type: 'PV',
-          project: 'Marsview',
+          project: 'QwikPage',
           value: 50000,
         },
         {
           type: 'UV',
-          project: 'Marsview',
+          project: 'QwikPage',
           value: 35000,
         },
       ],

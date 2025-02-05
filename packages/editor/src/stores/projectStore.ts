@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import _ from 'lodash-es';
 import { IMenuItem } from '@/types/index';
 
 export interface ProjectInfo {

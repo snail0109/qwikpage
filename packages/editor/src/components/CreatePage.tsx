@@ -1,7 +1,7 @@
 import { Input, Modal, Form, Select, Space, Flex, Button } from 'antd';
 import { useImperativeHandle, useState, MutableRefObject } from 'react';
 import { projectService, pageService } from '@/services';
-import { Page, Project } from '@/services/types';
+import { IPage, IProject } from '@/types';
 import { useSearchParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { usePageStore } from '@/stores/pageStore';
@@ -9,12 +9,12 @@ import { usePageStore } from '@/stores/pageStore';
  * 创建页面
  */
 export interface CreatePageRef {
-  open: (action: 'create' | 'edit' | 'copy', record?: Page) => void;
+  open: (action: 'create' | 'edit' | 'copy', record?: IPage) => void;
 }
 export interface IModalProp {
-  createRef: MutableRefObject<{ open: (action: 'create' | 'edit' | 'copy', record?: Page) => void } | undefined>;
+  createRef: MutableRefObject<{ open: (action: 'create' | 'edit' | 'copy', record?: IPage) => void } | undefined>;
   update?: (status?: string) => void;
-  copy?: (record: Project) => void;
+  copy?: (record: IProject) => void;
 }
 
 const CreatePage = (props: IModalProp) => {
@@ -23,18 +23,18 @@ const CreatePage = (props: IModalProp) => {
   const [type, setType] = useState<'create' | 'edit' | 'copy'>('create');
   const [recordId, setRecordId] = useState("0");
   const [loading, setLoading] = useState(false);
-  const [projectList, setProjectList] = useState<Project[]>([]);
+  const [projectList, setProjectList] = useState<IProject[]>([]);
   const [searchParams] = useSearchParams();
   const savePageInfo = usePageStore((state) => state.savePageInfo);
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
-    async open(action: 'create' | 'edit' | 'copy', record?: Page) {
+    async open(action: 'create' | 'edit' | 'copy', record?: IPage) {
       const { list = [] } = await projectService.getProjectList({
         pageNum: 1,
         pageSize: 100,
       });
       setProjectList(
-        list.map((item: Project) => {
+        list.map((item: IProject) => {
           return {
             name: item.name,
             id: item.id,

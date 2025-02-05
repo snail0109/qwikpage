@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import router from '@/router';
+import router from '@/config/router';
 import { message } from './AntdGlobal';
 
 declare module 'axios' {

@@ -18,7 +18,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   const createRef = useRef<CreatePageRef>();
   const timer = useRef<any>(null);
 
-  const { mode, id, name, remark, projectId, pageData, isEdit, setMode, updatePageState, updateEditState, savePageInfo } = usePageStore(
+  const { mode, id, name, remark, projectId, pageData, isEdit, setMode, updateEditState, savePageInfo } = usePageStore(
     (state) => ({
       mode: state.mode,
       id: state.page.id,
@@ -28,7 +28,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
       pageData: state.page.pageData,
       isEdit: state.isEdit,
       setMode: state.setMode,
-      updatePageState: state.updatePageState,
       updateEditState: state.updateEditState,
       savePageInfo: state.savePageInfo,
     }),
@@ -72,7 +71,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
         pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
       });
       updateEditState(false);
-      updatePageState({ env: 'all' });
     } finally {
       message.success('页面保存成功');
       setLoading(false);

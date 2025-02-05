@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Page } from "@/services/types";
+import { IPage } from "@/types";
 
 export const pageService =  {
     // 获取页面列表
-    getPageList(params: { keyword?: string, projectId?: string; pageNum: number; pageSize: number }) : Promise<{ list: Page[], total: number }> {
+    getPageList(params: { keyword?: string, projectId?: string; pageNum: number; pageSize: number }) : Promise<{ list: IPage[], total: number }> {
         return invoke("get_page_list", params);
     },
 
@@ -13,7 +13,7 @@ export const pageService =  {
     },
 
     // 复制页面数据
-    copyPageData(params: Partial<Page>) {
+    copyPageData(params: Partial<IPage>) {
         return invoke("copy_page", params);
     },
 
@@ -23,12 +23,12 @@ export const pageService =  {
     },
 
     // 创建页面数据
-    createPageData(params: Partial<Page>) {
+    createPageData(params: Partial<IPage>) {
         return invoke("add_page", params);
     },
 
     // 保存页面数据
-    updatePageData(params: Partial<Page>) {
+    updatePageData(params: Partial<IPage>) {
         return invoke("update_page", params);
     },
 

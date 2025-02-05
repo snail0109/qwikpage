@@ -3,19 +3,19 @@ import { useParams } from "react-router-dom";
 import { Modal, Form, TreeSelect, Input, Select, InputNumber, Radio, Spin } from "antd";
 import { message } from "@/utils/AntdGlobal";
 import { IAction, IModalProp } from "@/pages/types";
-import { EditParams, MenuItem, Page } from "@/services/types";
+import { MenuEditParams, IMenuItem, IPage } from "@/types";
 import { menuService, pageService } from "@/services";
 import { arrayToTree } from "@/utils/util";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import CustomIconOptions from "@/components/CustomIconList";
 
-export default function CreateMenu(props: IModalProp<EditParams>) {
+export default function CreateMenu(props: IModalProp<MenuEditParams>) {
     const [form] = Form.useForm();
     const createRef = useRef<CreatePageRef>();
     const [action, setAction] = useState<IAction>("create");
     const [visible, setVisible] = useState(false);
-    const [menuList, setMenuList] = useState<MenuItem[]>([]);
-    const [pageList, setPageList] = useState<Page[]>([]);
+    const [menuList, setMenuList] = useState<IMenuItem[]>([]);
+    const [pageList, setPageList] = useState<IPage[]>([]);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const { id: projectId } = useParams();
@@ -25,7 +25,7 @@ export default function CreateMenu(props: IModalProp<EditParams>) {
     }));
 
     // 打开弹框函数
-    const open = async (type: IAction, data?: EditParams | { parentId: string }) => {
+    const open = async (type: IAction, data?: MenuEditParams | { parentId: string }) => {
         setAction(type);
         setVisible(true);
         setLoading(true);
@@ -47,7 +47,7 @@ export default function CreateMenu(props: IModalProp<EditParams>) {
         });
         // 菜单编辑时，父菜单不能选择自身子菜单，会产生冲突。
         const parentId = form.getFieldValue("parentId");
-        const filterList = res.filter((item: MenuItem) => {
+        const filterList = res.filter((item: IMenuItem) => {
             return item.menuType === 1 && item.parentId !== parentId;
         });
         const menuData = arrayToTree(filterList);

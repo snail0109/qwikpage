@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider, App as AntdApp, theme } from 'antd';
-import router from './router';
+import router from './config/router';
 import AntdGlobal from '@/utils/AntdGlobal';
 import locale from 'antd/locale/zh_CN';
 import dayjs from 'dayjs';

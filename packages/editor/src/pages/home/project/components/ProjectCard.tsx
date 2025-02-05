@@ -3,7 +3,7 @@ import { Typography, Avatar, Dropdown, Tooltip } from "antd";
 import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { Project } from "@/services/types";
+import { IProject } from "@/types";
 import styles from "./../page.module.less";
 const { Paragraph } = Typography;
 
@@ -11,7 +11,7 @@ const { Paragraph } = Typography;
  * 页面列表
  */
 
-export default function Category({ list }: { list: Project[] }) {
+export default function Category({ list }: { list: IProject[] }) {
     const navigate = useNavigate();
     // 单击打开项目配置
     const handleOpenProject = (id: string) => {

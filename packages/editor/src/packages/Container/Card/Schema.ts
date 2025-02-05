@@ -101,7 +101,7 @@ export default {
     props: {
       title: {
         type: 'static',
-        value: 'Marsview搭建',
+        value: 'QwikPage搭建',
       },
       size: 'default',
       bordered: true,

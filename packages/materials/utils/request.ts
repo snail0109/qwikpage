@@ -7,7 +7,7 @@ declare module 'axios' {
   }
 }
 /**
- * Marsview组件专用请求，跟平台请求区分开
+ * QwikPage组件专用请求，跟平台请求区分开
  * 配置request请求时的默认参数
  */
 const instance = axios.create({

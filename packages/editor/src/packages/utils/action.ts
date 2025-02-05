@@ -15,7 +15,7 @@ import { usePageStore } from '@/stores/pageStore';
 import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate, defaultVariable } from './util';
 import { Modal, message, notification } from '@/utils/AntdGlobal';
 import request from './request';
-import router from './../../router/index';
+import router from './../../config/router';
 
 // 把工作流转换为链表结构，此算法需要进一步优化。
 function convertArrayToLinkedList(nodes: any, isSuccessBranch = true) {

@@ -8,12 +8,6 @@ export interface PageState {
     name: string;
     remark: string;
     projectId: string;
-    stgState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    preState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    prdState: 1 | 2 | 3 | 4; // 1:未保存 2:已保存 3:已发布 4:已回滚
-    stgPublishId: number;
-    prePublishId: number;
-    prdPublishId: number;
     previewImg?: string;
     userId: number;
     userName: string;
@@ -73,12 +67,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
     userId: 0,
     userName: '',
     previewImg: '',
-    stgState: 1,
-    preState: 1,
-    prdState: 1,
-    stgPublishId: 0,
-    prePublishId: 0,
-    prdPublishId: 0,
     pageData: {
       config: {
         props: {},
@@ -149,12 +137,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
           userId: 0,
           userName: '',
           previewImg: '',
-          stgState: 1,
-          preState: 1,
-          prdState: 1,
-          stgPublishId: 0,
-          prePublishId: 0,
-          prdPublishId: 0,
           pageData: {
             config: {
               props: {},

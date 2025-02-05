@@ -5,17 +5,17 @@ import { CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { pageService } from '@/services';
-import { Page } from '@/services/types';
+import { IPage } from '@/types';
 import styles from './../../index.module.less';
 
 // 页面列表项
-const PageCard = ({ list, copy, refresh }: { list: Page[]; copy: (item: Page) => void; refresh: () => void }) => {
+const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) => void; refresh: () => void }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const navigate = useNavigate();
 
   // 页面操作
-  const handleAction = async (type: string, params: Page) => {
+  const handleAction = async (type: string, params: IPage) => {
     if (type === 'preview') {
       if (!params.previewImg) {
         return message.warning('该页面未生成预览图');
@@ -57,7 +57,7 @@ const PageCard = ({ list, copy, refresh }: { list: Page[]; copy: (item: Page) =>
           gap: 20,
         }}
       >
-        {list.map((item: Page, index: number) => {
+        {list.map((item: IPage, index: number) => {
           return (
             <Card
               key={item.id + index}
