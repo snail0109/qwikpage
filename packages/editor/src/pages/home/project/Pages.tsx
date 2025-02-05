@@ -4,11 +4,11 @@ import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import { useMediaQuery } from 'react-responsive';
-import api from '@/invokeApi/page';
+import { pageService } from '@/services';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import SearchBar from '@/components/Searchbar/SearchBar';
 import PageCard from './components/PageCard';
-import { Page } from '@/invokeApi/types';
+import { Page } from '@/services/types';
 import styles from './../index.module.less';
 
 /**
@@ -25,7 +25,7 @@ export default function Index() {
 
   // 获取列表数据
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, { keyword }: { keyword: string }) => {
-    return api
+    return pageService
       .getPageList({
         pageNum: current,
         pageSize: pageSize,

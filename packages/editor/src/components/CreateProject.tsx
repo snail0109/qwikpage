@@ -1,6 +1,6 @@
 import { Input, Modal, Form, Button, Image } from 'antd';
 import { useImperativeHandle, useState, forwardRef, memo } from 'react';
-import api from '@/invokeApi/project';
+import { projectService } from '@/services';
 import { message } from '@/utils/AntdGlobal';
 import TextArea from 'antd/es/input/TextArea';
 
@@ -26,7 +26,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
       await form.validateFields();
       const values = form.getFieldsValue();
       setLoading(true);
-      await api.addProject({ ...values });
+      await projectService.addProject({ ...values });
       message.success('项目初始化成功');
       props.update?.();
       setLoading(false);

@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Form, Input, Button, Table, Select, Badge } from "antd";
-import { EditParams, MenuItem, Page } from "@/invokeApi/types";
+import { EditParams, MenuItem, Page } from "@/services/types";
 import { IAction } from "@/pages/types";
 import { ColumnsType } from "antd/es/table";
 import { Modal, message } from "@/utils/AntdGlobal";
 import CreateMenu from "./CreateMenu";
 import SearchForm from "../components/SearchForm";
-import { getMenuList, delMenu, copyMenu } from "@/invokeApi/menu";
-import pageApi from "@/invokeApi/page";
+import { menuService, pageService } from "@/services";
 import { arrayToTree } from "@/utils/util";
 import * as icons from "@ant-design/icons";
 import BaseTable from "../components/BaseTable";
@@ -48,8 +47,8 @@ export default function MenuList() {
         const { name, status } = form.getFieldsValue();
         if (!projectId) return;
         setLoading(true);
-        const pageData = await pageApi.getPageList({ pageNum: 1, pageSize: 50, projectId: projectId! });
-        const res = await getMenuList({
+        const pageData = await pageService.getPageList({ pageNum: 1, pageSize: 50, projectId: projectId! });
+        const res = await menuService.getMenuList({
             projectId,
             name,
             status,
@@ -76,7 +75,7 @@ export default function MenuList() {
     const handleCopy = async (record: MenuItem) => {
         setLoading(true);
         try {
-            await copyMenu({
+            await menuService.copyMenu({
                 projectId: record.projectId,
                 id: record.id,
             });
@@ -121,7 +120,7 @@ export default function MenuList() {
     const handleDelSubmit = async (projectId: string, id: string) => {
         setLoading(true);
         try {
-            await delMenu({ projectId, id });
+            await menuService.delMenu({ projectId, id });
             message.success("删除成功");
             getMenus();
         } catch (error) {

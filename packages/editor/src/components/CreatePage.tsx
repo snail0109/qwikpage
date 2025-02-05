@@ -1,8 +1,7 @@
 import { Input, Modal, Form, Select, Space, Flex, Button } from 'antd';
 import { useImperativeHandle, useState, MutableRefObject } from 'react';
-import projectApi from '@/invokeApi/project';
-import api from '@/invokeApi/page';
-import { Page, Project } from '@/invokeApi/types';
+import { projectService, pageService } from '@/services';
+import { Page, Project } from '@/services/types';
 import { useSearchParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { usePageStore } from '@/stores/pageStore';
@@ -30,11 +29,10 @@ const CreatePage = (props: IModalProp) => {
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
     async open(action: 'create' | 'edit' | 'copy', record?: Page) {
-      const { list = [] } = await projectApi.getProjectList({
+      const { list = [] } = await projectService.getProjectList({
         pageNum: 1,
         pageSize: 100,
       });
-      debugger
       setProjectList(
         list.map((item: Project) => {
           return {
@@ -70,9 +68,9 @@ const CreatePage = (props: IModalProp) => {
       setLoading(true);
       try {
         if (type === 'create') {
-          await api.createPageData(params);
+          await pageService.createPageData(params);
         } else if (type === 'edit') {
-          await api.updatePageData({
+          await pageService.updatePageData({
             ...params,
             id: recordId,
           });
@@ -87,7 +85,7 @@ const CreatePage = (props: IModalProp) => {
             id: recordId,
           }
           
-          await api.copyPageData(param);
+          await pageService.copyPageData(param);
         }
         // 编辑器界面 - 左侧菜单修改后刷新
         props.update?.('success');

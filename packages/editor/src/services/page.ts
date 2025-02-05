@@ -1,8 +1,7 @@
-import request from "@/utils/request";
 import { invoke } from "@tauri-apps/api/core";
-import { Page } from "@/invokeApi/types";
+import { Page } from "@/services/types";
 
-export default {
+export const pageService =  {
     // 获取页面列表
     getPageList(params: { keyword?: string, projectId?: string; pageNum: number; pageSize: number }) : Promise<{ list: Page[], total: number }> {
         return invoke("get_page_list", params);

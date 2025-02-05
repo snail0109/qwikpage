@@ -3,7 +3,7 @@ import { Typography, Avatar, Dropdown, Tooltip } from "antd";
 import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { Project } from "@/invokeApi/types";
+import { Project } from "@/services/types";
 import styles from "./../page.module.less";
 const { Paragraph } = Typography;
 

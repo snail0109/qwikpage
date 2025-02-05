@@ -1,8 +1,8 @@
 import { Button, Flex, List, Spin, Tag } from 'antd';
 import { PlusOutlined, SyncOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { memo, useEffect, useRef, useState } from 'react';
-import { Page } from '@/invokeApi/types';
-import api from '@/invokeApi/page';
+import { Page } from '@/services/types';
+import { pageService } from '@/services';
 import { useNavigate } from 'react-router-dom';
 import { Modal, message } from '@/utils/AntdGlobal';
 import { usePageStore } from '@/stores/pageStore';
@@ -36,7 +36,7 @@ export default memo(() => {
     } else {
       setLoading(true);
     }
-    const res = await api.getPageList({
+    const res = await pageService.getPageList({
       pageNum: current || pageNum,
       pageSize,
       projectId,
@@ -71,7 +71,7 @@ export default memo(() => {
       okText: '确认',
       cancelText: '取消',
       onOk: async () => {
-        await api.delPageData({
+        await pageService.delPageData({
           id,
         });
         message.success('删除成功');

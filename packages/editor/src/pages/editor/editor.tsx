@@ -7,7 +7,7 @@ import { getComponent } from '@/packages/index';
 import { IDragTargetItem } from '@/packages/types/index';
 import { checkComponentType, createId, getElement } from '@/utils/util';
 import storage from '@/utils/storage';
-import api from '@/invokeApi/page';
+import { pageService } from '@/services';
 import Toolbar from '@/components/Toolbar/Toolbar';
 import { message } from '@/utils/AntdGlobal';
 import { usePageStore } from '@/stores/pageStore';
@@ -93,7 +93,7 @@ const Editor = () => {
     if (!id) return;
     setLoaded(false);
     setCanvasWidth(storage.get('canvasWidth') || 'auto');
-    api
+    pageService
       .getPageDetail({id})
       .then((res: any) => {
         let pageData: any = {};

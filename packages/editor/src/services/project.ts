@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-export default {
+export const projectService =  {
 
   getProjectList(params: any): Promise<any> {
     return invoke("get_project_list", params)

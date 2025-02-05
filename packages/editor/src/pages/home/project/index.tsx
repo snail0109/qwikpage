@@ -4,8 +4,7 @@ import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
 import { useAntdTable } from 'ahooks';
-import api from '@/invokeApi/project';
-import pageApi from '@/invokeApi/page';
+import { pageService, projectService } from '@/services';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import SearchBar from '@/components/Searchbar/SearchBar';
 import ProjectCard from './components/ProjectCard';
@@ -26,7 +25,7 @@ function Category() {
 
   // 获取列表数据
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, { keyword }: { keyword: string }) => {
-    const promise = type === 'project' ? api.getProjectList : pageApi.getPageList;
+    const promise = type === 'project' ? projectService.getProjectList : pageService.getPageList;
     return promise({
       pageNum: current,
       pageSize: pageSize,

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
-import { EyeOutlined, CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
-import api from '@/invokeApi/page';
-import { Page } from '@/invokeApi/types';
+import { pageService } from '@/services';
+import { Page } from '@/services/types';
 import styles from './../../index.module.less';
 
 // 页面列表项
@@ -39,7 +39,7 @@ const PageCard = ({ list, copy, refresh }: { list: Page[]; copy: (item: Page) =>
         okButtonProps: { danger: true },
         cancelText: '取消',
         onOk: async () => {
-          await api.delPageData({
+          await pageService.delPageData({
             id: params.id,
           });
           message.success('删除成功');

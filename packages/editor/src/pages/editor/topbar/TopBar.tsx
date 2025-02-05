@@ -3,7 +3,7 @@ import { Select, Switch, Button, Space, Tooltip } from 'antd';
 import { EyeOutlined, SaveOutlined, SettingOutlined, LeftOutlined } from '@ant-design/icons';
 import { usePageStore } from '@/stores/pageStore';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
-import api from '@/invokeApi/page';
+import { pageService } from '@/services';
 import storage from '@/utils/storage';
 import styles from './index.module.less';
 import { message } from '@/utils/AntdGlobal';
@@ -67,7 +67,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   const savePageData = async () => {
     setLoading(true);
     try {
-      await api.updatePageData({
+      await pageService.updatePageData({
         id,
         pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
       });

@@ -1,7 +1,7 @@
 import { Button, Flex, Row, Space } from "antd";
 import Editor, { loader } from "@monaco-editor/react";
 import { useRef, useEffect, useState } from "react";
-import api from "@/invokeApi/page";
+import { pageService } from "@/services";
 import { usePageStore } from "@/stores/pageStore";
 import { message } from "@/utils/AntdGlobal";
 import { save } from "@tauri-apps/plugin-dialog";
@@ -57,7 +57,7 @@ const CodingPanel = () => {
         };
         setLoading(true);
         try {
-            await api.updatePageData(params);
+            await pageService.updatePageData(params);
             setLoading(false);
             savePageInfo({
                 ...params,

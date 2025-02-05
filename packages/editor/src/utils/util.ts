@@ -1,4 +1,4 @@
-import { MenuItem } from '@/invokeApi/types';
+import { MenuItem } from '@/services/types';
 import components from '@/config/components';
 import { ComponentType, ComItemType } from '@/packages/types';
 import dayjs from 'dayjs';

@@ -4,7 +4,7 @@ import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
 import { message } from "@/utils/AntdGlobal";
 import { RollbackOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
-import projectApi from "@/invokeApi/project";
+import { projectService } from "@/services";
 import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
 import UD from "@/assets/image/UD.png";
@@ -25,7 +25,7 @@ const Config: React.FC = memo(() => {
     // 项目加载
     useEffect(() => {
         if (!id) return;
-        projectApi.getProjectDetail(id).then((res) => {
+        projectService.getProjectDetail(id).then((res) => {
             form.setFieldsValue(res);
         });
     }, []);
@@ -39,7 +39,7 @@ const Config: React.FC = memo(() => {
             // value 转化成 snake_case格式
             const { menuMode, menuThemeColor, systemThemeColor, ...rest } = value;
 
-            await projectApi.updateProject({
+            await projectService.updateProject({
                 ...rest,
                 system_theme_color: systemThemeColor,
                 menu_mode: menuMode,
@@ -62,7 +62,7 @@ const Config: React.FC = memo(() => {
         setDelLoading(true);
         try {
             if (id) {
-                await projectApi.delProject({ id, mode: val });
+                await projectService.delProject({ id, mode: val });
                 message.success("删除成功");
                 navigate("/projects");
             }

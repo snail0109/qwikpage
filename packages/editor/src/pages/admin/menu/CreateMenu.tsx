@@ -3,9 +3,8 @@ import { useParams } from "react-router-dom";
 import { Modal, Form, TreeSelect, Input, Select, InputNumber, Radio, Spin } from "antd";
 import { message } from "@/utils/AntdGlobal";
 import { IAction, IModalProp } from "@/pages/types";
-import { EditParams, MenuItem, Page } from "@/invokeApi/types";
-import { getMenuList, addMenu, updateMenu } from "@/invokeApi/menu";
-import api from "@/invokeApi/page";
+import { EditParams, MenuItem, Page } from "@/services/types";
+import { menuService, pageService } from "@/services";
 import { arrayToTree } from "@/utils/util";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import CustomIconOptions from "@/components/CustomIconList";
@@ -42,7 +41,7 @@ export default function CreateMenu(props: IModalProp<EditParams>) {
     // 获取菜单列表，生成菜单树
     const getMenus = async () => {
         if (!projectId) return;
-        const res = await getMenuList({
+        const res = await menuService.getMenuList({
             projectId,
             status: -1,
         });
@@ -57,7 +56,7 @@ export default function CreateMenu(props: IModalProp<EditParams>) {
 
     // 获取用户页面列表
     const getMyPageList = async () => {
-        const res = await api.getPageList({ pageNum: 1, pageSize: 50,  projectId: projectId! });
+        const res = await pageService.getPageList({ pageNum: 1, pageSize: 50,  projectId: projectId! });
         setPageList(res.list);
     };
 
@@ -77,9 +76,9 @@ export default function CreateMenu(props: IModalProp<EditParams>) {
                 params.project_id = projectId
                 params.sort_num = sortNum
                 if (action === "create") {
-                    await addMenu({ isCreate, params });
+                    await menuService.addMenu({ isCreate, params });
                 } else {
-                    await updateMenu({ id, params });
+                    await menuService.updateMenu({ id, params });
                 }
                 setConfirmLoading(false);
                 message.success("操作成功");
