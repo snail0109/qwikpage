@@ -3,12 +3,11 @@ import { LinkOutlined, QuestionCircleOutlined, SoundOutlined } from "@ant-design
 export default () => {
     return (
         <FloatButton.Group trigger="click" type="primary" style={{ insetInlineEnd: 24 }} icon={<SoundOutlined />}>
-            <Tooltip title="使用文档" placement="left">
+            {/* <Tooltip title="使用文档" placement="left">
                 <FloatButton
                     icon={<LinkOutlined />}
-                    onClick={() => window.open("http://docs.marsview.com.cn", "_blank")}
                 />
-            </Tooltip>
+            </Tooltip> */}
             <Popover
                 content={
                     <>
@@ -18,7 +17,6 @@ export default () => {
                         <p>4. 表单组件，只能放在Form容器和搜索表单组件中，请勿单独使用。</p>
                         <p>5. 支持接口调用，表单联动、自定义样式、逻辑编排，脚本运行，变量绑定等等。</p>
                         <p>6. 页面支持通过微前端框架集成到自身传统项目中。</p>
-                        <p>7. 有任何技术和使用问题，请联系我，24H为你解答。</p>
                     </>
                 }
                 title="使用说明(不建议使用拖拽功能)"
