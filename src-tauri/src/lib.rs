@@ -46,27 +46,31 @@ pub fn run() {
                     let _ = rocket.launch().await;
                 });
             }
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            // 项目
             project::get_project_list,
             project::add_project,
             project::get_project_detail,
             project::update_project,
             project::delete_project,
+            // 菜单
             menu::get_menu_list,
             menu::add_menu,
             menu::copy_menu,
             menu::update_menu,
             menu::delete_menu,
+            // 页面
             page::get_page_list,
             page::get_page_detail,
             page::add_page,
             page::update_page,
             page::delete_page,
             page::copy_page,
+            // 出码
             dsl::export_json,
+            // 系统配置
             config::open_folder,
             config::set_theme,
             config::get_app_conf,

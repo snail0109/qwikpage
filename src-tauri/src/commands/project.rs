@@ -102,7 +102,7 @@ pub fn get_project_detail(id: String) -> Result<Project, String> {
 #[command]
 pub fn add_project(name: String, remark: String, logo: String) -> Result<(), String> {
     info!(
-        "Project::add_project start name: {}, remark: {}, logo: {}",
+        "Project::add_project start, name: {}, remark: {}, logo: {}",
         name, remark, logo
     );
     let root_dir: PathBuf = get_app_root_dir();

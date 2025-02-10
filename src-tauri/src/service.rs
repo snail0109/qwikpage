@@ -62,6 +62,7 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
         })))
 }
 
+// 获取项目详情
 #[get("/project/detail/<id>")]
 pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
     match project::get_project_detail(id) {
@@ -70,6 +71,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
     }
 }
 
+// 获取项目菜单
 #[get("/project/menus/<id>")]
 pub fn get_project_menus(id: String) -> Result<Json<Vec<Menu>>, Status> {
     match menu::get_menu_list(id, None, -1) {
@@ -78,6 +80,7 @@ pub fn get_project_menus(id: String) -> Result<Json<Vec<Menu>>, Status> {
     }
 }
 
+// 获取菜单详情
 #[get("/menu/detail/<project_id>/<id>")]
 pub fn get_menu_detail(project_id: String, id: String) -> Result<Json<Menu>, Status> {
     match menu::get_menu_detail(id, project_id) {
@@ -86,6 +89,7 @@ pub fn get_menu_detail(project_id: String, id: String) -> Result<Json<Menu>, Sta
     }
 }
 
+// 获取页面详情
 #[get("/page/detail/<id>")]
 pub fn get_page_detail(id: String) -> Result<Json<Page>, Status> {
     match page::get_page_detail(id) {

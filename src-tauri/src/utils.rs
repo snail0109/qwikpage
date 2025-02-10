@@ -18,13 +18,13 @@ pub fn paginate<T: Clone>(items: Vec<T>, page_num: usize, page_size: usize) -> (
     (items[start..end].to_vec(), total)
 }
 
-
+// 检查端口是否被占用
 pub fn is_port_in_use(port: u16) -> bool {
     let address = format!("127.0.0.1:{}", port);
     TcpStream::connect(address).is_ok()
 }
 
-
+// 获取应用根目录
 pub fn get_app_root_dir() -> PathBuf {
     let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
     if !root_dir.exists() {
