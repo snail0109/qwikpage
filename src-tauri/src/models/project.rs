@@ -4,6 +4,60 @@ use std::path::Path;
 
 use crate::constans::PROJECT_CONFIG_FILE;
 use crate::utils::get_current_time;
+
+// 系统布局
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub enum ProjectLayout {
+    LeftRight,
+    TopBottom,
+}
+
+impl ProjectLayout {
+    pub fn to_value(&self) -> u32 {
+        match self {
+            ProjectLayout::LeftRight => 1,
+            ProjectLayout::TopBottom => 2,
+        }
+    }
+}
+
+
+// 菜单模式
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub enum MenuMode {
+    // 垂直水平内嵌
+    Vertical,
+    Horizontal,
+    Inline,
+}
+
+impl MenuMode {
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            MenuMode::Vertical => "vertical",
+            MenuMode::Horizontal => "horizontal",
+            MenuMode::Inline =>  "inline",
+        }
+    }
+}
+
+// 菜单主题
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub enum MenuThemeColor {
+    Dark,
+    Light,
+}
+
+impl MenuThemeColor {
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            MenuThemeColor::Dark => "dark",
+            MenuThemeColor::Light => "light",
+        }
+    }
+}
+
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Project {
@@ -17,7 +71,7 @@ pub struct Project {
     pub breadcrumb: bool,                   // 是否显示面包屑导航
     pub tag: bool,                          // 是否显示标签页
     pub footer: bool,                       // 是否显示页脚
-    pub system_theme_color: Option<String>, // 系统主题
+    pub system_theme_color: Option<String>, // 系统主题颜色
     pub created_at: String,
     pub updated_at: String,
 }
@@ -61,9 +115,9 @@ impl Project {
             name,
             remark,
             logo,
-            layout: 1,
-            menu_mode: "vertical".to_string(),
-            menu_theme_color: "light".to_string(),
+            layout: ProjectLayout::LeftRight.to_value(),
+            menu_mode: MenuMode::Vertical.to_str().to_string(),
+            menu_theme_color: MenuThemeColor::Light.to_str().to_string(),
             breadcrumb: false,
             tag: false,
             footer: false,
