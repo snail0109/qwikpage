@@ -1,13 +1,11 @@
 use crate::models::page::count_pages_in_project;
-use crate::models::project::{Project, ProjectList, ProjectSummary, ProjectUpdateParams};
+use crate::models::project::{PROJECT_CONFIG_FILE, Project, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::{get_app_root_dir, paginate};
 use anyhow::Result;
 use log::{error, info};
 use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::command;
-
-const PROJECT_CONFIG_FILE: &str = "project.json";
 
 // 加载项目详情信息
 fn load_project(project_path: &Path) -> Option<Project> {

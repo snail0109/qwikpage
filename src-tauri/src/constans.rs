@@ -1,7 +1,4 @@
 
-// 项目配置文件
-pub const PROJECT_CONFIG_FILE: &str = "project.json";
-
 // 页面根目录
 pub const PAGE_DIR: &str = "pages";
 

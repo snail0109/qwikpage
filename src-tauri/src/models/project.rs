@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 
-use crate::constans::PROJECT_CONFIG_FILE;
 use crate::utils::get_current_time;
 
 // 系统布局
@@ -106,6 +105,9 @@ pub struct ProjectList {
     pub list: Vec<ProjectSummary>,
     pub total: usize,
 }
+
+// 项目配置文件
+pub const PROJECT_CONFIG_FILE: &str = "project.json";
 
 impl Project {
     pub fn new(id: String, name: String, remark: String, logo: String) -> Self {

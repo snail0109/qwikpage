@@ -39,7 +39,7 @@ export default function Category({ list }: { list: IProject[] }) {
 
     // 预览跳转
     const handlePreview = async (id: string) => {
-        const previewUrl = `http://127.0.0.1:8000/project/${id}`;
+        const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${id}`;
         await openUrl(previewUrl)
     };
 
