@@ -3,9 +3,31 @@ use crate::utils::paginate;
 use dirs;
 use chrono::Local;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use log::warn;
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Element {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
+}
+
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+struct ElementConfig {
+   pub config: Value,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct PageContent {
+    pub elements: Vec<Element>,
+    #[serde(rename = "elementsMap")]
+    pub elements_map: HashMap<String, ElementConfig>,
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
