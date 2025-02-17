@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Select } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { getInitLocale, Link, Outlet, setLang, utils } from 'fishx';
+import { getInitLocale, Outlet, setLang, utils } from 'fishx';
 import Sidebar from '@/components/Sidebar';
 import styles from './index.module.less';
 
@@ -63,7 +63,6 @@ const BasicLayout = (props: any) => {
                 中文
               </Option>
             </Select>
-            <Link to="/login">登录</Link>
           </div>
         </Header>
         <Content
