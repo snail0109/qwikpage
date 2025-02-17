@@ -7,5 +7,5 @@ port = 8789            # 默认监听端口
 [staging]
 port = 8789            # 默认监听端口
 
-[production]
+[release]
 port = 8789            # 默认监听端口
