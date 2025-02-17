@@ -1,8 +1,9 @@
-import { Image } from './Basic';
+import { Image, Text } from './Basic';
 import { PageWrapper } from './PageWrapper';
 
 
 export {
     Image,
+    Text,
     PageWrapper   
 }
