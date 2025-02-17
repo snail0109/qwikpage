@@ -17,6 +17,7 @@ export interface PageState {
   page: {
     id: string;
     name: string;
+    path: string;
     remark: string;
     projectId: string;
     isPublic: 1 | 2;
@@ -99,6 +100,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   page: {
     id: "0",
     name: '',
+    path: '',
     remark: '',
     projectId: "0",
     isPublic: 2,
@@ -524,6 +526,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
         state.page = {
           id: 0,
           name: '',
+          path: '',
           remark: '',
           projectId: 0,
           userId: 0,

@@ -1,14 +1,13 @@
-import { getPageDetail } from '@/api/index';
+import { getPageDetailWithPath } from '@/api/index';
 import { useLocation, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { usePageStore } from '@qwikpage/materials/stores/pageStore';
-import { useProjectStore } from '@/stores/projectStore';
+// import { useProjectStore } from '@/stores/projectStore';
 import { message } from '@/utils/AntdGlobal';
 import NotFound from './notFound';
 import Page from '@qwikpage/materials/Page/Page';
 import { useShallow } from 'zustand/react/shallow';
 import { ComItemType, ConfigType } from '@qwikpage/materials/types/index';
-import { getPageId } from '@/utils/util';
 
 export default function () {
   const [pageData, setPageData] = useState<{ config: ConfigType; elements: ComItemType[] }>();
@@ -25,18 +24,12 @@ export default function () {
       };
     }),
   );
-  const pageMap = useProjectStore(useShallow((state) => state.pageMap));
+  // const pageMap = useProjectStore(useShallow((state) => state.pageMap));
   const { pathname } = useLocation();
   useEffect(() => {
     if (!projectId) return;
     const pageId = pathname.split(projectId)[1].slice(1);
-    // 获取页面ID
-    const id = getPageId(pageId, pageMap);
-    if (!pageMap[id] || !id) {
-      setNotFound(true);
-      return;
-    }
-    getPageDetail(id)
+    getPageDetailWithPath(projectId, pageId)
       .then((res: any) => {
         let pageData: any = {};
         try {

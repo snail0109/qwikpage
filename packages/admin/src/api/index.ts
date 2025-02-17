@@ -5,6 +5,11 @@ export const getPageDetail = (pageId: string) => {
   return request.get(`/page/detail/${pageId}`);
 };
 
+// 根据projectId和page path获取页面详情
+export const getPageDetailWithPath = (projectId: string, pageUrl: string) => {
+  return request.get(`/page/detail/${projectId}/${pageUrl}`);
+}
+
 // 获取菜单详情
 // export const getMenuDetail = (projectId: string, menuId: string) => {
 //   return request.get(`/menu/detail/${projectId}/${menuId}`);
