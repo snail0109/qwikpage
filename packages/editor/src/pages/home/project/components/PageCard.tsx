@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
-import { CopyOutlined, DeleteOutlined, SendOutlined, GlobalOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { pageService } from '@/services';
@@ -17,11 +18,8 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
   // 页面操作
   const handleAction = async (type: string, params: IPage) => {
     if (type === 'preview') {
-      if (!params.previewImg) {
-        return message.warning('该页面未生成预览图');
-      }
-      setShowPreview(true);
-      setPreviewUrl(params.previewImg);
+      const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${params.projectId}/${params.path}`;
+      await openUrl(previewUrl)
       return;
     }
 
@@ -64,6 +62,9 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
               actions={[
                 <Tooltip title="复制">
                   <CopyOutlined style={{ fontSize: 16 }} onClick={() => handleAction('copy', item)} />
+                </Tooltip>,
+                <Tooltip title="预览">
+                  <EyeOutlined style={{ fontSize: 16 }} onClick={() => handleAction('preview', item)} />
                 </Tooltip>,
                 <Tooltip title="删除">
                   <DeleteOutlined style={{ fontSize: 16 }} onClick={() => handleAction('delete', item)} />
