@@ -60,6 +60,21 @@ const CreatePage = (props: IModalProp) => {
     },
   }));
 
+  // const handleNameBlur = () => {
+  //   const pageName = form.getFieldValue('name');
+  //   const pagePath = form.getFieldValue('path');
+  //   if (pageName && !pagePath) {
+  //     // 默认路由
+  //     const defaultPath = pageName.split(' ').map((word: string, index: number) => {
+  //       if (index === 0) {
+  //         return word.charAt(0).toLowerCase() + word.slice(1);
+  //       }
+  //       return word.charAt(0).toUpperCase() + word.slice(1);
+  //     });
+  //     form.setFieldValue('path', `/${defaultPath}`)
+  //   }
+  // }
+
   // 提交
   const handleOk = async () => {
     const params = form.getFieldsValue();
@@ -78,13 +93,14 @@ const CreatePage = (props: IModalProp) => {
             name: params?.name,
             remark: params?.remark,
             projectId: params?.projectId,
+            path: params?.path,
           });
         } else {
           const param = {
             ...params,
             id: recordId,
           }
-          
+
           await pageService.copyPageData(param);
         }
         // 编辑器界面 - 左侧菜单修改后刷新
@@ -122,6 +138,9 @@ const CreatePage = (props: IModalProp) => {
         </Form.Item>
         <Form.Item label="描述" name="remark">
           <TextArea autoSize={{ minRows: 4, maxRows: 6 }} placeholder="请输入描述" maxLength={100} showCount />
+        </Form.Item>
+        <Form.Item label="页面路由" name="path" rules={[{ required: true, message: '请输入页面路由' }]}>
+          <Input placeholder="请输入页面路径，例如: /dashboard" />
         </Form.Item>
         <Form.Item label="所属项目" name="projectId" rules={[{ required: true, message: '请选择所属项目' }]}>
           <Select

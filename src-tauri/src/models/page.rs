@@ -1,13 +1,14 @@
 use crate::constans::{APP_IDENTIFIER, DATA_FORMAT, PAGE_DIR};
 use crate::utils::paginate;
-use dirs;
 use chrono::Local;
+use dirs;
+use log::warn;
+use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use log::{info, warn};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Element {
@@ -16,10 +17,9 @@ pub struct Element {
     pub type_name: String,
 }
 
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ElementConfig {
-   pub config: Value,
+    pub config: Value,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -33,8 +33,9 @@ pub struct PageContent {
 #[serde(rename_all = "camelCase")]
 pub struct Page {
     pub id: String,
-    pub name: String,   // 页面名称
-    pub remark: Option<String> , // 页面描述
+    pub name: String,           // 页面名称
+    pub path: Option<String>,   // 页面路由
+    pub remark: Option<String>, // 页面描述
     pub page_data: String,
     pub project_id: String,
     pub created_at: String,
@@ -70,6 +71,7 @@ impl Page {
     pub fn new(
         id: String,
         name: String,
+        path: Option<String>,
         remark: Option<String>,
         page_data: Option<String>,
         project_id: String,
@@ -78,6 +80,7 @@ impl Page {
         Page {
             id,
             name,
+            path,
             remark,
             page_data: page_data.unwrap_or_else(|| String::new()),
             project_id,
@@ -126,7 +129,7 @@ impl Page {
             }
         }
         // 分页逻辑
-        let ( list , total) = paginate(pages_list, page_num, page_size);
+        let (list, total) = paginate(pages_list, page_num, page_size);
         Ok(PageList { total, list })
     }
 
@@ -141,10 +144,9 @@ impl Page {
             warn!("页面文件不存在");
             return Err("页面文件不存在".to_string());
         }
-        let json = fs::read_to_string(page_file)
-            .map_err(|e| format!("读取页面文件失败: {}", e))?;
-        let page: Page = serde_json::from_str(&json)
-            .map_err(|e| format!("解析页面数据失败: {}", e))?;
+        let json = fs::read_to_string(page_file).map_err(|e| format!("读取页面文件失败: {}", e))?;
+        let page: Page =
+            serde_json::from_str(&json).map_err(|e| format!("解析页面数据失败: {}", e))?;
         Ok(page)
     }
 
@@ -158,12 +160,12 @@ impl Page {
     // 根据页面参数查询对应页面
     pub fn list_with_options(
         project_id: Option<String>,
-        path:Option<String>,
+        path: Option<String>,
     ) -> Result<Vec<Page>, String> {
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir();
         if !page_dir.exists() {
-            warn!("页面文件不存在");                     
+            warn!("页面文件不存在");
             return Err("页面文件不存在".to_string());
         }
         let entries = fs::read_dir(page_dir).unwrap();
@@ -186,5 +188,4 @@ impl Page {
         }
         Ok(pages_list)
     }
-
 }

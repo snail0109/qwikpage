@@ -1,13 +1,13 @@
-use crate::models::page::{Page, PageList};
 use crate::constans::{DATA_FORMAT, PAGE_DIR};
+use crate::models::page::{Page, PageList};
+use crate::models::response::ErrorResponse;
 use crate::utils::get_app_root_dir;
 use anyhow::Result;
 use chrono::Local;
+use log::{error, info};
 use std::path::PathBuf;
 use tauri::command;
 use uuid::Uuid;
-use crate::models::response::ErrorResponse;
-use log::{error, info};
 
 #[command]
 pub fn get_page_list(
@@ -44,18 +44,19 @@ pub fn get_page_detail(id: String) -> Result<Page, ErrorResponse> {
 pub fn add_page(
     id: Option<String>,
     name: String,
+    path: Option<String>,
     remark: Option<String>,
     page_data: Option<String>,
     project_id: String,
 ) -> Result<(), String> {
     info!(
-        "Page::add_page start, id: {:?}, name: {}, remark: {:?}, project_id: {}",
-        id, name, remark, project_id
+        "Page::add_page start, id: {:?}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
+        id, name, path, remark, project_id
     );
     let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
     let page_id = id.unwrap_or_else(|| Uuid::new_v4().to_string());
-    let page = Page::new(page_id.clone(), name, remark, page_data, project_id);
+    let page = Page::new(page_id.clone(), name, path, remark, page_data, project_id);
     let page_file = page_dir.join(format!("{}.json", page_id.clone()));
     page.save(page_file)
         .map_err(|e| format!("创建页面失败: {}", e))?;
@@ -67,13 +68,14 @@ pub fn add_page(
 pub fn update_page(
     id: String,
     name: Option<String>,
+    path: Option<String>,
     remark: Option<String>,
     page_data: Option<String>,
     project_id: Option<String>,
 ) -> Result<(), ErrorResponse> {
     info!(
-        "Page::update_page start, id: {}, name: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
-        id, name, remark, page_data, project_id
+        "Page::update_page start, id: {}, name: {:?}, path: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
+        id, name, path, remark, page_data, project_id
     );
     let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
@@ -82,8 +84,11 @@ pub fn update_page(
     if let Some(project_id) = project_id {
         page.project_id = project_id;
     }
-    if let Some(name) = name{
+    if let Some(name) = name {
         page.name = name;
+    }
+    if let Some(path) = path {
+        page.path = Some(path);
     }
     if let Some(remark) = remark {
         page.remark = Some(remark);
@@ -110,12 +115,13 @@ pub fn delete_page(id: String) -> Result<(), String> {
 pub fn copy_page(
     id: String,
     name: String,
+    path: Option<String>,
     remark: Option<String>,
     project_id: String,
 ) -> Result<(), String> {
     info!(
-        "Page::copy_page start, id: {}, name: {}, remark: {:?}, project_id: {}",
-        id, name, remark, project_id
+        "Page::copy_page start, id: {}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
+        id, name, path, remark, project_id
     );
     let root_dir: PathBuf = get_app_root_dir();
     let page_dir: PathBuf = root_dir.join(PAGE_DIR);
@@ -126,6 +132,7 @@ pub fn copy_page(
     let page = Page::new(
         new_page_id,
         name,
+        path,
         remark,
         Some(source_page.page_data),
         project_id,

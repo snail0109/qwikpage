@@ -15,7 +15,10 @@ pub fn get_menu_list(
     name: Option<String>,
     status: i32,
 ) -> Result<Vec<Menu>, String> {
-    info!("Menu::get_menu_list start, project_id: {}, name: {:?}, status: {}", project_id, name, status);
+    info!(
+        "Menu::get_menu_list start, project_id: {}, name: {:?}, status: {}",
+        project_id, name, status
+    );
     let root_dir: PathBuf = get_app_root_dir();
     let project_path = root_dir.join(&project_id);
     // project menu 目录下的文件
@@ -49,7 +52,10 @@ pub fn get_menu_list(
 // 新建菜单
 #[command]
 pub fn add_menu(is_create: u32, params: MenuParams) -> Result<(), String> {
-    info!("Menu::add_menu start, is_create: {}, params: {:?}", is_create, params);
+    info!(
+        "Menu::add_menu start, is_create: {}, params: {:?}",
+        is_create, params
+    );
     // 获取根目录，使用proper错误处理
     let root_dir: PathBuf = get_app_root_dir();
     // 避免多次clone project_id
@@ -61,6 +67,7 @@ pub fn add_menu(is_create: u32, params: MenuParams) -> Result<(), String> {
         add_page(
             Some(page_id.clone()),
             params.name.clone(),
+            Some(String::new()),
             Some(String::new()),
             Some(String::new()),
             params.project_id.clone(),
@@ -95,9 +102,11 @@ pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
     info!("Menu::update_menu start, id: {}, params: {:?}", id, params);
     let root_dir: PathBuf = get_app_root_dir();
     let project_path = root_dir.join(&params.project_id);
-    let mut menu = Menu::load(&project_path , id.clone()).map_err(|e| format!("更新菜单失败: {}", e))?;
+    let mut menu =
+        Menu::load(&project_path, id.clone()).map_err(|e| format!("更新菜单失败: {}", e))?;
     menu.update(params);
-    menu.save(&project_path).map_err(|e| format!("更新菜单失败: {}", e))?;
+    menu.save(&project_path)
+        .map_err(|e| format!("更新菜单失败: {}", e))?;
     info!("update_menu success");
     Ok(())
 }
@@ -105,7 +114,10 @@ pub fn update_menu(id: String, params: MenuParams) -> Result<(), String> {
 // 删除菜单
 #[command]
 pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
-    info!("Menu::delete_menu start, id: {}, project_id: {}", id, project_id);
+    info!(
+        "Menu::delete_menu start, id: {}, project_id: {}",
+        id, project_id
+    );
     let root_dir: PathBuf = get_app_root_dir();
     let project_path = root_dir.join(project_id);
     let menu_dir = project_path.join(MENU_DIR);
@@ -115,10 +127,10 @@ pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
         return Err(format!("{} does not found", menu_dir.display()));
     }
     let menu_file = menu_dir.join(format!("{}.json", id));
-        if !menu_file.exists() {
-            warn!("菜单文件不存在");
-            return Err("菜单文件不存在".to_string());
-        }
+    if !menu_file.exists() {
+        warn!("菜单文件不存在");
+        return Err("菜单文件不存在".to_string());
+    }
     Menu::delete(&menu_file).map_err(|e| format!("删除菜单失败: {}", e))?;
     info!("delete_menu success");
     Ok(())
@@ -127,12 +139,17 @@ pub fn delete_menu(id: String, project_id: String) -> Result<(), String> {
 // 复制菜单
 #[command]
 pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
-    info!("Menu::copy_menu start, id: {}, project_id: {}", id, project_id);
+    info!(
+        "Menu::copy_menu start, id: {}, project_id: {}",
+        id, project_id
+    );
     let root_dir: PathBuf = get_app_root_dir();
     let project_path = root_dir.join(project_id);
-    let mut menu = Menu::load(&project_path , id.clone()).map_err(|e| format!("复制保存菜单失败: {}", e))?;
+    let mut menu =
+        Menu::load(&project_path, id.clone()).map_err(|e| format!("复制保存菜单失败: {}", e))?;
     menu.copy();
-    menu.save(&project_path).map_err(|e| format!("复制保存菜单失败: {}", e))?;
+    menu.save(&project_path)
+        .map_err(|e| format!("复制保存菜单失败: {}", e))?;
     info!("copy_menu success");
     Ok(())
 }
@@ -140,7 +157,10 @@ pub fn copy_menu(id: String, project_id: String) -> Result<(), String> {
 // 获取菜单详情
 #[command]
 pub fn get_menu_detail(id: String, project_id: String) -> Result<Menu, String> {
-    info!("Menu::get_menu_detail start, id: {}, project_id: {}", id, project_id);
+    info!(
+        "Menu::get_menu_detail start, id: {}, project_id: {}",
+        id, project_id
+    );
     let root_dir: PathBuf = get_app_root_dir();
     let project_path = root_dir.join(project_id);
     let menu = Menu::load(&project_path, id).map_err(|e| format!("获取菜单详情失败: {}", e))?;
