@@ -6,7 +6,7 @@ import { usePageStore } from '@materials/stores/pageStore';
 import { ApiConfig } from '@materials/types';
 import request from './request';
 import { message } from '@materials/utils/AntdGlobal';
-import { getEnv, handleArrayVariable, renderFormula, renderTemplate } from './util';
+import { handleArrayVariable, renderFormula, renderTemplate } from './util';
 import { get } from 'lodash-es';
 import qs from 'qs';
 import { isObject } from 'lodash-es';
@@ -41,15 +41,12 @@ export const handleApi = async (
       return { code: 0, data: '' };
     }
     const apis = usePageStore.getState().page.pageData.apis;
-    const { method, stgApi, preApi, prdApi, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
+    const { method, stgApi, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
     // 处理参数
     const config: any = mergeParams(method, replaceData, params, sendParams);
     // 解析模板字符串：http://mars-api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(stgApi, sendParams);
-    const preUrl = renderTemplate(preApi, sendParams);
-    const prdUrl = renderTemplate(prdApi, sendParams);
-    const env = getEnv();
-    config.url = env === 'stg' ? stgUrl : env === 'pre' ? preUrl : prdUrl;
+    config.url = stgUrl;
     config.isCors = isCors;
     let response = null;
     try {
@@ -108,7 +105,7 @@ export const handleApi = async (
       // 如果开启了系统错误，则优先使用系统报错
       if (tips?.isError && msg) {
         message.error(msg);
-      } else if (tips?.fail) {
+      } else if (tips?.isError && tips?.fail) {
         // 最后使用自定义错误
         message.error(tips?.fail);
       }

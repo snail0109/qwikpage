@@ -187,8 +187,6 @@ export interface ApiType {
   name: string; //接口名称
   url: string;
   stgApi: string;
-  preApi: string;
-  prdApi: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   sourceType?: string; //数据源类型，枚举值
   // 静态数据源映射
