@@ -70,6 +70,7 @@ pub fn run() {
             page::copy_page,
             // 出码
             dsl::export_json,
+            dsl::export_project,
             // 系统配置
             config::open_folder,
             config::set_theme,

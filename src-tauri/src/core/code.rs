@@ -106,4 +106,6 @@ export default {compName};"#,
     }
 
     fs::write("./Page.tsx", output).unwrap();
+
+    // TODO 写入路由数据
 }

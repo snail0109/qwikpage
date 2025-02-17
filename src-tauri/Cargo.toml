@@ -33,6 +33,7 @@ rocket = { version = "0.5.1", features = ["json"] }
 async-trait = "0.1.85"
 dark-light = "1.1.1"
 
+
 # Algorithms
 uuid = { version = "1.11.0", features = ["v4"] }
 
@@ -42,7 +43,8 @@ tauri-plugin-opener = "2"
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-single-instance = "2"
-
+zip = "2.2.2"
+reqwest = { version = "0.12", features = ["blocking"] }
 
 [target.'cfg(windows)'.dependencies]
 deelevate = "0.2.0"
