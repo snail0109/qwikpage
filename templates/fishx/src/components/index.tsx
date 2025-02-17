@@ -1,9 +1,10 @@
 import { Image, Text } from './Basic';
 import { Col, Divider, Row, Space } from './Layout';
 import { Flex, Form } from './Container';
+import { SearchForm, MarsTable } from './Scene';
 import { PageWrapper } from './PageWrapper';
 import { FormItem, Input } from './FormItems';
-import { Button } from './Functional';
+import { Button, AuthButton } from './Functional';
 
 export {
     Image,
@@ -17,5 +18,8 @@ export {
     Form,
     FormItem,
     Input,
-    Button,  
+    Button, 
+    AuthButton, 
+    SearchForm,
+    MarsTable
 }

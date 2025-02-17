@@ -1,5 +1,5 @@
 import { ComponentType } from '@/types';
-import { usePageStore } from 'stores/pageStore';
+import { usePageStore } from '@/stores/pageStore';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Button, Space } from 'antd';
 
