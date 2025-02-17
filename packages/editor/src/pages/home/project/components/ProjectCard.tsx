@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Typography, Avatar, Dropdown, Tooltip } from "antd";
+import { Typography, Avatar, Dropdown, Tooltip, message } from "antd";
 import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined, ExportOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { openUrl } from '@tauri-apps/plugin-opener';
@@ -49,7 +49,9 @@ export default function Category({ list }: { list: IProject[] }) {
             return handleOpenProject(id);
         }
         if (_key === 'export') {
-            return handleExportProjectCode(id);
+            return handleExportProjectCode(id).catch(res=> {
+                message.error(res);
+            });
         }
     };
 
