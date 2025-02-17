@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import { Select, Switch, Button, Space, Tooltip } from 'antd';
 import { EyeOutlined, SaveOutlined, SettingOutlined, LeftOutlined } from '@ant-design/icons';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { usePageStore } from '@/stores/pageStore';
 import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import { pageService } from '@/services';
@@ -79,6 +80,11 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
     }
   };
 
+  const handlePreview = () => {
+    const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${projectId}/${path}`;
+    openUrl(previewUrl)
+  }
+
   return (
     <>
       <div className={`${styles.designerBar} ${mode === 'preview' ? styles.hidden : ''}`}>
@@ -109,7 +115,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
           <Button type="text" icon={<SaveOutlined />} onClick={savePageData} loading={loading}>
             保存
           </Button>
-          <Button type="text" icon={<EyeOutlined />} onClick={() => setMode('preview')}>
+          <Button type="text" icon={<EyeOutlined />} onClick={() => handlePreview()}>
             预览
           </Button>
         </Space>
