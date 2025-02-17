@@ -33,6 +33,7 @@ pub fn export_project(app: AppHandle, id: String) -> Result<(), String> {
         fs::create_dir_all(&code_dir).map_err(|e| format!("创建目录失败: {}", e))?;
     }
 
+    // TODO  处理异常
     download_temp(&code_dir).unwrap();
 
     info!("查询项目页面信息: {:?}", id);

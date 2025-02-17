@@ -4,20 +4,30 @@ use chrono::Local;
 use dirs;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use serde_json::Value;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Element {
     pub id: String,
+    #[serde(rename = "parentId")]
+    pub parent_id: Option<String>,
     #[serde(rename = "type")]
     pub type_name: String,
+    pub name: String,
+    pub elements: Vec<Element>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ElementConfig {
+    pub id: String,
+}
+
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ElementObj {
     pub config: Value,
 }
 
@@ -25,7 +35,7 @@ pub struct ElementConfig {
 pub struct PageContent {
     pub elements: Vec<Element>,
     #[serde(rename = "elementsMap")]
-    pub elements_map: HashMap<String, ElementConfig>,
+    pub elements_map: HashMap<String, ElementObj>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

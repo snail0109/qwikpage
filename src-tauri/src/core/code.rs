@@ -3,8 +3,7 @@ use reqwest;
 use serde_json::Value;
 use std::{collections::HashSet, fs, path::PathBuf};
 use zip;
-
-use crate::models::page::{Page, PageContent};
+use crate::models::page::{Element, Page, PageContent};
 
 const REPLACEMENT_CHARACTER: &str = "##replace##";
 
@@ -43,7 +42,7 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
 
     let mut components = Vec::new();
     // 存储组件类型
-    let mut components_types = HashSet::new();
+    let mut import_components_types = HashSet::new();
 
     // TODO 处理页面级别的事件和属性
 
@@ -54,25 +53,22 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
 
     // 遍历页面元素
     for element in &page_data.elements {
-        let element_id = &element.id;
-        let component_type = &element.type_name;
-
-        // 记录组件类型
-        components_types.insert(component_type.clone());
-
-        // 如果页面元素的配置存在，则生成组件字符串
-        if let Some(config) = page_data.elements_map.get(element_id) {
-            let js_config = value_to_js(&config.config);
-            // TODO 透传 antd 组件的配置
-            components.push(format!("<{component_type} config={{{js_config}}} />"));
-        }
+        // import_components_types 传入到 generate_component_string 方法内部去调用
+        let component_str = generate_component_string(&element, &page_data, &mut import_components_types);
+        // if element.type_name == "Text" {
+        //     import_components_types.insert(String::from("Typography"));
+        // } else {
+        //     import_components_types.insert(element.type_name.clone());
+        // }
+        import_components_types.insert(element.type_name.clone());
+        components.push(component_str);
     }
 
     // 生成 antd 导入语句
-    let mut sorted_types: Vec<String> = components_types.into_iter().collect();
+    let mut sorted_types: Vec<String> = import_components_types.into_iter().collect();
     sorted_types.sort();
     let antd_import = if !sorted_types.is_empty() {
-        format!("import {{ {} }} from 'antd';\n", sorted_types.join(", "))
+        format!("import {{ {} }} from '@/components';\n", sorted_types.join(", "))
     } else {
         String::new()
     };
@@ -82,12 +78,13 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
 
     let output = format!(
         r#"import React from 'react';
+import {{ PageWrapper }} from '@components/PageWrapper';
 {antd_import}
 function {compName}() {{
   return (
-    <div>
+    <PageWrapper>
       {components}
-    </div>
+    </PageWrapper>
   );
 }}
 
@@ -255,4 +252,38 @@ pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+
+
+fn generate_component_string(element: &Element, page_data: &PageContent, import_components_types: &mut HashSet<String>) -> String {
+    let component_type = &element.type_name;
+    import_components_types.insert(component_type.clone());
+    // let text = String::from("Typography.Text");
+    // if component_type == "Text" {
+    //     component_type = &text;
+    // }
+
+    let element_id = &element.id;
+    let child_elements: &Vec<Element> = &element.elements;
+    
+    // 获取组件的配置
+    let js_config = page_data
+        .elements_map
+        .get(element_id)
+        .map(|config| value_to_js(&config.config))
+        .unwrap_or_else(|| "null".to_string());
+
+    // 递归处理子组件
+    let child_components: Vec<String> = child_elements
+        .iter()
+        .map(|child| generate_component_string(child, page_data, import_components_types))
+        .collect();
+
+    if child_components.is_empty() {
+        format!("<{component_type} config={{{js_config}}} />")
+    } else {
+        let children_str = child_components.join("\n");
+        format!("<{component_type} config={{{js_config}}}>\n{children_str}\n</{component_type}>")
+    }
 }
