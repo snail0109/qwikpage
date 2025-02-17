@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import storage from '@/utils/storage';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'fishx';
 import { renderFormula, getPageId } from '@/utils/util';
 
 const renderBtn = (props: any) => (<Button {...props} onClick={props.onClick}>

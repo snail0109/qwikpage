@@ -13,7 +13,7 @@ export interface IConfig {
  * @param style 组件样式
  * @returns
  */
-const MFlex = ({ id, type, config, elements }: ComponentType, ref: any) => {
+const MFlex = ({ id, type, config, elements, children }: ComponentType, ref: any) => {
   const [visible, setVisible] = useState(true);
 
   // 对外暴露方法
@@ -32,7 +32,7 @@ const MFlex = ({ id, type, config, elements }: ComponentType, ref: any) => {
     visible && (
       <Flex style={config.style} {...config.props} data-id={id} data-type={type}>
         {/* {elements?.length ? <MarsRender elements={elements || []} /> : <></>} */}
-        {config.props.children}
+        {children}
       </Flex>
     )
   );

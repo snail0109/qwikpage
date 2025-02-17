@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
  * @param attr 组件其它属性，比如：id、type、className
  * @returns
  */
-const MForm = ({ id, config, elements, onFinish, onChange }: ComponentType, ref: any) => {
+const MForm = ({ id, config, elements, onFinish, onChange, children }: ComponentType, ref: any) => {
   const [form] = Form.useForm();
   const { formData, setFormData } = usePageStore(
     useShallow((state) => {
@@ -107,7 +107,7 @@ const MForm = ({ id, config, elements, onFinish, onChange }: ComponentType, ref:
       <FormContext.Provider value={{ initValues }}>
         <Form form={form} style={config.style} {...config.props} initialValues={initialValues} onFinish={handleFinish} onValuesChange={handleChange}>
           {/* <MarsRender elements={elements} /> */}
-          {config.props.children}
+          {children}
         </Form>
       </FormContext.Provider>
     )

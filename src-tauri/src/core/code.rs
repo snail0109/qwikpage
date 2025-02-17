@@ -280,7 +280,9 @@ fn generate_component_string(element: &Element, page_data: &PageContent, import_
         .map(|child| generate_component_string(child, page_data, import_components_types))
         .collect();
 
-    if child_components.is_empty() {
+     // 如果 component_type 是 Button 也需要特殊处理
+
+    if  child_components.is_empty() {
         format!("<{component_type} config={{{js_config}}} />")
     } else {
         let children_str = child_components.join("\n");

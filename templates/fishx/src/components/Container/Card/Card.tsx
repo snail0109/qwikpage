@@ -8,7 +8,7 @@ import { omit } from 'lodash-es';
  * @param style 组件样式
  * @returns
  */
-const MCard = ({ config, elements, onClick }: ComponentType, ref: any) => {
+const MCard = ({ config, elements, onClick, children }: ComponentType, ref: any) => {
   const [visible, setVisible] = useState(true);
   // 对外暴露方法
   useImperativeHandle(ref, () => {
@@ -42,7 +42,7 @@ const MCard = ({ config, elements, onClick }: ComponentType, ref: any) => {
       >
         {meta.title || meta.description ? <Card.Meta {...meta} /> : null}
         {/* <MarsRender elements={elements || []} /> */}
-        {config.props.children}
+        {children}
       </Card>
     )
   );
