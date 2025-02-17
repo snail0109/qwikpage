@@ -16,7 +16,7 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MFormItem = ({ id, type, config, elements }: ComponentType<IConfig>, ref: any) => {
+const MFormItem = ({ id, type, config, elements, children }: ComponentType<IConfig>, ref: any) => {
   const [visible, setVisible] = useState(true);
 
   // 对外暴露方法
@@ -35,7 +35,7 @@ const MFormItem = ({ id, type, config, elements }: ComponentType<IConfig>, ref: 
     visible && (
       <Form.Item {...ItemProps} name={ItemProps.name || undefined} data-id={id} data-type={type}>
         {/* <span style={config.style}>{<MarsRender elements={elements || []} />}</span> */}
-        <span style={config.style}>{config.props.children}</span>
+        <span style={config.style}>{children}</span>
       </Form.Item>
     )
   );
