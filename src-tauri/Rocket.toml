@@ -1,5 +1,11 @@
+[default]
+port = 8789            # 默认监听端口
+
 [development]
-port = 8789
+port = 8789            # 默认监听端口
+
+[staging]
+port = 8789            # 默认监听端口
 
 [production]
-port = 8789
+port = 8789            # 默认监听端口
