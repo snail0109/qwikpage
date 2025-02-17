@@ -1,7 +1,7 @@
 use crate::core::code::{download_temp, export_page, handle_routes};
 use crate::models::page::Page;
 use crate::utils::get_app_root_dir;
-use log::info;
+use log::{ info, error };
 use serde_json::Value;
 use std::fs::{self, File};
 use std::io::Write;
@@ -33,8 +33,17 @@ pub fn export_project(app: AppHandle, id: String) -> Result<(), String> {
         fs::create_dir_all(&code_dir).map_err(|e| format!("创建目录失败: {}", e))?;
     }
 
-    // TODO  处理异常
-    download_temp(&code_dir).unwrap();
+   match download_temp(&code_dir) {
+    Ok(_) => {
+        info!("模板下载成功");
+    }
+    Err(e) => {
+        error!("下载模板失败: {}", e);
+        return Err(format!("下载模板失败: {}", e));
+    }
+}
+
+
 
     info!("查询项目页面信息: {:?}", id);
     let page_list = Page::list_with_options(Some(id), None).unwrap();
