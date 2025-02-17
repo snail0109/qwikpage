@@ -23,7 +23,7 @@ export interface IConfig {
  * @param attr 组件其它属性，比如：id、type、className
  * @returns
  */
-const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset }: ComponentType<IConfig>, ref: any) => {
+const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset, children }: ComponentType<IConfig>, ref: any) => {
   const [form] = Form.useForm();
   const emptyRef = useRef<HTMLDivElement>(null);
   const [isExpand, setIsExpand] = useState(false);
@@ -151,7 +151,7 @@ const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset }:
         <Form form={form} layout="inline" style={config.style} initialValues={initialValues} onValuesChange={handleValuesChange}>
           <div className={styles.formWrap} style={!isExpand ? { height: 32, overflow: 'hidden' } : {}}>
             {/* <MarsRender elements={elements} /> */}
-            {config.props.children}
+            {children}
             <div ref={emptyRef}></div>
           </div>
           <Space style={{ alignItems: 'baseline', marginLeft: 10 }}>

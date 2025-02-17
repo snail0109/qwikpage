@@ -42,7 +42,7 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MarsTable = ({ config, elements, onCheckedChange }: ComponentType<IConfig>, ref: any) => {
+const MarsTable = ({ config, elements, onCheckedChange, children }: ComponentType<IConfig>, ref: any) => {
   const [searchParams, setSearchParams] = useState<{
     [key: string]: any;
   }>({});
@@ -429,7 +429,7 @@ const MarsTable = ({ config, elements, onCheckedChange }: ComponentType<IConfig>
             {title && <div className={styles.title}>{config.props.leftTitle}</div>}
             <div className={styles.action}>
               {/* {elements?.length ? <MarsRender elements={elements} /> : null} */}
-              {config.props.children}
+              {children}
               {bulkActionList?.map((item) => {
                 return (
                   <AuthButton
