@@ -1,5 +1,6 @@
 import { Image, Text } from './Basic';
-import {Col, Divider, Row, Space} from './Layout';
+import { Col, Divider, Row, Space } from './Layout';
+import { Flex, Form } from './Container';
 import { PageWrapper } from './PageWrapper';
 
 export {
@@ -9,5 +10,7 @@ export {
     Col,
     Divider,
     Row,
-    Space   
+    Space,
+    Flex,
+    Form   
 }
