@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout } from 'antd';
-import Header from '../components/Header/Header';
-import Menu from '../components/Menu/Menu';
+// import Header from '../components/Header/Header';
+// import Menu from '../components/Menu/Menu';
 import { useProjectStore } from '@/stores/projectStore';
 import { getProjectDetail, getProjectMenu } from '@/api/index';
-import Tab from '../components/Tab';
-import Logo from '@/components/Logo/Logo';
-import BreadList from '@/components/BreadList/BreadList';
+// import Tab from '../components/Tab';
+// import Logo from '@/components/Logo/Logo';
+// import BreadList from '@/components/BreadList/BreadList';
 import { arrayToTree } from '@/utils/util';
 import storage from '@/utils/storage';
 import locale from 'antd/locale/zh_CN';
@@ -39,13 +39,11 @@ const AdminLayout = () => {
         if (!detail.id) {
           return navigate('/404?type=project');
         }
-        const menus = await getProjectMenu(projectId).catch(() => {
-          return navigate('/403?type=project');
-        });
-        if (!menus) return;
-        // 如果没有页面路径，跳转到欢迎页
-        if (!/project\/\d+\/\w+/.test(pathname)) navigate(`/project/${projectId}/welcome`);
-        const { menuTree, buttons, pageMap, menuMap } = arrayToTree(menus || []);
+        const paths = pathname.split("/").filter(v => v)
+        if (paths.length <= 2 || pathname.endsWith('welcome')) {
+          navigate(`/project/${projectId}/welcome`);
+        }
+        const { menuTree, buttons, pageMap, menuMap } = arrayToTree([]);
         storage.set('buttons', buttons);
         storage.set('pageMap', pageMap);
         setProjectInfo({
@@ -61,9 +59,9 @@ const AdminLayout = () => {
   }, [projectId]);
 
   // 计算渲染区容器实际高度
-  const calcHeight = useMemo(() => {
-    return projectInfo.tag ? `calc(100vh - 114px)` : `calc(100vh - 64px)`;
-  }, [projectInfo.tag]);
+  // const calcHeight = useMemo(() => {
+  //   return projectInfo.tag ? `calc(100vh - 114px)` : `calc(100vh - 64px)`;
+  // }, [projectInfo.tag]);
 
   // 定义Footer
   const Footer = () => (
@@ -84,43 +82,43 @@ const AdminLayout = () => {
         hashed: false,
       }}
     >
-      <Layout>
-        {/* 左右布局 */}
-        {projectInfo.layout === 1 && (
-          <Layout style={{ flexDirection: 'row' }}>
-            {/* 左侧Sider渲染 */}
-            <div style={{ width: collapsed ? 80 : 256, borderRight: '1px solid #e8e9eb' }}>
-              <Logo />
-              <Menu />
-            </div>
-            {/* 右侧内容渲染 */}
-            <div style={{ width: collapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 256px)' }}>
-              <Header />
-              {/* 加载页签 */}
-              {projectInfo.tag && <Tab />}
-              {/* 加载内容 */}
-              <div style={{ height: calcHeight, overflow: 'auto' }}>
-                <Outlet></Outlet>
-                {projectInfo.footer === 1 && <Footer />}
-              </div>
-            </div>
-          </Layout>
-        )}
-        {/* 上下布局 */}
-        {projectInfo.layout === 2 && (
-          <>
-            <Header />
-            {/* 加载页签 */}
-            {projectInfo.tag ? <Tab /> : null}
-            <Layout style={{ padding: 20, backgroundColor: '#f3f5f9', height: calcHeight, overflow: 'auto' }}>
-              {/* 加载面包屑 */}
-              {projectInfo.breadcrumb && <BreadList />}
-              <Outlet></Outlet>
-              {projectInfo.footer === 1 && <Footer />}
-            </Layout>
-          </>
-        )}
+      {/* <Layout> */}
+      {/* 左右布局 */}
+      {/* {projectInfo.layout === 1 && ( */}
+      <Layout style={{ flexDirection: 'row' }}>
+        {/* 左侧Sider渲染 */}
+        {/* <div style={{ width: collapsed ? 80 : 256, borderRight: '1px solid #e8e9eb' }}>
+            <Logo />
+            <Menu />
+          </div> */}
+        {/* 右侧内容渲染 */}
+        <div style={{ width: '100vw' }}>
+          {/* <Header /> */}
+          {/* 加载页签 */}
+          {/* {projectInfo.tag && <Tab />} */}
+          {/* 加载内容 */}
+          <div style={{ height: '100vh', overflow: 'auto' }}>
+            <Outlet></Outlet>
+            {projectInfo.footer === 1 && <Footer />}
+          </div>
+        </div>
       </Layout>
+      {/* )} */}
+      {/* 上下布局 */}
+      {/* {projectInfo.layout === 2 && ( */}
+      {/* <> */}
+      {/* <Header /> */}
+      {/* 加载页签 */}
+      {/* {projectInfo.tag ? <Tab /> : null} */}
+      {/* <Layout style={{ padding: 20, backgroundColor: '#f3f5f9', height: calcHeight, overflow: 'auto' }}> */}
+      {/* 加载面包屑 */}
+      {/* {projectInfo.breadcrumb && <BreadList />} */}
+      {/* <Outlet></Outlet> */}
+      {/* {projectInfo.footer === 1 && <Footer />} */}
+      {/* </Layout> */}
+      {/* </> */}
+      {/* )} */}
+      {/* </Layout> */}
     </ConfigProvider>
   );
 };

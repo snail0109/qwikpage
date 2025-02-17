@@ -1,16 +1,16 @@
 mod commands;
+mod constans;
 mod core;
 mod models;
 mod service;
 mod utils;
-mod constans;
 use crate::{
     commands::{config, dsl, menu, page, project},
     core::setup,
     service::configure_rocket,
-    utils::is_port_in_use
+    utils::is_port_in_use,
 };
-use log::{info, error};
+use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
@@ -64,6 +64,7 @@ pub fn run() {
             // 页面
             page::get_page_list,
             page::get_page_detail,
+            page::get_page_detail_with_path,
             page::add_page,
             page::update_page,
             page::delete_page,

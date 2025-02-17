@@ -25,6 +25,7 @@ export interface IMenuItem {
 export interface IPage {
   id: string,
   name: string,
+  path: string,
   remark?: string,
   projectId: string,
   pageData?: string,

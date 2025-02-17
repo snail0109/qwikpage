@@ -39,6 +39,32 @@ pub fn get_page_detail(id: String) -> Result<Page, ErrorResponse> {
     Ok(page)
 }
 
+#[command]
+pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Page, ErrorResponse> {
+    info!(
+        "Page::get_page_detail_with_path start, project_id: {:?}, path: {}",
+        project_id, path
+    );
+    let pages_list: PageList =
+        Page::list(1, 20, Some(project_id), Some("".to_string())).map_err(|e| {
+            error!("Failed to list pages: {}", e);
+            ErrorResponse::not_found(format!("无法获取页面列表: {}", e))
+        })?;
+    // 查找与给定 path 匹配的页面
+    for page in pages_list.list {
+        if page.path.as_ref() == Some(&format!("/{}", path)) {
+            // 进行匹配
+            info!("Page::getMartten, path: {}", path);
+            return Ok(page);
+        }
+    }
+    // 如果没有找到匹配的页面，返回一个错误
+    Err(ErrorResponse::not_found(format!(
+        "未找到匹配的页面，路径: {}",
+        path
+    )))
+}
+
 // menu
 #[command]
 pub fn add_page(
