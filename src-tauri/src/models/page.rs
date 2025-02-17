@@ -2,7 +2,6 @@ use crate::constans::{APP_IDENTIFIER, DATA_FORMAT, PAGE_DIR};
 use crate::utils::paginate;
 use chrono::Local;
 use dirs;
-use log::warn;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
