@@ -112,12 +112,16 @@ export default {compName};"#,
 }
 
 pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) {
+    let root_code_path = code_dir.join("app").join("src");
     // 读取路由文件
-    let routes_path = code_dir
-        .join("app")
-        .join("src")
+    let routes_path = root_code_path
         .join("config")
         .join("routes.ts");
+
+
+    let menus_path = root_code_path
+        .join("config")
+        .join("menu.ts");
 
     // 确保config目录存在
     if !routes_path.parent().unwrap().exists() {
@@ -132,13 +136,19 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
         String::new()
     };
 
+    let menus_content = if menus_path.exists() {
+        fs::read_to_string(&menus_path).unwrap_or_default()
+    } else {
+        String::new()
+    };
+
     let mut new_routes = String::new();
 
     let mut new_menus = String::new();
 
     for index in 0..page_len {
         let comp_name = format!("Page{}", index);
-        let page = page_list.get(index - 1);
+        // let page = page_list.get(index - 1);
         // TODO 如果页面也有 path 则 path 设置成页面的配置
 
         // 处理 Fishx 模版路由信息
@@ -165,8 +175,20 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
         routes_content
     };
 
+    // 在数组结束前插入新菜单
+    let updated_menus = if menus_content.contains("##replace##") {
+        menus_content.replace("##replace##", &format!("{}\n", new_menus))
+    } else {
+        menus_content
+    };
+
     // 写入更新后的路由配置
     fs::write(&routes_path, updated_routes).expect("failed to write routes file");
+
+    // 写入更新后的菜单配置
+    fs::write(&menus_path, updated_menus).expect("failed to write menus file");
+
+
 }
 
 pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
