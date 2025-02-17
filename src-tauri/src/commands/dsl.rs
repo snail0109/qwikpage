@@ -39,7 +39,7 @@ pub fn export_project(app: AppHandle, id: String) -> Result<(), String> {
     }
     Err(e) => {
         error!("下载模板失败: {}", e);
-        return Err(format!("下载模板失败: {}", e));
+        return Err(format!("下载模板失败: {}, 请关闭本地代理", e));
     }
 }
 
