@@ -1,3 +1,4 @@
+import React from 'react';
 import { ComponentType } from '@/types';
 import { Image } from 'antd';
 import { useState, useImperativeHandle, forwardRef } from 'react';
