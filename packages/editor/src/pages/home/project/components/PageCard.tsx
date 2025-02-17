@@ -19,7 +19,7 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
   const handleAction = async (type: string, params: IPage) => {
     if (type === 'preview') {
       const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${params.projectId}/${params.path}`;
-      await openUrl(previewUrl)
+      openUrl(previewUrl)
       return;
     }
 
