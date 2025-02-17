@@ -18,7 +18,7 @@ pub struct Element {
 
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-struct ElementConfig {
+pub struct ElementConfig {
    pub config: Value,
 }
 
