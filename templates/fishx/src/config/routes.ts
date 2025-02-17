@@ -4,7 +4,7 @@ const routerConfig = [
     component: '../layouts/BasicLayout',
     routes: [
       { path: '/', component: './Home' },
-      // ##replace##
+      ##replace##
     ],
   },
 ];

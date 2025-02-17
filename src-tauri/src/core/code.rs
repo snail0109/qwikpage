@@ -6,6 +6,8 @@ use zip;
 
 use crate::models::page::{Page, PageContent};
 
+const REPLACEMENT_CHARACTER: &str = "##replace##";
+
 // 将 JSON 值转换为 JavaScript 表示的字符串
 fn value_to_js(v: &Value) -> String {
     match v {
@@ -147,13 +149,20 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
     let mut new_menus = String::new();
 
     for index in 0..page_len {
-        let comp_name = format!("Page{}", index);
-        // let page = page_list.get(index - 1);
+        let comp_name = format!("Page{}", index+1);
+        let page = page_list.get(index);
         // TODO 如果页面也有 path 则 path 设置成页面的配置
+        // 如果 page 对象 path 字段有值，则取path 没有则取comp_namel
+        let page_path = page
+        .and_then(|page| page.path.clone()) // 解包 page 和 page.path
+        .filter(|path| !path.is_empty()) // 过滤掉空字符串
+        // unwrap_or / + comp_name.clone()
+        .unwrap_or(format!("/{}", comp_name));
 
         // 处理 Fishx 模版路由信息
         let new_route = format!(
-            "\n      {{path: '/{route_name}', component: './{route_name}'}},",
+            "\n      {{ path: '{route_path}', component: './{route_name}' }},",
+            route_path = page_path,
             route_name = &comp_name
         );
 
@@ -161,7 +170,8 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
 
         // 处理 Fishx 模版菜单信息
         let new_menu = format!(
-            "\n      {{ \n path: '/{route_name}', \n name: '{route_name}' \n}},",
+            "\n  {{\n    path: '{route_path}',\n    name: '{route_name}',\n  }},",
+            route_path = page_path,
             route_name = &comp_name
         );
 
@@ -169,15 +179,15 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
     }
 
     // 在数组结束前插入新路由
-    let updated_routes = if routes_content.contains("##replace##") {
-        routes_content.replace("##replace##", &format!("{}\n", new_routes))
+    let updated_routes = if routes_content.contains(REPLACEMENT_CHARACTER) {
+        routes_content.replace(REPLACEMENT_CHARACTER, &format!("{}\n", new_routes))
     } else {
         routes_content
     };
 
     // 在数组结束前插入新菜单
-    let updated_menus = if menus_content.contains("##replace##") {
-        menus_content.replace("##replace##", &format!("{}\n", new_menus))
+    let updated_menus = if menus_content.contains(REPLACEMENT_CHARACTER) {
+        menus_content.replace(REPLACEMENT_CHARACTER, &format!("{}\n", new_menus))
     } else {
         menus_content
     };

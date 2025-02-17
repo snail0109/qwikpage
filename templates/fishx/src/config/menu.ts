@@ -3,7 +3,7 @@ const asideMenuConfig = [
     path: '/',
     name: 'Home',
   },
-  // ##replace##
+  ##replace##
 ];
 
 const config = {

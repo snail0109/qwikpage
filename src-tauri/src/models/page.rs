@@ -168,7 +168,6 @@ impl Page {
             return Err("页面文件不存在".to_string());
         }
         let entries = fs::read_dir(page_dir).unwrap();
-        info!("查询页面文件: {:?}", entries);
         for entry in entries {
             let entry = entry.unwrap();
             let path = entry.path();
