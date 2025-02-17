@@ -71,7 +71,7 @@ const panels = [
   {
     key: 'CodingPanel',
     icon: <CodeOutlined style={{ fontSize: 16 }} />,
-    label: '代码',
+    label: 'DSL',
     title: '页面JSON',
     children: () => {
       return <CodingPanel />;
