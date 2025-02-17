@@ -156,7 +156,7 @@ impl Page {
     }
 
     // 根据页面参数查询对应页面
-    pub fn lis_with_options(
+    pub fn list_with_options(
         project_id: Option<String>,
         path:Option<String>,
     ) -> Result<Vec<Page>, String> {
