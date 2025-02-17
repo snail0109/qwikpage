@@ -81,7 +81,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   };
 
   const handlePreview = () => {
-    const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${projectId}/${path}`;
+    const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${projectId}${path}`;
     openUrl(previewUrl)
   }
 
