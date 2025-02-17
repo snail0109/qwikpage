@@ -1,10 +1,10 @@
-use serde_json::{from_str, Value};
+use log::info;
+use reqwest;
+use serde_json::Value;
 use std::{collections::HashSet, fs, path::PathBuf};
+use zip;
 
-use crate::{
-    models::page::{Page, PageContent},
-    utils::get_app_root_dir,
-};
+use crate::models::page::{Page, PageContent};
 
 // 将 JSON 值转换为 JavaScript 表示的字符串
 fn value_to_js(v: &Value) -> String {
@@ -36,7 +36,7 @@ fn escape_string(s: &str) -> String {
         .replace('\t', "\\t")
 }
 
-pub fn export_page(index: usize , code_dir: PathBuf, page: Page) {
+pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
     // 存储生成的组件字符
 
     let mut components = Vec::new();
@@ -90,7 +90,7 @@ function {compName}() {{
 }}
 
 export default {compName};"#,
-        compName = comp_name,
+        compName = &comp_name,
         components = components.join("\n      "),
         antd_import = antd_import
     );
@@ -99,13 +99,128 @@ export default {compName};"#,
 
     // 将生成的代码写入 GeneratedPage.tsx 文件
     // TODO: 约定一下输出文件的路径
-    let app_data_dir = get_app_root_dir();
-    let code_dir = app_data_dir.join("qwikpage-code");
-    if !code_dir.exists() {
-        fs::create_dir_all(&code_dir).expect("failed to create pages dir");
+    let fe_page_dir = code_dir
+        .join("app")
+        .join("src")
+        .join("pages")
+        .join(&comp_name);
+    if !fe_page_dir.exists() {
+        fs::create_dir_all(&fe_page_dir).expect("failed to find code dir");
     }
 
-    fs::write("./Page.tsx", output).unwrap();
+    fs::write(fe_page_dir.join("index.tsx"), output).unwrap();
+}
 
-    // TODO 写入路由数据
+pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) {
+    // 读取路由文件
+    let routes_path = code_dir
+        .join("app")
+        .join("src")
+        .join("config")
+        .join("routes.ts");
+
+    // 确保config目录存在
+    if !routes_path.parent().unwrap().exists() {
+        fs::create_dir_all(routes_path.parent().unwrap())
+            .expect("failed to create config directory");
+    }
+
+    // 读取现有路由配置或创建新的
+    let routes_content = if routes_path.exists() {
+        fs::read_to_string(&routes_path).unwrap_or_default()
+    } else {
+        String::new()
+    };
+
+    let mut new_routes = String::new();
+
+    let mut new_menus = String::new();
+
+    for index in 0..page_len {
+        let comp_name = format!("Page{}", index);
+        let page = page_list.get(index - 1);
+        // TODO 如果页面也有 path 则 path 设置成页面的配置
+
+        // 处理 Fishx 模版路由信息
+        let new_route = format!(
+            "\n      {{path: '/{route_name}', component: './{route_name}'}},",
+            route_name = &comp_name
+        );
+
+        new_routes.push_str(&new_route);
+
+        // 处理 Fishx 模版菜单信息
+        let new_menu = format!(
+            "\n      {{ \n path: '/{route_name}', \n name: '{route_name}' \n}},",
+            route_name = &comp_name
+        );
+
+        new_menus.push_str(&new_menu);
+    }
+
+    // 在数组结束前插入新路由
+    let updated_routes = if routes_content.contains("##replace##") {
+        routes_content.replace("##replace##", &format!("{}\n", new_routes))
+    } else {
+        routes_content
+    };
+
+    // 写入更新后的路由配置
+    fs::write(&routes_path, updated_routes).expect("failed to write routes file");
+}
+
+pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
+    // 下载代码模板
+    let template_url = String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip");
+    let template_path = code_dir.join("fishx-template.zip");
+
+    info!("下载代码模板......");
+    let response =
+        reqwest::blocking::get(template_url).map_err(|e| format!("下载模板失败: {}", e))?;
+    let content = response
+        .bytes()
+        .map_err(|e| format!("读取响应内容失败: {}", e))?;
+
+    info!("保存zip文件");
+    fs::write(&template_path, content).map_err(|e| format!("保存模板文件失败: {}", e))?;
+
+    info!("解压文件");
+    let file = fs::File::open(&template_path).map_err(|e| format!("打开zip文件失败: {}", e))?;
+    let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("读取zip文件失败: {}", e))?;
+
+    info!("解压所有文件");
+    for i in 0..archive.len() {
+        let mut file = archive
+            .by_index(i)
+            .map_err(|e| format!("访问zip文件条目失败: {}", e))?;
+        let outpath = code_dir.join(file.name());
+
+        if file.name().ends_with('/') {
+            fs::create_dir_all(&outpath).map_err(|e| format!("创建目录失败: {}", e))?;
+        } else {
+            if let Some(p) = outpath.parent() {
+                if !p.exists() {
+                    fs::create_dir_all(p).map_err(|e| format!("创建父目录失败: {}", e))?;
+                }
+            }
+            let mut outfile =
+                fs::File::create(&outpath).map_err(|e| format!("创建文件失败: {}", e))?;
+            std::io::copy(&mut file, &mut outfile)
+                .map_err(|e| format!("复制文件内容失败: {}", e))?;
+        }
+    }
+
+    info!("删除zip文件");
+    fs::remove_file(&template_path).map_err(|e| format!("删除zip文件失败: {}", e))?;
+
+    // mac 下会生成 __MACOSX 文件
+    #[cfg(target_os = "macos")]
+    {
+        let macosx_path = template_path.with_file_name("__MACOSX");
+        if macosx_path.exists() {
+            fs::remove_dir_all(macosx_path).map_err(|e| format!("删除macosx文件夹失败: {}", e))?;
+        }
+    }
+
+    Ok(())
 }

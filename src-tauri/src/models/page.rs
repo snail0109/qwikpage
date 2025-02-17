@@ -7,7 +7,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use log::warn;
+use log::{info, warn};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Element {
@@ -163,16 +163,18 @@ impl Page {
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir();
         if !page_dir.exists() {
-            warn!("页面文件不存在");
+            warn!("页面文件不存在");                     
             return Err("页面文件不存在".to_string());
         }
         let entries = fs::read_dir(page_dir).unwrap();
+        info!("查询页面文件: {:?}", entries);
         for entry in entries {
             let entry = entry.unwrap();
             let path = entry.path();
             if path.is_file() {
                 let json = fs::read_to_string(&path).unwrap();
                 let page: Page = serde_json::from_str(&json).unwrap();
+                info!("查询页面文件: {:?}", page);
                 if let Some(project_id) = &project_id {
                     if page.project_id != *project_id {
                         continue;
