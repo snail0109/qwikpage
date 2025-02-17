@@ -1,0 +1,48 @@
+{
+  "name": "app",
+  "version": "0.0.1",
+  "description": "基于FDX4的ts模板",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development fishx dev",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=2048 fishx build",
+    "test": "fishx test",
+    "lint": "cross-env NODE_OPTIONS=--max_old_space_size=2048 fishx lint --ext=.ts,.tsx --eslint --type=typescript src/",
+    "prettier": "fishx lint --prettier src/",
+    "fix": "cross-env NODE_OPTIONS=--max_old_space_size=2048 fishx lint --ext=.ts,.tsx --eslint --type=typescript --fix src/"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "fishx lint --ext=.ts,.tsx --eslint --type=typescript --staged"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 9-11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version",
+      "ie 9-11"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.8.1",
+    "antd": "^5.21.1",
+    "dayjs": "^1.11.13",
+    "fishx": "5.0.10",
+    "react": "^18.0.0",
+    "react-app-polyfill": "^1.0.6",
+    "react-dom": "^18.0.0",
+    "react-redux": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "babel-plugin-import": "^1.12.2",
+    "cross-env": "^7.0.2"
+  }
+}

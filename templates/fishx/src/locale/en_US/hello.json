@@ -1,0 +1,6 @@
+{
+  "HELLO_GREETING": "Welcome!",
+  "HELLO_SIMPLE": "Thanks you!",
+  "HELLO_REDUX": "I am translate by react-intl-universal",
+  "HELLO_DIFF": "Hello, {name}. Welcome to {where}!"
+}

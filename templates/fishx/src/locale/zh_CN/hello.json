@@ -1,0 +1,6 @@
+{
+  "HELLO_GREETING": "欢迎！",
+  "HELLO_SIMPLE": "谢谢！",
+  "HELLO_REDUX": "我是由react-intl-universal翻译的",
+  "HELLO_DIFF": "你好, {name}. 欢迎来到 {where}!"
+}
