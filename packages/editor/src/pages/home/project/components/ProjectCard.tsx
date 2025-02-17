@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Typography, Avatar, Dropdown, Tooltip } from "antd";
-import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined } from "@ant-design/icons";
+import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined, ExportOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
 import styles from "./../page.module.less";
 const { Paragraph } = Typography;
@@ -23,6 +24,11 @@ export default function Category({ list }: { list: IProject[] }) {
         navigate(`/project/pages?projectId=${id}`);
     };
 
+    // 导出项目代码
+    const handleExportProjectCode = async (id: string) => {
+        return await invoke<void>("export_project", { id: id });
+    };
+
     // 卡片下拉项
     const items: MenuProps["items"] = [
         {
@@ -30,11 +36,21 @@ export default function Category({ list }: { list: IProject[] }) {
             icon: <SettingOutlined />,
             label: "项目配置",
         },
+        {
+            key: "export",
+            icon: <ExportOutlined />,
+            label: "导出代码",
+        },
     ];
 
     // 环境跳转
     const onClick = (_key: string, id: string) => {
-        return handleOpenProject(id);
+        if (_key === 'config') {
+            return handleOpenProject(id);
+        }
+        if (_key === 'export') {
+            return handleExportProjectCode(id);
+        }
     };
 
     // 预览跳转

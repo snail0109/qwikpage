@@ -5,6 +5,7 @@ use std::io::{Write, Read};
 use crate::page::get_page_list;
 use crate::core::code::export_page;
 use crate::utils::get_app_root_dir;
+use log::{error, info, warn};
 use reqwest;
 use zip;
 use crate::models::page::{Page, PageList};
@@ -32,6 +33,7 @@ pub fn export_project(id: String) -> Result<(), String> {
         fs::create_dir_all(&code_dir).map_err(|e| format!("创建目录失败: {}", e))?;
     }
 
+    info!("code_dir: {}", code_dir.display());
     // 下载代码模板
     let template_url = "https://fish.iwhalecloud.com/qwikpage-fishx/app.zip";
     let template_path = code_dir.join("fishx-template.zip");
