@@ -6,7 +6,7 @@ mod models;
 mod service;
 mod utils;
 use crate::{
-    commands::{config, dsl, menu, page, project},
+    commands::{config, dsl, page, project},
     core::setup,
     service::configure_rocket,
     utils::is_port_in_use,
@@ -56,12 +56,6 @@ pub fn run() {
             project::get_project_detail,
             project::update_project,
             project::delete_project,
-            // 菜单
-            menu::get_menu_list,
-            menu::add_menu,
-            menu::copy_menu,
-            menu::update_menu,
-            menu::delete_menu,
             // 页面
             page::get_page_list,
             page::get_page_detail,

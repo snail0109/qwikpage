@@ -57,10 +57,6 @@ export const router = [
             path: '/project/:id/config',
             element: lazyLoad(React.lazy(() => import('@/pages/admin/config/index'))),
           },
-          {
-            path: '/project/:id/menu',
-            element: lazyLoad(React.lazy(() => import('@/pages/admin/menu/index'))),
-          },
         ],
       },
       {

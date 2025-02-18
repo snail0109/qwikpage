@@ -6,15 +6,12 @@ import {
   CodeOutlined,
   ApiOutlined,
   FunctionOutlined,
-  ProjectOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 import ComponentPanel from './ComponentPanel';
 import SpinLoading from '@/components/SpinLoading';
 import styles from './index.module.less';
 
-// 页面列表
-const PageList = lazy(() => import('./Pages/PageList'));
 // 组件大纲
 const OutlinePanel = lazy(() => import('./OutlinePanel'));
 // 页面源码
@@ -41,15 +38,6 @@ const panels = [
     ),
     children: () => {
       return <ComponentPanel />;
-    },
-  },
-  {
-    key: 'home',
-    icon: <ProjectOutlined style={{ fontSize: 16 }} />,
-    label: '页面',
-    title: '页面列表',
-    children: () => {
-      return <PageList />;
     },
   },
   {

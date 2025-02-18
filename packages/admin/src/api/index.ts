@@ -10,15 +10,6 @@ export const getPageDetailWithPath = (projectId: string, pageUrl: string) => {
   return request.get(`/page/detail/${projectId}/${pageUrl}`);
 }
 
-// 获取菜单详情
-// export const getMenuDetail = (projectId: string, menuId: string) => {
-//   return request.get(`/menu/detail/${projectId}/${menuId}`);
-// }
-
-// 获取项目对应的菜单列表
-export const getProjectMenu = (projectId: string) => {
-  return request.get(`/project/menus/${projectId}`);
-};
 
 // 获取项目配置
 export const getProjectDetail = (projectId: string) => {
