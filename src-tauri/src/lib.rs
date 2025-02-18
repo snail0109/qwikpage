@@ -5,9 +5,9 @@ mod core;
 mod models;
 mod service;
 mod utils;
+mod setup;
 use crate::{
-    commands::{config, dsl, page, project},
-    core::setup,
+    commands::{group, config, dsl, page, project},
     service::configure_rocket,
     utils::is_port_in_use,
 };
@@ -50,6 +50,11 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            // 分组
+            group::add_group,
+            group::edit_group,
+            group::delete_group,
+            group::query_groups,
             // 项目
             project::get_project_list,
             project::add_project,
