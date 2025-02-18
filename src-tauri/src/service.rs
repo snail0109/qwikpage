@@ -1,5 +1,5 @@
-use crate::commands::{menu, page, project};
-use crate::models::{menu::Menu, page::Page, project::Project};
+use crate::commands::{page, project};
+use crate::models::{page::Page, project::Project};
 use anyhow::Result;
 use rocket::Config;
 use rocket::{
@@ -51,8 +51,6 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
             "/api",
             routes![
                 get_project_detail,
-                get_project_menus,
-                get_menu_detail,
                 get_page_detail,
                 get_page_detail_with_path
             ],
@@ -77,23 +75,6 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
     }
 }
 
-// 获取项目菜单
-#[get("/project/menus/<id>")]
-pub fn get_project_menus(id: String) -> Result<Json<Vec<Menu>>, Status> {
-    match menu::get_menu_list(id, None, -1) {
-        Ok(menus) => Ok(Json(menus)),
-        Err(_) => Err(Status::InternalServerError),
-    }
-}
-
-// 获取菜单详情
-#[get("/menu/detail/<project_id>/<id>")]
-pub fn get_menu_detail(project_id: String, id: String) -> Result<Json<Menu>, Status> {
-    match menu::get_menu_detail(id, project_id) {
-        Ok(menu) => Ok(Json(menu)),
-        Err(_) => Err(Status::InternalServerError),
-    }
-}
 
 // 获取页面详情
 #[get("/page/detail/<id>")]

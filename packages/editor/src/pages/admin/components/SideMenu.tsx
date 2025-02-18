@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd/es/menu';
 import { useEffect, useState } from 'react';
-import { ProjectOutlined, MenuOutlined } from '@ant-design/icons';
+import { ProjectOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { usePageStore } from '@/stores/pageStore';
 
@@ -32,7 +32,6 @@ const SideMenu = () => {
     }
     setMenuList([
       getItem('项目配置', `/project/${id}/config`, <ProjectOutlined />),
-      getItem('菜单列表', `/project/${id}/menu`, <MenuOutlined />),
     ]);
     setSelectedKeys([location.pathname]);
   }, []);

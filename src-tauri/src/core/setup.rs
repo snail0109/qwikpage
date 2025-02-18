@@ -22,5 +22,8 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         info!("create page_dir dir: {:?}", page_dir);
         fs::create_dir_all(&page_dir).expect("failed to create pages dir");
     }
+
+    // 数据备份迁移
+
     Ok(())
 }
