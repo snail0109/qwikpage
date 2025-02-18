@@ -1,25 +1,21 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Layout, Menu, MenuProps, Button, Space, Switch, message } from "antd";
-import { ProjectOutlined, SunOutlined, MoonFilled, OneToOneOutlined, SettingOutlined } from "@ant-design/icons";
+import { Layout, Button, Space, Switch } from "antd";
+import { SunOutlined, MoonFilled, SettingOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import storage from "@/utils/storage";
 import { invoke } from "@tauri-apps/api/core";
-// import useAppConfigStore from "@/stores/appConfigStore";
 
 /**
  * 编辑器顶部组件
  */
 const Header = memo(() => {
-    const [isNav, setNav] = useState(false);
-    const [navKey, setNavKey] = useState(["projects"]);
     const [pageFrom, setPageFrom] = useState("projects");
     const navigate = useNavigate();
     const { id } = useParams();
     const location = useLocation();
-    // const { theme, setTheme } = useAppConfigStore();
-    const { page, mode, theme, setMode, setTheme } = usePageStore((state) => {
+    const { mode, theme, setMode, setTheme } = usePageStore((state) => {
         return {
             page: state.page,
             mode: state.mode,
@@ -40,30 +36,7 @@ const Header = memo(() => {
         navigate("/projects");
     };
 
-    // Tab切换项
-    const items: MenuProps["items"] = useMemo(
-        () => [
-            {
-                label: "项目列表",
-                key: "projects",
-                icon: <ProjectOutlined style={{ fontSize: 16 }} />,
-            },
-            {
-                label: "页面列表",
-                key: "pages",
-                icon: <OneToOneOutlined style={{ fontSize: 16 }} />,
-            },
-        ],
-        []
-    );
-
     useEffect(() => {
-        if (["/projects", "/pages"].includes(location.pathname)) {
-            setNav(true);
-            setNavKey([location.pathname.slice(1)]);
-        } else {
-            setNav(false);
-        }
         setPageFrom(location.pathname.slice(1));
     }, [location]);
 
@@ -78,11 +51,6 @@ const Header = memo(() => {
         setTheme(isDark ? "dark" : "light");
     }, []);
 
-    // Tab切换点击
-    const handleTab: MenuProps["onClick"] = (e) => {
-        navigate(`/${e.key}`);
-    };
-
     // 退出预览模式
     const handleExitPreview = () => {
         setMode("edit");
@@ -91,8 +59,6 @@ const Header = memo(() => {
     const onOpenSettingClick = async () => {
         return await invoke<void>("open_folder");
     };
-
-    const isEditPage = pageFrom === `editor/${id}/edit` || pageFrom === `editor/${id}/template`;
 
     return (
         <>
@@ -104,21 +70,6 @@ const Header = memo(() => {
                     />
                     <span>QwikPage</span>
                 </div>
-                {/* 首页 - 导航菜单 */}
-                {isNav && (
-                    <div className={styles.menu}>
-                        <Menu
-                            // 在Safari下面会显示... 先设置一个临时宽度
-                            style={{ minWidth: "240px" }}
-                            onClick={handleTab}
-                            selectedKeys={navKey}
-                            theme={theme}
-                            mode="horizontal"
-                            items={items}
-                        />
-                    </div>
-                )}
-
                 {/* 用户信息&发布&发布记录 */}
                 <div className={styles.user}>
                     {/* 系统设置的按钮图标 */}
