@@ -54,7 +54,7 @@ const MButton = ({ id, type, config, onClick }: ComponentType<IConfig>, ref: any
         icon={config.props.icon ? React.createElement(iconsList[config.props.icon]) : null}
         onClick={handleClick}
       >
-        {typeof config.props.text === "object" ? config.props.text.value : config.props.text}
+        {config.props.text}
       </AuthButton>
     )
   );
