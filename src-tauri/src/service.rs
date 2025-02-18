@@ -1,6 +1,7 @@
 use crate::commands::{menu, page, project};
 use crate::models::{menu::Menu, page::Page, project::Project};
 use anyhow::Result;
+use rocket::Config;
 use rocket::{
     catch, catchers,
     fairing::AdHoc,
@@ -41,7 +42,11 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
         .resource_dir()
         .expect("Failed to get resource directory");
     let admin_path = resource_dir.join("assets").join("admin");
-    rocket::build()
+    let config = Config {
+        port: 8789,       // 指定端口
+        ..Config::default() // 继承其他默认配置
+    };
+    rocket::custom(config)
         .mount(
             "/api",
             routes![
