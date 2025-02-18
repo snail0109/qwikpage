@@ -6,7 +6,7 @@ import { usePageStore } from '@/stores/pageStore';
 import { ApiConfig } from '@/types';
 import request from './request';
 import { message } from '@/utils/AntdGlobal';
-import { getEnv, handleArrayVariable, renderFormula, renderTemplate } from './util';
+import { handleArrayVariable, renderFormula, renderTemplate } from './util';
 import { get } from 'lodash-es';
 import qs from 'qs';
 import { isObject } from 'lodash-es';
@@ -46,10 +46,10 @@ export const handleApi = async (
     const config: any = mergeParams(method, replaceData, params, sendParams);
     // 解析模板字符串：http://mars-api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(stgApi, sendParams);
-    const preUrl = renderTemplate(preApi, sendParams);
-    const prdUrl = renderTemplate(prdApi, sendParams);
-    const env = getEnv();
-    config.url = env === 'stg' ? stgUrl : env === 'pre' ? preUrl : prdUrl;
+    // const preUrl = renderTemplate(preApi, sendParams);
+    // const prdUrl = renderTemplate(prdApi, sendParams);
+    // const env = getEnv();
+    config.url = stgUrl;
     config.isCors = isCors;
     let response = null;
     try {
