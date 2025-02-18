@@ -5,7 +5,7 @@
 import { usePageStore } from '@/stores/pageStore';
 import { ApiConfig } from '@/types';
 import request from './request';
-import { message } from '@/utils/AntdGlobal';
+import { message } from 'antd';
 import { handleArrayVariable, renderFormula, renderTemplate } from './util';
 import { get } from 'lodash-es';
 import qs from 'qs';
@@ -106,12 +106,12 @@ export const handleApi = async (
       }
     } else {
       // 如果开启了系统错误，则优先使用系统报错
-      if (tips?.isError && msg) {
-        message.error(msg);
-      } else if (tips?.fail) {
-        // 最后使用自定义错误
-        message.error(tips?.fail);
-      }
+      // if (tips?.isError && msg) {
+      //   message.error(msg);
+      // } else if (tips?.fail) {
+      //   // 最后使用自定义错误
+      //   message.error(tips?.fail);
+      // }
     }
     // 根据 sourceField 解析数据
     let renderData = data;

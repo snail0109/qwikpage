@@ -1,9 +1,9 @@
+use crate::models::page::{Element, Page, PageContent};
 use log::info;
 use reqwest;
 use serde_json::Value;
 use std::{collections::HashSet, fs, path::PathBuf};
 use zip;
-use crate::models::page::{Element, Page, PageContent};
 
 const REPLACEMENT_CHARACTER: &str = "##replace##";
 
@@ -51,10 +51,12 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
     // page.page_data string 转JSON
     let page_data: PageContent = serde_json::from_str(&page.page_data).unwrap();
 
+
     // 遍历页面元素
     for element in &page_data.elements {
         // import_components_types 传入到 generate_component_string 方法内部去调用
-        let component_str = generate_component_string(&element, &page_data, &mut import_components_types);
+        let component_str =
+            generate_component_string(&element, &page_data, &mut import_components_types);
         // if element.type_name == "Text" {
         //     import_components_types.insert(String::from("Typography"));
         // } else {
@@ -68,7 +70,10 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
     let mut sorted_types: Vec<String> = import_components_types.into_iter().collect();
     sorted_types.sort();
     let antd_import = if !sorted_types.is_empty() {
-        format!("import {{ {} }} from '@/components';\n", sorted_types.join(", "))
+        format!(
+            "import {{ {} }} from '@/components';\n",
+            sorted_types.join(", ")
+        )
     } else {
         String::new()
     };
@@ -76,11 +81,40 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
     // 生成最终的代码, 组件名称 Pageindex
     let comp_name = format!("Page{}", index);
 
+    // 需要将 page 的 page_data 设置成 JSON对之后
+
+    let page_json = serde_json::to_string_pretty(&page_data).unwrap();
+
     let output = format!(
-        r#"import React from 'react';
+        r#"import React, {{ useState, useEffect }} from 'react';
 import {{ PageWrapper }} from '@components/PageWrapper';
 {antd_import}
+import {{ usePageStore }} from '@/stores/pageStore';
+import {{ useShallow }} from 'zustand/react/shallow';
+import {{ Spin }} from 'antd';
 function {compName}() {{
+
+  const [loading, setLoading] = useState(true)
+  const {{ savePageInfo }} = usePageStore(
+    useShallow((state) => {{
+      return {{
+        savePageInfo: state.savePageInfo,
+    }};
+    }}),
+  );
+
+  useEffect(() => {{
+    savePageInfo({{
+    "id": "{page_id}",
+    "pageData": {page_str}
+    }});
+    setLoading(false);
+  }}, []);
+
+  if (loading) {{
+    return <Spin />;
+  }}
+
   return (
     <PageWrapper>
       {components}
@@ -91,7 +125,9 @@ function {compName}() {{
 export default {compName};"#,
         compName = &comp_name,
         components = components.join("\n      "),
-        antd_import = antd_import
+        antd_import = antd_import,
+        page_str = page_json,
+        page_id = page.id,
     );
 
     println!("{}", output);
@@ -113,14 +149,9 @@ export default {compName};"#,
 pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) {
     let root_code_path = code_dir.join("app").join("src");
     // 读取路由文件
-    let routes_path = root_code_path
-        .join("config")
-        .join("routes.ts");
+    let routes_path = root_code_path.join("config").join("routes.ts");
 
-
-    let menus_path = root_code_path
-        .join("config")
-        .join("menu.ts");
+    let menus_path = root_code_path.join("config").join("menu.ts");
 
     // 确保config目录存在
     if !routes_path.parent().unwrap().exists() {
@@ -146,15 +177,15 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
     let mut new_menus = String::new();
 
     for index in 0..page_len {
-        let comp_name = format!("Page{}", index+1);
+        let comp_name = format!("Page{}", index + 1);
         let page = page_list.get(index);
         // TODO 如果页面也有 path 则 path 设置成页面的配置
         // 如果 page 对象 path 字段有值，则取path 没有则取comp_namel
         let page_path = page
-        .and_then(|page| page.path.clone()) // 解包 page 和 page.path
-        .filter(|path| !path.is_empty()) // 过滤掉空字符串
-        // unwrap_or / + comp_name.clone()
-        .unwrap_or(format!("/{}", comp_name));
+            .and_then(|page| page.path.clone()) // 解包 page 和 page.path
+            .filter(|path| !path.is_empty()) // 过滤掉空字符串
+            // unwrap_or / + comp_name.clone()
+            .unwrap_or(format!("/{}", comp_name));
 
         // 处理 Fishx 模版路由信息
         let new_route = format!(
@@ -194,8 +225,6 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
 
     // 写入更新后的菜单配置
     fs::write(&menus_path, updated_menus).expect("failed to write menus file");
-
-
 }
 
 pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
@@ -254,9 +283,11 @@ pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
     Ok(())
 }
 
-
-
-fn generate_component_string(element: &Element, page_data: &PageContent, import_components_types: &mut HashSet<String>) -> String {
+fn generate_component_string(
+    element: &Element,
+    page_data: &PageContent,
+    import_components_types: &mut HashSet<String>,
+) -> String {
     let component_type = &element.type_name;
     import_components_types.insert(component_type.clone());
     // let text = String::from("Typography.Text");
@@ -266,7 +297,7 @@ fn generate_component_string(element: &Element, page_data: &PageContent, import_
 
     let element_id = &element.id;
     let child_elements: &Vec<Element> = &element.elements;
-    
+
     // 获取组件的配置
     let js_config = page_data
         .elements_map
@@ -280,9 +311,9 @@ fn generate_component_string(element: &Element, page_data: &PageContent, import_
         .map(|child| generate_component_string(child, page_data, import_components_types))
         .collect();
 
-     // 如果 component_type 是 Button 也需要特殊处理
+    // 如果 component_type 是 Button 也需要特殊处理
 
-    if  child_components.is_empty() {
+    if child_components.is_empty() {
         format!("<{component_type} config={{{js_config}}} />")
     } else {
         let children_str = child_components.join("\n");

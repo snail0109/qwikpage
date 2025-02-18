@@ -8,6 +8,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use serde_json::Value;
+use uuid::Uuid;
+
+use crate::types::interceptor::Interceptor;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Element {
@@ -31,11 +34,14 @@ pub struct ElementObj {
     pub config: Value,
 }
 
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct PageContent {
     pub elements: Vec<Element>,
     #[serde(rename = "elementsMap")]
     pub elements_map: HashMap<String, ElementObj>,
+    pub apis: HashMap<Uuid, Value>,
+    pub interceptor: Interceptor,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -68,6 +74,7 @@ pub fn count_pages_in_project(project_id: &str) -> usize {
         if path.is_file() {
             let json = fs::read_to_string(&path).unwrap();
             let page: Page = serde_json::from_str(&json).unwrap();
+            // project_id 校验
             if page.project_id == project_id {
                 count += 1;
             }
