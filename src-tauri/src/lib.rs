@@ -1,18 +1,19 @@
-mod types;
 mod commands;
 mod constans;
 mod core;
 mod models;
 mod service;
-mod utils;
 mod setup;
+mod types;
+mod utils;
 use crate::{
-    commands::{group, config, dsl, page, project},
+    commands::{config, dsl, group, page, project},
     service::configure_rocket,
     utils::is_port_in_use,
 };
 use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
+use utils::get_app_root_dir;
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
@@ -23,7 +24,10 @@ pub fn run() {
             tauri_plugin_log::Builder::new()
                 .targets([
                     Target::new(TargetKind::Stdout),
-                    Target::new(TargetKind::LogDir { file_name: None }),
+                    Target::new(TargetKind::Folder {
+                        path: get_app_root_dir(),
+                        file_name: None,
+                    }),
                     Target::new(TargetKind::Webview),
                 ])
                 .level(log::LevelFilter::Debug)
