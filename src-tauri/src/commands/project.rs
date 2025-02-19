@@ -1,4 +1,3 @@
-use crate::models::page::count_pages_in_project;
 use crate::models::project::{PROJECT_CONFIG_FILE, Project, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::{get_app_root_dir, paginate};
 use anyhow::Result;
@@ -63,7 +62,7 @@ pub fn get_project_list(
                                 continue;
                             }
                         }
-                        let count = count_pages_in_project(&project.id);
+                        let count = Project::count_pages_in_project(&project.id);
                         project_list.push(ProjectSummary {
                             id: project.id,
                             name: project.name,
@@ -151,4 +150,54 @@ pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
     }
     Project::delete(&project_dir, mode);
     Ok(())
+}
+
+
+
+// 获取项目列表
+#[command]
+pub fn get_project_list_new(
+    keyword: Option<String>,
+) -> Result<Vec<ProjectSummary>, String> {
+    info!(
+        "Project::get_project_list start, keyword: {:?}", keyword
+    );
+    let root_dir: PathBuf = get_app_root_dir();
+    let mut project_list = Vec::new();
+
+    if let Ok(entries) = fs::read_dir(&root_dir) {
+        for entry in entries {
+            if let Ok(entry) = entry {
+                let project_path = entry.path();
+                // 过滤页面目录
+                if project_path
+                    .file_name()
+                    .map_or(false, |name| name == "page")
+                {
+                    continue;
+                }
+                if project_path.is_dir() {
+                    if let Some(project) = load_project(&project_path) {
+                        // 如果keyword传入了值，只返回匹配的项目
+                        if let Some(keyword) = &keyword {
+                            if !project.name.contains(keyword) && !project.remark.contains(keyword)
+                            {
+                                continue;
+                            }
+                        }
+                        let count = Project::count_pages_in_project(&project.id);
+                        project_list.push(ProjectSummary {
+                            id: project.id,
+                            name: project.name,
+                            remark: project.remark,
+                            updated_at: project.updated_at,
+                            logo: project.logo,
+                            count,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    Ok(project_list)
 }

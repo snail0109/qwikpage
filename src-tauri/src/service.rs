@@ -77,9 +77,9 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 
 
 // 获取页面详情
-#[get("/page/detail/<id>")]
-pub fn get_page_detail(id: String) -> Result<Json<Page>, Status> {
-    match page::get_page_detail(id) {
+#[get("/page/detail/<project_id>/<id>")]
+pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
+    match page::get_page_detail(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }

@@ -1,48 +1,33 @@
-import { memo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Button, Empty, Form, Layout, Pagination, Spin } from "antd";
+import { memo, useEffect, useRef, useState } from "react";
+import { Button, Empty, Form, Layout, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useMediaQuery } from "react-responsive";
-import { useAntdTable } from "ahooks";
-import { projectService } from "@/services";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import ProjectCard from "./components/ProjectCard";
 import styles from "./../index.module.less";
 import CreateProject from "@/components/CreateProject";
+import CreateGroup from "@/components/CreateGroup";
+import { cmd_invoke } from "@/services/cmd_invoke";
 
 function Category() {
     const [form] = Form.useForm();
-    const [searchParams] = useSearchParams();
+    const [loading, setLoading] = useState(false);
+    const [dataSource, setDataSource] = useState([]);
     const createPageRef = useRef<CreatePageRef>();
     const createProjectRef = useRef<{ open: (type: string) => void }>();
-    // 判断是否是超大屏
-    const isXLarge = useMediaQuery({ query: "(min-width: 1920px)" });
+    const createGroupRef = useRef<{ open: () => void }>();
 
-    // 获取列表数据
-    const getTableData = (
-        { current, pageSize }: { current: number; pageSize: number },
-        { keyword }: { keyword: string }
-    ) => {
-        return projectService
-            .getProjectList({
-                pageNum: current,
-                pageSize: pageSize,
-                keyword,
-                projectId: Number(searchParams.get("projectId")),
-            })
+    useEffect(() => {
+        setLoading(true);
+        cmd_invoke("load_groups_with_projects")
             .then((res) => {
-                return {
-                    total: res.total,
-                    list: res.list,
-                };
+                console.log("load_groups_with_projects", res);
+                setDataSource(res.groups);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-    };
-
-    const { tableProps, loading, search } = useAntdTable(getTableData, {
-        form,
-        defaultPageSize: isXLarge ? 15 : 12,
-    });
+    }, []);
 
     // 新建项目或页面
     const handleCreate = () => {
@@ -51,7 +36,12 @@ function Category() {
 
     // 新建项目分组
     const handleCreateGroup = () => {
-        // TODO
+        createGroupRef.current?.open();
+    };
+
+    const search = () => {
+        const keyword = form.getFieldValue("keyword");
+        console.log(keyword);
     };
 
     return (
@@ -61,16 +51,23 @@ function Category() {
                 showGroup={false}
                 form={form}
                 from={"项目"}
-                submit={search.submit}
-                refresh={search.submit}
+                submit={search}
+                refresh={search}
                 onCreate={handleCreate}
                 onCreateGroup={handleCreateGroup}
             />
 
             <div className={styles.pagesContent}>
                 <Spin spinning={loading} size="large" tip="加载中...">
-                    {tableProps.dataSource.length > 0 ? (
-                        <ProjectCard list={tableProps.dataSource} />
+                    {dataSource.length > 0 ? (
+                        dataSource.map((item: any) => {
+                            return (
+                                <div key={item.id} className={styles.group}>
+                                    <div className={styles.groupTitle}>{item.name}</div>
+                                    <ProjectCard list={item.projects} />
+                                </div>
+                            );
+                        })
                     ) : (
                         <Empty style={{ marginTop: 100 }}>
                             <Button type="dashed" icon={<PlusOutlined />} onClick={handleCreate}>
@@ -81,20 +78,11 @@ function Category() {
                 </Spin>
             </div>
 
-            {tableProps.dataSource.length > 0 ? (
-                <Pagination
-                    {...tableProps.pagination}
-                    onChange={(current, pageSize) => tableProps.onChange({ current, pageSize })}
-                    showSizeChanger
-                    showTotal={(total) => `总共 ${total} 条`}
-                    align="end"
-                />
-            ) : null}
-
             {/* 新建项目 */}
-            <CreateProject createRef={createProjectRef} update={search.submit} />
+            <CreateGroup createRef={createGroupRef} update={search} />
+            <CreateProject createRef={createProjectRef} update={search} />
             {/* 新建页面 */}
-            <CreatePage createRef={createPageRef} update={search.submit} />
+            <CreatePage createRef={createPageRef} update={search} />
         </Layout.Content>
     );
 }

@@ -2,7 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 
-use crate::utils::get_current_time;
+use crate::constans::PAGE_DIR;
+use crate::utils::{get_app_root_dir, get_current_time};
 
 // 系统布局
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -165,4 +166,22 @@ impl Project {
             fs::remove_file(project_file).unwrap();
         }
     }
+
+    pub fn count_pages_in_project(project_id: &str) -> usize {
+        let page_dir = get_app_root_dir().join(&project_id).join(PAGE_DIR);
+        let entries = fs::read_dir(page_dir).unwrap();
+        let mut count = 0;
+        for entry in entries {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.is_file() {
+                if path.extension().unwrap() != "json" {
+                    continue;
+                }
+                count += 1;
+            }
+        }
+        count
+    }
+    
 }

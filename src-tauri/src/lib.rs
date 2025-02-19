@@ -54,7 +54,8 @@ pub fn run() {
             group::add_group,
             group::edit_group,
             group::delete_group,
-            group::query_groups,
+            group::load_groups,
+            group::load_groups_with_projects,
             // 项目
             project::get_project_list,
             project::add_project,
