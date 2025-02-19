@@ -148,7 +148,6 @@ impl Page {
     // 根据页面参数查询对应页面
     pub fn list_with_options(
         project_id: String,
-        path: Option<String>,
     ) -> Result<Vec<Page>, String> {
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir(&project_id);

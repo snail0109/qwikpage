@@ -1,9 +1,11 @@
+use anyhow::Error;
 use serde::{Deserialize, Serialize};
-use std::fs;
-use std::path::Path;
+use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
 use crate::utils::{get_app_root_dir, get_current_time};
+
+use super::group::{GroupConfig, UpdateOption};
 
 // 系统布局
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -130,19 +132,24 @@ impl Project {
         }
     }
 
-    pub fn save(&self, project_path: &Path) {
-        let project_file = project_path.join(PROJECT_CONFIG_FILE);
+    pub fn save(&self) -> io::Result<()> {
+        let project_file = get_app_root_dir().join(self.id.clone()).join(PROJECT_CONFIG_FILE);
         let json = serde_json::to_string_pretty(&self).unwrap();
-        fs::write(project_file, json).unwrap();
+        fs::write(project_file, json)
     }
 
-    pub fn load(project_path: &Path) -> Self {
-        let project_file = project_path.join(PROJECT_CONFIG_FILE);
-        let json = fs::read_to_string(project_file).unwrap();
-        serde_json::from_str(&json).unwrap()
+    pub fn load(project_id: String) -> io::Result<Self> {
+        let project_file = get_app_root_dir().join(project_id).join(PROJECT_CONFIG_FILE);
+        match fs::read_to_string(project_file) {
+            Ok(data) => {
+                let project: Project = serde_json::from_str(&data).unwrap();
+                Ok(project)
+            }
+            Err(e) => Err(e),
+        }
     }
 
-    pub fn update(&mut self, params: ProjectUpdateParams) {
+    pub fn update(&mut self, params: ProjectUpdateParams) -> Result<bool, Error> {
         self.name = params.name;
         self.remark = params.remark;
         self.layout = params.layout;
@@ -153,22 +160,24 @@ impl Project {
         self.tag = params.tag;
         self.footer = params.footer;
         self.updated_at = get_current_time();
+        self.save();
+        Ok(true)
     }
 
-    pub fn delete(project_path: &Path, mode: Option<String>) {
-        // 删除项目目录 mode 如果等于 "all" 则删除项目目录
-        if let Some(mode) = mode {
-            if mode == "all" {
-                fs::remove_dir_all(project_path).unwrap();
-            }
-        } else {
-            let project_file = project_path.join(PROJECT_CONFIG_FILE);
-            fs::remove_file(project_file).unwrap();
-        }
+    pub fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
+        let project_dir = get_app_root_dir().join(&project_id);
+        fs::remove_dir_all(project_dir);
+        let mut config = GroupConfig::load().unwrap();
+        config.update_group_project(group_id, project_id, UpdateOption::Remove);
+        Ok(true)
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
         let page_dir = get_app_root_dir().join(&project_id).join(PAGE_DIR);
+        // 目录不存在则返回 0
+        if !page_dir.exists() {
+            return 0;
+        }
         let entries = fs::read_dir(page_dir).unwrap();
         let mut count = 0;
         for entry in entries {
@@ -182,6 +191,15 @@ impl Project {
             }
         }
         count
+    }
+
+    pub fn add_project(group_id: String, name: String, remark: String, logo: String) -> Result<Project, Error> {
+        let project_id = uuid::Uuid::new_v4().to_string();
+        let project = Project::new(project_id.clone(), name, remark, logo);
+        project.save();
+        let mut config = GroupConfig::load().unwrap();
+        config.update_group_project(group_id, project.id.clone(), UpdateOption::Remove);
+        Ok(project)
     }
     
 }

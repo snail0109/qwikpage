@@ -1,4 +1,8 @@
-use crate::models::project::{PROJECT_CONFIG_FILE, Project, ProjectList, ProjectSummary, ProjectUpdateParams};
+use crate::commands::cmd_response::CmdResponse;
+use crate::models::group::GroupConfig;
+use crate::models::project::{
+    Project, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE,
+};
 use crate::utils::{get_app_root_dir, paginate};
 use anyhow::Result;
 use log::{error, info};
@@ -77,7 +81,7 @@ pub fn get_project_list(
         }
     }
     // 分页逻辑
-    let ( list, total) = paginate(project_list, page_num, page_size);
+    let (list, total) = paginate(project_list, page_num, page_size);
     Ok(ProjectList { total, list })
 }
 
@@ -97,71 +101,44 @@ pub fn get_project_detail(id: String) -> Result<Project, String> {
 
 // 新建项目
 #[command]
-pub fn add_project(name: String, remark: String, logo: String) -> Result<(), String> {
+pub fn add_project(
+    group_id: String,
+    name: String,
+    remark: String,
+    logo: String,
+) -> CmdResponse<Project> {
     info!(
         "Project::add_project start, name: {}, remark: {}, logo: {}",
         name, remark, logo
     );
-    let root_dir: PathBuf = get_app_root_dir();
-    let project_id = uuid::Uuid::new_v4().to_string();
-    let project_dir = root_dir.join(&project_id);
-    if project_dir.exists() {
-        error!("project_dir already exists");
-        return Err(format!("{} already exists", project_dir.display()));
-    }
-    fs::create_dir_all(&project_dir).unwrap();
-    let project = Project::new(project_id, name, remark, logo);
-    project.save(&project_dir);
-    Ok(())
+    let project = Project::add_project(group_id, name, remark, logo);
+    CmdResponse::from(project)
 }
 
 // 更新项目
 #[command]
-pub fn update_project(id: String, params: ProjectUpdateParams) -> Result<(), String> {
+pub fn update_project(id: String, params: ProjectUpdateParams) -> CmdResponse<bool> {
     info!(
         "Project::update_project start, id: {}, params: {:?}",
         id, params
     );
-    let root_dir: PathBuf = get_app_root_dir();
-
-    let project_dir = root_dir.join(&id);
-    if !project_dir.exists() {
-        error!("project does not found");
-        return Err(format!("{} does not found", project_dir.display()));
-    }
-    let mut project = Project::load(&project_dir);
-    project.update(params);
-    project.save(&project_dir);
-    Ok(())
+    let mut project = Project::load(id).unwrap();
+    let res = project.update(params);
+    CmdResponse::from(res)
 }
 
 // 删除项目
 #[command]
-pub fn delete_project(id: String, mode: Option<String>) -> Result<(), String> {
-    info!(
-        "Project::delete_project start, id: {}, mode: {:?}",
-        id, mode
-    );
-    let root_dir: PathBuf = get_app_root_dir();
-    let project_dir = root_dir.join(&id);
-    if !project_dir.exists() {
-        error!("project does not found");
-        return Err(format!("{} does not found", project_dir.display()));
-    }
-    Project::delete(&project_dir, mode);
-    Ok(())
+pub fn delete_project(id: String, group_id: String) -> CmdResponse<bool>{
+    info!("Project::delete_project start, id: {}", id);
+    let res = Project::delete(id, group_id);
+    CmdResponse::from(res)
 }
-
-
 
 // 获取项目列表
 #[command]
-pub fn get_project_list_new(
-    keyword: Option<String>,
-) -> Result<Vec<ProjectSummary>, String> {
-    info!(
-        "Project::get_project_list start, keyword: {:?}", keyword
-    );
+pub fn get_project_list_new(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
+    info!("Project::get_project_list start, keyword: {:?}", keyword);
     let root_dir: PathBuf = get_app_root_dir();
     let mut project_list = Vec::new();
 
