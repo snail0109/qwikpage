@@ -9,16 +9,16 @@ export const projectService =  {
 
   // 新增项目
   addProject(params: any) {
-    return cmd_invoke("add_project", params)
+    return cmd_invoke("add_project", { params })
   },
 
   // 更新项目
   updateProject(params: any) {
-    return cmd_invoke("update_project", { id: params.id,params })
+    return cmd_invoke("update_project", { params })
   },
 
   // 删除项目
-  delProject(params: { id: string; group_id?: string }) {
+  delProject(params: { id: string; groupId?: string }) {
     return cmd_invoke("delete_project", params)
   },
 

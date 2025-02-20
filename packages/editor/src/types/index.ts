@@ -28,6 +28,7 @@ export interface IPage {
   path: string,
   remark?: string,
   projectId: string,
+  project_id: string,
   pageData?: string,
   updatedAt?: string,
   previewImg?: string,
