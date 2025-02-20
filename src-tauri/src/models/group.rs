@@ -35,11 +35,6 @@ pub struct GroupList {
     pub groups: Vec<GroupDetail>,
 }
 
-pub enum UpdateOption {
-    Add,
-    Remove,
-}
-
 impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
@@ -148,11 +143,10 @@ impl GroupConfig {
         Ok(GroupList { groups: group_list })
     }
 
-    pub fn update_group_project(
+    pub fn add_group_project(
         &mut self,
         id: String,
         project_id: String,
-        option: UpdateOption,
     ) -> Result<bool, Error> {
         // 查找目标分组
         let group = match self.groups.iter_mut().find(|group| group.id == id) {
@@ -161,22 +155,10 @@ impl GroupConfig {
         };
         let projects = group.projects.get_or_insert_with(Vec::new);
 
-        match option {
-            UpdateOption::Add => {
-                // 如果项目ID尚未存在，则添加
-                if !projects.contains(&project_id.to_string()) {
-                    projects.push(project_id.to_string());
-                    info!("Project {} added to group {}", project_id, id);
-                }
-            }
-            UpdateOption::Remove => {
-                // 移除指定的项目ID
-                let original_len = projects.len();
-                projects.retain(|p| *p != project_id.to_string());
-                if projects.len() < original_len {
-                    info!("Project {} removed from group {}", project_id, id);
-                }
-            }
+        // 如果项目ID尚未存在，则添加
+        if !projects.contains(&project_id.to_string()) {
+            projects.push(project_id.to_string());
+            info!("Project {} added to group {}", project_id, id);
         }
         self.save()?;
         Ok(true)
@@ -188,6 +170,7 @@ impl GroupConfig {
             if let Some(projects) = &mut group.projects {
                 if projects.contains(&project_id) {
                     projects.retain(|id| id != &project_id);
+                    self.save()?;
                     info!("Project {} removed from group {}", project_id, group_id);
                     return Ok(());
                 }

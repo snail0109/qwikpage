@@ -6,7 +6,7 @@ use std::{fs, io};
 use crate::constans::PAGE_DIR;
 use crate::utils::{get_app_root_dir, get_current_time};
 
-use super::group::{GroupConfig, UpdateOption};
+use super::group::GroupConfig;
 
 // 系统布局
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -219,7 +219,7 @@ impl Project {
         // group_id 不为空的时候，更新分组的项目列表
         if let Some(group_id) = group_id {
             let mut config = GroupConfig::load()?;
-            config.update_group_project(group_id, project_id, UpdateOption::Remove);
+            config.add_group_project(group_id, project_id);
         }
         Ok(project)
     }
