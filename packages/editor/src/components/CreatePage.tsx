@@ -139,7 +139,21 @@ const CreatePage = (props: IModalProp) => {
         <Form.Item label="描述" name="remark">
           <TextArea autoSize={{ minRows: 4, maxRows: 6 }} placeholder="请输入描述" maxLength={100} showCount />
         </Form.Item>
-        <Form.Item label="页面路由" name="path" rules={[{ required: true, message: '请输入页面路由' }]}>
+        <Form.Item
+          label="页面路由"
+          name="path"
+          rules={[
+            { required: true, message: '请输入页面路由' },
+            () => ({
+              validator(_, value) {
+                if (!value || value.startsWith('/')) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('页面路径需要以 "/" 开头'));
+              },
+            }),
+          ]}
+        >
           <Input placeholder="请输入页面路径，例如: /dashboard" />
         </Form.Item>
         <Form.Item label="所属项目" name="projectId" rules={[{ required: true, message: '请选择所属项目' }]}>
