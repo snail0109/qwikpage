@@ -26,14 +26,14 @@ function App() {
         cssVar: true,
         hashed: false,
         token: {
-          colorPrimary: '#7D33FF',
-          colorLink: '#7D33FF',
-          colorInfo: '#7D33FF',
+          colorPrimary: '#216EF7',
+          colorLink: '#216EF7',
+          colorInfo: '#216EF7',
         },
         components: {
           Menu: {
             darkItemBg: '#000',
-            darkItemHoverColor: '#7D33FF',
+            darkItemHoverColor: '#216EF7',
           },
         },
         algorithm: marsTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
