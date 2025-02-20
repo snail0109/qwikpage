@@ -32,32 +32,27 @@ const AdminLayout = () => {
     // if (projectId && isNaN(+projectId)) return navigate('/404?type=project');
     const fetchProjectDetail = async () => {
       if (projectId) {
-
-      
-        debugger
-        getProjectDetail(projectId).then((aaa)=> {
-          debugger
-        }).catch(res => {
-          debugger
-        })
-        // // 如果项目不存在，跳转到404
-        // if (!detail.id) {
-        //   return navigate('/404?type=project');
-        // }
-        // const paths = pathname.split("/").filter(v => v)
-        // if (paths.length <= 2 || pathname.endsWith('welcome')) {
-        //   navigate(`/project/${projectId}/welcome`);
-        // }
-        // const { menuTree, buttons, pageMap, menuMap } = arrayToTree([]);
-        // storage.set('buttons', buttons);
-        // storage.set('pageMap', pageMap);
-        // setProjectInfo({
-        //   projectInfo: detail,
-        //   menuTree,
-        //   buttons,
-        //   pageMap,
-        //   menuMap,
-        // });
+        const detail = await getProjectDetail(projectId).catch(() => {
+          return navigate('/403?type=project');
+        });
+        // 如果项目不存在，跳转到404
+        if (!detail.id) {
+          return navigate('/404?type=project');
+        }
+        const paths = pathname.split("/").filter(v => v)
+        if (paths.length <= 2 || pathname.endsWith('welcome')) {
+          navigate(`/project/${projectId}/welcome`);
+        }
+        const { menuTree, buttons, pageMap, menuMap } = arrayToTree([]);
+        storage.set('buttons', buttons);
+        storage.set('pageMap', pageMap);
+        setProjectInfo({
+          projectInfo: detail,
+          menuTree,
+          buttons,
+          pageMap,
+          menuMap,
+        });
       }
     };
     fetchProjectDetail();
