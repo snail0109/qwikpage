@@ -18,8 +18,12 @@ function Category() {
     const createGroupRef = useRef<{ open: () => void }>();
 
     useEffect(() => {
+        load_groups_with_projects();
+    }, []);
+
+    const load_groups_with_projects = (keyword?: string) => {
         setLoading(true);
-        cmd_invoke("load_groups_with_projects")
+        cmd_invoke("load_groups_with_projects", { keyword })
             .then((res) => {
                 console.log("load_groups_with_projects", res);
                 setDataSource(res.groups);
@@ -27,7 +31,7 @@ function Category() {
             .finally(() => {
                 setLoading(false);
             });
-    }, []);
+    };
 
     // 新建项目或页面
     const handleCreate = () => {
@@ -41,7 +45,7 @@ function Category() {
 
     const search = () => {
         const keyword = form.getFieldValue("keyword");
-        console.log(keyword);
+        load_groups_with_projects(keyword)
     };
 
     return (

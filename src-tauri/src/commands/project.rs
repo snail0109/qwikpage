@@ -1,5 +1,4 @@
 use crate::commands::cmd_response::CmdResponse;
-use crate::models::group::GroupConfig;
 use crate::models::project::{
     Project, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE,
 };
@@ -87,22 +86,15 @@ pub fn get_project_list(
 
 // 获取项目详情
 #[command]
-pub fn get_project_detail(id: String) -> Result<Project, String> {
+pub fn get_project_detail(id: String) -> CmdResponse<Project> {
     info!("Project::get_project_detail start, id: {}", id);
-    let root_dir: PathBuf = get_app_root_dir();
-    let project_path = root_dir.join(&id);
-    if let Some(project) = load_project(&project_path) {
-        Ok(project)
-    } else {
-        error!("project does not found");
-        Err(format!("{} does not found", project_path.display()))
-    }
+    CmdResponse::from(Project::load(id))
 }
 
 // 新建项目
 #[command]
 pub fn add_project(
-    group_id: String,
+    group_id: Option<String>,
     name: String,
     remark: String,
     logo: String,
@@ -129,7 +121,7 @@ pub fn update_project(id: String, params: ProjectUpdateParams) -> CmdResponse<bo
 
 // 删除项目
 #[command]
-pub fn delete_project(id: String, group_id: String) -> CmdResponse<bool>{
+pub fn delete_project(id: String, group_id: Option<String>) -> CmdResponse<bool>{
     info!("Project::delete_project start, id: {}", id);
     let res = Project::delete(id, group_id);
     CmdResponse::from(res)

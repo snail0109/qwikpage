@@ -12,9 +12,9 @@ pub fn load_groups() -> CmdResponse<GroupConfig> {
 
 // 查询所有分组信息
 #[command]
-pub fn load_groups_with_projects(name: Option<String>) -> CmdResponse<GroupList> {
+pub fn load_groups_with_projects(keyword: Option<String>) -> CmdResponse<GroupList> {
     let config = GroupConfig::load().unwrap();
-    let res = config.get_project_details(name);
+    let res = config.get_project_details(keyword);
     CmdResponse::from(res)
 }
 

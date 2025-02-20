@@ -1,4 +1,5 @@
 use anyhow::Error;
+use log::{error, info};
 use serde::{Deserialize, Serialize};
 use std::{fs, io};
 
@@ -132,10 +133,15 @@ impl Project {
         }
     }
 
-    pub fn save(&self) -> io::Result<()> {
-        let project_file = get_app_root_dir().join(self.id.clone()).join(PROJECT_CONFIG_FILE);
-        let json = serde_json::to_string_pretty(&self).unwrap();
-        fs::write(project_file, json)
+    pub fn save(&self) -> Result<bool, Error> {
+        let project_dir_path = get_app_root_dir().join(self.id.clone());
+        if !project_dir_path.exists() {
+            fs::create_dir_all(&project_dir_path)?;
+        }
+        let project_file = project_dir_path.join(PROJECT_CONFIG_FILE);
+        let json = serde_json::to_string_pretty(&self)?;
+        fs::write(project_file, json)?;
+        Ok(true)
     }
 
     pub fn load(project_id: String) -> io::Result<Self> {
@@ -164,12 +170,24 @@ impl Project {
         Ok(true)
     }
 
-    pub fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
+    pub fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
         let project_dir = get_app_root_dir().join(&project_id);
-        fs::remove_dir_all(project_dir);
-        let mut config = GroupConfig::load().unwrap();
-        config.update_group_project(group_id, project_id, UpdateOption::Remove);
+        fs::remove_dir_all(project_dir)?;
+        let mut config = GroupConfig::load()?;
+        // 查找 config.groups 各个 group projects 是否包含 project_id
+        let mut group_id = group_id;
+        if let Some(group) = config.groups.iter_mut().find(|g| g.projects.as_ref().map_or(false, |projects| projects.contains(&project_id))) {
+            group_id = Some(group.id.clone());
+        }
+        if let Some(group_id) = group_id {
+            if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
+                // 处理错误，例如记录日志或返回错误
+                error!("Failed to remove project from group: {}", e);
+                return Err(anyhow::anyhow!("Failed to remove project from group: {}", e));
+            }
+        }
         Ok(true)
+        
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
@@ -193,12 +211,16 @@ impl Project {
         count
     }
 
-    pub fn add_project(group_id: String, name: String, remark: String, logo: String) -> Result<Project, Error> {
+    pub fn add_project(group_id: Option<String>, name: String, remark: String, logo: String) -> Result<Project, Error> {
         let project_id = uuid::Uuid::new_v4().to_string();
+        info!("add project: {}", &project_id);
         let project = Project::new(project_id.clone(), name, remark, logo);
-        project.save();
-        let mut config = GroupConfig::load().unwrap();
-        config.update_group_project(group_id, project.id.clone(), UpdateOption::Remove);
+        project.save()?;
+        // group_id 不为空的时候，更新分组的项目列表
+        if let Some(group_id) = group_id {
+            let mut config = GroupConfig::load()?;
+            config.update_group_project(group_id, project_id, UpdateOption::Remove);
+        }
         Ok(project)
     }
     

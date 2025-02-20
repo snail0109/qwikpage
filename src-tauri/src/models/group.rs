@@ -181,4 +181,18 @@ impl GroupConfig {
         self.save()?;
         Ok(true)
     }
+
+
+    pub fn remove_project_from_group(&mut self, group_id: String, project_id: String) -> Result<(), Error> {
+        if let Some(group) = self.groups.iter_mut().find(|g| g.id == group_id) {
+            if let Some(projects) = &mut group.projects {
+                if projects.contains(&project_id) {
+                    projects.retain(|id| id != &project_id);
+                    info!("Project {} removed from group {}", project_id, group_id);
+                    return Ok(());
+                }
+            }
+        }
+        Err(anyhow::anyhow!("Project {} not found in group {}", project_id, group_id))
+    }
 }

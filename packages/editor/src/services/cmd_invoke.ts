@@ -7,15 +7,15 @@ import { invoke } from "@tauri-apps/api/core";
 export async function cmd_invoke(method: string, params?: any): Promise<any> {
     try {
         const response : any = await invoke(method, params);
-        if (response.error != null) {
+        if (!response.success) {
             console.log("ERROR - cmd_invoke error", response);
             notification.error({
                 message: "Error",
-                description: response.error.message,
+                description: response.message,
             });
-            throw new Error(response.error.message);
+            throw new Error(response.message);
         } else {
-            return response.result.data;
+            return response.data;
         }
     } catch (err: any) {
         console.log("ERROR - cmd_invoke error", err);
