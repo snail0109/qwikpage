@@ -41,11 +41,10 @@ pub fn run() {
             setup::init(app)?;
             let handle = app.handle().clone();
             // mount the rocket instance
-            let port = 8000;
+            let port = 8789;
             if is_port_in_use(port) {
                 error!("Port {} is already in use", port);
             } else {
-                info!("Port {} ", port);
                 tauri::async_runtime::spawn(async move {
                     let rocket = configure_rocket(handle);
                     let _ = rocket.launch().await;
