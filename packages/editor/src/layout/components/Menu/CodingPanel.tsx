@@ -54,6 +54,7 @@ const CodingPanel = () => {
             name,
             remark,
             pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
+            projectId: page.projectId,
         };
         setLoading(true);
         try {

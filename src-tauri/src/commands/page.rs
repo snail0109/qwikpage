@@ -1,13 +1,12 @@
-use crate::constans::{DATA_FORMAT, PAGE_DIR};
-use crate::models::page::{Page, PageList};
+use crate::commands::cmd_response::CmdResponse;
+use crate::constans::PAGE_DIR;
+use crate::models::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::models::response::ErrorResponse;
 use crate::utils::get_app_root_dir;
 use anyhow::Result;
-use chrono::Local;
 use log::{error, info};
 use std::path::PathBuf;
 use tauri::command;
-use uuid::Uuid;
 
 #[command]
 pub fn get_page_list(
@@ -26,7 +25,7 @@ pub fn get_page_list(
 }
 
 #[command]
-pub fn get_page_detail(id: String, project_id: String) -> Result<Page, ErrorResponse> {
+pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
     info!("Page::get_page_detail start, id: {}", id);
     let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
     if !page_dir.exists() {
@@ -34,7 +33,7 @@ pub fn get_page_detail(id: String, project_id: String) -> Result<Page, ErrorResp
         return Err(ErrorResponse::not_found("页面目录不存在".to_string()));
     }
     let page_file = page_dir.join(format!("{}.json", id));
-    let page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
+    let page = Page::load(&page_file).unwrap();
     Ok(page)
 }
 
@@ -66,97 +65,26 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Pag
 
 // menu
 #[command]
-pub fn add_page(
-    id: Option<String>,
-    name: String,
-    path: Option<String>,
-    remark: Option<String>,
-    page_data: Option<String>,
-    project_id: String,
-) -> Result<(), String> {
-    info!(
-        "Page::add_page start, id: {:?}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
-        id, name, path, remark, project_id
-    );
-    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
-    let page_id = id.unwrap_or_else(|| Uuid::new_v4().to_string());
-    let page = Page::new(page_id.clone(), name, path, remark, page_data);
-    let page_file = page_dir.join(format!("{}.json", page_id.clone()));
-    page.save(page_file)
-        .map_err(|e| format!("创建页面失败: {}", e))?;
-    info!("add_page success");
-    Ok(())
+pub fn add_page(params: PageAddParams) -> CmdResponse<Page> {
+    info!("Page::add_page start, params: {:#?}", params);
+    let page = Page::add_page(params);
+    CmdResponse::from(page)
 }
 
 #[command]
-pub fn update_page(
-    id: String,
-    name: Option<String>,
-    path: Option<String>,
-    remark: Option<String>,
-    page_data: Option<String>,
-    project_id: String,
-) -> Result<(), ErrorResponse> {
-    info!(
-        "Page::update_page start, id: {}, name: {:?}, path: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
-        id, name, path, remark, page_data, project_id
-    );
-    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
-    let page_file = page_dir.join(format!("{}.json", id));
-    let mut page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
-    if let Some(name) = name {
-        page.name = name;
-    }
-    if let Some(path) = path {
-        page.path = Some(path);
-    }
-    if let Some(remark) = remark {
-        page.remark = Some(remark);
-    }
-    if let Some(page_data) = page_data {
-        page.page_data = page_data;
-    }
-    page.updated_at = Local::now().format(DATA_FORMAT).to_string();
-    page.save(page_file)
-        .map_err(|e| ErrorResponse::not_found(e))?;
-    info!("update_page success");
-    Ok(())
+pub fn update_page(params: PageUpdateParams) -> CmdResponse<bool> {
+    info!("Page::update_page start, params: {:#?}", params);
+    CmdResponse::from(Page::update(params))
 }
 
 #[command]
-pub fn delete_page(id: String, project_id : String) -> Result<(), String> {
+pub fn delete_page(id: String, project_id: String) -> CmdResponse<bool> {
     info!("Page::delete_page start, id: {}", id);
-    Page::delete(id, project_id).map_err(|e| format!("删除页面失败: {}", e))?;
-    info!("delete_page success");
-    Ok(())
+    CmdResponse::from(Page::delete(id, project_id))
 }
 
 #[command]
-pub fn copy_page(
-    id: String,
-    name: String,
-    path: Option<String>,
-    remark: Option<String>,
-    project_id: String,
-) -> Result<(), String> {
-    info!(
-        "Page::copy_page start, id: {}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
-        id, name, path, remark, project_id
-    );
-    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
-    let page_file = page_dir.join(format!("{}.json", id));
-    let source_page = Page::load(&page_file)?;
-    let new_page_id = Uuid::new_v4().to_string();
-    let new_page_file = page_dir.join(format!("{}.json", new_page_id));
-    let page = Page::new(
-        new_page_id,
-        name,
-        path,
-        remark,
-        Some(source_page.page_data),
-    );
-    page.save(new_page_file)
-        .map_err(|e| format!("复制页面失败: {}", e))?;
-    info!("copy_page success");
-    Ok(())
+pub fn copy_page(params: PageCopyParams) -> CmdResponse<String> {
+    info!("Page::copy_page start, params: {:#?}", params);
+    CmdResponse::from(Page::copy(params))
 }

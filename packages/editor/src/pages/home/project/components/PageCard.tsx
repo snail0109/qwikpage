@@ -24,7 +24,7 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
     }
 
     if (type === 'edit') {
-      return navigate(`/editor/${params?.id}/edit`);
+      return navigate(`/editor/${params.projectId}/${params?.id}/edit`);
     }
     if (type === 'copy') {
       return copy?.(params);

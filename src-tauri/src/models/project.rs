@@ -24,7 +24,6 @@ impl ProjectLayout {
     }
 }
 
-
 // 菜单模式
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum MenuMode {
@@ -39,7 +38,7 @@ impl MenuMode {
         match self {
             MenuMode::Vertical => "vertical",
             MenuMode::Horizontal => "horizontal",
-            MenuMode::Inline =>  "inline",
+            MenuMode::Inline => "inline",
         }
     }
 }
@@ -59,7 +58,6 @@ impl MenuThemeColor {
         }
     }
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -81,6 +79,7 @@ pub struct Project {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ProjectUpdateParams {
+    pub id: String,
     pub name: String,                       // 项目名称
     pub remark: String,                     // 项目备注（可选）
     pub layout: u32,                        // 系统布局 1 2
@@ -108,6 +107,14 @@ pub struct ProjectSummary {
 pub struct ProjectList {
     pub list: Vec<ProjectSummary>,
     pub total: usize,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ProjectAddParams {
+    pub group_id: Option<String>,
+    pub name: String,
+    pub remark: String,
+    pub logo: String,
 }
 
 // 项目配置文件
@@ -145,7 +152,9 @@ impl Project {
     }
 
     pub fn load(project_id: String) -> io::Result<Self> {
-        let project_file = get_app_root_dir().join(project_id).join(PROJECT_CONFIG_FILE);
+        let project_file = get_app_root_dir()
+            .join(project_id)
+            .join(PROJECT_CONFIG_FILE);
         match fs::read_to_string(project_file) {
             Ok(data) => {
                 let project: Project = serde_json::from_str(&data).unwrap();
@@ -166,8 +175,13 @@ impl Project {
         self.tag = params.tag;
         self.footer = params.footer;
         self.updated_at = get_current_time();
-        self.save();
-        Ok(true)
+        match self.save() {
+            Ok(_) => Ok(true),
+            Err(e) => {
+                error!("Failed to save project: {}", e);
+                Err(anyhow::anyhow!("Failed to save project: {}", e))
+            }
+        }
     }
 
     pub fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
@@ -176,18 +190,24 @@ impl Project {
         let mut config = GroupConfig::load()?;
         // 查找 config.groups 各个 group projects 是否包含 project_id
         let mut group_id = group_id;
-        if let Some(group) = config.groups.iter_mut().find(|g| g.projects.as_ref().map_or(false, |projects| projects.contains(&project_id))) {
+        if let Some(group) = config.groups.iter_mut().find(|g| {
+            g.projects
+                .as_ref()
+                .map_or(false, |projects| projects.contains(&project_id))
+        }) {
             group_id = Some(group.id.clone());
         }
         if let Some(group_id) = group_id {
             if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
                 // 处理错误，例如记录日志或返回错误
                 error!("Failed to remove project from group: {}", e);
-                return Err(anyhow::anyhow!("Failed to remove project from group: {}", e));
+                return Err(anyhow::anyhow!(
+                    "Failed to remove project from group: {}",
+                    e
+                ));
             }
         }
         Ok(true)
-        
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
@@ -211,17 +231,30 @@ impl Project {
         count
     }
 
-    pub fn add_project(group_id: Option<String>, name: String, remark: String, logo: String) -> Result<Project, Error> {
+    pub fn add_project(params: ProjectAddParams) -> Result<Project, Error> {
         let project_id = uuid::Uuid::new_v4().to_string();
         info!("add project: {}", &project_id);
-        let project = Project::new(project_id.clone(), name, remark, logo);
+        let project = Project::new(project_id.clone(), params.name, params.remark, params.logo);
         project.save()?;
         // group_id 不为空的时候，更新分组的项目列表
-        if let Some(group_id) = group_id {
-            let mut config = GroupConfig::load()?;
-            config.add_group_project(group_id, project_id);
-        }
+        if let Some(group_id) = params.group_id {
+            let mut config = GroupConfig::load().map_err(|e| {
+                error!("Failed to load group configuration: {}", e);
+                anyhow::anyhow!("加载分组配置失败: {}", e)
+            })?;
+            config.add_group_project(group_id.clone(), project_id.clone()).map_err(|e| {
+                error!(
+                    "Failed to add project {} to group {}: {}",
+                    project_id, group_id, e
+                );
+                anyhow::anyhow!(
+                    "添加项目 {} 到分组 {} 失败: {}",
+                    project_id,
+                    group_id,
+                    e
+                )
+            })?;
+        } 
         Ok(project)
     }
-    
 }

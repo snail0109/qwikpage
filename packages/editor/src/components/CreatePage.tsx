@@ -1,4 +1,4 @@
-import { Input, Modal, Form, Select, Space, Flex, Button } from 'antd';
+import { Input, Modal, Form, Select, Space, Flex, Button, message } from 'antd';
 import { useImperativeHandle, useState, MutableRefObject } from 'react';
 import { projectService, pageService } from '@/services';
 import { IPage, IProject } from '@/types';
@@ -84,11 +84,13 @@ const CreatePage = (props: IModalProp) => {
       try {
         if (type === 'create') {
           await pageService.createPageData(params);
+          message.success('页面创建成功');
         } else if (type === 'edit') {
           await pageService.updatePageData({
             ...params,
             id: recordId,
           });
+          message.success('页面修改成功');
           savePageInfo({
             name: params?.name,
             remark: params?.remark,
@@ -102,6 +104,7 @@ const CreatePage = (props: IModalProp) => {
           }
 
           await pageService.copyPageData(param);
+          message.success('页面复制成功');
         }
         // 编辑器界面 - 左侧菜单修改后刷新
         props.update?.('success');

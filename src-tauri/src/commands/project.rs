@@ -1,6 +1,6 @@
 use crate::commands::cmd_response::CmdResponse;
 use crate::models::project::{
-    Project, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE,
+    Project, ProjectAddParams, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE
 };
 use crate::utils::{get_app_root_dir, paginate};
 use anyhow::Result;
@@ -93,36 +93,25 @@ pub fn get_project_detail(id: String) -> CmdResponse<Project> {
 
 // 新建项目
 #[command]
-pub fn add_project(
-    group_id: Option<String>,
-    name: String,
-    remark: String,
-    logo: String,
-) -> CmdResponse<Project> {
-    info!(
-        "Project::add_project start, name: {}, remark: {}, logo: {}",
-        name, remark, logo
-    );
-    let project = Project::add_project(group_id, name, remark, logo);
+pub fn add_project(params: ProjectAddParams) -> CmdResponse<Project> {
+    info!("Project::add_project start, params: {:#?}", params);
+    let project = Project::add_project(params);
     CmdResponse::from(project)
 }
 
 // 更新项目
 #[command]
-pub fn update_project(id: String, params: ProjectUpdateParams) -> CmdResponse<bool> {
-    info!(
-        "Project::update_project start, id: {}, params: {:?}",
-        id, params
-    );
-    let mut project = Project::load(id).unwrap();
+pub fn update_project(params: ProjectUpdateParams) -> CmdResponse<bool> {
+    info!("Project::update_project start, params: {:#?}", params);
+    let mut project = Project::load(params.id.clone()).unwrap();
     let res = project.update(params);
     CmdResponse::from(res)
 }
 
 // 删除项目
 #[command]
-pub fn delete_project(id: String, group_id: Option<String>) -> CmdResponse<bool>{
-    info!("Project::delete_project start, id: {}", id);
+pub fn delete_project(id: String, group_id: Option<String>) -> CmdResponse<bool> {
+    info!("Project::delete_project start, id: {}", id.clone());
     let res = Project::delete(id, group_id);
     CmdResponse::from(res)
 }

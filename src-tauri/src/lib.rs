@@ -67,7 +67,7 @@ pub fn run() {
             project::delete_project,
             // 页面
             page::get_page_list,
-            page::get_page_detail,
+            page::get_page_detail_with_id,
             page::get_page_detail_with_path,
             page::add_page,
             page::update_page,
