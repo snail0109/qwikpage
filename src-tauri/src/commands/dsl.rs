@@ -46,7 +46,7 @@ pub fn export_project(app: AppHandle, id: String) -> Result<(), String> {
 
 
     info!("查询项目页面信息: {:?}", id);
-    let page_list = Page::list_with_options(Some(id), None).unwrap();
+    let page_list = Page::list_with_options(id).unwrap();
 
     let mut index = 1;
     let page_len  = page_list.len();

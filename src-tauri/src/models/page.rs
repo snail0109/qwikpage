@@ -1,5 +1,5 @@
 use crate::constans::{APP_IDENTIFIER, DATA_FORMAT, PAGE_DIR};
-use crate::utils::paginate;
+use crate::utils::{get_app_root_dir, paginate};
 use chrono::Local;
 use dirs;
 use log::{info, warn};
@@ -52,7 +52,6 @@ pub struct Page {
     pub path: Option<String>,   // 页面路由
     pub remark: Option<String>, // 页面描述
     pub page_data: String,
-    pub project_id: String,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -64,25 +63,6 @@ pub struct PageList {
     pub total: usize,
 }
 
-pub fn count_pages_in_project(project_id: &str) -> usize {
-    let page_dir = Page::get_page_dir();
-    let entries = fs::read_dir(page_dir).unwrap();
-    let mut count = 0;
-    for entry in entries {
-        let entry = entry.unwrap();
-        let path = entry.path();
-        if path.is_file() {
-            let json = fs::read_to_string(&path).unwrap();
-            let page: Page = serde_json::from_str(&json).unwrap();
-            // project_id 校验
-            if page.project_id == project_id {
-                count += 1;
-            }
-        }
-    }
-    count
-}
-
 impl Page {
     pub fn new(
         id: String,
@@ -90,7 +70,6 @@ impl Page {
         path: Option<String>,
         remark: Option<String>,
         page_data: Option<String>,
-        project_id: String,
     ) -> Self {
         let now = Local::now().format(DATA_FORMAT).to_string();
         Page {
@@ -99,26 +78,24 @@ impl Page {
             path,
             remark,
             page_data: page_data.unwrap_or_else(|| String::new()),
-            project_id,
             created_at: now.clone(),
             updated_at: now,
         }
     }
 
-    pub fn get_page_dir() -> PathBuf {
-        let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
-        let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    pub fn get_page_dir(project_id: &String) -> PathBuf {
+        let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
         page_dir
     }
 
     pub fn list(
         page_num: usize,
         page_size: usize,
-        project_id: Option<String>,
+        project_id: String,
         keyword: Option<String>,
     ) -> Result<PageList, String> {
         let mut pages_list = vec![];
-        let page_dir = Self::get_page_dir();
+        let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir).map_err(|e| format!("创建页面目录失败: {}", e))?;
         }
@@ -132,11 +109,6 @@ impl Page {
                 let page: Page = serde_json::from_str(&json).unwrap();
                 if let Some(keyword) = &keyword {
                     if !page.name.contains(keyword) {
-                        continue;
-                    }
-                }
-                if let Some(project_id) = &project_id {
-                    if page.project_id != *project_id {
                         continue;
                     }
                 }
@@ -166,8 +138,8 @@ impl Page {
         Ok(page)
     }
 
-    pub fn delete(id: String) -> Result<(), String> {
-        let page_dir = Self::get_page_dir();
+    pub fn delete(id: String, project_id: String) -> Result<(), String> {
+        let page_dir = Self::get_page_dir(&project_id);
         let page_file = page_dir.join(format!("{}.json", id));
         fs::remove_file(page_file).map_err(|e| format!("删除页面失败: {}", e))?;
         Ok(())
@@ -175,11 +147,10 @@ impl Page {
 
     // 根据页面参数查询对应页面
     pub fn list_with_options(
-        project_id: Option<String>,
-        path: Option<String>,
+        project_id: String,
     ) -> Result<Vec<Page>, String> {
         let mut pages_list = vec![];
-        let page_dir = Self::get_page_dir();
+        let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
             warn!("页面文件不存在");
             return Err("页面文件不存在".to_string());
@@ -189,15 +160,12 @@ impl Page {
             let entry = entry.unwrap();
             let path = entry.path();
             if path.is_file() {
+                // 读取 json 文件内容
+                if path.extension().unwrap() != "json" {
+                    continue;
+                }
                 let json = fs::read_to_string(&path).unwrap();
                 let page: Page = serde_json::from_str(&json).unwrap();
-                info!("查询页面文件: {:?}", page);
-                if let Some(project_id) = &project_id {
-                    if page.project_id != *project_id {
-                        continue;
-                    }
-                }
-
                 pages_list.push(page);
             }
         }

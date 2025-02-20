@@ -2,9 +2,6 @@
 // 页面根目录
 pub const PAGE_DIR: &str = "pages";
 
-// 菜单根目录
-pub const MENU_DIR: &str = "menus";
-
 // 日期数据格式
 pub const DATA_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 

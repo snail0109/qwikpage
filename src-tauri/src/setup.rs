@@ -16,12 +16,6 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         info!("create app data dir: {:?}", app_data_dir);
         fs::create_dir_all(&app_data_dir).expect("failed to create app data dir");
     }
-    // 初始化 page 目录
-    let page_dir = app_data_dir.join(PAGE_DIR);
-    if !page_dir.exists() {
-        info!("create page_dir dir: {:?}", page_dir);
-        fs::create_dir_all(&page_dir).expect("failed to create pages dir");
-    }
 
     // 数据备份迁移
 

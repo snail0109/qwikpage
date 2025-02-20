@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { cmd_invoke } from "./cmd_invoke";
 
 export const projectService =  {
 
@@ -8,22 +9,22 @@ export const projectService =  {
 
   // 新增项目
   addProject(params: any) {
-    return invoke("add_project", params)
+    return cmd_invoke("add_project", params)
   },
 
   // 更新项目
   updateProject(params: any) {
-    return invoke("update_project", { id: params.id,params })
+    return cmd_invoke("update_project", { id: params.id,params })
   },
 
   // 删除项目
-  delProject(params: { id: string; mode?: string }) {
-    return invoke("delete_project", params)
+  delProject(params: { id: string; group_id?: string }) {
+    return cmd_invoke("delete_project", params)
   },
 
   // 获取项目详情
   getProjectDetail(id: string): Promise<any> {
-    return invoke("get_project_detail", { id })
+    return cmd_invoke("get_project_detail", { id })
   },
 
 };

@@ -1,4 +1,4 @@
 pub mod project;
-pub mod menu;
+pub mod group;
 pub mod page;
 pub mod response;

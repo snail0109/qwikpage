@@ -14,7 +14,7 @@ pub fn get_page_list(
     page_num: usize,
     page_size: usize,
     keyword: Option<String>,
-    project_id: Option<String>,
+    project_id: String,
 ) -> Result<PageList, String> {
     info!(
         "Page::get_page_list start, page_num: {}, page_size: {}, keyword: {:?}, project_id: {:?}",
@@ -26,10 +26,9 @@ pub fn get_page_list(
 }
 
 #[command]
-pub fn get_page_detail(id: String) -> Result<Page, ErrorResponse> {
+pub fn get_page_detail(id: String, project_id: String) -> Result<Page, ErrorResponse> {
     info!("Page::get_page_detail start, id: {}", id);
-    let root_dir: PathBuf = get_app_root_dir();
-    let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
     if !page_dir.exists() {
         error!("页面目录不存在");
         return Err(ErrorResponse::not_found("页面目录不存在".to_string()));
@@ -46,7 +45,7 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Pag
         project_id, path
     );
     let pages_list: PageList =
-        Page::list(1, 20, Some(project_id), Some("".to_string())).map_err(|e| {
+        Page::list(1, 20, project_id, Some("".to_string())).map_err(|e| {
             error!("Failed to list pages: {}", e);
             ErrorResponse::not_found(format!("无法获取页面列表: {}", e))
         })?;
@@ -79,10 +78,9 @@ pub fn add_page(
         "Page::add_page start, id: {:?}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
         id, name, path, remark, project_id
     );
-    let root_dir: PathBuf = get_app_root_dir();
-    let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
     let page_id = id.unwrap_or_else(|| Uuid::new_v4().to_string());
-    let page = Page::new(page_id.clone(), name, path, remark, page_data, project_id);
+    let page = Page::new(page_id.clone(), name, path, remark, page_data);
     let page_file = page_dir.join(format!("{}.json", page_id.clone()));
     page.save(page_file)
         .map_err(|e| format!("创建页面失败: {}", e))?;
@@ -97,19 +95,15 @@ pub fn update_page(
     path: Option<String>,
     remark: Option<String>,
     page_data: Option<String>,
-    project_id: Option<String>,
+    project_id: String,
 ) -> Result<(), ErrorResponse> {
     info!(
         "Page::update_page start, id: {}, name: {:?}, path: {:?}, remark: {:?}, page_data: {:?}, project_id: {:?}",
         id, name, path, remark, page_data, project_id
     );
-    let root_dir: PathBuf = get_app_root_dir();
-    let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
     let mut page = Page::load(&page_file).map_err(|e| ErrorResponse::not_found(e))?;
-    if let Some(project_id) = project_id {
-        page.project_id = project_id;
-    }
     if let Some(name) = name {
         page.name = name;
     }
@@ -130,9 +124,9 @@ pub fn update_page(
 }
 
 #[command]
-pub fn delete_page(id: String) -> Result<(), String> {
+pub fn delete_page(id: String, project_id : String) -> Result<(), String> {
     info!("Page::delete_page start, id: {}", id);
-    Page::delete(id).map_err(|e| format!("删除页面失败: {}", e))?;
+    Page::delete(id, project_id).map_err(|e| format!("删除页面失败: {}", e))?;
     info!("delete_page success");
     Ok(())
 }
@@ -149,8 +143,7 @@ pub fn copy_page(
         "Page::copy_page start, id: {}, name: {}, path: {:?}, remark: {:?}, project_id: {}",
         id, name, path, remark, project_id
     );
-    let root_dir: PathBuf = get_app_root_dir();
-    let page_dir: PathBuf = root_dir.join(PAGE_DIR);
+    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
     let page_file = page_dir.join(format!("{}.json", id));
     let source_page = Page::load(&page_file)?;
     let new_page_id = Uuid::new_v4().to_string();
@@ -161,7 +154,6 @@ pub fn copy_page(
         path,
         remark,
         Some(source_page.page_data),
-        project_id,
     );
     page.save(new_page_file)
         .map_err(|e| format!("复制页面失败: {}", e))?;

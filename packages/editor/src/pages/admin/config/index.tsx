@@ -223,17 +223,13 @@ const Config: React.FC = memo(() => {
                     <Button key="back" onClick={() => setOpen(false)}>
                         关闭
                     </Button>,
-                    <Button key="submit" type="primary" loading={delLoading} onClick={() => handleOk()}>
-                        仅删除项目
-                    </Button>,
                     <Button key="link" type="primary" danger loading={delLoading} onClick={() => handleOk("all")}>
                         删除所有数据
                     </Button>,
                 ]}
             >
-                <p>1. 删除项目后，您将无法找回，请慎重操作！</p>
-                <p>2. 仅删除项目会保留项目下页面列表。</p>
-                <p>3. 删除所有数据，会彻底删除项目本身、菜单列表以及归属页面列表。</p>
+                <p>1. 删除项目，会彻底删除项目本身、菜单列表以及归属页面列表。</p>
+                <p>2. 删除项目后，您将无法找回，请慎重操作！</p>
             </Modal>
         </>
     );

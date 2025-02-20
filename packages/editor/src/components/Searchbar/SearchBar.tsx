@@ -7,7 +7,7 @@ import styles from './index.module.less';
 const SearchBar = (props: any) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { form, from, submit, refresh, onCreate } = props;
+  const { form, from, submit, refresh, onCreate, onCreateGroup } = props;
 
   return (
     <div className={styles.searchBar}>
@@ -30,6 +30,11 @@ const SearchBar = (props: any) => {
           <Tooltip title="返回">
             <Button icon={<ArrowLeftOutlined />} shape="circle" onClick={() => navigate('/projects')}></Button>
           </Tooltip>
+        )}
+        {pathname === '/projects' && (
+          <Button type="dashed" icon={<PlusOutlined />} onClick={onCreateGroup}>
+          新建分组
+          </Button>
         )}
         <Button type="dashed" icon={<PlusOutlined />} onClick={onCreate}>
           新建{from}

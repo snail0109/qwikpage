@@ -1,18 +1,19 @@
-mod types;
 mod commands;
 mod constans;
 mod core;
 mod models;
 mod service;
+mod setup;
+mod types;
 mod utils;
 use crate::{
-    commands::{config, dsl, page, project},
-    core::setup,
+    commands::{config, dsl, group, page, project},
     service::configure_rocket,
     utils::is_port_in_use,
 };
 use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
+use utils::get_app_root_dir;
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
@@ -23,7 +24,10 @@ pub fn run() {
             tauri_plugin_log::Builder::new()
                 .targets([
                     Target::new(TargetKind::Stdout),
-                    Target::new(TargetKind::LogDir { file_name: None }),
+                    Target::new(TargetKind::Folder {
+                        path: get_app_root_dir(),
+                        file_name: None,
+                    }),
                     Target::new(TargetKind::Webview),
                 ])
                 .level(log::LevelFilter::Debug)
@@ -37,11 +41,10 @@ pub fn run() {
             setup::init(app)?;
             let handle = app.handle().clone();
             // mount the rocket instance
-            let port = 8000;
+            let port = 8789;
             if is_port_in_use(port) {
                 error!("Port {} is already in use", port);
             } else {
-                info!("Port {} ", port);
                 tauri::async_runtime::spawn(async move {
                     let rocket = configure_rocket(handle);
                     let _ = rocket.launch().await;
@@ -50,6 +53,12 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            // 分组
+            group::add_group,
+            group::edit_group,
+            group::delete_group,
+            group::load_groups,
+            group::load_groups_with_projects,
             // 项目
             project::get_project_list,
             project::add_project,

@@ -1,8 +1,12 @@
+use anyhow::Error;
+use log::{error, info};
 use serde::{Deserialize, Serialize};
-use std::fs;
-use std::path::Path;
+use std::{fs, io};
 
-use crate::utils::get_current_time;
+use crate::constans::PAGE_DIR;
+use crate::utils::{get_app_root_dir, get_current_time};
+
+use super::group::GroupConfig;
 
 // 系统布局
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -129,19 +133,29 @@ impl Project {
         }
     }
 
-    pub fn save(&self, project_path: &Path) {
-        let project_file = project_path.join(PROJECT_CONFIG_FILE);
-        let json = serde_json::to_string_pretty(&self).unwrap();
-        fs::write(project_file, json).unwrap();
+    pub fn save(&self) -> Result<bool, Error> {
+        let project_dir_path = get_app_root_dir().join(self.id.clone());
+        if !project_dir_path.exists() {
+            fs::create_dir_all(&project_dir_path)?;
+        }
+        let project_file = project_dir_path.join(PROJECT_CONFIG_FILE);
+        let json = serde_json::to_string_pretty(&self)?;
+        fs::write(project_file, json)?;
+        Ok(true)
     }
 
-    pub fn load(project_path: &Path) -> Self {
-        let project_file = project_path.join(PROJECT_CONFIG_FILE);
-        let json = fs::read_to_string(project_file).unwrap();
-        serde_json::from_str(&json).unwrap()
+    pub fn load(project_id: String) -> io::Result<Self> {
+        let project_file = get_app_root_dir().join(project_id).join(PROJECT_CONFIG_FILE);
+        match fs::read_to_string(project_file) {
+            Ok(data) => {
+                let project: Project = serde_json::from_str(&data).unwrap();
+                Ok(project)
+            }
+            Err(e) => Err(e),
+        }
     }
 
-    pub fn update(&mut self, params: ProjectUpdateParams) {
+    pub fn update(&mut self, params: ProjectUpdateParams) -> Result<bool, Error> {
         self.name = params.name;
         self.remark = params.remark;
         self.layout = params.layout;
@@ -152,17 +166,62 @@ impl Project {
         self.tag = params.tag;
         self.footer = params.footer;
         self.updated_at = get_current_time();
+        self.save();
+        Ok(true)
     }
 
-    pub fn delete(project_path: &Path, mode: Option<String>) {
-        // 删除项目目录 mode 如果等于 "all" 则删除项目目录
-        if let Some(mode) = mode {
-            if mode == "all" {
-                fs::remove_dir_all(project_path).unwrap();
-            }
-        } else {
-            let project_file = project_path.join(PROJECT_CONFIG_FILE);
-            fs::remove_file(project_file).unwrap();
+    pub fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
+        let project_dir = get_app_root_dir().join(&project_id);
+        fs::remove_dir_all(project_dir)?;
+        let mut config = GroupConfig::load()?;
+        // 查找 config.groups 各个 group projects 是否包含 project_id
+        let mut group_id = group_id;
+        if let Some(group) = config.groups.iter_mut().find(|g| g.projects.as_ref().map_or(false, |projects| projects.contains(&project_id))) {
+            group_id = Some(group.id.clone());
         }
+        if let Some(group_id) = group_id {
+            if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
+                // 处理错误，例如记录日志或返回错误
+                error!("Failed to remove project from group: {}", e);
+                return Err(anyhow::anyhow!("Failed to remove project from group: {}", e));
+            }
+        }
+        Ok(true)
+        
     }
+
+    pub fn count_pages_in_project(project_id: &str) -> usize {
+        let page_dir = get_app_root_dir().join(&project_id).join(PAGE_DIR);
+        // 目录不存在则返回 0
+        if !page_dir.exists() {
+            return 0;
+        }
+        let entries = fs::read_dir(page_dir).unwrap();
+        let mut count = 0;
+        for entry in entries {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.is_file() {
+                if path.extension().unwrap() != "json" {
+                    continue;
+                }
+                count += 1;
+            }
+        }
+        count
+    }
+
+    pub fn add_project(group_id: Option<String>, name: String, remark: String, logo: String) -> Result<Project, Error> {
+        let project_id = uuid::Uuid::new_v4().to_string();
+        info!("add project: {}", &project_id);
+        let project = Project::new(project_id.clone(), name, remark, logo);
+        project.save()?;
+        // group_id 不为空的时候，更新分组的项目列表
+        if let Some(group_id) = group_id {
+            let mut config = GroupConfig::load()?;
+            config.add_group_project(group_id, project_id);
+        }
+        Ok(project)
+    }
+    
 }

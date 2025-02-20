@@ -1,4 +1,4 @@
-use crate::commands::{page, project};
+use crate::commands::page;
 use crate::models::{page::Page, project::Project};
 use anyhow::Result;
 use rocket::Config;
@@ -69,7 +69,7 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
 // 获取项目详情
 #[get("/project/detail/<id>")]
 pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
-    match project::get_project_detail(id) {
+    match Project::load(id) {
         Ok(project) => Ok(Json(project)),
         Err(_) => Err(Status::InternalServerError),
     }
@@ -77,9 +77,9 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 
 
 // 获取页面详情
-#[get("/page/detail/<id>")]
-pub fn get_page_detail(id: String) -> Result<Json<Page>, Status> {
-    match page::get_page_detail(id) {
+#[get("/page/detail/id/<project_id>/<id>")]
+pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
+    match page::get_page_detail(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }
