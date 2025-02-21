@@ -11,6 +11,7 @@ use crate::{
     service::configure_rocket,
     utils::is_port_in_use,
 };
+use commands::resource;
 use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
 use utils::get_app_root_dir;
@@ -65,6 +66,8 @@ pub fn run() {
             project::get_project_detail,
             project::update_project,
             project::delete_project,
+            // reource
+            resource::load_resource,
             // 页面
             page::get_page_list,
             page::get_page_detail_with_id,

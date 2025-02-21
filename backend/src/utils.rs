@@ -1,5 +1,6 @@
 use chrono::Local;
-use std::{net::TcpStream, path::PathBuf};
+use log::info;
+use std::{fs::create_dir_all, net::TcpStream, path::PathBuf};
 use dirs;
 
 use crate::constans::{APP_IDENTIFIER, DATA_FORMAT};
@@ -28,7 +29,18 @@ pub fn is_port_in_use(port: u16) -> bool {
 pub fn get_app_root_dir() -> PathBuf {
     let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
     if !root_dir.exists() {
-        std::fs::create_dir_all(&root_dir).unwrap();
+        info!("create root dir: {:?}", root_dir);
+        create_dir_all(&root_dir).unwrap();
     }
     root_dir
+}
+
+pub fn get_app_root_resource_dir() -> PathBuf {
+    let root_dir = get_app_root_dir();
+    let resources_dir = root_dir.join("resources");
+    if !resources_dir.exists() {
+        info!("create resources dir: {:?}", resources_dir);
+        create_dir_all(&resources_dir).expect("failed to create resources dir");
+    }
+    resources_dir
 }

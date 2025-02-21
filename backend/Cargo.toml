@@ -45,6 +45,8 @@ tauri-plugin-dialog = "2"
 tauri-plugin-single-instance = "2"
 zip = "2.2.2"
 reqwest = { version = "0.12", features = ["blocking"] }
+tokio = { version = "1.43.0", features = ["sync"] }
+
 
 [target.'cfg(windows)'.dependencies]
 deelevate = "0.2.0"
