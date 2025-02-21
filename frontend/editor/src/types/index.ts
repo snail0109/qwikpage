@@ -1,3 +1,8 @@
+export interface IGroup {
+  id: string;
+  name: string;
+  projects: IProject[]
+}
 export interface IProject {
   id: string;
   name: string;

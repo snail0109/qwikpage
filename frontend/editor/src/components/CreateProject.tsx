@@ -11,11 +11,13 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [groupId, setGroupId] = useState<string | undefined>(undefined);
 
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
-    open() {
+    open(type: string, groupId?: string) {
       form.resetFields();
+      setGroupId(groupId);
       setVisible(true);
     },
   }));
@@ -26,7 +28,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
       await form.validateFields();
       const values = form.getFieldsValue();
       setLoading(true);
-      await projectService.addProject({ ...values });
+      await projectService.addProject({ ...values, group_id: groupId });
       message.success('项目初始化成功');
       props.update?.();
       setLoading(false);

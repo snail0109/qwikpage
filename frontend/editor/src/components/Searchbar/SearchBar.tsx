@@ -27,18 +27,20 @@ const SearchBar = (props: any) => {
       </div>
       <Space>
         {pathname === '/project/pages' && (
-          <Tooltip title="返回">
-            <Button icon={<ArrowLeftOutlined />} shape="circle" onClick={() => navigate('/projects')}></Button>
-          </Tooltip>
+          <>
+            <Tooltip title="返回">
+              <Button icon={<ArrowLeftOutlined />} shape="circle" onClick={() => navigate('/projects')}></Button>
+            </Tooltip>
+            <Button type="dashed" icon={<PlusOutlined />} onClick={onCreate}>
+              新建{from}
+            </Button>
+          </>
         )}
         {pathname === '/projects' && (
           <Button type="dashed" icon={<PlusOutlined />} onClick={onCreateGroup}>
-          新建分组
+            新建分组
           </Button>
         )}
-        <Button type="dashed" icon={<PlusOutlined />} onClick={onCreate}>
-          新建{from}
-        </Button>
         <Button shape="circle" icon={<RedoOutlined />} onClick={refresh}></Button>
       </Space>
     </div>

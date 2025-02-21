@@ -3,7 +3,7 @@ import { Button, Empty, Form, Layout, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
-import ProjectCard from "./components/ProjectCard";
+import ProjectGroup from "./components/ProjectGroup";
 import styles from "./../index.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
@@ -14,7 +14,7 @@ function Category() {
     const [loading, setLoading] = useState(false);
     const [dataSource, setDataSource] = useState([]);
     const createPageRef = useRef<CreatePageRef>();
-    const createProjectRef = useRef<{ open: (type: string) => void }>();
+    const createProjectRef = useRef<{ open: (type: string, groupId?: string) => void }>();
     const createGroupRef = useRef<{ open: () => void }>();
 
     useEffect(() => {
@@ -34,8 +34,8 @@ function Category() {
     };
 
     // 新建项目或页面
-    const handleCreate = () => {
-        createProjectRef.current?.open("project");
+    const handleCreate = (groupId?: string) => {
+        createProjectRef.current?.open("project", groupId);
     };
 
     // 新建项目分组
@@ -63,27 +63,19 @@ function Category() {
 
             <div className={styles.pagesContent}>
                 <Spin spinning={loading} size="large" tip="加载中...">
-                    {dataSource.length > 0 ? (
+                    {
                         dataSource.map((item: any) => {
                             return (
-                                <div key={item.id} className={styles.group}>
-                                    <div className={styles.groupTitle}>{item.name}</div>
-                                    <ProjectCard list={item.projects} />
-                                </div>
+                                <ProjectGroup groupItem={item} onCreate={handleCreate} />
                             );
                         })
-                    ) : (
-                        <Empty style={{ marginTop: 100 }}>
-                            <Button type="dashed" icon={<PlusOutlined />} onClick={handleCreate}>
-                                创建项目
-                            </Button>
-                        </Empty>
-                    )}
+                    }
                 </Spin>
             </div>
 
-            {/* 新建项目 */}
+            {/* 新建分组 */}
             <CreateGroup createRef={createGroupRef} update={search} />
+            {/* 新建项目 */}
             <CreateProject createRef={createProjectRef} update={search} />
             {/* 新建页面 */}
             <CreatePage createRef={createPageRef} update={search} />
