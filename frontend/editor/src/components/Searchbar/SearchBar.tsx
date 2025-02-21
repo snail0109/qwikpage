@@ -10,7 +10,12 @@ const SearchBar = (props: any) => {
   const { form, from, submit, refresh, onCreate, onCreateGroup } = props;
 
   return (
-    <div className={styles.searchBar}>
+    <div className={styles.searchBar} style={{ justifyContent: pathname === '/project/pages' ? 'flex-end' : 'space-between' }}>
+      {pathname === '/project/pages' && (
+        <Tooltip title="返回" className={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}></Button>
+        </Tooltip>
+      )}
       <div className={styles.searchBarForm}>
         <Form form={form} layout="inline" initialValues={{ type: 1 }}>
           <Form.Item name="keyword" style={{ width: 200 }}>
@@ -27,22 +32,20 @@ const SearchBar = (props: any) => {
       </div>
       <Space>
         {pathname === '/project/pages' && (
-          <>
-            <Tooltip title="返回">
-              <Button icon={<ArrowLeftOutlined />} shape="circle" onClick={() => navigate('/projects')}></Button>
-            </Tooltip>
-            <Button type="dashed" icon={<PlusOutlined />} onClick={onCreate}>
-              新建{from}
-            </Button>
-          </>
+          <Button type="dashed" icon={<PlusOutlined />} onClick={onCreate}>
+            新建{from}
+          </Button>
         )}
         {pathname === '/projects' && (
           <Button type="dashed" icon={<PlusOutlined />} onClick={onCreateGroup}>
             新建分组
           </Button>
         )}
-        <Button shape="circle" icon={<RedoOutlined />} onClick={refresh}></Button>
+        <Tooltip title="返回">
+          <Button icon={<RedoOutlined />} onClick={refresh}></Button>
+        </Tooltip>
       </Space>
+
     </div>
   );
 };
