@@ -5,11 +5,63 @@
 ## 前置要求
 根据自己的电脑系统参考官方文档安装配置 [前置要求 | Tauri](https://v2.tauri.app/start/prerequisites/)
 
+### MAC
+1. 安装 Xcode
+`xcode-select --install`
+
+2. 安装 Rust
+```bash
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+```
+
+### Windows 
+1. 安装 Microsoft C++ 生成工具
+下载 [Microsoft C++](https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/) 生成工具 安装程序并打开它以开始安装。
+在安装过程中，选中“使用 C++ 的桌面开发”选项。
+![](https://v2.tauri.app/_astro/visual-studio-build-tools-installer.TFOm5FVI_RDwYY.webp)
+
+Windows
+```bash
+winget install --id Rustlang.Rustup
+```
+
+2. webview2
+WebView 2 已安装在 Windows 10（从版本 1803 开始）和更高版本的 Windows 上。如果你正在这些版本之一上进行开发，则可以跳过此步骤，并直接转到安装 Rust。
+
+Tauri 使用 Microsoft Edge WebView2 在 Windows 上呈现内容。
+
+通过访问 [下载 WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download) 安装 WebView2。下载并安装“常青独立安装程序（Evergreen Bootstrapper）”。
+
+3. 安装 Rust
+前往 https://www.rust-lang.org/zh-CN/tools/install 下载 rustup。
+或者，你可以在 PowerShell 中使用 winget 安装 rustup：
+`winget install --id Rustlang.Rustup`
+
+
+### 安装 node 
+1.访问 [ Node.js](https://nodejs.org/zh-cn) 网站，下载并安装长期支持版本（LTS）。
+node 最低使用 node 18
+
+2.运行以下命令以检查 Node 是否成功安装：
+
+```bash
+node -v 
+# v20.10.0
+npm -v
+# 10.2.3
+```
+
+## 安装依赖
+```bash
+cargo build  // 如果遇到网络问题，需要开启命令行代理
+pnpm install
+```
+
 ## 启动
 
 ```bash
-pnpm install
-pnpm tauri dev
+pnpm tauri dev // 不执行cargo build，启动会自动下载依赖
+
 ```
 
 ## 打包
@@ -18,7 +70,3 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-
-## FAQ
-
-seachParams 丢失
