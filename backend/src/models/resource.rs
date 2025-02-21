@@ -1,6 +1,7 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, time::SystemTime};
 
 use anyhow::Error;
+use chrono::{DateTime, Local};
 use log::info;
 use serde::{Deserialize, Serialize};
 
@@ -19,6 +20,7 @@ pub struct ResourceInfo {
     pub name: String,
     pub path: String,
     pub res_type: String,
+    pub last_modified_time: String,
 }
 
 pub struct ResourceConfig {}
@@ -54,23 +56,26 @@ impl ResourceConfig {
         let mut resources: Vec<ResourceInfo> = vec![];
         while let Ok(Some(entry)) = result.next_entry().await {
             if entry.path().is_dir() {
-                let path_str = process_path(entry.path());
                 resources.push(ResourceInfo {
                     name: entry.file_name().to_string_lossy().to_string(),
-                    path: path_str,
+                    path: entry.path().to_string_lossy().to_string(),
                     // 判断你是文件还是目录
                     res_type: String::from("dir"),
+                    // 返回目录操作时间
+                    last_modified_time: format_system_time(entry.path().metadata().unwrap().modified().unwrap()),
                 });
             } else {
                 // 排除 .DS_Store 文件
                 if entry.file_name() == ".DS_Store" {
                     continue;
                 }
-                let path_str = process_path(entry.path());
                 resources.push(ResourceInfo {
                     name: entry.file_name().to_string_lossy().to_string(),
-                    path: path_str,
-                    res_type: String::from("file"),
+                    path: entry.path().to_string_lossy().to_string(),
+                    // 文件就返回具体的文件类型
+                    res_type: entry.path().extension().unwrap().to_string_lossy().to_string(),
+                    // 返回文件操作时间, 转换成 YYYY/MM/DD 格式
+                    last_modified_time: format_system_time(entry.path().metadata().unwrap().modified().unwrap()),
                 });
             }
         }
@@ -79,35 +84,7 @@ impl ResourceConfig {
 
 }
 
-
-fn process_path(p: PathBuf) -> String {
-    #[cfg(target_os = "windows")]
-    {
-        fix_windows_paths(&p)
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        p.to_string_lossy().to_string()
-    }
-}
-
-#[cfg(target_os = "windows")]
-fn fix_windows_paths(p: &PathBuf) -> String {
-    use std::path::Component;
-
-    // 1. Remove UNC prefix (if exists)
-    let mut components = p.components();
-    if let Some(Component::Prefix(prefix)) = components.next() {
-        if prefix.kind().is_verbatim() {
-            components = p.strip_prefix(prefix.as_os_str()).unwrap().components();
-        }
-    }
-
-    // 2. Remove the drive letter
-    let path_without_drive = components.as_path().to_string_lossy();
-
-    // 3. Convert backslashes to forward slashes
-    let final_path = path_without_drive.replace("\\", "/");
-
-    final_path
+fn format_system_time(system_time: SystemTime) -> String {
+    let datetime: DateTime<Local> = system_time.into();
+    datetime.format("%Y/%m/%d").to_string()
 }

@@ -8,11 +8,12 @@ import styles from "./../index.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import { cmd_invoke } from "@/services/cmd_invoke";
+import { IGroup } from '@/types';
 
 function Category() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [dataSource, setDataSource] = useState([]);
+    const [dataSource, setDataSource] = useState<IGroup[]>([]);
     const createPageRef = useRef<CreatePageRef>();
     const createProjectRef = useRef<{ open: (type: string, groupId?: string) => void }>();
     const createGroupRef = useRef<{ open: () => void }>();
@@ -43,6 +44,15 @@ function Category() {
         createGroupRef.current?.open();
     };
 
+    // 更新分组名称
+    const updateGroupName = (groupId: string, newName: string) => {
+        setDataSource((pre) =>
+            pre.map((group) =>
+                group.id === groupId ? { ...group, name: newName } : group
+            )
+        );
+    };
+
     const search = () => {
         const keyword = form.getFieldValue("keyword");
         load_groups_with_projects(keyword)
@@ -66,7 +76,7 @@ function Category() {
                     {
                         dataSource.map((item: any) => {
                             return (
-                                <ProjectGroup groupItem={item} onCreate={handleCreate} />
+                                <ProjectGroup groupItem={item} onCreate={handleCreate} onUpdateGroup={updateGroupName} />
                             );
                         })
                     }
