@@ -53,7 +53,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
         <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入页面名称' }]}>
           <Input placeholder="请输入项目名称" maxLength={15} showCount />
         </Form.Item>
-        <Form.Item label="描述" name="remark" rules={[{ required: true, message: '请输入描述' }]}>
+        <Form.Item label="描述" name="remark">
           <TextArea autoSize={{ minRows: 4, maxRows: 6 }} placeholder="请输入描述" maxLength={100} showCount />
         </Form.Item>
         <Form.Item label="图标" name="logo" rules={[{ required: true, message: '请上传项目Logo' }]}>

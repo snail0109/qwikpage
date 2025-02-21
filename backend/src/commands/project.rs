@@ -60,7 +60,7 @@ pub fn get_project_list(
                     if let Some(project) = load_project(&project_path) {
                         // 如果keyword传入了值，只返回匹配的项目
                         if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword) && !project.remark.contains(keyword)
+                            if !project.name.contains(keyword)
                             {
                                 continue;
                             }
@@ -138,7 +138,7 @@ pub fn get_project_list_new(keyword: Option<String>) -> Result<Vec<ProjectSummar
                     if let Some(project) = load_project(&project_path) {
                         // 如果keyword传入了值，只返回匹配的项目
                         if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword) && !project.remark.contains(keyword)
+                            if !project.name.contains(keyword)
                             {
                                 continue;
                             }

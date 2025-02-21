@@ -39,6 +39,7 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
         onOk: async () => {
           await pageService.delPageData({
             id: params.id,
+            projectId: params.projectId
           });
           message.success('删除成功');
           refresh();

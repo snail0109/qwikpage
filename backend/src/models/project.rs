@@ -64,7 +64,7 @@ impl MenuThemeColor {
 pub struct Project {
     pub id: String,                         // 项目唯一标识
     pub name: String,                       // 项目名称
-    pub remark: String,                     // 项目备注（可选）
+    pub remark: Option<String>,                     // 项目备注（可选）
     pub logo: String,                       // 项目 logo 的 URL（可选）
     pub layout: u32,                        // 系统布局 1 2
     pub menu_mode: String,                  // 菜单模式
@@ -96,7 +96,7 @@ pub struct ProjectUpdateParams {
 pub struct ProjectSummary {
     pub id: String,
     pub name: String,
-    pub remark: String,
+    pub remark: Option<String>,
     pub count: usize,
     pub updated_at: String,
     pub logo: String,
@@ -113,7 +113,7 @@ pub struct ProjectList {
 pub struct ProjectAddParams {
     pub group_id: Option<String>,
     pub name: String,
-    pub remark: String,
+    pub remark: Option<String>,
     pub logo: String,
 }
 
@@ -121,7 +121,7 @@ pub struct ProjectAddParams {
 pub const PROJECT_CONFIG_FILE: &str = "project.json";
 
 impl Project {
-    pub fn new(id: String, name: String, remark: String, logo: String) -> Self {
+    pub fn new(id: String, name: String, remark: Option<String>, logo: String) -> Self {
         // 生成随机并且唯一的项目 ID
         Project {
             id,
@@ -166,7 +166,7 @@ impl Project {
 
     pub fn update(&mut self, params: ProjectUpdateParams) -> Result<bool, Error> {
         self.name = params.name;
-        self.remark = params.remark;
+        self.remark = Some(params.remark);
         self.layout = params.layout;
         self.menu_mode = params.menu_mode;
         self.menu_theme_color = params.menu_theme_color;
