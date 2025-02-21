@@ -12,7 +12,7 @@ fi
 
 # 设置源目录和目标目录
 SOURCE_DIR="dist/admin"
-TARGET_DIR="src-tauri/assets/admin"
+TARGET_DIR="backend/assets/admin"
 
 # 确保目标目录存在
 mkdir -p "$TARGET_DIR"
