@@ -35,12 +35,24 @@ pub struct GroupList {
     pub groups: Vec<GroupDetail>,
 }
 
+fn default_group() -> Group {
+    Group {
+        id: "-1".to_string(),
+        name: "默认分组".to_string(),
+        projects: None,
+    }
+}
+
+
 impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
         let path = get_app_root_dir().join("group.json");
         if !path.exists() {
-            let config = GroupConfig { groups: vec![] };
+            let def_group = default_group();
+            let config = GroupConfig {
+                groups: vec![def_group],
+            };
             config.save()?;
         }
 
@@ -51,7 +63,10 @@ impl GroupConfig {
             }
             Err(e) if e.kind() == ErrorKind::NotFound => {
                 // 如果文件不存在，返回一个空配置
-                Ok(GroupConfig { groups: vec![] })
+                let def_group = default_group();
+                Ok(GroupConfig {
+                    groups: vec![def_group],
+                })
             }
             Err(e) => Err(e),
         }
@@ -128,26 +143,10 @@ impl GroupConfig {
             });
         }
 
-        let default_projects: Vec<_> = projects
-            .iter()
-            .filter(|p| !assigned_project_ids.contains(&p.id))
-            .cloned()
-            .collect();
-
-        group_list.push(GroupDetail {
-            id: String::from("-1"),        // 默认分组ID
-            name: String::from("Default"), // 默认分组名称
-            projects: Some(default_projects),
-        });
-
         Ok(GroupList { groups: group_list })
     }
 
-    pub fn add_group_project(
-        &mut self,
-        id: String,
-        project_id: String,
-    ) -> Result<bool, Error> {
+    pub fn add_group_project(&mut self, id: String, project_id: String) -> Result<bool, Error> {
         // 查找目标分组
         let group = match self.groups.iter_mut().find(|group| group.id == id) {
             Some(group) => group,
@@ -164,8 +163,15 @@ impl GroupConfig {
         Ok(true)
     }
 
-
-    pub fn remove_project_from_group(&mut self, group_id: String, project_id: String) -> Result<(), Error> {
+    pub fn remove_project_from_group(
+        &mut self,
+        group_id: String,
+        project_id: String,
+    ) -> Result<(), Error> {
+        // group_id 如果是 -1 则是默认分组，不允许删除
+        if group_id == "-1" {
+            return Err(anyhow::anyhow!("默认分组，不允许删除"));
+        }
         if let Some(group) = self.groups.iter_mut().find(|g| g.id == group_id) {
             if let Some(projects) = &mut group.projects {
                 if projects.contains(&project_id) {
@@ -176,6 +182,10 @@ impl GroupConfig {
                 }
             }
         }
-        Err(anyhow::anyhow!("Project {} not found in group {}", project_id, group_id))
+        Err(anyhow::anyhow!(
+            "Project {} not found in group {}",
+            project_id,
+            group_id
+        ))
     }
 }

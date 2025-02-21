@@ -236,25 +236,24 @@ impl Project {
         info!("add project: {}", &project_id);
         let project = Project::new(project_id.clone(), params.name, params.remark, params.logo);
         project.save()?;
-        // group_id 不为空的时候，更新分组的项目列表
-        if let Some(group_id) = params.group_id {
-            let mut config = GroupConfig::load().map_err(|e| {
-                error!("Failed to load group configuration: {}", e);
-                anyhow::anyhow!("加载分组配置失败: {}", e)
-            })?;
-            config.add_group_project(group_id.clone(), project_id.clone()).map_err(|e| {
-                error!(
-                    "Failed to add project {} to group {}: {}",
-                    project_id, group_id, e
-                );
-                anyhow::anyhow!(
-                    "添加项目 {} 到分组 {} 失败: {}",
-                    project_id,
-                    group_id,
-                    e
-                )
-            })?;
-        } 
+        // group_id 为 None 时，添加到默认分组
+        let group_id = params.group_id.clone().unwrap_or("-1".to_string());
+        let mut config = GroupConfig::load().map_err(|e| {
+            error!("Failed to load group configuration: {}", e);
+            anyhow::anyhow!("加载分组配置失败: {}", e)
+        })?;
+        config.add_group_project(group_id.clone(), project_id.clone()).map_err(|e| {
+            error!(
+                "Failed to add project {} to group {}: {}",
+                project_id, group_id, e
+            );
+            anyhow::anyhow!(
+                "添加项目 {} 到分组 {} 失败: {}",
+                project_id,
+                group_id,
+                e
+            )
+        })?;
         Ok(project)
     }
 }
