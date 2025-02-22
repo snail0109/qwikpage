@@ -51,6 +51,9 @@ npm -v
 # 10.2.3
 ```
 
+### 安装 pnpm
+`npm i pnpm -g`
+
 ## 安装依赖
 ```bash
 cargo build  // 如果遇到网络问题，需要开启命令行代理
