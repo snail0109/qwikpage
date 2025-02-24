@@ -246,6 +246,7 @@ impl Page {
         }
         page.updated_at = get_current_time();
         page.save(page_file);
+
         Ok(true)
     }
 

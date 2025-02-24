@@ -40,7 +40,7 @@ pub async fn update_resource_group(params: OperResourceGroupParams) -> CmdRespon
 // 导入资源
 #[command]
 pub async fn import_resource(params: UploadParams) -> CmdResponse<bool> {
-    info!("import resource group: {:?}", params);
+    info!("import resource group");
     let config = ResourceConfig::import_resources(params).await;
     CmdResponse::from(config)
 }

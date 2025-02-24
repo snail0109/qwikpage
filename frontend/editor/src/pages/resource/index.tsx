@@ -1,14 +1,15 @@
-import { ImageViewer } from "@/components/resourceViewers/ImageViewer";
 import { resourceService } from "@/services";
 import { appConfigDir, appDataDir, join } from "@tauri-apps/api/path";
 import { Button, Divider, Flex, Form, Input, Layout, Space, Tooltip } from "antd";
 import { set } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import searchBarstyles from "@/components/SearchBar/index.module.less";
 import pageStyles from "@/pages/home/index.module.less";
 import { RedoOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
+import CreateGroup, { IOpenParams } from "./components/CreateGroup";
+import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
 
 const tabs = [
     {
@@ -35,27 +36,60 @@ const tabs = [
 
 export default function Home() {
     const { projectId: project_id } = useParams();
-    const [data, setData] = useState<[]>();
-    const [activeTab, setActiveTab] = useState("图片");
+    const [data, setData] = useState<IResourceGroup[]>([]);
+    const [resource_type, setResourceType] = useState("img");
+    const [loading, setLoading] = useState(true);
+
+    const createGroupRef = useRef<{ open: (params: IOpenParams) => void }>();
 
     const [form] = Form.useForm();
 
     useEffect(() => {
+        setLoading(true);
         resourceService
             .load_resource({
-                project_id: "a504d633-ac58-48bb-8b48-cff5f252df72",
-                resouce_type: "img",
+                project_id: project_id!,
+                resource_type,
+            })
+            .then((res) => {
+                setData(res);
+                console.log(res);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                setLoading(false);
+            });
+    }, []);
+
+    const searchSubmit = () => {};
+
+    // 新建资源分组
+    const handleAddResGroup = () => {
+        createGroupRef.current?.open({ action: "create" });
+    };
+
+    const handleEditResGroup = (group_name: string) => {
+        createGroupRef.current?.open({
+            action: "edit",
+            group_name,
+        });
+    };
+
+    const refresh = () => {
+        const keyword = form.getFieldValue("keyword");
+        resourceService
+            .load_resource({
+                // @ts-ignore
+                project_id: project_id,
+                resource_type: "img",
+                keyword,
             })
             .then((res) => {
                 setData(res);
                 console.log(res);
             });
-    }, []);
-
-    const searchSubmit = () => {};
-    const handleAddResGroup = () => {};
-
-    const handleRefresh = () => {};
+    };
 
     return (
         // TODO 抽取公共组件
@@ -84,9 +118,9 @@ export default function Home() {
                     {tabs.map((tab) => (
                         <Button
                             key={tab.value}
-                            type={activeTab === tab.value ? "primary" : "default"}
+                            type={resource_type === tab.value ? "primary" : "default"}
                             className={styles.tabButton}
-                            onClick={() => setActiveTab(tab.value)}
+                            onClick={() => setResourceType(tab.value)}
                         >
                             {tab.label}
                         </Button>
@@ -97,11 +131,25 @@ export default function Home() {
                         创建分组
                     </Button>
                     <Tooltip title="刷新">
-                        <Button icon={<RedoOutlined />} onClick={handleRefresh}></Button>
+                        <Button icon={<RedoOutlined />} onClick={refresh}></Button>
                     </Tooltip>
                 </div>
             </div>
-            <div className={styles.pagesContent}>Content</div>
+            <div className={styles.pagesContent}>
+                <ResourceGroupList
+                    refresh={refresh}
+                    data={data}
+                    project_id={project_id!}
+                    resource_type={resource_type}
+                    handleEditResGroup={handleEditResGroup}
+                />
+            </div>
+            <CreateGroup
+                createRef={createGroupRef}
+                update={refresh}
+                project_id={project_id!}
+                resource_type={resource_type}
+            />
         </Layout.Content>
     );
 }
