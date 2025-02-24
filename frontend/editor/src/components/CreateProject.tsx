@@ -3,7 +3,7 @@ import { useImperativeHandle, useState, forwardRef, memo } from 'react';
 import { projectService } from '@/services';
 import { message } from '@/utils/AntdGlobal';
 import TextArea from 'antd/es/input/TextArea';
-import styles from "./index.module.less";
+import ColorRadioGroup from '@/components/RadioColorGroup/RadioColorGroup';
 
 const colorOptions: { label: string; value: string }[] = [
   { label: 'blue', value: 'blue' },
@@ -52,6 +52,11 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
     form.resetFields();
     setVisible(false);
   };
+
+  const handleColorChange = (value: string) => {
+    form.setFieldsValue({ theme_color: value });
+  };
+
   return (
     <Modal title="新增项目" open={visible} confirmLoading={loading} onCancel={handleCancel} width={500} footer={null}>
       <Form
@@ -71,25 +76,10 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
           <TextArea autoSize={{ minRows: 4, maxRows: 6 }} placeholder="请输入描述" maxLength={100} showCount />
         </Form.Item>
         <Form.Item label="选择主题色" name="theme_color">
-          <Radio.Group optionType='button' className={styles.themeColor}>
-            {colorOptions.map((option) => {
-              const selectedColor = form.getFieldValue('theme_color');
-              return (
-                <Radio key={option.value} value={option.value}>
-                  <div
-                    style={{
-                      backgroundColor: option.value,
-                      padding: '15px',
-                      borderWidth: '2px',
-                      borderStyle: 'solid',
-                      borderColor: selectedColor === option.value ? '#D3E4FF' : option.value,
-                      borderRadius: '4px',
-                    }}
-                  />
-                </Radio>
-              );
-            })}
-          </Radio.Group>
+          <ColorRadioGroup
+            selectedValue={form.getFieldValue('theme_color')}
+            onChange={handleColorChange}
+          />
         </Form.Item>
         <Form.Item label="图标" name="logo" rules={[{ required: true, message: '请上传项目Logo' }]}>
           <Image width={100} src="/imgs/qwikpage-logo.png" />

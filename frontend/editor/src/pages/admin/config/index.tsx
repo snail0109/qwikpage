@@ -4,6 +4,7 @@ import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
 import { message } from "@/utils/AntdGlobal";
 import { RollbackOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
+import ColorRadioGroup from '@/components/RadioColorGroup/RadioColorGroup';
 import { projectService } from "@/services";
 import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
@@ -84,6 +85,10 @@ const Config: React.FC = memo(() => {
         variant: type === "detail" ? "borderless" : "outlined",
     };
 
+    const handleColorChange = (value: string) => {
+        form.setFieldsValue({ theme_color: value });
+    };
+
     return (
         <>
             <Form
@@ -112,13 +117,19 @@ const Config: React.FC = memo(() => {
                 <Form.Item label="项目名称" name="name" rules={[{ required: true, message: "请输入项目名称" }]}>
                     <Input placeholder={"项目名称: Mars"} {...props} maxLength={15} showCount />
                 </Form.Item>
-                <Form.Item label="项目描述" name="remark" rules={[{ required: true, message: "请输入项目描述" }]}>
+                <Form.Item label="项目描述" name="remark">
                     <Input.TextArea
                         placeholder={"请输入项目描述"}
                         rows={3}
                         maxLength={100}
                         showCount={type !== "detail"}
                         {...props}
+                    />
+                </Form.Item>
+                <Form.Item label="选择主题色" name="theme_color">
+                    <ColorRadioGroup
+                        selectedValue={form.getFieldValue('theme_color')}
+                        onChange={handleColorChange}
                     />
                 </Form.Item>
                 <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
