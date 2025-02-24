@@ -66,6 +66,7 @@ pub struct Project {
     pub name: String,                       // 项目名称
     pub remark: Option<String>,                     // 项目备注（可选）
     pub logo: String,                       // 项目 logo 的 URL（可选）
+    pub theme_color: String,                // 项目主题色
     pub layout: u32,                        // 系统布局 1 2
     pub menu_mode: String,                  // 菜单模式
     pub menu_theme_color: String,           // 菜单主题
@@ -83,6 +84,7 @@ pub struct ProjectUpdateParams {
     pub name: String,                       // 项目名称
     pub remark: String,                     // 项目备注（可选）
     pub layout: u32,                        // 系统布局 1 2
+    pub theme_color: String,                // 项目主题
     pub menu_mode: String,                  // 菜单模式
     pub menu_theme_color: String,           // 菜单主题
     pub breadcrumb: bool,                   // 是否显示面包屑导航
@@ -97,6 +99,7 @@ pub struct ProjectSummary {
     pub id: String,
     pub name: String,
     pub remark: Option<String>,
+    pub theme_color: String,
     pub count: usize,
     pub updated_at: String,
     pub logo: String,
@@ -115,19 +118,21 @@ pub struct ProjectAddParams {
     pub name: String,
     pub remark: Option<String>,
     pub logo: String,
+    pub theme_color: String,
 }
 
 // 项目配置文件
 pub const PROJECT_CONFIG_FILE: &str = "project.json";
 
 impl Project {
-    pub fn new(id: String, name: String, remark: Option<String>, logo: String) -> Self {
+    pub fn new(id: String, name: String, theme_color:String, remark: Option<String>, logo: String) -> Self {
         // 生成随机并且唯一的项目 ID
         Project {
             id,
             name,
             remark,
             logo,
+            theme_color,
             layout: ProjectLayout::LeftRight.to_value(),
             menu_mode: MenuMode::Vertical.to_str().to_string(),
             menu_theme_color: MenuThemeColor::Light.to_str().to_string(),
@@ -168,6 +173,7 @@ impl Project {
         self.name = params.name;
         self.remark = Some(params.remark);
         self.layout = params.layout;
+        self.theme_color = params.theme_color;
         self.menu_mode = params.menu_mode;
         self.menu_theme_color = params.menu_theme_color;
         self.system_theme_color = params.system_theme_color;
@@ -234,7 +240,7 @@ impl Project {
     pub fn add_project(params: ProjectAddParams) -> Result<Project, Error> {
         let project_id = uuid::Uuid::new_v4().to_string();
         info!("add project: {}", &project_id);
-        let project = Project::new(project_id.clone(), params.name, params.remark, params.logo);
+        let project = Project::new(project_id.clone(), params.name, params.theme_color, params.remark, params.logo);
         project.save()?;
         // group_id 为 None 时，添加到默认分组
         let group_id = params.group_id.clone().unwrap_or("-1".to_string());
