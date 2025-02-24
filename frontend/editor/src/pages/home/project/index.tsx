@@ -8,6 +8,7 @@ import ProjectCard from "./components/ProjectCard";
 import styles from "@/styles/page.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
+import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import { cmd_invoke } from "@/services/cmd_invoke";
 import { IGroup } from '@/types';
 
@@ -86,17 +87,20 @@ function Category() {
                         // 设置默认展开所有项
                         activeKey={activeKeys}
                         onChange={onChange}
-                        items={dataSource.map((item: any) => ({
-                            key: item.id,
-                            label: (
-                                <ProjectGroup
-                                    groupItem={item}
-                                    onCreate={handleCreate}
-                                    onUpdateGroup={updateGroupName}
-                                />
-                            ),
-                            children: <ProjectCard list={item.projects} />,
-                        }))}
+                        items={dataSource.map((item: any) => {
+                            const isEmptyDefaultGroup = item.id === "-1" && item.projects.length === 0;
+                            return {
+                                key: item.id,
+                                label: (
+                                    <ProjectGroup
+                                        groupItem={item}
+                                        onCreate={handleCreate}
+                                        onUpdateGroup={updateGroupName}
+                                    />
+                                ),
+                                children: isEmptyDefaultGroup ? <EmptyBox title="该分组下暂无项目，请新增项目" lastCharsCount={4} onCreate={handleCreateGroup} /> : <ProjectCard list={item.projects} />,
+                            };
+                        })}
                         expandIcon={
                             ({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />
                         }
