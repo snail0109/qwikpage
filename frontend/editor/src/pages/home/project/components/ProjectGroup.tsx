@@ -44,8 +44,10 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
   };
 
   // 点击新增项目，调用父组件方法
-  const onCreateProject = () => {
+  const onCreateProject = (event: any) => {
     onCreate(groupItem.id);
+    // 阻止事件冒泡
+    event.stopPropagation();
   };
 
   return (

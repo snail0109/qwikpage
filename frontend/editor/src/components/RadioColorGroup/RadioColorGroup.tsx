@@ -9,6 +9,7 @@ interface ColorOption {
 
 interface ColorRadioGroupProps {
   options?: ColorOption[]; // 使 options 可选
+  disabled?: boolean;
   selectedValue: string;
   onChange: (value: string) => void;
 }
@@ -22,11 +23,18 @@ const defaultColorOptions: ColorOption[] = [
 
 const ColorRadioGroup: React.FC<ColorRadioGroupProps> = ({
   options = defaultColorOptions,
+  disabled = false,
   selectedValue,
   onChange,
 }) => {
   return (
-    <Radio.Group optionType='button' className={styles.themeColor} onChange={(e) => onChange(e.target.value)}>
+    <Radio.Group
+      optionType='button'
+      value={selectedValue}
+      className={styles.themeColor}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+    >
       {options.map((option) => (
         <Radio key={option.value} value={option.value}>
           <div

@@ -5,13 +5,6 @@ import { message } from '@/utils/AntdGlobal';
 import TextArea from 'antd/es/input/TextArea';
 import ColorRadioGroup from '@/components/RadioColorGroup/RadioColorGroup';
 
-const colorOptions: { label: string; value: string }[] = [
-  { label: 'blue', value: 'blue' },
-  { label: 'purple', value: 'purple' },
-  { label: 'red', value: 'red' },
-  { label: 'green', value: 'green' },
-]
-
 /**
  * 创建项目
  */
@@ -19,7 +12,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [color, setColor] = useState('blue');
+  const [selectedColor, setSelectedColor] = useState('blue');
   const [groupId, setGroupId] = useState<string | undefined>(undefined);
 
   // 暴露方法
@@ -54,6 +47,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
   };
 
   const handleColorChange = (value: string) => {
+    setSelectedColor(value);
     form.setFieldsValue({ theme_color: value });
   };
 
@@ -77,7 +71,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
         </Form.Item>
         <Form.Item label="选择主题色" name="theme_color">
           <ColorRadioGroup
-            selectedValue={form.getFieldValue('theme_color')}
+            selectedValue={selectedColor}
             onChange={handleColorChange}
           />
         </Form.Item>

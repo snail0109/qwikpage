@@ -18,6 +18,7 @@ const Config: React.FC = memo(() => {
     const [delLoading, setDelLoading] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [type, setType] = useState<"detail" | "edit" | "create">("detail");
+    const [selectedColor, setSelectedColor] = useState('');
 
     const { id } = useParams();
     const [form] = Form.useForm();
@@ -28,6 +29,7 @@ const Config: React.FC = memo(() => {
         if (!id) return;
         projectService.getProjectDetail(id).then((res) => {
             form.setFieldsValue(res);
+            setSelectedColor(res.themeColor);  
         });
     }, []);
 
@@ -86,6 +88,7 @@ const Config: React.FC = memo(() => {
     };
 
     const handleColorChange = (value: string) => {
+        setSelectedColor(value);
         form.setFieldsValue({ theme_color: value });
     };
 
@@ -128,8 +131,9 @@ const Config: React.FC = memo(() => {
                 </Form.Item>
                 <Form.Item label="选择主题色" name="theme_color">
                     <ColorRadioGroup
-                        selectedValue={form.getFieldValue('theme_color')}
+                        selectedValue={selectedColor}
                         onChange={handleColorChange}
+                        disabled={type === "detail"}
                     />
                 </Form.Item>
                 <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
