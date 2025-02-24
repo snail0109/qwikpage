@@ -15,6 +15,7 @@ function Category() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [dataSource, setDataSource] = useState<IGroup[]>([]);
+    const [activeKeys, setActiveKeys] = useState<string[]>([]);
     const createPageRef = useRef<CreatePageRef>();
     const createProjectRef = useRef<{ open: (type: string, groupId?: string) => void }>();
     const createGroupRef = useRef<{ open: () => void }>();
@@ -29,6 +30,7 @@ function Category() {
             .then((res) => {
                 console.log("load_groups_with_projects", res);
                 setDataSource(res.groups);
+                setActiveKeys(res.groups.map((item: { id: string; }) => item.id))
             })
             .finally(() => {
                 setLoading(false);
@@ -59,6 +61,11 @@ function Category() {
         load_groups_with_projects(keyword)
     };
 
+    // 折叠面板展开折叠
+    const onChange = (key: string[]) => {
+        setActiveKeys(key);
+    };
+
     return (
         <Layout.Content className={styles.pageList}>
             {/* 搜索工具条 */}
@@ -77,7 +84,8 @@ function Category() {
                     <Collapse
                         ghost
                         // 设置默认展开所有项
-                        activeKey={dataSource.map(item => item.id)}
+                        activeKey={activeKeys}
+                        onChange={onChange}
                         items={dataSource.map((item: any) => ({
                             key: item.id,
                             label: (
@@ -92,7 +100,6 @@ function Category() {
                         expandIcon={
                             ({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />
                         }
-                        // size="small"
                     />
                 </Spin>
             </div>
