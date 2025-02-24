@@ -5,7 +5,7 @@ import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import ProjectGroup from "./components/ProjectGroup";
 import ProjectCard from "./components/ProjectCard";
-import styles from "./../index.module.less";
+import styles from "@/styles/page.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import { cmd_invoke } from "@/services/cmd_invoke";

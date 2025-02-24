@@ -27,11 +27,11 @@ export const router = [
       },
       {
         path: '/pages',
-        element: lazyLoad(React.lazy(() => import('@/pages/home/project/Pages'))),
+        element: lazyLoad(React.lazy(() => import('@/pages/pageList'))),
       },
       {
         path: '/project/pages',
-        element: lazyLoad(React.lazy(() => import('@/pages/home/project/Pages'))),
+        element: lazyLoad(React.lazy(() => import('@/pages/pageList'))),
       },
       {
         path: '/editor/:projectId/:id',

@@ -5,7 +5,7 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { cmd_invoke } from "@/services/cmd_invoke";
 import { IGroup } from '@/types';
-import styles from './../../index.module.less';
+import styles from '@/styles/page.module.less';
 
 interface ProjectGroupProps {
   groupItem: IGroup;
