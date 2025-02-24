@@ -8,14 +8,37 @@ import styles from "./index.module.less";
 import searchBarstyles from "@/components/SearchBar/index.module.less";
 import pageStyles from "@/pages/home/index.module.less";
 import { RedoOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+
+const tabs = [
+    {
+        label: "图片",
+        value: "img",
+    },
+    {
+        label: "字体",
+        value: "font",
+    },
+    {
+        label: "第三方JS",
+        value: "js",
+    },
+    {
+        label: "附件",
+        value: "attachment",
+    },
+    {
+        label: "其它",
+        value: "other",
+    },
+];
 
 export default function Home() {
-    const [path, setPath] = useState<string>("");
+    const { projectId: project_id } = useParams();
+    const [data, setData] = useState<[]>();
     const [activeTab, setActiveTab] = useState("图片");
 
     const [form] = Form.useForm();
-
-    const tabs = ["图片", "字体", "第三方JS", "附件", "其它"];
 
     useEffect(() => {
         resourceService
@@ -24,8 +47,8 @@ export default function Home() {
                 resouce_type: "img",
             })
             .then((res) => {
+                setData(res);
                 console.log(res);
-                setPath(res[0].path);
             });
     }, []);
 
@@ -60,12 +83,12 @@ export default function Home() {
                 <div>
                     {tabs.map((tab) => (
                         <Button
-                            key={tab}
-                            type={activeTab === tab ? "primary" : "default"}
+                            key={tab.value}
+                            type={activeTab === tab.value ? "primary" : "default"}
                             className={styles.tabButton}
-                            onClick={() => setActiveTab(tab)}
+                            onClick={() => setActiveTab(tab.value)}
                         >
-                            {tab}
+                            {tab.label}
                         </Button>
                     ))}
                 </div>
