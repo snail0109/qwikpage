@@ -1,14 +1,19 @@
 import { ImageViewer } from "@/components/resourceViewers/ImageViewer";
 import { resourceService } from "@/services";
 import { appConfigDir, appDataDir, join } from "@tauri-apps/api/path";
-import { Button, Divider, Flex, Layout, Space } from "antd";
+import { Button, Divider, Flex, Form, Input, Layout, Space, Tooltip } from "antd";
 import { set } from "lodash-es";
 import { useEffect, useState } from "react";
 import styles from "./index.module.less";
+import searchBarstyles from "@/components/SearchBar/index.module.less";
+import pageStyles from "@/pages/home/index.module.less";
+import { RedoOutlined } from "@ant-design/icons";
 
 export default function Home() {
     const [path, setPath] = useState<string>("");
     const [activeTab, setActiveTab] = useState("图片");
+
+    const [form] = Form.useForm();
 
     const tabs = ["图片", "字体", "第三方JS", "附件", "其它"];
 
@@ -24,22 +29,56 @@ export default function Home() {
             });
     }, []);
 
+    const searchSubmit = () => {};
+    const handleAddResGroup = () => {};
+
+    const handleRefresh = () => {};
+
     return (
-        <Layout.Content>
-            <div>Search Bar</div>
-            <Divider />
-            <Flex gap="small" className={styles.tabContainer}>
-                {tabs.map((tab) => (
-                    <Button
-                        key={tab}
-                        type={activeTab === tab ? "primary" : "default"}
-                        className={styles.tabButton}
-                        onClick={() => setActiveTab(tab)}
-                    >
-                        {tab}
+        // TODO 抽取公共组件
+        <Layout.Content className={pageStyles.pageList}>
+            {/* TODO SearchBar 组件替换 */}
+            <div className={searchBarstyles.searchBar} style={{ justifyContent: "space-between" }}>
+                <div>项目名称</div>
+                <div className={searchBarstyles.searchBarForm}>
+                    <Form form={form} layout="inline" initialValues={{ type: 1 }}>
+                        <Form.Item name="keyword" style={{ width: 200 }}>
+                            <Input placeholder="请输入查找关键字" onPressEnter={searchSubmit} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Space>
+                                <Button type="primary" onClick={searchSubmit} size="middle">
+                                    搜索
+                                </Button>
+                            </Space>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+            <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                {/* TODO 按照设计稿实现 */}
+                <div>
+                    {tabs.map((tab) => (
+                        <Button
+                            key={tab}
+                            type={activeTab === tab ? "primary" : "default"}
+                            className={styles.tabButton}
+                            onClick={() => setActiveTab(tab)}
+                        >
+                            {tab}
+                        </Button>
+                    ))}
+                </div>
+                <div>
+                    <Button type="primary" onClick={handleAddResGroup}>
+                        创建分组
                     </Button>
-                ))}
-            </Flex>
+                    <Tooltip title="刷新">
+                        <Button icon={<RedoOutlined />} onClick={handleRefresh}></Button>
+                    </Tooltip>
+                </div>
+            </div>
+            <div className={styles.pagesContent}>Content</div>
         </Layout.Content>
     );
 }
