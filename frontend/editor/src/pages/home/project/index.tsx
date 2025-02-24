@@ -72,7 +72,7 @@ function Category() {
             <SearchBar
                 showGroup={false}
                 form={form}
-                from={"项目"}
+                from={"分组"}
                 submit={search}
                 refresh={search}
                 onCreate={handleCreate}

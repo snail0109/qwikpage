@@ -18,7 +18,9 @@ export default function Index() {
   const [form] = Form.useForm();
   const createPageRef = useRef<CreatePageRef>();
   const location = useLocation();
-  const projectId = new URLSearchParams(location.search).get('projectId') || undefined;
+  const searchParams = new URLSearchParams(location.search);
+  const projectId = searchParams.get('projectId') || undefined;
+  const projectName = searchParams.get('projectName') || undefined;
 
   // 判断是否是超大屏
   const isXLarge = useMediaQuery({ query: '(min-width: 1920px)' });
@@ -58,8 +60,7 @@ export default function Index() {
   return (
     <>
       <Layout.Content className={styles.pageList}>
-        <SearchBar showGroup={false} form={form} from="页面" submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
-
+        <SearchBar showGroup={false} form={form} from="页面" projectName={projectName} submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
         <div className={styles.pagesContent}>
           <Spin spinning={loading} size="large" tip="加载中...">
             {tableProps.dataSource.length > 0 ? (

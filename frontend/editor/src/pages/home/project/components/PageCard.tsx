@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
-import { CopyOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, EyeOutlined, FileFilled } from '@ant-design/icons';
+import PageIcon from '@/components/icons/PageIcon';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
@@ -61,11 +62,11 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
             <Card
               key={item.id + index}
               actions={[
-                <Tooltip title="复制">
-                  <CopyOutlined style={{ fontSize: 16 }} onClick={() => handleAction('copy', item)} />
-                </Tooltip>,
                 <Tooltip title="预览">
                   <EyeOutlined style={{ fontSize: 16 }} onClick={() => handleAction('preview', item)} />
+                </Tooltip>,
+                <Tooltip title="复制">
+                  <CopyOutlined style={{ fontSize: 16 }} onClick={() => handleAction('copy', item)} />
                 </Tooltip>,
                 <Tooltip title="删除">
                   <DeleteOutlined style={{ fontSize: 16 }} onClick={() => handleAction('delete', item)} />
@@ -73,7 +74,10 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
               ]}
             >
               <div className={styles.cardBody} onClick={() => handleAction('edit', item)}>
-                <div className={styles.itemTitle}>{item.name}</div>
+                <div className={styles.itemTitle}>
+                  <PageIcon className={styles.pageIcon} />
+                  {item.name}
+                </div>
                 <div className={styles.itemRemark}>{item.remark || '暂无描述'}</div>
                 <div className={styles.updateUser}>
                   <span>更新于 {dayjs(item.updatedAt).fromNow()}</span>
@@ -82,10 +86,11 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
             </Card>
           );
         })}
-      </div>
+      </div >
       {/* 图片预览 */}
-      <Image
-        style={{ display: 'none' }}
+      < Image
+        style={{ display: 'none' }
+        }
         preview={{
           visible: showPreview,
           src: previewUrl,

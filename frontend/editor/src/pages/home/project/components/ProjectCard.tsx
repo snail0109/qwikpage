@@ -21,7 +21,10 @@ export default function Category({ list }: { list: IProject[] }) {
 
     // 双击加载项目下子页面
     const handleOpenPages = (id: string) => {
-        navigate(`/project/pages?projectId=${id}`);
+        const project = list.find(item => item.id === id);
+        if (project) {
+            navigate(`/project/pages?projectId=${id}&projectName=${encodeURIComponent(project.name)}`);
+        }
     };
 
     // 导出项目代码
@@ -54,7 +57,7 @@ export default function Category({ list }: { list: IProject[] }) {
             return handleOpenProject(id);
         }
         if (_key === 'export') {
-            return handleExportProjectCode(id).catch(res=> {
+            return handleExportProjectCode(id).catch(res => {
                 message.error(res);
             });
         }

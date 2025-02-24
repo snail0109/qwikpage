@@ -1,0 +1,37 @@
+.searchBar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.searchBar .projectName {
+  display: flex;
+  align-items: center;
+}
+.searchBar .projectName .prefixIcon {
+  width: 5px;
+  height: 15px;
+  background-color: #216EF7;
+  margin-right: 6px;
+}
+.searchBar .projectName .projectNameText {
+  font-size: 16px;
+  font-weight: 600;
+}
+.searchBar .searchBarContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.searchBar .searchBarContent .backButton {
+  margin-right: 8px;
+}
+.searchBar .searchBarContent .refreshButton {
+  transform: rotate(-110deg);
+}
+.searchBar .searchBarContent .divider {
+  height: 24px;
+  border-left: 1px solid #ccc;
+  margin-left: -8px;
+  margin-right: 8px;
+}
