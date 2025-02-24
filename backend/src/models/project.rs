@@ -1,6 +1,7 @@
 use anyhow::Error;
 use log::{error, info};
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
@@ -64,7 +65,7 @@ impl MenuThemeColor {
 pub struct Project {
     pub id: String,                         // 项目唯一标识
     pub name: String,                       // 项目名称
-    pub remark: Option<String>,                     // 项目备注（可选）
+    pub remark: Option<String>,             // 项目备注（可选）
     pub logo: String,                       // 项目 logo 的 URL（可选）
     pub theme_color: String,                // 项目主题色
     pub layout: u32,                        // 系统布局 1 2
@@ -125,7 +126,13 @@ pub struct ProjectAddParams {
 pub const PROJECT_CONFIG_FILE: &str = "project.json";
 
 impl Project {
-    pub fn new(id: String, name: String, theme_color:String, remark: Option<String>, logo: String) -> Self {
+    pub fn new(
+        id: String,
+        name: String,
+        theme_color: String,
+        remark: Option<String>,
+        logo: String,
+    ) -> Self {
         // 生成随机并且唯一的项目 ID
         Project {
             id,
@@ -240,26 +247,45 @@ impl Project {
     pub fn add_project(params: ProjectAddParams) -> Result<Project, Error> {
         let project_id = uuid::Uuid::new_v4().to_string();
         info!("add project: {}", &project_id);
-        let project = Project::new(project_id.clone(), params.name, params.theme_color, params.remark, params.logo);
+        let project_dir_path = get_app_root_dir().join(project_id.clone());
+        if !project_dir_path.exists() {
+            fs::create_dir_all(&project_dir_path)?;
+        }
+        // 处理一下 logo， 如果logo 是本地文件路径，则复制文件到项目目录下
+        let logo_file_path = Path::new(&params.logo);
+        let mut logo = params.logo.clone();
+        if logo_file_path.exists() {
+            let project_dir_path = get_app_root_dir().join(project_id.clone());
+            let project_logo_file_path = project_dir_path.join("logo.png");
+            fs::copy(logo_file_path, &project_logo_file_path)?;
+            logo = project_logo_file_path.to_string_lossy().to_string();
+        }
+
+        let project = Project::new(
+            project_id.clone(),
+            params.name,
+            params.theme_color,
+            params.remark,
+            logo.to_string(),
+        );
         project.save()?;
+        
         // group_id 为 None 时，添加到默认分组
         let group_id = params.group_id.clone().unwrap_or("-1".to_string());
         let mut config = GroupConfig::load().map_err(|e| {
             error!("Failed to load group configuration: {}", e);
             anyhow::anyhow!("加载分组配置失败: {}", e)
         })?;
-        config.add_group_project(group_id.clone(), project_id.clone()).map_err(|e| {
-            error!(
-                "Failed to add project {} to group {}: {}",
-                project_id, group_id, e
-            );
-            anyhow::anyhow!(
-                "添加项目 {} 到分组 {} 失败: {}",
-                project_id,
-                group_id,
-                e
-            )
-        })?;
+        config
+            .add_group_project(group_id.clone(), project_id.clone())
+            .map_err(|e| {
+                error!(
+                    "Failed to add project {} to group {}: {}",
+                    project_id, group_id, e
+                );
+                anyhow::anyhow!("添加项目 {} 到分组 {} 失败: {}", project_id, group_id, e)
+            })?;
         Ok(project)
     }
+
 }
