@@ -6,7 +6,19 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
 import styles from "./../page.module.less";
+import problue from "@/assets/image/probg_blue.png";
+import progreen from "@/assets/image/progb_green.png";
+import propurple from "@/assets/image/probg_purple.png";
+import prored from "@/assets/image/progb_red.png";
 const { Paragraph } = Typography;
+
+// 根据 themeColor 映射到相应的图片
+const themeColorToImageMap: { [key: string]: string } = {
+    blue: problue,
+    green: progreen,
+    purple: propurple,
+    red: prored,
+};
 
 /**
  * 页面列表
@@ -77,19 +89,25 @@ export default function Category({ list }: { list: IProject[] }) {
         <>
             <div className={styles.projectGrid}>
                 {list.map((project) => {
+                    const backgroundImage = themeColorToImageMap[project.themeColor];
                     return (
                         <div className={styles.projectCard} key={project.id}>
                             {/* 卡片头部 */}
-                            <div className={styles.cardHeader} onClick={() => handleOpenProject(project.id)}>
+                            <div
+                                className={styles.cardHeader}
+                                onClick={() => handleOpenProject(project.id)}
+                                style={{
+                                    backgroundImage: `url(${backgroundImage})`,
+                                    backgroundSize: 'cover',
+                                }}>
                                 <h3 className={styles.cardTitle}>
-                                    <GlobalOutlined className={styles.cardIcon} />
                                     {project.name}
                                 </h3>
                             </div>
                             {/* 卡片内容 */}
                             <div className={styles.cardContent} onClick={() => handleOpenPages(project.id)}>
                                 <Paragraph className={styles.description}>{project.remark}</Paragraph>
-                                <div className={styles.metaInfo}>
+                                <div className={styles.metaInfo} style={{ paddingTop: '5px' }}>
                                     <FolderOpenOutlined className={styles.metaIcon} />
                                     <p>
                                         <span>{project.count} </span>个页面
