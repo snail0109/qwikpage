@@ -7,6 +7,7 @@ export interface IProject {
   id: string;
   name: string;
   logo: string;
+  themeColor: string;
   remark: string;
   count: number;
 }
