@@ -1,9 +1,10 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Button, Empty, Form, Layout, Spin } from "antd";
+import { Collapse, Empty, Form, Layout, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import ProjectGroup from "./components/ProjectGroup";
+import ProjectCard from "./components/ProjectCard";
 import styles from "./../index.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
@@ -71,15 +72,28 @@ function Category() {
                 onCreateGroup={handleCreateGroup}
             />
 
-            <div className={styles.pagesContent}>
+            <div className={styles.projectContent}>
                 <Spin spinning={loading} size="large" tip="加载中...">
-                    {
-                        dataSource.map((item: any) => {
-                            return (
-                                <ProjectGroup groupItem={item} onCreate={handleCreate} onUpdateGroup={updateGroupName} />
-                            );
-                        })
-                    }
+                    <Collapse
+                        ghost
+                        // 设置默认展开所有项
+                        activeKey={dataSource.map(item => item.id)}
+                        items={dataSource.map((item: any) => ({
+                            key: item.id,
+                            label: (
+                                <ProjectGroup
+                                    groupItem={item}
+                                    onCreate={handleCreate}
+                                    onUpdateGroup={updateGroupName}
+                                />
+                            ),
+                            children: <ProjectCard list={item.projects} />,
+                        }))}
+                        expandIcon={
+                            ({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />
+                        }
+                        // size="small"
+                    />
                 </Spin>
             </div>
 

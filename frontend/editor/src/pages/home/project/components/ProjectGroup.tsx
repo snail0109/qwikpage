@@ -5,7 +5,6 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { cmd_invoke } from "@/services/cmd_invoke";
 import { IGroup } from '@/types';
-import ProjectCard from "./ProjectCard";
 import styles from './../../index.module.less';
 
 interface ProjectGroupProps {
@@ -19,7 +18,7 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
   const [isEditing, setIsEditing] = useState(false); // 是否正在编辑
   const [inputValue, setInputValue] = useState(groupItem.name); // 输入框的值
 
-   // 处理编辑分组名称
+  // 处理编辑分组名称
   const handleEditGroup = async () => {
     try {
       const res = await cmd_invoke("edit_group", { id: groupItem.id, groupName: inputValue });
@@ -45,7 +44,7 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
   };
 
   // 点击新增项目，调用父组件方法
-  const onCreatePro = () => {
+  const onCreateProject = () => {
     onCreate(groupItem.id);
   };
 
@@ -53,30 +52,29 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
     <>
       <div key={groupItem.id} className={styles.group}>
         <div className={styles.groupHeader}>
-        <div>
-          {isEditing ? (
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              autoFocus
-            />
-          ) : (
-            <>
-              {groupItem.name}
-              <EditOutlined
-                className={styles.editIcon}
-                onClick={() => setIsEditing(true)}
+          <div>
+            {isEditing ? (
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                autoFocus
               />
-            </>
-          )}
-        </div>
-          <Button color="primary" variant="link" onClick={onCreatePro}>
+            ) : (
+              <>
+                {groupItem.name}
+                <EditOutlined
+                  className={styles.editIcon}
+                  onClick={() => setIsEditing(true)}
+                />
+              </>
+            )}
+          </div>
+          <Button color="primary" variant="link" onClick={onCreateProject}>
             新增项目
           </Button>
         </div>
-        <ProjectCard list={groupItem.projects} />
       </div>
     </>
   );
