@@ -1,6 +1,6 @@
-use chrono::Local;
+use chrono::{DateTime, Local};
 use log::info;
-use std::{fs::create_dir_all, net::TcpStream, path::PathBuf};
+use std::{fs::create_dir_all, net::TcpStream, path::PathBuf, time::SystemTime};
 use dirs;
 
 use crate::constans::{APP_IDENTIFIER, DATA_FORMAT};
@@ -35,6 +35,7 @@ pub fn get_app_root_dir() -> PathBuf {
     root_dir
 }
 
+// 获取应用资源目录
 pub fn get_app_root_resource_dir() -> PathBuf {
     let root_dir = get_app_root_dir();
     let resources_dir = root_dir.join("resources");
@@ -43,4 +44,12 @@ pub fn get_app_root_resource_dir() -> PathBuf {
         create_dir_all(&resources_dir).expect("failed to create resources dir");
     }
     resources_dir
+}
+
+
+
+// 格式化时间
+pub fn format_system_time(system_time: SystemTime) -> String {
+    let datetime: DateTime<Local> = system_time.into();
+    datetime.format("%Y/%m/%d").to_string()
 }

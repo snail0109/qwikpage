@@ -1,11 +1,10 @@
-use std::{fs, path::PathBuf, time::SystemTime};
+use std::fs;
 
 use anyhow::Error;
-use chrono::{DateTime, Local};
 use log::info;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::get_app_root_resource_dir;
+use crate::utils::{format_system_time, get_app_root_resource_dir};
 use tokio::fs::read_dir;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -13,6 +12,7 @@ pub struct ResourceQueryParams {
     pub project_id: String,
     pub resouce_type: String,
     pub resouce_group: Option<String>,
+    pub keyword: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,7 +26,7 @@ pub struct ResourceInfo {
 pub struct ResourceConfig {}
 
 impl ResourceConfig {
-    /// 从文件加载配置
+    // 查询接口，根据项目 ID、资源类型、资源分组、关键字查询资源
     pub async fn load(params: ResourceQueryParams) -> Result<Vec<ResourceInfo>, Error> {
         // 项目资源路径
         let prj_res_dir = get_app_root_resource_dir().join(params.project_id);
@@ -55,6 +55,12 @@ impl ResourceConfig {
         let mut result = read_dir(res_group_dir).await?;
         let mut resources: Vec<ResourceInfo> = vec![];
         while let Ok(Some(entry)) = result.next_entry().await {
+            // 支持 keyword 过滤
+            if let Some(keyword) = &params.keyword {
+                if !entry.file_name().to_string_lossy().contains(keyword) {
+                    continue;
+                }
+            }
             if entry.path().is_dir() {
                 resources.push(ResourceInfo {
                     name: entry.file_name().to_string_lossy().to_string(),
@@ -82,9 +88,27 @@ impl ResourceConfig {
         Ok(resources)
     }
 
-}
+    pub async fn save() {
 
-fn format_system_time(system_time: SystemTime) -> String {
-    let datetime: DateTime<Local> = system_time.into();
-    datetime.format("%Y/%m/%d").to_string()
+    }
+
+    pub async fn add_resource() {
+
+    }
+
+    pub async fn delete_resource() {
+
+    }
+
+    pub async fn update_resource() {
+
+    }
+
+
+    pub async fn upload_resource() {
+        
+    }
+
+
+
 }

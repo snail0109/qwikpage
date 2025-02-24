@@ -41,6 +41,11 @@ export default function Category({ list }: { list: IProject[] }) {
             icon: <ExportOutlined />,
             label: "导出代码",
         },
+        {
+            key: "resource_mgr",
+            icon: <ExportOutlined />,
+            label: "静态资源管理",
+        },
     ];
 
     // 环境跳转
@@ -52,6 +57,9 @@ export default function Category({ list }: { list: IProject[] }) {
             return handleExportProjectCode(id).catch(res=> {
                 message.error(res);
             });
+        }
+        if (_key === 'resource_mgr') {
+            return navigate(`/resources/${id}`);
         }
     };
 
