@@ -10,7 +10,7 @@ import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import { cmd_invoke } from "@/services/cmd_invoke";
-import { IGroup } from '@/types';
+import { IGroup } from "@/types";
 
 function Category() {
     const [form] = Form.useForm();
@@ -31,14 +31,14 @@ function Category() {
             .then((res) => {
                 console.log("load_groups_with_projects", res);
                 setDataSource(res.groups);
-                setActiveKeys(res.groups.map((item: { id: string; }) => item.id))
+                setActiveKeys(res.groups.map((item: { id: string }) => item.id));
             })
             .finally(() => {
                 setLoading(false);
             });
     };
 
-    // 新建项目或页面
+    // 新建项目
     const handleCreate = (groupId?: string) => {
         createProjectRef.current?.open("project", groupId);
     };
@@ -50,16 +50,12 @@ function Category() {
 
     // 更新分组名称
     const updateGroupName = (groupId: string, newName: string) => {
-        setDataSource((pre) =>
-            pre.map((group) =>
-                group.id === groupId ? { ...group, name: newName } : group
-            )
-        );
+        setDataSource((pre) => pre.map((group) => (group.id === groupId ? { ...group, name: newName } : group)));
     };
 
     const search = () => {
         const keyword = form.getFieldValue("keyword");
-        load_groups_with_projects(keyword)
+        load_groups_with_projects(keyword);
     };
 
     // 折叠面板展开折叠
@@ -98,12 +94,18 @@ function Category() {
                                         onUpdateGroup={updateGroupName}
                                     />
                                 ),
-                                children: isEmptyDefaultGroup ? <EmptyBox title="该分组下暂无项目，请新增项目" lastCharsCount={4} onCreate={handleCreateGroup} /> : <ProjectCard list={item.projects} />,
+                                children: isEmptyDefaultGroup ? (
+                                    <EmptyBox
+                                        title="该分组下暂无项目，请新增项目"
+                                        lastCharsCount={4}
+                                        onCreate={handleCreate}
+                                    />
+                                ) : (
+                                    <ProjectCard list={item.projects} />
+                                ),
                             };
                         })}
-                        expandIcon={
-                            ({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />
-                        }
+                        expandIcon={({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />}
                     />
                 </Spin>
             </div>
