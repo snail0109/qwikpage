@@ -106,6 +106,7 @@ function Category() {
                                 ),
                                 children: item.projects.length <= 0 ? (
                                     <EmptyBox
+                                        groupId={item.id}
                                         title="该分组下暂无项目，请新增项目"
                                         lastCharsCount={4}
                                         onCreate={handleCreate}
