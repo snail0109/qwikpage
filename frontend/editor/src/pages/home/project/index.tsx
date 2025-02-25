@@ -1,6 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { Collapse, Form, Layout, Spin } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import GroupTitle from "@/components/GroupTitle";
@@ -12,6 +11,7 @@ import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import { cmd_invoke } from "@/services/cmd_invoke";
 import { message } from "@/utils/AntdGlobal";
 import { IGroup } from "@/types";
+import ExpandIcon from "@/assets/icons/ExpandIcon.svg?react";
 
 function Category() {
     const [form] = Form.useForm();
@@ -115,7 +115,16 @@ function Category() {
                                 ),
                             };
                         })}
-                        expandIcon={({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />}
+                        expandIcon={({ isActive }) => (
+                            <ExpandIcon
+                                width={20}
+                                height={20}
+                                style={{
+                                    transform: isActive ? "rotate(0deg)" : "rotate(-90deg)",
+                                    transition: "transform 0.3s ease",
+                                }}
+                            />
+                        )}
                     />
                 </Spin>
             </div>

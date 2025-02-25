@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Typography, Avatar, Dropdown, Tooltip, message } from "antd";
-import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined, ExportOutlined, FileImageOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
 import styles from "./../page.module.less";
@@ -10,6 +9,14 @@ import problue from "@/assets/image/probg_blue.png";
 import progreen from "@/assets/image/progb_green.png";
 import propurple from "@/assets/image/probg_purple.png";
 import prored from "@/assets/image/progb_red.png";
+import SettingIcon from "@/assets/icons/SettingIcon.svg?react";
+import ExportIcon from "@/assets/icons/ExportIcon.svg?react";
+import ResourceIcon from "@/assets/icons/ResourceIcon.svg?react";
+import CodeIcon from "@/assets/icons/CodeIcon.svg?react";
+import MoreIcon from "@/assets/icons/MoreIcon.svg?react";
+import BrowseIcon from "@/assets/icons/BrowseIcon.svg?react";
+import FolderIcon from "@/assets/icons/FolderIcon.svg?react";
+
 const { Paragraph } = Typography;
 
 // 根据 themeColor 映射到相应的图片
@@ -33,7 +40,7 @@ export default function Category({ list }: { list: IProject[] }) {
 
     // 双击加载项目下子页面
     const handleOpenPages = (id: string) => {
-        const project = list.find(item => item.id === id);
+        const project = list.find((item) => item.id === id);
         if (project) {
             navigate(`/project/pages?projectId=${id}&projectName=${encodeURIComponent(project.name)}`);
         }
@@ -41,47 +48,48 @@ export default function Category({ list }: { list: IProject[] }) {
 
     // 导出项目代码
     const handleExportProjectCode = async (project_id: string, export_type: string) => {
-        return await invoke<void>("export_project", { params: {project_id, export_type} });
+        return await invoke<void>("export_project", { params: { project_id, export_type } });
     };
 
     // 卡片下拉项
     const items: MenuProps["items"] = [
         {
             key: "config",
-            icon: <SettingOutlined />,
+            icon: <SettingIcon />,
             label: "项目配置",
         },
         {
             key: "export",
-            icon: <ExportOutlined />,
+            icon: <ExportIcon />,
             label: "导出代码",
             children: [
                 {
-                    key: 'vue',
-                    icon: <ExportOutlined />,
+                    key: "vue",
+                    icon: <CodeIcon />,
                     label: "VUE",
                 },
                 {
-                    key: 'fishx',
-                    icon: <ExportOutlined />,
+                    key: "fishx",
+                    icon: <CodeIcon />,
                     label: "FishX",
-                },{
-                    key: 'fish',
-                    icon: <ExportOutlined />,
+                },
+                {
+                    key: "fish",
+                    icon: <CodeIcon />,
                     label: "Fish",
                 },
             ],
         },
         {
             key: "resource_mgr",
-            icon: <FileImageOutlined />,
-            label: "静态资源管理"
+            icon: <ResourceIcon />,
+            label: "静态资源管理",
         },
     ];
 
     // 环境跳转
     const onClick = (_key: string, id: string) => {
-        if (_key === 'config') {
+        if (_key === "config") {
             return handleOpenProject(id);
         }
         if (["fishx", "vue", "fish"].includes(_key)) {
@@ -89,8 +97,8 @@ export default function Category({ list }: { list: IProject[] }) {
                 message.error(res);
             });
         }
-        if (_key === 'resource_mgr') {
-            const project = list.find(item => item.id === id);
+        if (_key === "resource_mgr") {
+            const project = list.find((item) => item.id === id);
             if (project) {
                 return navigate(`/resources?projectId=${id}&projectName=${encodeURIComponent(project.name)}`);
             }
@@ -101,7 +109,7 @@ export default function Category({ list }: { list: IProject[] }) {
     // 预览跳转
     const handlePreview = async (id: string) => {
         const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${id}`;
-        await openUrl(previewUrl)
+        await openUrl(previewUrl);
     };
 
     // 项目列表
@@ -118,17 +126,16 @@ export default function Category({ list }: { list: IProject[] }) {
                                 onClick={() => handleOpenProject(project.id)}
                                 style={{
                                     backgroundImage: `url(${backgroundImage})`,
-                                    backgroundSize: 'cover',
-                                }}>
-                                <h3 className={styles.cardTitle}>
-                                    {project.name}
-                                </h3>
+                                    backgroundSize: "cover",
+                                }}
+                            >
+                                <h3 className={styles.cardTitle}>{project.name}</h3>
                             </div>
                             {/* 卡片内容 */}
                             <div className={styles.cardContent} onClick={() => handleOpenPages(project.id)}>
                                 <Paragraph className={styles.description}>{project.remark}</Paragraph>
-                                <div className={styles.metaInfo} style={{ paddingTop: '5px' }}>
-                                    <FolderOpenOutlined className={styles.metaIcon} />
+                                <div className={styles.metaInfo} style={{ paddingTop: "5px" }}>
+                                    <FolderIcon className={styles.metaIcon} />
                                     <p>
                                         <span>{project.count} </span>个页面
                                     </p>
@@ -142,13 +149,13 @@ export default function Category({ list }: { list: IProject[] }) {
                                     placement="bottomRight"
                                     trigger={["click"]}
                                 >
-                                    <MoreOutlined className={styles.moreIcon} />
+                                    <MoreIcon className={styles.moreIcon} />
                                 </Dropdown>
                             </div>
                             {/* 卡片预览 */}
                             <div className={styles.moreInfo} style={{ right: 40 }}>
                                 <Tooltip title="预览">
-                                    <EyeOutlined className={styles.moreIcon} onClick={() => handlePreview(project.id)} />
+                                    <BrowseIcon className={styles.moreIcon} onClick={() => handlePreview(project.id)} />
                                 </Tooltip>
                             </div>
 
