@@ -4,7 +4,7 @@ import type { MenuProps } from "antd";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
-import styles from "./../page.module.less";
+import styles from "./index.module.less";
 import problue from "@/assets/image/probg_blue.png";
 import progreen from "@/assets/image/progb_green.png";
 import propurple from "@/assets/image/probg_purple.png";
@@ -144,6 +144,7 @@ export default function Category({ list }: { list: IProject[] }) {
                             {/* 卡片更多 */}
                             <div className={styles.moreInfo}>
                                 <Dropdown
+                                    overlayStyle={styles.projectSetting}
                                     menu={{ items, onClick: ({ key }) => onClick(key, project.id) }}
                                     arrow
                                     placement="bottomRight"

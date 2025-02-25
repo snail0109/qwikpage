@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button, Input } from "antd";
-import styles from "@/styles/page.module.less";
+import styles from "./index.module.less";
 import EditIcon from "@/assets/icons/EditIcon.svg?react";
-import Flex from "@/packages/Container/Flex/Flex";
 
 interface ProjectGroupProps {
     groupItem: {
