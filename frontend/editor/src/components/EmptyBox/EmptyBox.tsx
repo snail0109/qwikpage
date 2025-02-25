@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import styles from "./index.module.less";
-import UD from "@/assets/image/UD.png";
+import EmptyFolder from "@/assets/image/emptyFolder.png";
 
 interface EmptyBoxProps {
   title: string;
@@ -21,7 +21,7 @@ const EmptyBox = ({
   return (
     <div className={styles.emptyItem} onClick={onCreate}>
       <div className={styles.iconTitle}>
-        <img src={UD} />
+        <img src={EmptyFolder} />
         {mainText}
         <span className={styles.colorTitle}>{lastTwoChars}</span>
       </div>

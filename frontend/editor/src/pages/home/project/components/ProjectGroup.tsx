@@ -32,14 +32,16 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
   };
 
   // 处理输入框失焦
-  const handleBlur = () => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     handleEditGroup();
+    event.stopPropagation();
   };
 
   // 处理按下回车
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleEditGroup();
+      e.stopPropagation();
     }
   };
 
@@ -61,6 +63,9 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
                 autoFocus
               />
             ) : (
@@ -68,7 +73,10 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
                 {groupItem.name}
                 <EditOutlined
                   className={styles.editIcon}
-                  onClick={() => setIsEditing(true)}
+                  onClick={(event) => {
+                    setIsEditing(true);
+                    event.stopPropagation();
+                  }}
                 />
               </>
             )}
