@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Typography, Avatar, Dropdown, Tooltip, message } from "antd";
-import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined, ExportOutlined } from "@ant-design/icons";
+import { GlobalOutlined, MoreOutlined, SettingOutlined, FolderOpenOutlined, EyeOutlined, ExportOutlined, FileImageOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { invoke } from "@tauri-apps/api/core";
@@ -74,8 +74,8 @@ export default function Category({ list }: { list: IProject[] }) {
         },
         {
             key: "resource_mgr",
-            icon: <ExportOutlined />,
-            label: "静态资源管理",
+            icon: <FileImageOutlined />,
+            label: "静态资源管理"
         },
     ];
 
@@ -90,7 +90,11 @@ export default function Category({ list }: { list: IProject[] }) {
             });
         }
         if (_key === 'resource_mgr') {
-            return navigate(`/resources/${id}`);
+            const project = list.find(item => item.id === id);
+            if (project) {
+                return navigate(`/resources?projectId=${id}&projectName=${encodeURIComponent(project.name)}`);
+            }
+            return null;
         }
     };
 

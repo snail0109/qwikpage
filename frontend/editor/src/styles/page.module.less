@@ -8,16 +8,19 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
-  .pagesContent, 
+
+  .pagesContent,
   .projectContent {
     flex: 1;
   }
 }
+
 .pageList,
 .libList {
   :global {
     .ant-card {
       transition: all 0.3s;
+
       &:hover {
         border-color: #7d3fff;
         box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
@@ -25,24 +28,29 @@
     }
   }
 }
+
 .cardBody {
   cursor: pointer;
 }
+
 .itemEnv {
   position: absolute;
   top: 8px;
   right: 0px;
 }
+
 .itemTitle {
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
   .pageIcon {
     margin-right: 7px;
   }
 }
+
 .itemRemark {
   margin-top: 8px;
   margin-bottom: 10px;
@@ -54,6 +62,7 @@
   font-weight: 400;
   text-overflow: ellipsis;
 }
+
 .updateUser {
   font-size: 13px;
   color: #9c9a9a;
@@ -66,11 +75,13 @@
       padding-inline: 12px;
       padding-bottom: 6px;
     }
+
     .ant-card-actions li {
       margin: 8px 0;
     }
   }
 }
+
 // 组件库
 .libWrap {
   .search {
@@ -78,12 +89,14 @@
     margin-top: 30px;
     margin-bottom: 50px;
   }
+
   .libList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
   }
 }
+
 // 模板页面
 .searchBox {
   width: 50%;
@@ -96,7 +109,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
     .editIcon {
       margin-left: 10px;
     }
@@ -117,11 +130,12 @@
         align-items: center;
         padding: 0px;
         margin-top: 12px;
-        border-bottom: 1px solid #F3F3F3 ;
+        border-bottom: 1px solid #F3F3F3;
       }
-     .ant-collapse-content .ant-collapse-content-box {
+
+      .ant-collapse-content .ant-collapse-content-box {
         padding-top: 15px;
-     }
+      }
     }
   }
 }

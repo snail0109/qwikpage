@@ -1,20 +1,21 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Input, Card } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { message, Modal } from '@/utils/AntdGlobal';
+import { Button, Input } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import { cmd_invoke } from "@/services/cmd_invoke";
-import { IGroup } from '@/types';
 import styles from '@/styles/page.module.less';
 
 interface ProjectGroupProps {
-  groupItem: IGroup;
+  groupItem: {
+    id: string;
+    name: string;
+  };
+  createText?: string;
   onCreate: (groupId?: string) => void;
   onUpdateGroup: (groupId: string, newName: string) => void;
 }
 
 // 项目分组
-const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps) => {
+const ProjectGroup = ({ groupItem, createText = '新增项目', onCreate, onUpdateGroup }: ProjectGroupProps) => {
   const [isEditing, setIsEditing] = useState(false); // 是否正在编辑
   const [inputValue, setInputValue] = useState(groupItem.name); // 输入框的值
 
@@ -82,7 +83,7 @@ const ProjectGroup = ({ groupItem, onCreate, onUpdateGroup }: ProjectGroupProps)
             )}
           </div>
           <Button color="primary" variant="link" onClick={onCreateProject}>
-            新增项目
+            {createText}
           </Button>
         </div>
       </div>

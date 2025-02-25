@@ -1,4 +1,54 @@
-.tabContainer {
-    padding: 16px;
-}
+.resourceContainer {
+  padding: 17px 15px;
+  height: calc(100vh - 64px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 
+  .searchBar {
+    margin-bottom: 0;
+  }
+
+  :global {
+    .ant-divider-horizontal {
+      margin: 14px 0;
+    }
+  }
+
+  .topContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 26px;
+
+    >div {
+      display: flex;
+      gap: 10px;
+
+      :global {
+        .ant-btn {
+          border-radius: 4px;
+        }
+      }
+    }
+
+    >div:first-child {
+      flex: 1;
+      align-items: flex-start;
+
+      :global {
+        .ant-btn {
+          width: 90px;
+        }
+      }
+    }
+
+    >div:last-child {
+      align-items: flex-end;
+
+      .createGroupBtn {
+        width: 99px;
+      }
+    }
+  }
+}

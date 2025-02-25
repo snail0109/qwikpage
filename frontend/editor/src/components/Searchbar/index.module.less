@@ -3,36 +3,51 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   // 项目名称
   .projectName {
     display: flex;
     align-items: center;
+
     .prefixIcon {
       width: 5px;
       height: 15px;
       background-color: #216EF7;
       margin-right: 6px;
     }
+
     .projectNameText {
       font-size: 16px;
       font-weight: 600;
     }
   }
+
   .searchBarContent {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .backButton {
       margin-right: 8px;
     }
+
     .refreshButton {
       transform: rotate(-110deg);
     }
+
     .divider {
       height: 24px;
       border-left: 1px solid #ccc;
       margin-left: -8px;
       margin-right: 8px;
+    }
+
+    .lastBtn {
+      margin-right: 0;
+    }
+
+    .searchBtn {
+      width: 70px;
     }
   }
 }
