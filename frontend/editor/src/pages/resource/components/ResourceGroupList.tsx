@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, createContext } from "react";
+import { useMemo, useState, useEffect, createContext, useContext } from "react";
 import { ImageViewer, FontViewer } from "@/components/ResourcePreview";
 import { Col, Row, message, Collapse } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -22,6 +22,10 @@ export interface IResourceGroup {
   resources: Array<IResourceInfo>;
 }
 
+export interface IResourceContextProp {
+  onImport: (name: string) => void;
+}
+
 interface ICommonProps {
   project_id: string;
   resource_type: string;
@@ -32,7 +36,6 @@ interface ICommonProps {
 interface IResourceGroupProps extends ICommonProps {
   name: string;
   resources: Array<IResourceInfo>;
-  onImport: (name: string) => void;
 }
 
 interface IResourceGroupListProps extends ICommonProps {
@@ -55,37 +58,19 @@ function ResourceInfo(props: IResourceInfo) {
     }
   }, [file_type]);
 
-  return <Col xs={12} sm={12} md={8} lg={8} xl={6} xxl={4}>{resourceInfo}</Col>;
+  return (
+    <Col xs={12} sm={12} md={8} lg={8} xl={6} xxl={4}>
+      {resourceInfo}
+    </Col>
+  );
 }
 
 function ResourceGroup(props: IResourceGroupProps) {
-  const { name, resources, resource_type, project_id, refresh, onImport } = props;
-
-  const onEditGroupClick = () => {
-    props.handleEditResGroup(name);
-  };
-
-  const onDeleteGroupClick = () => {
-    resourceService
-      .delete_resource_group({
-        project_id,
-        resource_type: resource_type,
-        group_name: name,
-      })
-      .then(() => {
-        message.success("删除成功");
-        refresh();
-      });
-  };
+  const context = useContext(ResourceGroupContext);
+  const { name, resources, resource_type, project_id, refresh } = props;
 
   return (
     <div className="resource-group">
-      {/* <Flex justify="space-between" style={{ height: "20px", borderBottom: "1px solid #F3F3F3" }}>
-                {name}
-                <span onClick={onEditGroupClick}>编辑</span>
-                <span onClick={onDeleteGroupClick}>删除</span>
-                <div onClick={onImportClick}>上传</div>
-            </Flex> */}
       <div style={{ margin: 14 }}>
         {resources.length > 0 ? (
           <Row gutter={16} justify="start">
@@ -94,14 +79,14 @@ function ResourceGroup(props: IResourceGroupProps) {
             })}
           </Row>
         ) : (
-          <EmptyBox title="该分组下暂无静态资源，请上传" lastCharsCount={2} onCreate={() => onImport(name)} />
+          <EmptyBox title="该分组下暂无静态资源，请上传" lastCharsCount={2} onCreate={() => context?.onImport(name)} />
         )}
       </div>
     </div>
   );
 }
 
-const ResourceGroupContext = createContext<IResourceGroup | null>(null);
+const ResourceGroupContext = createContext<IResourceContextProp | null>(null);
 
 function ResourceGroupList(props: IResourceGroupListProps) {
   const { data, ...rest } = props;
@@ -110,7 +95,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
 
   useEffect(() => {
     setActiveKeys(data.map((item) => item.path));
-  }, [data])
+  }, [data]);
   const onChange = (key: string[]) => {
     setActiveKeys(key);
   };
@@ -138,9 +123,25 @@ function ResourceGroupList(props: IResourceGroupListProps) {
       });
   };
 
-  const updateGroupName = async () => {
-    return false;
+  // 编辑分组
+  const onEditGroupClick = async (name: string) => {
+    props.handleEditResGroup(name);
+    return true;
   };
+
+  // 删除分组
+  // const onDeleteGroupClick = (name: string) => {
+  //   resourceService
+  //     .delete_resource_group({
+  //       project_id,
+  //       resource_type: resource_type,
+  //       group_name: name,
+  //     })
+  //     .then(() => {
+  //       message.success("删除成功");
+  //       refresh();
+  //     });
+  // };
 
   return (
     <Collapse
@@ -156,10 +157,14 @@ function ResourceGroupList(props: IResourceGroupListProps) {
             groupItem={{ id: item.path, name: item.name }}
             createText="上传"
             onCreate={() => onImportClick(item.name)}
-            onUpdateGroup={updateGroupName}
+            onUpdateGroup={onEditGroupClick}
           />
         ),
-        children: <ResourceGroup {...rest} {...item} onImport={onImportClick} />,
+        children: (
+          <ResourceGroupContext.Provider value={{ onImport: onImportClick }}>
+            <ResourceGroup {...rest} {...item} />
+          </ResourceGroupContext.Provider>
+        ),
       }))}
     ></Collapse>
   );
