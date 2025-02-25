@@ -12,22 +12,27 @@ const tabs = [
   {
     label: "图片",
     value: "img",
+    placeholder: "请输入图片名称"
   },
   {
     label: "字体",
     value: "font",
+    placeholder: "请输入字体名称"
   },
   {
     label: "第三方JS",
     value: "js",
+    placeholder: "请输入JS名称"
   },
   {
     label: "附件",
     value: "attachment",
+    placeholder: "请输入附件名称"
   },
   {
     label: "其它",
     value: "other",
+    placeholder: "请输入其它资源名称"
   },
 ];
 
@@ -36,9 +41,9 @@ export default function Home() {
   const project_id = searchParams.get('projectId') || undefined;
   const project_name = searchParams.get('projectName') || undefined;
   const [data, setData] = useState<IResourceGroup[]>([]);
-  const [resource_type, setResourceType] = useState("img");
+  const [resource_type, setResourceType] = useState(tabs[0].value);
   const [loading, setLoading] = useState(true);
-  const [placeholder, setPlaceholder] = useState('请输入图片名称')
+  const [placeholder, setPlaceholder] = useState(tabs[0].placeholder);
 
   const createGroupRef = useRef<{ open: (params: IOpenParams) => void }>();
 
@@ -53,7 +58,7 @@ export default function Home() {
       })
       .then((res) => {
         setData(res);
-        console.log(res);
+        console.log("resourceGroup List: ", res);
         setLoading(false);
       })
       .catch((err) => {
@@ -98,14 +103,16 @@ export default function Home() {
       <SearchBar className={searchBarstyles.searchBar} showGroup={false} noNeedCreate noNeedFresh form={form} searchPlaceholder={placeholder} projectName={project_name} submit={searchSubmit} refresh={refresh} onCreate={searchSubmit} />
       <Divider />
       <div className={searchBarstyles.topContainer}>
-        {/* TODO 按照设计稿实现 */}
         <div>
           {tabs.map((tab) => (
             <Button
               key={tab.value}
               type={resource_type === tab.value ? "primary" : "default"}
               className={styles.tabButton}
-              onClick={() => setResourceType(tab.value)}
+              onClick={() => {
+                setResourceType(tab.value)
+                setPlaceholder(tab.placeholder)
+              }}
             >
               {tab.label}
             </Button>
