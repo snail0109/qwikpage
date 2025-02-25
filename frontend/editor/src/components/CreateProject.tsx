@@ -59,7 +59,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 24 }}
         initialValues={{
-          logo: '/imgs/qwikpage-logo.png',
+          logo: '/imgs/qwikpage-logo.svg',
           theme_color: 'blue',
         }}
       >
@@ -76,7 +76,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
           />
         </Form.Item>
         <Form.Item label="图标" name="logo" rules={[{ required: true, message: '请上传项目Logo' }]}>
-          <Image width={100} src="/imgs/qwikpage-logo.png" />
+          <Image width={100} src="/imgs/qwikpage-logo.svg" />
         </Form.Item>
         <Form.Item>
           <Button block type="primary" onClick={handleOk} loading={loading}>

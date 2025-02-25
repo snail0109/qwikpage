@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="82px" height="82px" viewBox="0 0 82 82" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>位图</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="82" height="82"></rect>
+        <path d="M82,41 L41,82 L41,41 L82,41 Z" id="path-3"></path>
+        <filter x="-14.6%" y="-14.6%" width="129.3%" height="129.3%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="20250221评审" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="其它" transform="translate(-67, -511)">
+            <g id="编组-2备份" transform="translate(58, 502)">
+                <g id="位图" transform="translate(9, 9)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="蒙版"></g>
+                    <g id="编组-13" mask="url(#mask-2)">
+                        <path d="M41,0 C63.417238,0 81.6324448,17.9910344 81.9945072,40.32199 L82,41 L41,82 C18.3563253,82 0,63.6436747 0,41 C0,18.3563253 18.3563253,0 41,0 Z M41,20.5 C29.6781626,20.5 20.5,29.6781626 20.5,41 C20.5,52.3218374 29.6781626,61.5 41,61.5 C52.3218374,61.5 61.5,52.3218374 61.5,41 C61.5,29.6781626 52.3218374,20.5 41,20.5 Z" id="形状结合" fill="#216EF7"></path>
+                        <g id="形状结合">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                            <use fill="#216EF7" fill-rule="evenodd" xlink:href="#path-3"></use>
+                        </g>
+                        <circle id="椭圆形" fill="#216EF7" cx="74" cy="74" r="8"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

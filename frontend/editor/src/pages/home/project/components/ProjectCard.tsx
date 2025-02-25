@@ -55,6 +55,22 @@ export default function Category({ list }: { list: IProject[] }) {
             key: "export",
             icon: <ExportOutlined />,
             label: "导出代码",
+            children: [
+                {
+                    key: 'vue',
+                    icon: <ExportOutlined />,
+                    label: "VUE",
+                },
+                {
+                    key: 'fishx',
+                    icon: <ExportOutlined />,
+                    label: "FishX",
+                },{
+                    key: 'fish',
+                    icon: <ExportOutlined />,
+                    label: "Fish",
+                },
+            ],
         },
         {
             key: "resource_mgr",

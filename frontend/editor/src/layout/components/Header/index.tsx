@@ -65,7 +65,7 @@ const Header = memo(() => {
             <Layout.Header className={styles.layoutHeader}>
                 <div className={styles.logo} onClick={goHome}>
                     <img
-                        src={`${theme === "dark" ? "/imgs/qwikpage-logo.png" : "/imgs/qwikpage-logo.png"}`}
+                        src={`${theme === "dark" ? "/imgs/qwikpage-logo.svg" : "/imgs/qwikpage-logo.svg"}`}
                         width={42}
                     />
                     <span>QwikPage</span>
