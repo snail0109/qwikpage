@@ -7,7 +7,7 @@ use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
 use crate::commands::project::get_project_list_new;
-use crate::utils::get_app_root_dir;
+use crate::utils::{get_app_root_dir, get_current_time};
 
 use super::project::ProjectSummary;
 
@@ -15,6 +15,8 @@ use super::project::ProjectSummary;
 pub struct Group {
     pub id: String,
     pub name: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
     pub projects: Option<Vec<String>>,
 }
 
@@ -27,6 +29,8 @@ pub struct GroupConfig {
 pub struct GroupDetail {
     pub id: String,
     pub name: String,
+    pub created_at: String,
+    pub updated_at: String,
     pub projects: Option<Vec<ProjectSummary>>,
 }
 
@@ -40,6 +44,8 @@ fn default_group() -> Group {
         id: "-1".to_string(),
         name: "默认分组".to_string(),
         projects: None,
+        created_at: None,
+        updated_at: None,
     }
 }
 
@@ -49,7 +55,9 @@ impl GroupConfig {
     pub fn load() -> io::Result<Self> {
         let path = get_app_root_dir().join("group.json");
         if !path.exists() {
-            let def_group = default_group();
+            let mut  def_group = default_group();
+            def_group.created_at = Some(get_current_time());
+            def_group.updated_at = Some(get_current_time());
             let config = GroupConfig {
                 groups: vec![def_group],
             };
@@ -58,12 +66,14 @@ impl GroupConfig {
 
         match fs::read_to_string(path) {
             Ok(data) => {
-                let config: GroupConfig = serde_json::from_str(&data).unwrap();
+                let config: GroupConfig = serde_json::from_str(&data)?;
                 Ok(config)
             }
             Err(e) if e.kind() == ErrorKind::NotFound => {
-                // 如果文件不存在，返回一个空配置
-                let def_group = default_group();
+                // 如果文件不存在，返回默认分组
+                let mut  def_group = default_group();
+                def_group.created_at = Some(get_current_time());
+                def_group.updated_at = Some(get_current_time());
                 Ok(GroupConfig {
                     groups: vec![def_group],
                 })
@@ -86,6 +96,8 @@ impl GroupConfig {
             id: id.clone(),
             name,
             projects: None,
+            created_at: Some(get_current_time()),
+            updated_at: Some(get_current_time())
         };
         self.groups.push(group);
         info!("group added: {:?}", self.groups);
@@ -106,6 +118,7 @@ impl GroupConfig {
         if let Some(group) = self.groups.iter_mut().find(|group| group.id == id) {
             if let Some(new_name) = name {
                 group.name = new_name;
+                group.updated_at = Some(get_current_time());
             }
             self.save()?;
             Ok(true)
@@ -139,10 +152,13 @@ impl GroupConfig {
             group_list.push(GroupDetail {
                 id: group.id.clone(),
                 name: group.name.clone(),
+                created_at: group.created_at.clone().unwrap_or_default(),
+                updated_at: group.updated_at.clone().unwrap_or_default(),
                 projects: Some(projects_in_group),
             });
         }
-
+        // 按照创建时间对 group_list 进行排序
+        group_list.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         Ok(GroupList { groups: group_list })
     }
 
