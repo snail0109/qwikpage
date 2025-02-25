@@ -82,7 +82,7 @@ export default function Home() {
             .load_resource({
                 // @ts-ignore
                 project_id: project_id,
-                resource_type: "img",
+                resource_type,
                 keyword,
             })
             .then((res) => {

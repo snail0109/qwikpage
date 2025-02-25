@@ -63,7 +63,7 @@ const CreateGroup = (
 
             serviceFunc(cmdParams)
                 .then(() => {
-                    message.success(type === "create" ? "新建分组成功" : "编辑分组成功");
+                    message.success(msg);
                     props.update?.();
                 })
                 .finally(() => {

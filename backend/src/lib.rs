@@ -74,6 +74,7 @@ pub fn run() {
             resource::delete_resource_group,
             resource::update_resource_group,
             resource::import_resource,
+            resource::parse_font_metadata,
             // 页面
             page::get_page_list,
             page::get_page_detail_with_id,

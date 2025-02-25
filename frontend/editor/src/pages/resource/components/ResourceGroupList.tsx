@@ -1,5 +1,5 @@
 import {useMemo } from "react";
-import { ImageViewer } from "@/components/ResourcePreview";
+import { ImageViewer, FontViewer } from "@/components/ResourcePreview";
 import { Col, Row, Flex, message } from "antd";
 import { open } from "@tauri-apps/plugin-dialog";
 import { resourceService } from "@/services";
@@ -44,7 +44,10 @@ function ResourceInfo(props: IResourceInfo) {
         // 匹配所有的图片格式
         if (["png", "jpg", "jpeg", "gif"].includes(file_type)) {
             return <ImageViewer {...props} />;
-        } else {
+        } else if (["otf", "ttf"].includes(file_type)) {
+            return <FontViewer {...props} />;
+        }
+        else {
             return <div>None Viewer</div>;
         }
     }, [file_type]);
