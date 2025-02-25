@@ -1,11 +1,9 @@
 import { resourceService } from "@/services";
-import { appConfigDir, appDataDir, join } from "@tauri-apps/api/path";
-import { Button, Divider, Flex, Form, Input, Layout, Space, Tooltip } from "antd";
-import { set } from "lodash-es";
+import { Button, Form, Input, Layout, Space, Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import searchBarstyles from "@/components/SearchBar/index.module.less";
-import pageStyles from "@/pages/home/index.module.less";
+import pageStyles from "@/pages/pageList/index.module.less";
 import { RedoOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import CreateGroup, { IOpenParams } from "./components/CreateGroup";
