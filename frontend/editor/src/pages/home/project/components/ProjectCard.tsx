@@ -40,8 +40,8 @@ export default function Category({ list }: { list: IProject[] }) {
     };
 
     // 导出项目代码
-    const handleExportProjectCode = async (id: string) => {
-        return await invoke<void>("export_project", { id: id });
+    const handleExportProjectCode = async (project_id: string, export_type: string) => {
+        return await invoke<void>("export_project", { params: {project_id, export_type} });
     };
 
     // 卡片下拉项
@@ -84,8 +84,8 @@ export default function Category({ list }: { list: IProject[] }) {
         if (_key === 'config') {
             return handleOpenProject(id);
         }
-        if (_key === 'export') {
-            return handleExportProjectCode(id).catch(res => {
+        if (["fishx", "vue", "fish"].includes(_key)) {
+            return handleExportProjectCode(id, _key).catch((res) => {
                 message.error(res);
             });
         }

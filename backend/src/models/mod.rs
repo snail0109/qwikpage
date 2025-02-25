@@ -3,3 +3,4 @@ pub mod group;
 pub mod page;
 pub mod response;
 pub mod resource;
+pub mod conf;

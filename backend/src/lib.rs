@@ -1,21 +1,19 @@
-
 mod commands;
 mod constans;
-mod core;
 mod models;
 mod service;
 mod setup;
 mod types;
 mod utils;
+mod code_generator;
+
 use crate::{
-    commands::{config, dsl, group, page, project},
+    commands::{config, code, group, page, project, resource},
     service::configure_rocket,
-    utils::is_port_in_use,
+    utils::{ is_port_in_use, get_app_root_dir },
 };
-use commands::resource;
 use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
-use utils::get_app_root_dir;
 
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
@@ -84,8 +82,8 @@ pub fn run() {
             page::delete_page,
             page::copy_page,
             // 出码
-            dsl::export_json,
-            dsl::export_project,
+            code::export_json,
+            code::export_project,
             // 系统配置
             config::open_folder,
             config::set_theme,

@@ -1,6 +1,6 @@
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
-use crate::{core::conf::AppConf, utils::get_app_root_dir};
+use crate::{models::conf::AppConf, utils::get_app_root_dir};
 
 #[command]
 pub fn open_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {

@@ -1,4 +1,5 @@
-use crate::models::page::{Element, Page, PageContent};
+use crate::{code_generator::export_code::ExportType, models::page::{Element, Page, PageContent}};
+use anyhow::Error;
 use log::info;
 use reqwest;
 use serde_json::Value;
@@ -37,7 +38,7 @@ fn escape_string(s: &str) -> String {
         .replace('\t', "\\t")
 }
 
-pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
+pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) -> Result<(), String> {
     // 存储生成的组件字符
 
     let mut components = Vec::new();
@@ -49,7 +50,13 @@ pub fn export_page(index: usize, code_dir: PathBuf, page: &Page) {
     // TODO 处理事件
 
     // page.page_data string 转JSON
-    let page_data: PageContent = serde_json::from_str(&page.page_data).unwrap();
+    let page_data: PageContent = match serde_json::from_str(&page.page_data) {
+        Ok(data) => data,
+        Err(e) => {
+            // 记录错误信息并返回错误
+            return Err(format!("解析 page_data 失败: {}", e));
+        }
+    };
 
 
     // 遍历页面元素
@@ -144,6 +151,7 @@ export default {compName};"#,
     }
 
     fs::write(fe_page_dir.join("index.tsx"), output).unwrap();
+    Ok(())
 }
 
 pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) {
@@ -227,9 +235,16 @@ pub fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) 
     fs::write(&menus_path, updated_menus).expect("failed to write menus file");
 }
 
-pub fn download_temp(code_dir: &PathBuf) -> Result<(), String> {
+pub fn download_temp(code_dir: &PathBuf, export_type: ExportType) -> Result<(), String> {
+    // 根据 export_type 设置 template_url
+    info!("export_type: {:#?}", export_type);
+    let template_url = match export_type {
+        ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip"),
+        ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-vue3/app.zip"),
+        ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-fish/app.zip"),
+        _ => return Err(format!("不支持的导出类型: {:#?}", export_type)),
+    };
     // 下载代码模板
-    let template_url = String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip");
     let template_path = code_dir.join("fishx-template.zip");
 
     info!("下载代码模板......");

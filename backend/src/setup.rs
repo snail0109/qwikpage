@@ -1,4 +1,4 @@
-use crate::{core::conf::AppConf, utils::{get_app_root_dir, get_app_root_resource_dir}};
+use crate::{models::conf::AppConf, utils::{get_app_root_dir, get_app_root_resource_dir}};
 use anyhow::Result;
 
 #[allow(unused_variables)]

@@ -192,7 +192,7 @@ impl Page {
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
             warn!("页面文件不存在");
-            return Err("页面文件不存在".to_string());
+            return Ok(pages_list);
         }
         let entries = fs::read_dir(page_dir).unwrap();
         for entry in entries {
