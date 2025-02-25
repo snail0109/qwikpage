@@ -1,0 +1,29 @@
+.imagePreview {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 206px;
+  height: 170px;
+  overflow: hidden;
+
+  :global {
+    .ant-image {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+
+      .ant-image-img {
+        object-fit: cover;
+      }
+    }
+  }
+
+  .imageBottom {
+    height: 20px;
+    margin-top: 10px;
+
+    >div:last-child {
+      color: #999999;
+    }
+  }
+}
