@@ -4,7 +4,8 @@ import type { MenuProps } from "antd";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
-import styles from "./index.module.less";
+import styles from "@/styles/card.module.less";
+import projectCardStyle from "./index.module.less";
 import problue from "@/assets/image/probg_blue.png";
 import progreen from "@/assets/image/progb_green.png";
 import propurple from "@/assets/image/probg_purple.png";
@@ -115,34 +116,34 @@ export default function Category({ list }: { list: IProject[] }) {
     // 项目列表
     return (
         <>
-            <div className={styles.projectGrid}>
+            <div className={projectCardStyle.projectGrid}>
                 {list.map((project) => {
                     const backgroundImage = themeColorToImageMap[project.themeColor];
                     return (
-                        <div className={styles.projectCard} key={project.id}>
+                        <div className={projectCardStyle.projectCard} key={project.id}>
                             {/* 卡片头部 */}
                             <div
-                                className={styles.cardHeader}
+                                className={projectCardStyle.cardHeader}
                                 onClick={() => handleOpenProject(project.id)}
                                 style={{
                                     backgroundImage: `url(${backgroundImage})`,
                                     backgroundSize: "cover",
                                 }}
                             >
-                                <h3 className={styles.cardTitle}>{project.name}</h3>
+                                <h3 className={projectCardStyle.cardTitle}>{project.name}</h3>
                             </div>
                             {/* 卡片内容 */}
-                            <div className={styles.cardContent} onClick={() => handleOpenPages(project.id)}>
+                            <div className={projectCardStyle.cardContent} onClick={() => handleOpenPages(project.id)}>
                                 <Paragraph className={styles.description}>{project.remark}</Paragraph>
-                                <div className={styles.metaInfo} style={{ paddingTop: "5px" }}>
-                                    <FolderIcon className={styles.metaIcon} />
+                                <div className={projectCardStyle.metaInfo} style={{ paddingTop: "5px" }}>
+                                    <FolderIcon className={projectCardStyle.metaIcon} />
                                     <p>
                                         <span>{project.count} </span>个页面
                                     </p>
                                 </div>
                             </div>
                             {/* 卡片更多 */}
-                            <div className={styles.moreInfo}>
+                            <div className={projectCardStyle.moreInfo}>
                                 <Dropdown
                                     overlayStyle={styles.projectSetting}
                                     menu={{ items, onClick: ({ key }) => onClick(key, project.id) }}
@@ -150,18 +151,18 @@ export default function Category({ list }: { list: IProject[] }) {
                                     placement="bottomRight"
                                     trigger={["click"]}
                                 >
-                                    <MoreIcon className={styles.moreIcon} />
+                                    <MoreIcon className={projectCardStyle.moreIcon} />
                                 </Dropdown>
                             </div>
                             {/* 卡片预览 */}
-                            <div className={styles.moreInfo} style={{ right: 40 }}>
+                            <div className={projectCardStyle.moreInfo} style={{ right: 40 }}>
                                 <Tooltip title="预览">
-                                    <BrowseIcon className={styles.moreIcon} onClick={() => handlePreview(project.id)} />
+                                    <BrowseIcon className={projectCardStyle.moreIcon} onClick={() => handlePreview(project.id)} />
                                 </Tooltip>
                             </div>
 
                             {/* 项目Logo */}
-                            <Avatar src={project.logo} className={styles.projectLogo} />
+                            <Avatar src={project.logo} className={projectCardStyle.projectLogo} />
                         </div>
                     );
                 })}

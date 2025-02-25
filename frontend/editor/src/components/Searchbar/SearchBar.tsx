@@ -23,7 +23,7 @@ const SearchBar = (props: any) => {
           </Tooltip>
         )}
         <Form form={form} layout="inline" initialValues={{ type: 1 }}>
-          <Form.Item name="keyword" style={{ width: 200 }}>
+          <Form.Item name="keyword" style={{ width: 200, marginInlineEnd: '8px' }} >
             <Input placeholder={searchPlaceholder || `请输入${from === '分组' ? '项目' : from}名称`} onPressEnter={submit} />
           </Form.Item>
           <Form.Item className={pathname === '/resources' ? styles.lastBtn : ''}>

@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { pageService } from '@/services';
 import { IPage } from '@/types';
-import styles from '@/styles/page.module.less';
+import styles from '@/styles/card.module.less';
 import pageCardStyle from './index.module.less';
 
 // 页面列表项
@@ -75,13 +75,13 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
                                 </Tooltip>,
                             ]}
                         >
-                            <div className={styles.cardBody} onClick={() => handleAction('edit', item)}>
-                                <div className={styles.itemTitle}>
-                                    <PageIcon className={styles.pageIcon} />
+                            <div className={pageCardStyle.cardBody} onClick={() => handleAction('edit', item)}>
+                                <div className={pageCardStyle.itemTitle}>
+                                    <PageIcon className={pageCardStyle.pageIcon} />
                                     {item.name}
                                 </div>
-                                <div className={styles.itemRemark} style={{ height: '40px' }}>{item.remark || '暂无描述'}</div>
-                                <div className={styles.updateUser}>
+                                <div className={styles.description} style={{ marginTop: '10px', marginBottom: '10px' }}>{item.remark || '暂无描述'}</div>
+                                <div className={pageCardStyle.updateUser}>
                                     <span>更新于 {dayjs(item.updatedAt).fromNow()}</span>
                                 </div>
                             </div>
