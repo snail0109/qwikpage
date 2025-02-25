@@ -145,7 +145,7 @@ export default function Category({ list }: { list: IProject[] }) {
                             {/* 卡片更多 */}
                             <div className={projectCardStyle.moreInfo}>
                                 <Dropdown
-                                    overlayStyle={styles.projectSetting}
+                                    overlayClassName={styles.projectSetting}
                                     menu={{ items, onClick: ({ key }) => onClick(key, project.id) }}
                                     arrow
                                     placement="bottomRight"

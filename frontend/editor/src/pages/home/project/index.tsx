@@ -8,6 +8,7 @@ import styles from "@/styles/page.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
+import GroupCollapse from "@/components/GroupCollapse/GroupCollapse";
 import { cmd_invoke } from "@/services/cmd_invoke";
 import { message } from "@/utils/AntdGlobal";
 import { IGroup } from "@/types";
@@ -56,12 +57,12 @@ function Category() {
             console.log("修改成功", res);
             // 刷新当前修改的分组名
             setDataSource((pre) => pre.map((group) => (group.id === groupId ? { ...group, name: newName } : group)));
-            return true
+            return true;
         } catch (error) {
             message.error("修改失败,请重试");
             console.error("修改失败", error);
         }
-        return false
+        return false;
     };
 
     const search = () => {
@@ -127,6 +128,22 @@ function Category() {
                             />
                         )}
                     />
+                    {/* <GroupCollapse
+                        loading={loading}
+                        dataSource={dataSource}
+                        renderHeader={(item) => (
+                            <GroupTitle groupItem={item} onCreate={handleCreate} onUpdateGroup={updateGroupName} />
+                        )}
+                        renderChildren={(item) => <ProjectCard list={item.projects} />}
+                        renderemptyChildren={(id) => (
+                            <EmptyBox
+                                groupId={id}
+                                title="该分组下暂无项目，请新增项目"
+                                lastCharsCount={4}
+                                onCreate={handleCreate}
+                            />
+                        )}
+                    /> */}
                 </Spin>
             </div>
 
