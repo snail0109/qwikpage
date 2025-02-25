@@ -1,7 +1,6 @@
-import { Button } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
 import styles from "./index.module.less";
 import EmptyFolder from "@/assets/image/emptyFolder.png";
+import ArrowIcon from "@/assets/icons/ArrowIcon.svg?react";
 
 interface EmptyBoxProps {
   title: string;
@@ -25,7 +24,7 @@ const EmptyBox = ({
         {mainText}
         <span className={styles.colorTitle}>{lastTwoChars}</span>
       </div>
-      <ExportOutlined />
+      <ArrowIcon />
     </div>
   );
 };
