@@ -200,10 +200,17 @@ async fn get_res_root_dir(project_id: &String, resource_type: &ResourceType) -> 
 }
 
 async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error>  {
-    let default_dir = res_root_dir.join("默认分组");
-    if !default_dir.exists() {
-        info!("创建默认分组目录: {:?}", default_dir);
-        tokio::fs::create_dir_all(&default_dir).await
+    // 判断根目录下是否有目录，没有则创建默认目录
+    let mut dir_count = 0;
+    for entry in res_root_dir.read_dir()? {
+        let entry = entry?;
+        if entry.file_type()?.is_dir() {
+            dir_count += 1;
+        }
+    }
+    if dir_count == 0 {
+        info!("创建默认分组目录: {:?}", res_root_dir.join("默认分组"));
+        tokio::fs::create_dir_all(&res_root_dir.join("默认分组")).await
         .map_err(|e| Error::new(e).context("Failed to create directory"))?;
     }
     Ok(())
