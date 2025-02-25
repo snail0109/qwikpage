@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button, Input } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { cmd_invoke } from "@/services/cmd_invoke";
 import styles from '@/styles/page.module.less';
 
 interface ProjectGroupProps {
@@ -11,24 +10,19 @@ interface ProjectGroupProps {
   };
   createText?: string;
   onCreate: (groupId?: string) => void;
-  onUpdateGroup: (groupId: string, newName: string) => void;
+  onUpdateGroup: (groupId: string, newName: string) => Promise<boolean>;
 }
 
 // 项目分组
-const ProjectGroup = ({ groupItem, createText = '新增项目', onCreate, onUpdateGroup }: ProjectGroupProps) => {
+const GroupTitle = ({ groupItem, createText = '新增项目', onCreate, onUpdateGroup }: ProjectGroupProps) => {
   const [isEditing, setIsEditing] = useState(false); // 是否正在编辑
   const [inputValue, setInputValue] = useState(groupItem.name); // 输入框的值
 
   // 处理编辑分组名称
   const handleEditGroup = async () => {
-    try {
-      const res = await cmd_invoke("edit_group", { id: groupItem.id, groupName: inputValue });
-      console.log("修改成功", res);
+    const success = await onUpdateGroup(groupItem.id, inputValue);
+    if (success) {
       setIsEditing(false);
-      // 刷新当前修改的分组名
-      onUpdateGroup(groupItem.id, inputValue);
-    } catch (error) {
-      console.error("修改失败", error);
     }
   };
 
@@ -91,4 +85,4 @@ const ProjectGroup = ({ groupItem, createText = '新增项目', onCreate, onUpda
   );
 };
 
-export default ProjectGroup;
+export default GroupTitle;

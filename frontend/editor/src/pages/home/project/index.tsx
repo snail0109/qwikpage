@@ -1,15 +1,16 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Collapse, Empty, Form, Layout, Spin } from "antd";
+import { Collapse, Form, Layout, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
-import ProjectGroup from "./components/ProjectGroup";
+import GroupTitle from "@/components/GroupTitle";
 import ProjectCard from "./components/ProjectCard";
 import styles from "@/styles/page.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import { cmd_invoke } from "@/services/cmd_invoke";
+import { message } from "@/utils/AntdGlobal";
 import { IGroup } from "@/types";
 
 function Category() {
@@ -49,8 +50,18 @@ function Category() {
     };
 
     // 更新分组名称
-    const updateGroupName = (groupId: string, newName: string) => {
-        setDataSource((pre) => pre.map((group) => (group.id === groupId ? { ...group, name: newName } : group)));
+    const updateGroupName = async (groupId: string, newName: string) => {
+        try {
+            const res = await cmd_invoke("edit_group", { id: groupId, groupName: newName });
+            console.log("修改成功", res);
+            // 刷新当前修改的分组名
+            setDataSource((pre) => pre.map((group) => (group.id === groupId ? { ...group, name: newName } : group)));
+            return true
+        } catch (error) {
+            message.error("修改失败,请重试");
+            console.error("修改失败", error);
+        }
+        return false
     };
 
     const search = () => {
@@ -84,17 +95,16 @@ function Category() {
                         activeKey={activeKeys}
                         onChange={onChange}
                         items={dataSource.map((item: any) => {
-                            const isEmptyDefaultGroup = item.id === "-1" && item.projects.length === 0;
                             return {
                                 key: item.id,
                                 label: (
-                                    <ProjectGroup
+                                    <GroupTitle
                                         groupItem={item}
                                         onCreate={handleCreate}
                                         onUpdateGroup={updateGroupName}
                                     />
                                 ),
-                                children: isEmptyDefaultGroup ? (
+                                children: item.projects.length <= 0 ? (
                                     <EmptyBox
                                         title="该分组下暂无项目，请新增项目"
                                         lastCharsCount={4}
