@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组</title>
+    <g id="20250221评审" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="新建项目-2" transform="translate(-328, -284)">
+            <g id="编组-11" transform="translate(15, 149)">
+                <g id="编组-10" transform="translate(15, 70)">
+                    <g id="编组-9" transform="translate(268, 64)">
+                        <g id="编组" transform="translate(30, 1)">
+                            <rect id="矩形" x="0" y="0" width="16" height="16"></rect>
+                            <path d="M7,0 L9.82352941,0 L9.82352941,2.82352941 L7,2.82352941 L7,0 L7,0 Z M7,6.58823528 L9.82352941,6.58823528 L9.82352941,9.4117647 L7,9.4117647 L7,6.58823528 L7,6.58823528 Z M7,13.1764706 L9.82352941,13.1764706 L9.82352941,16 L7,16 L7,13.1764706 L7,13.1764706 Z" id="形状" fill="#444444" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
