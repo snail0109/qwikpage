@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
 import { CopyOutlined, DeleteOutlined, EyeOutlined, FileFilled } from '@ant-design/icons';
 import PageIcon from '@/components/icons/PageIcon';
+import DeleteIcon from '@/assets/icons/Delete.svg?react';
+import CopyIcon from '@/assets/icons/Copy.svg?react';
+import PreviewIcon from '@/assets/icons/Eye.svg?react';
+import TimeIcon from '@/assets/icons/Time.svg?react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
@@ -65,13 +69,13 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
                             className={pageCardStyle.card}
                             actions={[
                                 <Tooltip title="预览">
-                                    <EyeOutlined style={{ fontSize: 16 }} onClick={() => handleAction('preview', item)} />
+                                    <PreviewIcon className={pageCardStyle.actionIcon} style={{ fontSize: 18 }} onClick={() => handleAction('preview', item)} />
                                 </Tooltip>,
                                 <Tooltip title="复制">
-                                    <CopyOutlined style={{ fontSize: 16 }} onClick={() => handleAction('copy', item)} />
+                                    <CopyIcon className={pageCardStyle.actionIcon} onClick={() => handleAction('copy', item)} />
                                 </Tooltip>,
                                 <Tooltip title="删除">
-                                    <DeleteOutlined style={{ fontSize: 16 }} onClick={() => handleAction('delete', item)} />
+                                    <DeleteIcon className={pageCardStyle.actionIcon} style={{ fontSize: 17 }} onClick={() => handleAction('delete', item)} />
                                 </Tooltip>,
                             ]}
                         >
@@ -82,7 +86,7 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
                                 </div>
                                 <div className={styles.description} style={{ marginTop: '10px', marginBottom: '10px' }}>{item.remark || '暂无描述'}</div>
                                 <div className={pageCardStyle.updateUser}>
-                                    <span>更新于 {dayjs(item.updatedAt).fromNow()}</span>
+                                    <TimeIcon className={pageCardStyle.timeIcon} /><span>更新于 {dayjs(item.updatedAt).fromNow()}</span>
                                 </div>
                             </div>
                         </Card>

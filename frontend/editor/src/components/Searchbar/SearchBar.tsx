@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Space, Tooltip, Divider } from 'antd';
-import { PlusOutlined, RedoOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { PlusOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
 import styles from './index.module.less';
 
 const SearchBar = (props: any) => {
@@ -44,7 +44,7 @@ const SearchBar = (props: any) => {
           {
             !noNeedFresh && (
               <Tooltip title="刷新">
-                <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
+                <Button icon={<ReloadOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
               </Tooltip>
             )
           }
