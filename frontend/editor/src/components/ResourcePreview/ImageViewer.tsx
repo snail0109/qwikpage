@@ -19,13 +19,16 @@ const { useToken } = theme;
 
 export default function ImageViewer(props: IProps) {
     const { token } = useToken();
-    const { onDelete } = useResource();
+    const { onEditResource, onDeleteResource } = useResource();
     const { resource_name, name, path, last_modified_time } = props;
     const src = convertFileSrc(path);
     const [fileName] = name.split('.');
 
+    const handleEdit = () => {
+        onEditResource(resource_name, name)
+    }
     const handleDelete = () => {
-        onDelete(resource_name, name);
+        onDeleteResource(resource_name, name);
     }
     return (
         <div className={styles.imagePreview} >
@@ -38,7 +41,7 @@ export default function ImageViewer(props: IProps) {
             <Flex className={styles.imageTool} style={{
                 color: token.colorPrimaryBg,
             }} justify="center">
-                <EditIcon />
+                <EditIcon onClick={handleEdit} />
                 <Divider type="vertical" style={{ borderColor: token.colorPrimaryBg }} />
                 <DeleteOutlined onClick={handleDelete} />
             </Flex>

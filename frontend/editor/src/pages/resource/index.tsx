@@ -1,45 +1,54 @@
 import { resourceService } from "@/services";
-import { Button, Form, Input, Layout, Divider, Tooltip } from "antd";
+import { Button, Form, message, Layout, Divider, Tooltip, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import searchBarstyles from "./index.module.less";
-import { RedoOutlined, PlusOutlined } from "@ant-design/icons";
+import { open } from "@tauri-apps/plugin-dialog";
+import { RedoOutlined, PlusOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import CreateGroup, { IOpenParams } from "./components/CreateGroup";
+import { IOperResourceGroupParams } from "@/services/resource";
+import { ResourceGroupProvider } from "@/context/resource";
 import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
 
 export const RESOURCE_TABS = [
   {
     label: "图片",
     value: "img",
-    placeholder: "请输入图片名称"
+    placeholder: "请输入图片名称",
   },
   {
     label: "字体",
     value: "font",
-    placeholder: "请输入字体名称"
+    placeholder: "请输入字体名称",
   },
   {
     label: "第三方JS",
     value: "js",
-    placeholder: "请输入JS名称"
+    placeholder: "请输入JS名称",
   },
   {
     label: "附件",
     value: "attachment",
-    placeholder: "请输入附件名称"
+    placeholder: "请输入附件名称",
   },
   {
     label: "其它",
     value: "other",
-    placeholder: "请输入其它资源名称"
+    placeholder: "请输入其它资源名称",
   },
 ];
+const { confirm } = Modal;
+
+const renameResourceMap = {
+  group_name: '',
+  resource_name: ''
+}
 
 export default function Home() {
   const searchParams = new URLSearchParams(location.search);
-  const project_id = searchParams.get('projectId') || undefined;
-  const project_name = searchParams.get('projectName') || undefined;
+  const project_id = searchParams.get("projectId") || "";
+  const project_name = searchParams.get("projectName") || "";
   const [data, setData] = useState<IResourceGroup[]>([]);
   const [resource_type, setResourceType] = useState(RESOURCE_TABS[0].value);
   const [loading, setLoading] = useState(true);
@@ -74,12 +83,112 @@ export default function Home() {
     createGroupRef.current?.open({ action: "create" });
   };
 
-  // const handleEditResGroup = (group_name: string) => {
-  //   createGroupRef.current?.open({
-  //     action: "edit",
-  //     group_name,
-  //   });
+  // 上传资源
+  const onImportClick = async (name: string) => {
+    const filePaths = await open({
+      title: "Select File",
+      multiple: true,
+    });
+
+    if (!filePaths || filePaths?.length === 0) {
+      return;
+    }
+
+    resourceService
+      .import_resource({
+        project_id,
+        resource_type,
+        group_name: name,
+        file_list: filePaths!,
+      })
+      .then(() => {
+        message.success("导入成功");
+        refresh();
+      });
+  };
+
+  // 编辑分组
+  const onEditGroupClick = async (oldName: string, newName: string) => {
+    try {
+      const cmdParams: IOperResourceGroupParams = {
+        group_name: oldName,
+        new_group_name: newName,
+        project_id: project_id,
+        resource_type: resource_type,
+      };
+      await resourceService.update_resource_group(cmdParams);
+      refresh();
+      return true;
+    } catch (error) {
+      message.error("修改失败,请重试");
+      console.error("修改失败", error);
+    }
+    return false;
+  };
+
+  // 删除分组
+  // const onDeleteGroupClick = (name: string) => {
+  //   resourceService
+  //     .delete_resource_group({
+  //       project_id,
+  //       resource_type,
+  //       group_name: name,
+  //     })
+  //     .then(() => {
+  //       message.success("删除成功");
+  //       refresh();
+  //     });
   // };
+
+  // 删除资源
+  const onDeleteResourceClick = async (groupName: string, resourceName: string) => {
+    const fileType = RESOURCE_TABS.find((item) => item.value === resource_type)?.label;
+    confirm({
+      title: `确认要删除该${fileType}吗?`,
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        resourceService
+          .delete_resource({
+            project_id,
+            resource_type,
+            group_name: groupName,
+            resource_name: resourceName,
+          })
+          .then(() => {
+            message.success("删除成功");
+            refresh();
+          });
+      },
+    });
+  };
+
+  // 编辑资源
+  const onEditResourceClick = (groupName: string, resourceName: string) => {
+    renameResourceMap.group_name = groupName;
+    renameResourceMap.resource_name = resourceName;
+    const [name] = resourceName.split(".");
+    createGroupRef.current?.open({
+      action: "renameResource",
+      group_name: name
+    });
+  };
+
+  const renameResource = async (newName: string) => {
+    const [, type] = renameResourceMap.resource_name.split(".");
+    const result = await resourceService
+      .rename_resource({
+        project_id,
+        resource_type,
+        group_name: renameResourceMap.group_name,
+        resource_name: renameResourceMap.resource_name,
+        new_resource_name: `${newName}.${type}`,
+      });
+    if (result) {
+      message.success("重命名成功");
+      refresh();
+    }
+    return result;
+  }
 
   const refresh = () => {
     const keyword = form.getFieldValue("keyword");
@@ -100,7 +209,18 @@ export default function Home() {
     // TODO 抽取公共组件
     <Layout.Content className={searchBarstyles.resourceContainer}>
       {/* 搜索工具条 */}
-      <SearchBar className={searchBarstyles.searchBar} showGroup={false} noNeedCreate noNeedFresh form={form} searchPlaceholder={placeholder} projectName={project_name} submit={searchSubmit} refresh={refresh} onCreate={searchSubmit} />
+      <SearchBar
+        className={searchBarstyles.searchBar}
+        showGroup={false}
+        noNeedCreate
+        noNeedFresh
+        form={form}
+        searchPlaceholder={placeholder}
+        projectName={project_name}
+        submit={searchSubmit}
+        refresh={refresh}
+        onCreate={searchSubmit}
+      />
       <Divider />
       <div className={searchBarstyles.topContainer}>
         <div>
@@ -110,8 +230,8 @@ export default function Home() {
               type={resource_type === tab.value ? "primary" : "default"}
               className={styles.tabButton}
               onClick={() => {
-                setResourceType(tab.value)
-                setPlaceholder(tab.placeholder)
+                setResourceType(tab.value);
+                setPlaceholder(tab.placeholder);
               }}
             >
               {tab.label}
@@ -119,7 +239,12 @@ export default function Home() {
           ))}
         </div>
         <div>
-          <Button type="dashed" className={searchBarstyles.createGroupBtn} icon={<PlusOutlined />} onClick={handleAddResGroup}>
+          <Button
+            type="dashed"
+            className={searchBarstyles.createGroupBtn}
+            icon={<PlusOutlined />}
+            onClick={handleAddResGroup}
+          >
             创建分组
           </Button>
           <Tooltip title="刷新">
@@ -128,16 +253,20 @@ export default function Home() {
         </div>
       </div>
       <div className={styles.pagesContent}>
-        <ResourceGroupList
-          refresh={refresh}
-          data={data}
-          project_id={project_id!}
+        <ResourceGroupProvider
           resource_type={resource_type}
-        />
+          onImport={onImportClick}
+          onEditGroup={onEditGroupClick}
+          onEditResource={onEditResourceClick}
+          onDeleteResource={onDeleteResourceClick}
+        >
+          <ResourceGroupList data={data} />
+        </ResourceGroupProvider>
       </div>
       <CreateGroup
         createRef={createGroupRef}
         update={refresh}
+        customConfirm={renameResource}
         project_id={project_id!}
         resource_type={resource_type}
       />

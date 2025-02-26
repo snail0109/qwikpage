@@ -2,8 +2,10 @@ import { createContext, useContext } from 'react';
 
 export interface IResourceContextProp {
   resource_type: string;
+  onEditGroup: (oldName: string, newName: string) => void;
   onImport: (name: string) => void;
-  onDelete: (groupName: string, resourceName: string) => void;
+  onDeleteResource: (groupName: string, resourceName: string) => void;
+  onEditResource: (groupName: string, resourceName: string) => void
 }
 
 interface IResourceProviderProps extends IResourceContextProp {
