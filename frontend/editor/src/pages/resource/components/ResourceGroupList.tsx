@@ -1,11 +1,14 @@
-import { useMemo, useState, useEffect, createContext, useContext } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ImageViewer, FontViewer } from "@/components/ResourcePreview";
-import { Col, Row, message, Collapse } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Col, Row, message, Collapse, Modal } from "antd";
+import { PlusOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { open } from "@tauri-apps/plugin-dialog";
 import { resourceService } from "@/services";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import GroupTitle from "@/components/GroupTitle";
+import { IOperResourceGroupParams } from "@/services/resource";
+import { RESOURCE_TABS } from "../index";
+import { ResourceGroupProvider, useResource } from "@/context/resource";
 import styles from "./resource.module.less";
 
 interface IResourceInfo {
@@ -15,6 +18,10 @@ interface IResourceInfo {
   last_modified_time: string;
 }
 
+interface IResourceInfoProp extends IResourceInfo {
+  resource_name: string;
+}
+
 export interface IResourceGroup {
   name: string;
   path: string;
@@ -22,15 +29,10 @@ export interface IResourceGroup {
   resources: Array<IResourceInfo>;
 }
 
-export interface IResourceContextProp {
-  onImport: (name: string) => void;
-}
-
 interface ICommonProps {
   project_id: string;
   resource_type: string;
   refresh: () => void;
-  handleEditResGroup: (group_name: string) => void;
 }
 
 interface IResourceGroupProps extends ICommonProps {
@@ -42,21 +44,21 @@ interface IResourceGroupListProps extends ICommonProps {
   data: IResourceGroup[];
 }
 
-function ResourceInfo(props: IResourceInfo) {
-  // 根据 file_type 使用不同的展示组件,
-  const { file_type } = props;
+const { confirm } = Modal;
 
-  // TODO
+function ResourceInfo(props: IResourceInfoProp) {
+  // 根据 resource_type 使用不同的展示组件,
+  const { resource_type } = useResource();
   const resourceInfo = useMemo(() => {
-    // 匹配所有的图片格式
-    if (["png", "jpg", "jpeg", "gif"].includes(file_type)) {
-      return <ImageViewer {...props} />;
-    } else if (["otf", "ttf"].includes(file_type)) {
-      return <FontViewer {...props} />;
-    } else {
-      return <div>None Viewer</div>;
+    switch (resource_type) {
+      case RESOURCE_TABS[0].value:
+        return <ImageViewer {...props} />;
+      case RESOURCE_TABS[1].value:
+        return <FontViewer {...props} />;
+      default:
+        return <div>None Viewer</div>;
     }
-  }, [file_type]);
+  }, [resource_type]);
 
   return (
     <Col xs={12} sm={12} md={8} lg={8} xl={6} xxl={4}>
@@ -66,8 +68,9 @@ function ResourceInfo(props: IResourceInfo) {
 }
 
 function ResourceGroup(props: IResourceGroupProps) {
-  const context = useContext(ResourceGroupContext);
-  const { name, resources, resource_type, project_id, refresh } = props;
+  // const context = useContext(ResourceGroupContext);
+  const { name, resources } = props;
+  const { onImport } = useResource();
 
   return (
     <div className="resource-group">
@@ -75,18 +78,20 @@ function ResourceGroup(props: IResourceGroupProps) {
         {resources.length > 0 ? (
           <Row gutter={16} justify="start">
             {resources.map((item, index) => {
-              return <ResourceInfo key={index} {...item} />;
+              return <ResourceInfo key={index} {...item} resource_name={name} />;
             })}
           </Row>
         ) : (
-          <EmptyBox title="该分组下暂无静态资源，请上传" lastCharsCount={2} onCreate={() => context?.onImport(name)} />
+          <EmptyBox
+            title="该分组下暂无静态资源，请上传"
+            lastCharsCount={2}
+            onCreate={() => onImport(name)}
+          />
         )}
       </div>
     </div>
   );
 }
-
-const ResourceGroupContext = createContext<IResourceContextProp | null>(null);
 
 function ResourceGroupList(props: IResourceGroupListProps) {
   const { data, ...rest } = props;
@@ -100,6 +105,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
     setActiveKeys(key);
   };
 
+  // 上传资源
   const onImportClick = async (name: string) => {
     const filePaths = await open({
       title: "Select File",
@@ -124,9 +130,22 @@ function ResourceGroupList(props: IResourceGroupListProps) {
   };
 
   // 编辑分组
-  const onEditGroupClick = async (name: string) => {
-    props.handleEditResGroup(name);
-    return true;
+  const onEditGroupClick = async (oldName: string, newName: string) => {
+    try {
+      const cmdParams: IOperResourceGroupParams = {
+        group_name: oldName,
+        new_group_name: newName,
+        project_id: rest.project_id,
+        resource_type: rest.resource_type,
+      };
+      await resourceService.update_resource_group(cmdParams);
+      props.refresh();
+      return true;
+    } catch (error) {
+      message.error("修改失败,请重试");
+      console.error("修改失败", error);
+    }
+    return false;
   };
 
   // 删除分组
@@ -143,6 +162,28 @@ function ResourceGroupList(props: IResourceGroupListProps) {
   //     });
   // };
 
+  // 删除资源
+  const onDeleteResourceClick = async (groupName: string, resourceName: string) => {
+    const fileType = RESOURCE_TABS.find((item) => item.value === resource_type)?.label;
+    confirm({
+      title: `确认要删除该${fileType}吗?`,
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        resourceService
+          .delete_resource({
+            project_id,
+            resource_type,
+            group_name: groupName,
+            resource_name: resourceName,
+          })
+          .then(() => {
+            message.success("删除成功");
+            refresh();
+          });
+      },
+    });
+  };
+
   return (
     <Collapse
       className={styles.resourceGroup}
@@ -154,16 +195,20 @@ function ResourceGroupList(props: IResourceGroupListProps) {
         key: item.path,
         label: (
           <GroupTitle
-            groupItem={{ id: item.path, name: item.name }}
+            groupItem={{ id: item.name, name: item.name }}
             createText="上传"
             onCreate={() => onImportClick(item.name)}
             onUpdateGroup={onEditGroupClick}
           />
         ),
         children: (
-          <ResourceGroupContext.Provider value={{ onImport: onImportClick }}>
+          <ResourceGroupProvider
+            resource_type={resource_type}
+            onImport={onImportClick}
+            onDelete={onDeleteResourceClick}
+          >
             <ResourceGroup {...rest} {...item} />
-          </ResourceGroupContext.Provider>
+          </ResourceGroupProvider>
         ),
       }))}
     ></Collapse>

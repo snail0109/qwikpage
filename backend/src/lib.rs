@@ -1,3 +1,4 @@
+mod code_generator;
 mod commands;
 mod constans;
 mod models;
@@ -5,16 +6,14 @@ mod service;
 mod setup;
 mod types;
 mod utils;
-mod code_generator;
 
 use crate::{
-    commands::{config, code, group, page, project, resource},
+    commands::{code, config, group, page, project, resource},
     service::configure_rocket,
-    utils::{ is_port_in_use, get_app_root_dir },
+    utils::{get_app_root_dir, is_port_in_use},
 };
 use log::{error, info};
 use tauri_plugin_log::{Target, TargetKind};
-
 
 const APP_ERROR_MSG: &str = "error while running qwikpage application";
 
@@ -72,6 +71,8 @@ pub fn run() {
             resource::delete_resource_group,
             resource::update_resource_group,
             resource::import_resource,
+            resource::rename_resource,
+            resource::delete_resource,
             resource::parse_font_metadata,
             // 页面
             page::get_page_list,

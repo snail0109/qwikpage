@@ -8,7 +8,7 @@ import SearchBar from "@/components/Searchbar/SearchBar";
 import CreateGroup, { IOpenParams } from "./components/CreateGroup";
 import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
 
-const tabs = [
+export const RESOURCE_TABS = [
   {
     label: "图片",
     value: "img",
@@ -41,9 +41,9 @@ export default function Home() {
   const project_id = searchParams.get('projectId') || undefined;
   const project_name = searchParams.get('projectName') || undefined;
   const [data, setData] = useState<IResourceGroup[]>([]);
-  const [resource_type, setResourceType] = useState(tabs[0].value);
+  const [resource_type, setResourceType] = useState(RESOURCE_TABS[0].value);
   const [loading, setLoading] = useState(true);
-  const [placeholder, setPlaceholder] = useState(tabs[0].placeholder);
+  const [placeholder, setPlaceholder] = useState(RESOURCE_TABS[0].placeholder);
 
   const createGroupRef = useRef<{ open: (params: IOpenParams) => void }>();
 
@@ -74,12 +74,12 @@ export default function Home() {
     createGroupRef.current?.open({ action: "create" });
   };
 
-  const handleEditResGroup = (group_name: string) => {
-    createGroupRef.current?.open({
-      action: "edit",
-      group_name,
-    });
-  };
+  // const handleEditResGroup = (group_name: string) => {
+  //   createGroupRef.current?.open({
+  //     action: "edit",
+  //     group_name,
+  //   });
+  // };
 
   const refresh = () => {
     const keyword = form.getFieldValue("keyword");
@@ -104,7 +104,7 @@ export default function Home() {
       <Divider />
       <div className={searchBarstyles.topContainer}>
         <div>
-          {tabs.map((tab) => (
+          {RESOURCE_TABS.map((tab) => (
             <Button
               key={tab.value}
               type={resource_type === tab.value ? "primary" : "default"}
@@ -133,7 +133,6 @@ export default function Home() {
           data={data}
           project_id={project_id!}
           resource_type={resource_type}
-          handleEditResGroup={handleEditResGroup}
         />
       </div>
       <CreateGroup

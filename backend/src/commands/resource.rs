@@ -1,7 +1,10 @@
 use log::info;
 use tauri::command;
 
-use crate::models::resource::{OperResourceGroupParams, ResourceConfig, ResourceGroupInfo, ResourceQueryParams, UploadParams};
+use crate::models::resource::{
+    DeleteResource, OperResourceGroupParams, RenameResource, ResourceConfig, ResourceGroupInfo,
+    ResourceQueryParams, UploadParams,
+};
 
 use super::cmd_response::CmdResponse;
 
@@ -38,7 +41,6 @@ pub async fn update_resource_group(params: OperResourceGroupParams) -> CmdRespon
     CmdResponse::from(config)
 }
 
-
 // 导入资源
 #[command]
 pub async fn import_resource(params: UploadParams) -> CmdResponse<bool> {
@@ -47,15 +49,29 @@ pub async fn import_resource(params: UploadParams) -> CmdResponse<bool> {
     CmdResponse::from(config)
 }
 
+// 重命名资源
+#[command]
+pub async fn rename_resource(params: RenameResource) -> CmdResponse<bool> {
+    info!("rename resource: {:?}", params);
+    let config = ResourceConfig::rename_resource(params).await;
+    CmdResponse::from(config)
+}
+
+// 删除资源
+#[command]
+pub async fn delete_resource(params: DeleteResource) -> CmdResponse<bool> {
+    info!("delete resource: {:?}", params);
+    let config = ResourceConfig::delete_resource(params).await;
+    CmdResponse::from(config)
+}
 
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct FontMeta {
-    postscript_name : String,
+    postscript_name: String,
     family: String,
     full_name: String,
-
 }
 
 #[command]
