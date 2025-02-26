@@ -74,13 +74,17 @@ pub struct FontMeta {
     full_name: String,
 }
 
+
 #[command]
 pub fn parse_font_metadata(path: String) -> Result<FontMeta, String> {
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
     let face = font_kit::handle::Handle::from_memory(data.into(), 0);
-    Ok(FontMeta {
-        postscript_name: face.load().unwrap().postscript_name().unwrap_or_default(),
-        family: face.load().unwrap().family_name(),
-        full_name: face.load().unwrap().full_name(),
-    })
+    match face.load() {
+        Ok(loaded_face) => Ok(FontMeta {
+            postscript_name: loaded_face.postscript_name().unwrap_or_default(),
+            family: loaded_face.family_name(),
+            full_name: loaded_face.full_name(),
+        }),
+        Err(e) => Err(format!("加载字体失败: {}", e)),
+    }
 }
