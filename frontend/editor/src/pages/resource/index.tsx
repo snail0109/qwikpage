@@ -10,6 +10,7 @@ import CreateGroup, { IOpenParams } from "./components/CreateGroup";
 import { IOperResourceGroupParams } from "@/services/resource";
 import { ResourceGroupProvider } from "@/context/resource";
 import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
+import ResourceUpload from "@/components/ResourceUpload";
 
 export const RESOURCE_TABS = [
   {
@@ -55,6 +56,7 @@ export default function Home() {
   const [placeholder, setPlaceholder] = useState(RESOURCE_TABS[0].placeholder);
 
   const createGroupRef = useRef<{ open: (params: IOpenParams) => void }>();
+  const uploadfileRef = useRef<{ open: () => void }>();
 
   const [form] = Form.useForm();
 
@@ -85,6 +87,7 @@ export default function Home() {
 
   // 上传资源
   const onImportClick = async (name: string) => {
+    // uploadfileRef.current?.open();
     const filePaths = await open({
       title: "Select File",
       multiple: true,
@@ -206,7 +209,6 @@ export default function Home() {
   };
 
   return (
-    // TODO 抽取公共组件
     <Layout.Content className={searchBarstyles.resourceContainer}>
       {/* 搜索工具条 */}
       <SearchBar
@@ -263,6 +265,7 @@ export default function Home() {
           <ResourceGroupList data={data} />
         </ResourceGroupProvider>
       </div>
+      {/* 创建分组弹框 */}
       <CreateGroup
         createRef={createGroupRef}
         update={refresh}
@@ -270,6 +273,8 @@ export default function Home() {
         project_id={project_id!}
         resource_type={resource_type}
       />
+      {/* 上传资源 */}
+      <ResourceUpload uploadRef={uploadfileRef} />
     </Layout.Content>
   );
 }
