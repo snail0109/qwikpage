@@ -14,6 +14,21 @@
     }
   }
 }
+
+.menuContent {
+  margin-left: -14px;
+  margin-right: 10px;
+  :global {
+    .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab {
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+    .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab:not(:first-child) {
+      margin-top: 6px;
+    }
+  }
+}
+
 // 组件大纲
 .outlinePanel {
   height: calc(100vh - 110px);

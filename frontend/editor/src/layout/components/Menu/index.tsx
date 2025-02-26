@@ -27,7 +27,7 @@ const panels = [
     icon: <ComponentIcon style={{ fontSize: 16 }} />,
     label: '组件',
     title: (
-      <Space>
+      <Space >
         <span>组件</span>
         <Tooltip title="无需拖拽，直接点击就能添加到画布中。">
           <QuestionCircleOutlined />
@@ -107,8 +107,8 @@ const Menu = () => {
               </Flex>
             ),
             children: (
-              <div style={{ marginLeft: -10, marginRight: 10 }}>
-                <Row style={{ height: 46 }} align={'middle'} justify={'space-between'}>
+              <div className={styles.menuContent}>
+                <Row style={{ height: 36 }} align={'middle'} justify={'space-between'}>
                   <Col>
                     <span style={{ fontWeight: 'bold' }}>{item.title}</span>
                   </Col>
