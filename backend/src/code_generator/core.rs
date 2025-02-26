@@ -1,5 +1,4 @@
 use crate::{code_generator::export_code::ExportType, models::page::{Element, Page, PageContent}};
-use anyhow::Error;
 use log::info;
 use reqwest;
 use serde_json::Value;
@@ -242,7 +241,6 @@ pub fn download_temp(code_dir: &PathBuf, export_type: ExportType) -> Result<(), 
         ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip"),
         ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-vue3/app.zip"),
         ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-fish/app.zip"),
-        _ => return Err(format!("不支持的导出类型: {:#?}", export_type)),
     };
     // 下载代码模板
     let template_path = code_dir.join("fishx-template.zip");
