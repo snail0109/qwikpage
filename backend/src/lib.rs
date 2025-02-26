@@ -13,7 +13,9 @@ use crate::{
     utils::{get_app_root_dir, is_port_in_use},
 };
 use log::{error, info};
-use tauri::{TitleBarStyle, WebviewUrl, WebviewWindowBuilder};
+#[cfg(target_os = "macos")]
+use tauri::TitleBarStyle;
+use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
@@ -43,7 +45,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             info!("============== Start App ==============");
-            let win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+            let mut win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
                 .title("")
                 .resizable(true)
                 .fullscreen(false)
@@ -52,10 +54,12 @@ pub fn run() {
                 .min_inner_size(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
 
             // 仅在 macOS 时设置透明标题栏
-            #[cfg(target_os = "macos")]
-            let win_builder = win_builder
+            #[cfg(target_os = "macos")] {
+                win_builder = win_builder
                 .hidden_title(true)
                 .title_bar_style(TitleBarStyle::Overlay);
+            }
+            
 
             // Add non-MacOS things
             #[cfg(not(target_os = "macos"))]
