@@ -54,8 +54,8 @@ const Header = memo(() => {
     };
 
     const macStoplightsVisible = useMemo(() => {
-        // 如果App 是全屏 返回false
-        return !isFullscreen;
+        // mac 是全屏 返回false
+        return platform.osType === "macos" && !isFullscreen;
     }, [platform, isFullscreen]);
 
     // 添加窗口事件监听器
