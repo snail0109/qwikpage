@@ -8,6 +8,11 @@ import {
   FunctionOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
+import ComponentIcon from '@/assets/icons/Component.svg?react';
+import OutlineIcon from '@/assets/icons/Outline.svg?react';
+import InterfaceIcon from '@/assets/icons/Interface.svg?react';
+import DSLIcon from '@/assets/icons/DSL.svg?react';
+import VariableIcon from '@/assets/icons/Variable.svg?react';
 import ComponentPanel from './ComponentPanel';
 import SpinLoading from '@/components/SpinLoading';
 import styles from './index.module.less';
@@ -26,7 +31,7 @@ const VariableList = lazy(() => import('./Variable/VariableList'));
 const panels = [
   {
     key: 'ComponentPanel',
-    icon: <AppstoreOutlined style={{ fontSize: 16 }} />,
+    icon: <ComponentIcon style={{ fontSize: 16 }} />,
     label: '组件',
     title: (
       <Space>
@@ -42,7 +47,7 @@ const panels = [
   },
   {
     key: 'OutlinePanel',
-    icon: <PartitionOutlined style={{ fontSize: 16 }} />,
+    icon: <OutlineIcon style={{ fontSize: 16 }} />,
     label: '大纲',
     title: (
       <Space>
@@ -58,7 +63,7 @@ const panels = [
   },
   {
     key: 'CodingPanel',
-    icon: <CodeOutlined style={{ fontSize: 16 }} />,
+    icon: <DSLIcon style={{ fontSize: 16 }} />,
     label: 'DSL',
     title: '页面JSON',
     children: () => {
@@ -67,7 +72,7 @@ const panels = [
   },
   {
     key: 'ApiList',
-    icon: <ApiOutlined style={{ fontSize: 16 }} />,
+    icon: <InterfaceIcon style={{ fontSize: 16 }} />,
     label: '接口',
     title: '页面接口',
     children: () => {
@@ -76,7 +81,7 @@ const panels = [
   },
   {
     key: 'Variable',
-    icon: <FunctionOutlined style={{ fontSize: 16 }} />,
+    icon: <VariableIcon style={{ fontSize: 16 }} />,
     label: '变量',
     title: '页面变量',
     children: () => {

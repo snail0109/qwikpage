@@ -2,8 +2,12 @@
 .leftTool {
   :global {
     .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab {
-      padding: 8px;
+      margin-top: 22px;
+      padding: 0 12.5px;
       justify-content: center;
+    }
+    .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab:not(:first-child) {
+      margin-top: 25px; /* 其他元素的 margin-top 为 25px */
     }
     .ant-tabs-tab .anticon:not(:last-child) {
       margin-right: 0;
