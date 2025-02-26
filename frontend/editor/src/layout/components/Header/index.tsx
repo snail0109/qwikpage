@@ -58,6 +58,10 @@ const Header = memo(() => {
         return platform.osType === "macos" && !isFullscreen;
     }, [platform, isFullscreen]);
 
+    const isMac = useMemo(() => {
+        return platform.osType === "macos";
+    }, [platform]);
+
     // 添加窗口事件监听器
     useEffect(() => {
         // 初始检查
@@ -105,6 +109,7 @@ const Header = memo(() => {
                 className={styles.layoutHeader}
                 style={{
                     paddingLeft: macStoplightsVisible ? MAC_PADDING_LEFT : undefined,
+                    paddingRight: isMac ? '12px' : 0,
                     transition: "padding-left 0.3s ease", // 添加过渡效果
                 }}
             >
@@ -119,6 +124,9 @@ const Header = memo(() => {
                 <div className={styles.user}>
                     {/* 系统设置的按钮图标 */}
                     <SettingOutlined onClick={onOpenSettingClick} />
+                    {!isMac && (
+                        <div className={styles.divider}></div>
+                    )}
                     {/* 预览模式 */}
                     {mode === "preview" && (
                         <Button type="primary" onClick={handleExitPreview}>
