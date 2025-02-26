@@ -1,30 +1,23 @@
 import { lazy, Suspense } from 'react';
 import { Col, Flex, Row, Space, Tabs, Tooltip } from 'antd';
-import {
-  AppstoreOutlined,
-  PartitionOutlined,
-  CodeOutlined,
-  ApiOutlined,
-  FunctionOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import ComponentIcon from '@/assets/icons/Component.svg?react';
 import OutlineIcon from '@/assets/icons/Outline.svg?react';
 import InterfaceIcon from '@/assets/icons/Interface.svg?react';
 import DSLIcon from '@/assets/icons/DSL.svg?react';
 import VariableIcon from '@/assets/icons/Variable.svg?react';
-import ComponentPanel from './ComponentPanel';
+import ComponentPanel from './Components/ComponentPanel/ComponentPanel';
 import SpinLoading from '@/components/SpinLoading';
 import styles from './index.module.less';
 
 // 组件大纲
 const OutlinePanel = lazy(() => import('./OutlinePanel'));
 // 页面源码
-const CodingPanel = lazy(() => import('./CodingPanel'));
+const CodingPanel = lazy(() => import('./Components/CodingPanel'));
 // 接口列表
-const ApiList = lazy(() => import('./ApiList/ApiList'));
+const ApiList = lazy(() => import('./Components/ApiList/ApiList'));
 // 页面变量
-const VariableList = lazy(() => import('./Variable/VariableList'));
+const VariableList = lazy(() => import('./Components/Variable/VariableList'));
 /**
  * 左侧面板类型
  */

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Row, Col, Tabs, Collapse, Input, Divider, Empty } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import { useDebounceFn } from 'ahooks';
-import DragMenuItem from './DragMenuItem';
+import DragMenuItem from '../DragMenuItem';
 import components, { SysComItem } from '@/config/components';
 /**
- * 组件
+ * 组件面板
  */
 const ComponentPanel = () => {
   const customRef = useRef<{ reload: () => void }>();

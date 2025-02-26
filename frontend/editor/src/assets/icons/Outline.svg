@@ -5,7 +5,7 @@
             <g id="大纲" transform="translate(13, 119)">
                 <g transform="translate(4, 0)">
                     <rect id="矩形" x="0" y="0" width="16" height="16"></rect>
-                    <g id="编组-3" stroke="#333333">
+                    <g id="编组-3" stroke="currentColor">
                         <rect id="矩形" stroke-width="1.1" x="0.55" y="6.55" width="3.9" height="3.9"></rect>
                         <rect id="矩形" stroke-width="1.1" x="11.55" y="0.55" width="3.9" height="3.9"></rect>
                         <rect id="矩形" stroke-width="1.1" x="11.55" y="11.55" width="3.9" height="3.9"></rect>
