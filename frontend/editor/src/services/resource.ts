@@ -5,6 +5,7 @@ interface IResourceQueryParams {
     project_id: string;
     resource_type: string; // TODO - enum
     resource_group?: string;
+    keyword?: string;
 }
 
 export interface IOperResourceGroupParams {
