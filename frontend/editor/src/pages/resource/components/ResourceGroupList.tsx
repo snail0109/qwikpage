@@ -64,7 +64,7 @@ function ResourceGroup(props: IResourceGroupProps) {
     <div className="resource-group">
       <div style={{ margin: 14 }}>
         {resources.length > 0 ? (
-          <Row gutter={16} justify="start">
+          <Row gutter={[16, 24]} justify="start">
             {resources.map((item, index) => {
               return <ResourceInfo key={index} {...item} resource_name={name} />;
             })}

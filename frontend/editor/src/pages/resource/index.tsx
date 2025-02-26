@@ -17,28 +17,36 @@ export const RESOURCE_TABS = [
     label: "图片",
     value: "img",
     placeholder: "请输入图片名称",
+    extensions: ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp"]
   },
   {
     label: "字体",
     value: "font",
     placeholder: "请输入字体名称",
+    extensions: ["ttf", "otf", "woff", "woff2", "eot"]
   },
   {
     label: "第三方JS",
     value: "js",
     placeholder: "请输入JS名称",
+    extensions: ["js", "css", "json", "html"]
   },
   {
     label: "附件",
     value: "attachment",
     placeholder: "请输入附件名称",
+    extensions: ["zip", "rar", "tar", "gz", "7z"]
   },
   {
     label: "其它",
     value: "other",
     placeholder: "请输入其它资源名称",
+    extensions: ["pdf", "doc", "docx", "ppt", "pptx", "txt"]
   },
 ];
+
+const FILE_LIMITS = 5; // 文件数量
+const FILE_LIMIT_SIZE = 20 * 1024 * 1024; // 文件大小
 const { confirm } = Modal;
 
 const renameResourceMap = {
@@ -76,9 +84,7 @@ export default function Home() {
         console.log(err);
         setLoading(false);
       });
-  }, []);
-
-  const searchSubmit = () => { };
+  }, [resource_type]);
 
   // 新建资源分组
   const handleAddResGroup = () => {
@@ -88,14 +94,28 @@ export default function Home() {
   // 上传资源
   const onImportClick = async (name: string) => {
     // uploadfileRef.current?.open();
+    // const filters = 
     const filePaths = await open({
       title: "Select File",
       multiple: true,
+      filters: [
+        {
+          name: 'Files',
+          extensions: RESOURCE_TABS.find(item => item.value === resource_type)?.extensions || []
+        }
+      ]
     });
 
     if (!filePaths || filePaths?.length === 0) {
       return;
     }
+
+    if (filePaths.length > FILE_LIMITS) {
+      message.warning(`单次最多可上传${FILE_LIMITS}个文件`);
+      return;
+    }
+
+    // const MAX_SIZE = 
 
     resourceService
       .import_resource({
@@ -219,9 +239,8 @@ export default function Home() {
         form={form}
         searchPlaceholder={placeholder}
         projectName={project_name}
-        submit={searchSubmit}
+        submit={refresh}
         refresh={refresh}
-        onCreate={searchSubmit}
       />
       <Divider />
       <div className={searchBarstyles.topContainer}>
