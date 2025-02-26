@@ -6,7 +6,7 @@ import { getComponent } from '@/packages/index';
 import { usePageStore } from '@/stores/pageStore';
 import { message } from '@/utils/AntdGlobal';
 import { Button } from 'antd';
-import styles from './index.module.less';
+import styles from '../index.module.less';
 /**
  * 拖拽目标
  * @param props 拖拽对象属性值
