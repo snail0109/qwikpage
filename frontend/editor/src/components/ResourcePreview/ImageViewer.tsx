@@ -1,10 +1,12 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Flex, Image, Divider, theme } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
+import { useResource } from "@/context/resource";
 import EditIcon from "@/assets/icons/EditIcon.svg?react";
 import styles from './index.module.less';
 
 interface IProps {
+    resource_name: string;
     name: string;
     path: string;
     file_type: string;
@@ -17,9 +19,14 @@ const { useToken } = theme;
 
 export default function ImageViewer(props: IProps) {
     const { token } = useToken();
-    const { name, path, last_modified_time } = props;
+    const { onDelete } = useResource();
+    const { resource_name, name, path, last_modified_time } = props;
     const src = convertFileSrc(path);
     const [fileName] = name.split('.');
+
+    const handleDelete = () => {
+        onDelete(resource_name, name);
+    }
     return (
         <div className={styles.imagePreview} >
             <Image
@@ -33,7 +40,7 @@ export default function ImageViewer(props: IProps) {
             }} justify="center">
                 <EditIcon />
                 <Divider type="vertical" style={{ borderColor: token.colorPrimaryBg }} />
-                <DeleteOutlined />
+                <DeleteOutlined onClick={handleDelete} />
             </Flex>
             <Flex className={styles.imageBottom} justify="space-between">
                 <div>{fileName}</div>

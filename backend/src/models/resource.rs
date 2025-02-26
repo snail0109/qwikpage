@@ -68,6 +68,24 @@ pub struct ResourceGroupInfo {
     pub resources: Vec<ResourceInfo>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RenameResource {
+    pub project_id: String,
+    pub resource_type: ResourceType,
+    pub group_name: String,
+    pub resource_name: String,
+    pub new_resource_name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+
+pub struct DeleteResource {
+    pub project_id: String,
+    pub resource_type: ResourceType,
+    pub group_name: String,
+    pub resource_name: String,
+}
+
 pub struct ResourceConfig {}
 
 impl ResourceConfig {
@@ -131,8 +149,9 @@ impl ResourceConfig {
         let group_dir = res_root_dir.join(sanitize(&params.group_name));
         if !group_dir.exists() {
             info!("创建资源分组目录: {:?}", group_dir);
-            create_dir_all(&group_dir).await
-            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+            create_dir_all(&group_dir)
+                .await
+                .map_err(|e| Error::new(e).context("Failed to create directory"))?;
         }
         Ok(true)
     }
@@ -146,16 +165,18 @@ impl ResourceConfig {
                 .as_ref()
                 .ok_or_else(|| Error::msg("new_group_name is None"))?,
         );
-        rename(old_group_dir, new_group_dir).await
-        .map_err(|e| Error::new(e).context("Failed to rename directory"))?;
+        rename(old_group_dir, new_group_dir)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to rename directory"))?;
         Ok(true)
     }
 
     pub async fn delete_resource_group(params: OperResourceGroupParams) -> Result<bool, Error> {
         let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
-        remove_dir_all(group_dir).await
-        .map_err(|e| Error::new(e).context("Failed to remove directory"))?;
+        remove_dir_all(group_dir)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to remove directory"))?;
         Ok(true)
     }
 
@@ -165,41 +186,72 @@ impl ResourceConfig {
         let group_dir = res_root_dir.join(&params.group_name);
         if !group_dir.exists() {
             info!("创建资源分组目录: {:?}", group_dir);
-            create_dir_all(&group_dir).await
-            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+            create_dir_all(&group_dir)
+                .await
+                .map_err(|e| Error::new(e).context("Failed to create directory"))?;
         }
         // futures::future::join_all
         for file in &params.file_list {
             let file_path = std::path::Path::new(file);
             let file_name = file_path.file_name().unwrap();
             let new_file_path = group_dir.join(file_name);
-            copy(file_path, new_file_path).await.map_err(|e| Error::new(e).context("Failed to copy file"))?;
+            copy(file_path, new_file_path)
+                .await
+                .map_err(|e| Error::new(e).context("Failed to copy file"))?;
         }
+        Ok(true)
+    }
+
+    // 修改资源名称
+    pub async fn rename_resource(params: RenameResource) -> Result<bool, Error> {
+        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let group_dir = res_root_dir.join(&params.group_name);
+        let old_resource_path = group_dir.join(&params.resource_name);
+        let new_resource_path = group_dir.join(&params.new_resource_name);
+        rename(old_resource_path, new_resource_path)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to rename file"))?;
+        Ok(true)
+    }
+
+    // 删除资源
+    pub async fn delete_resource(params: DeleteResource) -> Result<bool, Error> {
+        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let group_dir = res_root_dir.join(&params.group_name);
+        let resource_path = group_dir.join(&params.resource_name);
+        tokio::fs::remove_file(resource_path)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to remove file"))?;
         Ok(true)
     }
 }
 
 // 资源分组根路径
-async fn get_res_root_dir(project_id: &String, resource_type: &ResourceType) -> Result<PathBuf, Error> {
+async fn get_res_root_dir(
+    project_id: &String,
+    resource_type: &ResourceType,
+) -> Result<PathBuf, Error> {
     // 项目资源路径
     let prj_res_dir = get_app_root_resource_dir().join(project_id);
     if !prj_res_dir.exists() {
         info!("创建项目资源目录: {:?}", prj_res_dir);
-        tokio::fs::create_dir_all(&prj_res_dir).await
-        .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+        tokio::fs::create_dir_all(&prj_res_dir)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
     }
 
     // 资源类型根路径
     let res_root_dir = prj_res_dir.join(resource_type.as_str());
     if !res_root_dir.exists() {
         info!("create resource type dir: {:?}", res_root_dir);
-        tokio::fs::create_dir_all(&res_root_dir).await
-        .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+        tokio::fs::create_dir_all(&res_root_dir)
+            .await
+            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
     }
     Ok(res_root_dir)
 }
 
-async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error>  {
+async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error> {
     // 判断根目录下是否有目录，没有则创建默认目录
     let mut dir_count = 0;
     for entry in res_root_dir.read_dir()? {
@@ -210,8 +262,9 @@ async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error>  {
     }
     if dir_count == 0 {
         info!("创建默认分组目录: {:?}", res_root_dir.join("默认分组"));
-        tokio::fs::create_dir_all(&res_root_dir.join("默认分组")).await
-        .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+        tokio::fs::create_dir_all(&res_root_dir.join("默认分组"))
+            .await
+            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
     }
     Ok(())
 }
