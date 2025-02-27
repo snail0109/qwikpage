@@ -8,6 +8,7 @@ use crate::constans::PAGE_DIR;
 use crate::utils::{get_app_root_dir, get_current_time};
 
 use super::group::GroupConfig;
+use super::resource::ResourceConfig;
 
 // 系统布局
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -197,9 +198,9 @@ impl Project {
         }
     }
 
-    pub fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
+    pub async fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
         let project_dir = get_app_root_dir().join(&project_id);
-        fs::remove_dir_all(project_dir)?;
+        tokio::fs::remove_dir_all(project_dir).await?;
         let mut config = GroupConfig::load()?;
         // 查找 config.groups 各个 group projects 是否包含 project_id
         let mut group_id = group_id;
@@ -220,6 +221,8 @@ impl Project {
                 ));
             }
         }
+        // 删除 resource 全部资源
+        ResourceConfig::delete_resource_dir(&project_id).await?;
         Ok(true)
     }
 
@@ -269,7 +272,7 @@ impl Project {
             logo.to_string(),
         );
         project.save()?;
-        
+
         // group_id 为 None 时，添加到默认分组
         let group_id = params.group_id.clone().unwrap_or("-1".to_string());
         let mut config = GroupConfig::load().map_err(|e| {
@@ -287,5 +290,4 @@ impl Project {
             })?;
         Ok(project)
     }
-
 }
