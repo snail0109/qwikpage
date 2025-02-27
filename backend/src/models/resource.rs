@@ -4,7 +4,8 @@ use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{format_system_time, get_app_root_resource_dir};
-use std::path::PathBuf;
+use futures::future::join_all;
+use std::path::{Path, PathBuf};
 use tokio::fs::{copy, create_dir_all, read_dir, remove_dir_all, rename};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -190,14 +191,31 @@ impl ResourceConfig {
                 .await
                 .map_err(|e| Error::new(e).context("Failed to create directory"))?;
         }
-        // futures::future::join_all
-        for file in &params.file_list {
-            let file_path = std::path::Path::new(file);
-            let file_name = file_path.file_name().unwrap();
-            let new_file_path = group_dir.join(file_name);
-            copy(file_path, new_file_path)
-                .await
-                .map_err(|e| Error::new(e).context("Failed to copy file"))?;
+        // 使用 futures::future::join_all 来并发处理文件复制
+        let copy_futures: Vec<_> = params
+            .file_list
+            .iter()
+            .map(|file| {
+                let file_path = Path::new(file);
+                let file_name = file_path.file_name().unwrap();
+                let new_file_path = group_dir.join(file_name);
+
+                async move {
+                    copy(file_path, new_file_path)
+                        .await
+                        .map_err(|e| Error::new(e).context("Failed to copy file"))
+                }
+            })
+            .collect();
+
+        // 等待所有的复制操作完成
+        let results = join_all(copy_futures).await;
+
+        // 检查结果
+        for result in results {
+            if let Err(e) = result {
+                return Err(e);
+            }
         }
         Ok(true)
     }
