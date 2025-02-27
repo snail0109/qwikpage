@@ -66,3 +66,102 @@
     }
   }
 }
+
+.fontPreview {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 120px;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+
+  >.fontContainer {
+    height: 120px;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    padding: 10px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+    cursor: pointer;
+
+    .loadFail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+
+      >svg {
+        color: var(--ant-red)
+      }
+
+      >span {
+        font-size: 12px;
+        display: block;
+        position: relative;
+        top: 10px;
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border-radius: 12px;
+      box-shadow: 0 0 5px #d9d9d9;
+    }
+
+    .fontTool {
+      position: absolute;
+      z-index: 1;
+      bottom: 0;
+      left: 5px;
+      right: 5px;
+      height: 37px;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.50);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      opacity: 0;
+      overflow: hidden;
+      transition: opacity var(--ant-motion-duration-slow);
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      :global {
+        .ant-divider {
+          margin: 0 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
+  .fontBottom {
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+}

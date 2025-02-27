@@ -17,31 +17,31 @@ export const RESOURCE_TABS = [
     label: "图片",
     value: "img",
     placeholder: "请输入图片名称",
-    extensions: ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp"]
+    extensions: ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp"],
   },
   {
     label: "字体",
     value: "font",
     placeholder: "请输入字体名称",
-    extensions: ["ttf", "otf", "woff", "woff2", "eot"]
+    extensions: ["ttf", "otf", "woff", "woff2", "eot", "ttc"],
   },
   {
     label: "第三方JS",
     value: "js",
     placeholder: "请输入JS名称",
-    extensions: ["js", "css", "json", "html"]
+    extensions: ["js", "css", "json", "html"],
   },
   {
     label: "附件",
     value: "attachment",
     placeholder: "请输入附件名称",
-    extensions: ["zip", "rar", "tar", "gz", "7z"]
+    extensions: ["zip", "rar", "tar", "gz", "7z"],
   },
   {
     label: "其它",
     value: "other",
     placeholder: "请输入其它资源名称",
-    extensions: ["pdf", "doc", "docx", "ppt", "pptx", "txt"]
+    extensions: ["pdf", "doc", "docx", "ppt", "pptx", "txt"],
   },
 ];
 
@@ -50,9 +50,9 @@ const FILE_LIMIT_SIZE = 20 * 1024 * 1024; // 文件大小
 const { confirm } = Modal;
 
 const renameResourceMap = {
-  group_name: '',
-  resource_name: ''
-}
+  group_name: "",
+  resource_name: "",
+};
 
 export default function Home() {
   const searchParams = new URLSearchParams(location.search);
@@ -68,23 +68,33 @@ export default function Home() {
 
   const [form] = Form.useForm();
 
-  useEffect(() => {
+  const fetchResource = async (sourceType: string) => {
     setLoading(true);
-    resourceService
-      .load_resource({
+    try {
+      const res = await resourceService.load_resource({
         project_id: project_id!,
-        resource_type,
-      })
-      .then((res) => {
-        setData(res);
-        console.log("resourceGroup List: ", res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
+        resource_type: sourceType,
       });
-  }, [resource_type]);
+      if (res) {
+        console.log("resourceGroup List: ", res);
+        setData(res);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchResource(resource_type);
+  }, []);
+
+  const onChangTab = async (tab: any) => {
+    await fetchResource(tab.value);
+    setResourceType(tab.value);
+    setPlaceholder(tab.placeholder);
+  };
 
   // 新建资源分组
   const handleAddResGroup = () => {
@@ -94,16 +104,17 @@ export default function Home() {
   // 上传资源
   const onImportClick = async (name: string) => {
     // uploadfileRef.current?.open();
-    // const filters = 
+    const filters = RESOURCE_TABS.find((item) => item.value === resource_type)?.extensions || [];
+    const filtersUp = filters.map(v => v.toUpperCase())
     const filePaths = await open({
       title: "Select File",
       multiple: true,
       filters: [
         {
-          name: 'Files',
-          extensions: RESOURCE_TABS.find(item => item.value === resource_type)?.extensions || []
-        }
-      ]
+          name: "Files",
+          extensions: filters.concat(filtersUp),
+        },
+      ],
     });
 
     if (!filePaths || filePaths?.length === 0) {
@@ -115,7 +126,7 @@ export default function Home() {
       return;
     }
 
-    // const MAX_SIZE = 
+    // const MAX_SIZE =
 
     resourceService
       .import_resource({
@@ -192,26 +203,25 @@ export default function Home() {
     const [name] = resourceName.split(".");
     createGroupRef.current?.open({
       action: "renameResource",
-      group_name: name
+      group_name: name,
     });
   };
 
   const renameResource = async (newName: string) => {
     const [, type] = renameResourceMap.resource_name.split(".");
-    const result = await resourceService
-      .rename_resource({
-        project_id,
-        resource_type,
-        group_name: renameResourceMap.group_name,
-        resource_name: renameResourceMap.resource_name,
-        new_resource_name: `${newName}.${type}`,
-      });
+    const result = await resourceService.rename_resource({
+      project_id,
+      resource_type,
+      group_name: renameResourceMap.group_name,
+      resource_name: renameResourceMap.resource_name,
+      new_resource_name: `${newName}.${type}`,
+    });
     if (result) {
       message.success("重命名成功");
       refresh();
     }
     return result;
-  }
+  };
 
   const refresh = () => {
     const keyword = form.getFieldValue("keyword");
@@ -250,10 +260,7 @@ export default function Home() {
               key={tab.value}
               type={resource_type === tab.value ? "primary" : "default"}
               className={styles.tabButton}
-              onClick={() => {
-                setResourceType(tab.value);
-                setPlaceholder(tab.placeholder);
-              }}
+              onClick={() => onChangTab(tab)}
             >
               {tab.label}
             </Button>

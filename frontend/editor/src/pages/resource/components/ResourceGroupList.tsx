@@ -49,11 +49,27 @@ function ResourceInfo(props: IResourceInfoProp) {
     }
   }, [resource_type, props.name, props.last_modified_time]);
 
-  return (
-    <Col xs={12} sm={12} md={8} lg={8} xl={6} xxl={4}>
-      {resourceInfo}
-    </Col>
-  );
+  const colConfig = useMemo(() => {
+    let config: any = {
+      xs: 12,
+      sm: 12,
+      md: 8,
+      lg: 8,
+      xl: 6,
+      xxl: 4,
+    };
+    switch (resource_type) {
+      case RESOURCE_TABS[1].value:
+        config = { xs: 8, sm: 6, md: 4, lg: 3, xl: 2, xxl: 2 };
+        break;
+      case RESOURCE_TABS[0].value:
+      default:
+        break;
+    }
+    return config;
+  }, [resource_type]);
+
+  return <Col {...colConfig}>{resourceInfo}</Col>;
 }
 
 function ResourceGroup(props: IResourceGroupProps) {
@@ -70,11 +86,7 @@ function ResourceGroup(props: IResourceGroupProps) {
             })}
           </Row>
         ) : (
-          <EmptyBox
-            title="该分组下暂无静态资源，请上传"
-            lastCharsCount={2}
-            onCreate={() => onImport(name)}
-          />
+          <EmptyBox title="该分组下暂无静态资源，请上传" lastCharsCount={2} onCreate={() => onImport(name)} />
         )}
       </div>
     </div>
@@ -110,9 +122,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
             onUpdateGroup={onEditGroup}
           />
         ),
-        children: (
-          <ResourceGroup {...rest} {...item} />
-        ),
+        children: <ResourceGroup {...rest} {...item} />,
       }))}
     ></Collapse>
   );
