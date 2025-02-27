@@ -4,6 +4,7 @@ import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import { useDebounceFn } from 'ahooks';
 import DragMenuItem from '../DragMenuItem';
 import components, { SysComItem } from '@/config/components';
+import styles from './index.module.less';
 /**
  * 组件面板
  */
@@ -77,7 +78,7 @@ const ComponentPanel = () => {
         children: (
           <>
             <Collapse
-              style={{ height: list.length > 0 ? 'calc(100vh - 210px)' : '', overflowY: 'auto' }}
+              style={{ height: list.length > 0 ? 'calc(100vh - 185px)' : '', overflowY: 'auto' }}
               items={list}
               ghost
               expandIconPosition={'end'}
@@ -119,6 +120,7 @@ const ComponentPanel = () => {
   return (
     <Tabs
       size={'small'}
+      className={styles.componentPanel}
       defaultActiveKey={tabs[0].key}
       tabPosition={'top'}
       onChange={handleTabChange}
@@ -131,7 +133,7 @@ const ComponentPanel = () => {
               {tabKey === 'system' && (
                 <>
                   <Input placeholder="输入组件名称查询" suffix={<SearchOutlined />} onChange={run} />
-                  <Divider style={{ margin: '12px 0 0 0' }} />
+                  <Divider style={{ margin: '10px 0 0 0' }} />
                 </>
               )}
               {item.children}
