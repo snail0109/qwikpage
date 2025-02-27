@@ -1,0 +1,24 @@
+.imageContainer {
+  position: relative;
+  display: inline-block;
+
+  .mask {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    background-color: transparent;
+    height: 100px;
+    position: absolute;
+    top: 0px;
+    color: var(--ant-color-text-light-solid);
+
+    &:hover {
+      background-color: var(--ant-color-bg-mask);
+    }
+  }
+
+  &:hover .mask {
+    display: flex;
+  }
+}
