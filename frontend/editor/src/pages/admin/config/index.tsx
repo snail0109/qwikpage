@@ -44,6 +44,7 @@ const Config: React.FC = memo(() => {
 
             await projectService.updateProject({
                 ...rest,
+                theme_color: selectedColor,
                 system_theme_color: systemThemeColor,
                 menu_mode: menuMode,
                 menu_theme_color: menuThemeColor,
