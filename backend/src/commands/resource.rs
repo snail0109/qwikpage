@@ -10,6 +10,7 @@ use super::cmd_response::CmdResponse;
 
 use font_kit;
 
+// 查询分组资源信息
 #[command]
 pub async fn load_resource(params: ResourceQueryParams) -> CmdResponse<Vec<ResourceGroupInfo>> {
     info!("load resource: {:?}", params);
@@ -74,7 +75,9 @@ pub struct FontMeta {
     full_name: String,
 }
 
-
+// TODO 代码迁移到 model下 
+// 解析字体元数据
+// 参数: path - 字体文件的路径
 #[command]
 pub fn parse_font_metadata(path: String) -> Result<FontMeta, String> {
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
