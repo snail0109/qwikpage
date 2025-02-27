@@ -107,6 +107,7 @@ impl GroupConfig {
 
     /// 删除一个分组
     pub fn delete_group(&mut self, id: &str) -> Result<bool, Error> {
+        // 默认分组，不允许删除
         let original_len = self.groups.len();
         self.groups.retain(|group| group.id != id);
         self.save()?;
@@ -185,9 +186,9 @@ impl GroupConfig {
         project_id: String,
     ) -> Result<(), Error> {
         // group_id 如果是 -1 则是默认分组，不允许删除
-        if group_id == "-1" {
-            return Err(anyhow::anyhow!("默认分组，不允许删除"));
-        }
+        // if group_id == "-1" {
+        //     return Err(anyhow::anyhow!("默认分组，不允许删除"));
+        // }
         if let Some(group) = self.groups.iter_mut().find(|g| g.id == group_id) {
             if let Some(projects) = &mut group.projects {
                 if projects.contains(&project_id) {
