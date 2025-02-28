@@ -85,7 +85,7 @@ pub struct Project {
 pub struct ProjectUpdateParams {
     pub id: String,
     pub name: String,                       // 项目名称
-    pub remark: String,                     // 项目备注（可选）
+    pub remark: Option<String>,                     // 项目备注（可选）
     pub layout: u32,                        // 系统布局 1 2
     pub theme_color: String,                // 项目主题
     pub menu_mode: String,                  // 菜单模式
@@ -182,7 +182,7 @@ impl Project {
 
     pub fn update(&mut self, params: ProjectUpdateParams) -> Result<bool, Error> {
         self.name = params.name;
-        self.remark = Some(params.remark);
+        self.remark = params.remark;
         self.layout = params.layout;
         self.theme_color = params.theme_color;
         self.menu_mode = params.menu_mode;
