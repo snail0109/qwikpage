@@ -65,6 +65,7 @@ impl MenuThemeColor {
 #[serde(rename_all = "camelCase")]
 pub struct Project {
     pub id: String,                         // 项目唯一标识
+    pub group_id: String,                   // 项目分组唯一标识
     pub name: String,                       // 项目名称
     pub remark: Option<String>,             // 项目备注（可选）
     pub logo: String,                       // 项目 logo 的 URL（可选）
@@ -116,7 +117,7 @@ pub struct ProjectList {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ProjectAddParams {
-    pub group_id: Option<String>,
+    pub group_id: String,
     pub name: String,
     pub remark: Option<String>,
     pub logo: String,
@@ -133,10 +134,12 @@ impl Project {
         theme_color: String,
         remark: Option<String>,
         logo: String,
+        group_id: String,
     ) -> Self {
         // 生成随机并且唯一的项目 ID
         Project {
             id,
+            group_id,
             name,
             remark,
             logo,
@@ -270,11 +273,12 @@ impl Project {
             params.theme_color,
             params.remark,
             logo.to_string(),
+        params.group_id.clone(),
         );
         project.save()?;
 
         // group_id 为 None 时，添加到默认分组
-        let group_id = params.group_id.clone().unwrap_or("-1".to_string());
+        let group_id = params.group_id.clone();
         let mut config = GroupConfig::load().map_err(|e| {
             error!("Failed to load group configuration: {}", e);
             anyhow::anyhow!("加载分组配置失败: {}", e)
