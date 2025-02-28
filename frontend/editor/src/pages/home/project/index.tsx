@@ -50,6 +50,19 @@ function Category() {
         createGroupRef.current?.open();
     };
 
+    // 删除分组
+    const handleDeleteGroup = (groupId: string) => {
+        setLoading(true);
+        cmd_invoke("delete_group", { id: groupId })
+            .then(() => {
+                message.success("删除分组成功");
+                load_groups_with_projects();
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
     // 更新分组名称
     const updateGroupName = async (groupId: string, newName: string) => {
         try {
@@ -102,6 +115,7 @@ function Category() {
                                     <GroupTitle
                                         groupItem={item}
                                         onCreate={handleCreate}
+                                        onDelete={handleDeleteGroup}
                                         onUpdateGroup={updateGroupName}
                                     />
                                 ),

@@ -5,7 +5,7 @@ import ArrowIcon from "@/assets/icons/ArrowIcon.svg?react";
 interface EmptyBoxProps {
   title: string;
   lastCharsCount: number;
-  groupId?: string;
+  groupId: string;
   onCreate: (groupId: string) => void;
 }
 
