@@ -3,7 +3,7 @@ use log::info;
 use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{format_system_time, get_app_root_resource_dir};
+use crate::utils::{format_system_size, format_system_time, get_app_root_resource_dir};
 use futures::future::join_all;
 use std::path::{Path, PathBuf};
 use tokio::fs::{copy, create_dir_all, read_dir, remove_dir_all, rename};
@@ -60,6 +60,7 @@ pub struct ResourceInfo {
     pub path: String,
     pub file_type: String,
     pub last_modified_time: String,
+    pub file_size   : Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -115,7 +116,6 @@ impl ResourceConfig {
                         default_group = true;
                         continue;
                     }
-                        // 遍历main目录下的文件
                     // 过滤掉隐藏文件
                     if dir_entry.file_name().to_string_lossy().starts_with(".") {
                         continue;
@@ -139,6 +139,9 @@ impl ResourceConfig {
                         last_modified_time: format_system_time(
                             dir_entry.path().metadata().unwrap().modified().unwrap(),
                         ),
+                        file_size: Some(format_system_size(
+                            dir_entry.path().metadata().unwrap().len(),
+                        ))
                     });
                 }
                 // 判断
