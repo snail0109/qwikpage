@@ -8,21 +8,26 @@ export async function cmd_invoke(method: string, params?: any): Promise<any> {
     try {
         const response : any = await invoke(method, params);
         if (!response.success) {
-            console.log("ERROR - cmd_invoke error", response);
-            notification.error({
-                message: "Error",
-                description: response.message,
-            });
             throw new Error(response.message);
         } else {
             return response.data;
         }
     } catch (err: any) {
-        console.log("ERROR - cmd_invoke error", err);
-        notification.error({
-            message: "Error",
-            description: err,
-        });
+        // 如果 err 是字符串，直接显示
+        if (typeof err === "string") {
+            notification.error({
+                message: "Error",
+                description: err,
+            });
+            throw new Error(err);
+        } else if (err instanceof Error) {
+            // 如果 err 是 Error 对象，显示 err.message
+            notification.error({
+                message: "Error",
+                description: err.message,
+            });
+            throw new Error(err.message);
+        }
         throw new Error(err);
     }
 }

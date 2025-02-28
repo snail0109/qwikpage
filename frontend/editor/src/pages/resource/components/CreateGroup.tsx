@@ -2,6 +2,7 @@ import { Input, Modal, Form } from "antd";
 import { useImperativeHandle, useState, forwardRef, memo, useMemo } from "react";
 import { resourceService, IOperResourceGroupParams } from "@/services/resource";
 import { message } from "@/utils/AntdGlobal";
+import { error } from "console";
 
 export interface IOpenParams {
     action: "create" | "edit" | "renameResource";
@@ -92,11 +93,14 @@ const CreateGroup = (
                 .then(() => {
                     message.success(msg);
                     props.update?.();
-                })
-                .finally(() => {
                     setLoading(false);
                     setVisible(false);
-                });
+                })
+                .catch(error => {
+                    debugger
+                    setLoading(false);
+                })
+                
         } catch (error) {
             setLoading(false);
         }
