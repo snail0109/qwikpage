@@ -9,7 +9,7 @@ interface ProjectGroupProps {
         name: string;
     };
     createText?: string;
-    onCreate: (groupId?: string) => void;
+    onCreate: (groupId: string) => void;
     onUpdateGroup: (groupId: string, newName: string) => Promise<boolean>;
 }
 

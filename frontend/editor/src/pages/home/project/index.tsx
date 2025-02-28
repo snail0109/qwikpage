@@ -20,7 +20,7 @@ function Category() {
     const [dataSource, setDataSource] = useState<IGroup[]>([]);
     const [activeKeys, setActiveKeys] = useState<string[]>([]);
     const createPageRef = useRef<CreatePageRef>();
-    const createProjectRef = useRef<{ open: (type: string, groupId?: string) => void }>();
+    const createProjectRef = useRef<{ open: (type: string, groupId: string) => void }>();
     const createGroupRef = useRef<{ open: () => void }>();
 
     useEffect(() => {
@@ -41,7 +41,7 @@ function Category() {
     };
 
     // 新建项目
-    const handleCreate = (groupId?: string) => {
+    const handleCreate = (groupId: string) => {
         createProjectRef.current?.open("project", groupId);
     };
 

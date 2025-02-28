@@ -6,7 +6,7 @@ interface EmptyBoxProps {
   title: string;
   lastCharsCount: number;
   groupId?: string;
-  onCreate: (groupId?: string) => void;
+  onCreate: (groupId: string) => void;
 }
 
 const EmptyBox = ({

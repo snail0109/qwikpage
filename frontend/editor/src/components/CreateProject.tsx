@@ -15,12 +15,12 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState("blue");
-  const [groupId, setGroupId] = useState<string | undefined>(undefined);
+  const [groupId, setGroupId] = useState<string>('-1');
   const [logoUrl, setLogoUrl] = useState("");
 
   // 暴露方法
   useImperativeHandle(props.createRef, () => ({
-    open(type: string, groupId?: string) {
+    open(type: string, groupId: string) {
       form.resetFields();
       setGroupId(groupId);
       setVisible(true);

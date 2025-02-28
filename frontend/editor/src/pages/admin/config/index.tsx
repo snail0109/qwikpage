@@ -19,6 +19,7 @@ const Config: React.FC = memo(() => {
     const [open, setOpen] = useState(false);
     const [type, setType] = useState<"detail" | "edit" | "create">("detail");
     const [selectedColor, setSelectedColor] = useState('');
+    const [groupId, setGroupId] = useState('');
 
     const { id } = useParams();
     const [form] = Form.useForm();
@@ -29,6 +30,7 @@ const Config: React.FC = memo(() => {
         if (!id) return;
         projectService.getProjectDetail(id).then((res) => {
             form.setFieldsValue(res);
+            setGroupId(res.groupId)
             setSelectedColor(res.themeColor);  
         });
     }, []);
@@ -62,12 +64,11 @@ const Config: React.FC = memo(() => {
         setOpen(true);
     };
     // 删除提交
-    const handleOk = async (val?: string) => {
+    const handleOk = async () => {
         setDelLoading(true);
         try {
             if (id) {
-                // FIXME: 分组ID 
-                await projectService.delProject({ id });
+                await projectService.delProject({ id, groupId });
                 message.success("删除成功");
                 navigate("/projects");
             }
@@ -240,7 +241,7 @@ const Config: React.FC = memo(() => {
                     <Button key="back" onClick={() => setOpen(false)}>
                         关闭
                     </Button>,
-                    <Button key="link" type="primary" danger loading={delLoading} onClick={() => handleOk("all")}>
+                    <Button key="link" type="primary" danger loading={delLoading} onClick={() => handleOk()}>
                         删除所有数据
                     </Button>,
                 ]}
