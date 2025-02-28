@@ -7,6 +7,7 @@ use crate::utils::{format_system_time, get_app_root_resource_dir};
 use futures::future::join_all;
 use std::path::{Path, PathBuf};
 use tokio::fs::{copy, create_dir_all, read_dir, remove_dir_all, rename};
+use log::error;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
@@ -67,6 +68,8 @@ pub struct ResourceGroupInfo {
     pub path: String,
     pub last_modified_time: String,
     pub resources: Vec<ResourceInfo>,
+    // 默认分组
+    pub default_group: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -105,7 +108,14 @@ impl ResourceConfig {
                 // 遍历目录下的文件
                 let mut resources: Vec<ResourceInfo> = vec![];
                 let mut dir_result = read_dir(entry.path()).await?;
+                let mut default_group: bool = false;
                 while let Ok(Some(dir_entry)) = dir_result.next_entry().await {
+                    // 如果存在文件夹 并且叫main 就是默认分组
+                    if dir_entry.file_name().to_string_lossy() == "main" {
+                        default_group = true;
+                        continue;
+                    }
+                        // 遍历main目录下的文件
                     // 过滤掉隐藏文件
                     if dir_entry.file_name().to_string_lossy().starts_with(".") {
                         continue;
@@ -131,6 +141,7 @@ impl ResourceConfig {
                         ),
                     });
                 }
+                // 判断
                 resource_groups.push(ResourceGroupInfo {
                     name: entry.file_name().to_string_lossy().to_string(),
                     path: entry.path().to_string_lossy().to_string(),
@@ -138,6 +149,7 @@ impl ResourceConfig {
                         entry.path().metadata().unwrap().modified().unwrap(),
                     ),
                     resources,
+                    default_group
                 });
             }
         }
@@ -153,6 +165,9 @@ impl ResourceConfig {
             create_dir_all(&group_dir)
                 .await
                 .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+        } else {
+            error!("资源分组已存在: {:?}", group_dir);
+            return Err(anyhow::anyhow!("资源分组已存在"));
         }
         Ok(true)
     }
@@ -288,8 +303,10 @@ async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error> {
         }
     }
     if dir_count == 0 {
-        info!("创建默认分组目录: {:?}", res_root_dir.join("默认分组"));
-        tokio::fs::create_dir_all(&res_root_dir.join("默认分组"))
+        // 默认分组下面再建一个 main 文件夹, 用于查询的时候识别出是否是默认分组
+        let def_group = res_root_dir.join("默认分组").join("main");
+        info!("创建默认分组目录: {:?}", def_group);
+        tokio::fs::create_dir_all(&def_group)
             .await
             .map_err(|e| Error::new(e).context("Failed to create directory"))?;
     }
