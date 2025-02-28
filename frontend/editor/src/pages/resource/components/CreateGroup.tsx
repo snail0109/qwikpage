@@ -64,7 +64,7 @@ const CreateGroup = (
             }
             const values = form.getFieldsValue();
             setLoading(true);
-            if (props.customConfirm) {
+            if (props.customConfirm && type === 'renameResource') {
                 const result = await props.customConfirm(values.group_name);
                 if (result) {
                     setLoading(false);
