@@ -6,15 +6,12 @@ import { useResource } from "@/context/resource";
 import EditIcon from "@/assets/icons/EditIcon.svg?react";
 import LoadError from "@/assets/icons/loadError.svg?react";
 import styles from './index.module.less';
+import type { IResource } from '@/types';
 
 const { useToken } = theme;
 
-interface IProps {
+interface IProps extends IResource {
   resource_name: string;
-  name: string;
-  path: string;
-  file_type: string;
-  last_modified_time: string;
 }
 
 interface FontProp {

@@ -60,6 +60,15 @@
   .imageBottom {
     height: 20px;
     margin-top: 10px;
+    align-items: center;
+
+    >div:first-child {
+      width: 136px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
 
     >div:last-child {
       color: #999999;
@@ -163,5 +172,41 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
+  }
+}
+
+.jsPreview {
+  :global {
+
+
+    .ant-table-thead {
+      .ant-table-cell {
+        background: #EDEDED !important;
+      }
+
+      .ant-table-cell {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+      }
+    }
+
+    .ant-table-tbody .ant-table-cell {
+      padding-top: 3px !important;
+      padding-bottom: 3px !important;
+    }
+  }
+
+  .iconHeader {
+    padding-left: 61px;
+  }
+
+  .iconCol {
+    display: flex;
+    align-items: center;
+    padding-left: 41px;
+
+    >svg {
+      margin-right: 5px;
+    }
   }
 }

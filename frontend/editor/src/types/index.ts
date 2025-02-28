@@ -62,3 +62,11 @@ export interface MenuEditParams {
   project_id?: number;
   sort_num: string;
 }
+
+export interface IResource {
+  name: string;
+  path: string;
+  file_type: string;
+  file_size: string;
+  last_modified_time: string;
+}

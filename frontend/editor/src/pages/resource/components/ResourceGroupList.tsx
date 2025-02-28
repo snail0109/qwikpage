@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { ImageViewer, FontViewer } from "@/components/ResourcePreview";
+import { ImageViewer, FontViewer, FileViewer } from "@/components/ResourcePreview";
 import { Col, Row, Collapse } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
@@ -7,15 +7,9 @@ import GroupTitle from "@/components/GroupTitle";
 import { RESOURCE_TABS } from "../index";
 import { useResource } from "@/context/resource";
 import styles from "./resource.module.less";
+import type { IResource } from '@/types';
 
-interface IResourceInfo {
-  name: string;
-  path: string;
-  file_type: string;
-  last_modified_time: string;
-}
-
-interface IResourceInfoProp extends IResourceInfo {
+interface IResourceInfoProp extends IResource {
   resource_name: string;
 }
 
@@ -24,12 +18,12 @@ export interface IResourceGroup {
   path: string;
   last_modified_time: string;
   default_group: boolean;
-  resources: Array<IResourceInfo>;
+  resources: Array<IResource>;
 }
 
 interface IResourceGroupProps {
   name: string;
-  resources: Array<IResourceInfo>;
+  resources: Array<IResource>;
 }
 
 interface IResourceGroupListProps {
@@ -73,20 +67,28 @@ function ResourceInfo(props: IResourceInfoProp) {
   return <Col {...colConfig}>{resourceInfo}</Col>;
 }
 
+function ResourceContainer(props: IResourceGroupProps) {
+  const { name, resources } = props;
+  const { resource_type } = useResource();
+  return (
+    [RESOURCE_TABS[0].value, RESOURCE_TABS[1].value].includes(resource_type) ? (
+      <Row gutter={[16, 24]} justify="start">
+        {resources.map((item, index) => {
+          return <ResourceInfo key={index} {...item} resource_name={name} />;
+        })}
+      </Row>
+    ) : <FileViewer resource_name={name} data={resources} />
+  )
+}
+
 function ResourceGroup(props: IResourceGroupProps) {
   const { name, resources } = props;
   const { onImport } = useResource();
 
   return (
     <div className="resource-group">
-      <div style={{ margin: 14 }}>
-        {resources.length > 0 ? (
-          <Row gutter={[16, 24]} justify="start">
-            {resources.map((item, index) => {
-              return <ResourceInfo key={index} {...item} resource_name={name} />;
-            })}
-          </Row>
-        ) : (
+      <div style={{ margin: '14px 0' }}>
+        {resources.length > 0 ? <ResourceContainer {...props} /> : (
           <EmptyBox title="该分组下暂无静态资源，请上传" lastCharsCount={2} onCreate={() => onImport(name)} />
         )}
       </div>
