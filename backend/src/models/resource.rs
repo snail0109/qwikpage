@@ -1,4 +1,4 @@
-use anyhow::Error;
+use anyhow::{Context, Error};
 use log::info;
 use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
@@ -283,25 +283,37 @@ impl ResourceConfig {
 
     // 添加项目资源
     pub async fn add_project_resource(params: AddTempResourceParams) -> Result<bool, Error> {
-        // 项目临时资源文件
+        // 构建项目资源目录路径
         let prj_res_dir = get_app_root_resource_dir()
             .join("project_logo")
             .join(&params.project_id);
-        // prj_res_dir 不存在就创建
-        if !prj_res_dir.exists() {
-            tokio::fs::create_dir_all(&prj_res_dir)
-                .await
-                .map_err(|e| Error::new(e).context("创建项目logo目录失败"))?;
-        }
 
+        // 创建目录（如果不存在），使用create_dir_all自动处理已存在的情况
+        tokio::fs::create_dir_all(&prj_res_dir)
+            .await
+            .with_context(|| "无法创建项目logo目录")?;
+
+        // 安全处理文件名，防止路径遍历攻击
         let file_path = Path::new(&params.file_path);
         let file_name = file_path
             .file_name()
-            .ok_or_else(|| Error::msg("文件路径无效，无法获取文件名"))?;
+            .ok_or_else(|| Error::msg("无效的文件路径"))?;
+
+        // 验证文件名不包含路径分隔符
+        let file_name_str = file_name
+            .to_str()
+            .ok_or_else(|| Error::msg("文件名包含无效字符"))?;
+        if file_name_str.contains(|c| c == '/' || c == '\\') {
+            return Err(Error::msg("文件名包含非法路径字符"));
+        }
+        // 构建目标文件路径
         let new_file_path = prj_res_dir.join(file_name);
-        let res = tokio::fs::copy(file_path, new_file_path)
+
+        // 执行文件复制操作，添加详细错误上下文
+        tokio::fs::copy(file_path, new_file_path)
             .await
-            .map_err(|e| Error::new(e).context("上传项目logo失败"));
+            .with_context(|| "文件复制失败")?;
+
         Ok(true)
     }
 }
