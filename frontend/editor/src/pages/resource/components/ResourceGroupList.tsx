@@ -23,6 +23,7 @@ export interface IResourceGroup {
 
 interface IResourceGroupProps {
   name: string;
+  path: string;
   resources: Array<IResource>;
 }
 
@@ -68,7 +69,7 @@ function ResourceInfo(props: IResourceInfoProp) {
 }
 
 function ResourceContainer(props: IResourceGroupProps) {
-  const { name, resources } = props;
+  const { name, path, resources } = props;
   const { resource_type } = useResource();
   return (
     [RESOURCE_TABS[0].value, RESOURCE_TABS[1].value].includes(resource_type) ? (
@@ -77,7 +78,7 @@ function ResourceContainer(props: IResourceGroupProps) {
           return <ResourceInfo key={index} {...item} resource_name={name} />;
         })}
       </Row>
-    ) : <FileViewer resource_name={name} data={resources} />
+    ) : <FileViewer resource_name={name} resource_path={path} data={resources} />
   )
 }
 

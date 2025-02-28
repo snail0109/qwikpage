@@ -54,12 +54,12 @@ pub fn run() {
                 .min_inner_size(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
 
             // 仅在 macOS 时设置透明标题栏
-            #[cfg(target_os = "macos")] {
+            #[cfg(target_os = "macos")]
+            {
                 win_builder = win_builder
-                .hidden_title(true)
-                .title_bar_style(TitleBarStyle::Overlay);
+                    .hidden_title(true)
+                    .title_bar_style(TitleBarStyle::Overlay);
             }
-            
 
             // Add non-MacOS things
             #[cfg(not(target_os = "macos"))]
@@ -118,6 +118,7 @@ pub fn run() {
             code::export_project,
             // 系统配置
             config::open_folder,
+            config::open_target_folder,
             config::set_theme,
             config::get_app_conf,
         ])
