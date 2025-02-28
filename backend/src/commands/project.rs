@@ -111,7 +111,7 @@ pub fn update_project(params: ProjectUpdateParams) -> CmdResponse<bool> {
 
 // 删除项目
 #[command]
-pub async fn delete_project(id: String, group_id: Option<String>) -> CmdResponse<bool> {
+pub async fn delete_project(id: String, group_id: String) -> CmdResponse<bool> {
     info!("Project::delete_project start, id: {}", id.clone());
     let res = Project::delete(id, group_id).await;
     CmdResponse::from(res)

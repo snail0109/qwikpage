@@ -201,28 +201,17 @@ impl Project {
         }
     }
 
-    pub async fn delete(project_id: String, group_id: Option<String>) -> Result<bool, Error> {
+    pub async fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
         let project_dir = get_app_root_dir().join(&project_id);
         tokio::fs::remove_dir_all(project_dir).await?;
         let mut config = GroupConfig::load()?;
-        // 查找 config.groups 各个 group projects 是否包含 project_id
-        let mut group_id = group_id;
-        if let Some(group) = config.groups.iter_mut().find(|g| {
-            g.projects
-                .as_ref()
-                .map_or(false, |projects| projects.contains(&project_id))
-        }) {
-            group_id = Some(group.id.clone());
-        }
-        if let Some(group_id) = group_id {
-            if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
-                // 处理错误，例如记录日志或返回错误
-                error!("Failed to remove project from group: {}", e);
-                return Err(anyhow::anyhow!(
-                    "Failed to remove project from group: {}",
-                    e
-                ));
-            }
+        if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
+            // 处理错误，例如记录日志或返回错误
+            error!("Failed to remove project from group: {}", e);
+            return Err(anyhow::anyhow!(
+                "Failed to remove project from group: {}",
+                e
+            ));
         }
         // 删除 resource 全部资源
         ResourceConfig::delete_resource_dir(&project_id).await?;
@@ -252,6 +241,7 @@ impl Project {
 
     pub fn add_project(params: ProjectAddParams) -> Result<Project, Error> {
         let project_id = uuid::Uuid::new_v4().to_string();
+        let group_id = params.group_id.clone();
         info!("add project: {}", &project_id);
         let project_dir_path = get_app_root_dir().join(project_id.clone());
         if !project_dir_path.exists() {
@@ -273,12 +263,11 @@ impl Project {
             params.theme_color,
             params.remark,
             logo.to_string(),
-        params.group_id.clone(),
+            group_id.clone(),
         );
         project.save()?;
 
         // group_id 为 None 时，添加到默认分组
-        let group_id = params.group_id.clone();
         let mut config = GroupConfig::load().map_err(|e| {
             error!("Failed to load group configuration: {}", e);
             anyhow::anyhow!("加载分组配置失败: {}", e)
