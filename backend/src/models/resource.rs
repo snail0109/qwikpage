@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::{format_system_size, format_system_time, get_app_root_resource_dir};
 use futures::future::join_all;
-use std::path::{Path, PathBuf};
-use tokio::fs::{copy, create_dir_all, read_dir, remove_dir_all, rename};
 use log::error;
+use std::path::{Path, PathBuf};
+use tokio::fs::{create_dir_all, read_dir, remove_dir_all, rename};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
@@ -60,7 +60,7 @@ pub struct ResourceInfo {
     pub path: String,
     pub file_type: String,
     pub last_modified_time: String,
-    pub file_size   : Option<String>,
+    pub file_size: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -89,6 +89,14 @@ pub struct DeleteResource {
     pub resource_type: ResourceType,
     pub group_name: String,
     pub resource_name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AddTempResourceParams {
+    // 项目ID
+    pub project_id: String,
+    // 原始文件本地路径
+    pub file_path: String,
 }
 
 pub struct ResourceConfig {}
@@ -141,7 +149,7 @@ impl ResourceConfig {
                         ),
                         file_size: Some(format_system_size(
                             dir_entry.path().metadata().unwrap().len(),
-                        ))
+                        )),
                     });
                 }
                 // 判断
@@ -152,7 +160,7 @@ impl ResourceConfig {
                         entry.path().metadata().unwrap().modified().unwrap(),
                     ),
                     resources,
-                    default_group
+                    default_group,
                 });
             }
         }
@@ -219,7 +227,7 @@ impl ResourceConfig {
                 let new_file_path = group_dir.join(file_name);
 
                 async move {
-                    copy(file_path, new_file_path)
+                    tokio::fs::copy(file_path, new_file_path)
                         .await
                         .map_err(|e| Error::new(e).context("Failed to copy file"))
                 }
@@ -267,9 +275,33 @@ impl ResourceConfig {
         // 如果 prj_res_dir 存在则删除
         if prj_res_dir.exists() {
             tokio::fs::remove_dir_all(prj_res_dir)
-            .await
-            .map_err(|e| Error::new(e).context("Failed to remove file"))?;
+                .await
+                .map_err(|e| Error::new(e).context("Failed to remove file"))?;
         }
+        Ok(true)
+    }
+
+    // 添加项目资源
+    pub async fn add_project_resource(params: AddTempResourceParams) -> Result<bool, Error> {
+        // 项目临时资源文件
+        let prj_res_dir = get_app_root_resource_dir()
+            .join("project_logo")
+            .join(&params.project_id);
+        // prj_res_dir 不存在就创建
+        if !prj_res_dir.exists() {
+            tokio::fs::create_dir_all(&prj_res_dir)
+                .await
+                .map_err(|e| Error::new(e).context("创建项目logo目录失败"))?;
+        }
+
+        let file_path = Path::new(&params.file_path);
+        let file_name = file_path
+            .file_name()
+            .ok_or_else(|| Error::msg("文件路径无效，无法获取文件名"))?;
+        let new_file_path = prj_res_dir.join(file_name);
+        let res = tokio::fs::copy(file_path, new_file_path)
+            .await
+            .map_err(|e| Error::new(e).context("上传项目logo失败"));
         Ok(true)
     }
 }

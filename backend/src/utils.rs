@@ -76,11 +76,11 @@ pub fn format_system_size(size: u64) -> String {
     } else {
         // Base-2 (binary)
         if size < 1024 {
-            format!("{} B", size)
+            format!("{} B", (size as f64 / 1024.0).round() as u64)
         } else if size < 1024 * 1024 {
-            format!("{:.2} KB", size as f64 / 1024.0)
+            format!("{} KB", (size as f64 / 1024.0).round() as u64)
         } else if size < 1024 * 1024 * 1024 {
-            format!("{:.2} MB", size as f64 / (1024.0 * 1024.0))
+            format!("{:.1} MB", size as f64 / (1024.0 * 1024.0))
         } else {
             format!("{:.2} GB", size as f64 / (1024.0 * 1024.0 * 1024.0))
         }
