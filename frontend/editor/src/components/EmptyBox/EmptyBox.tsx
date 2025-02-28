@@ -5,12 +5,12 @@ import ArrowIcon from "@/assets/icons/ArrowIcon.svg?react";
 interface EmptyBoxProps {
   title: string;
   lastCharsCount: number;
-  groupId: string;
+  groupId?: string;
   onCreate: (groupId: string) => void;
 }
 
 const EmptyBox = ({
-  groupId,
+  groupId = '',
   title,
   lastCharsCount = 2,
   onCreate,
@@ -19,10 +19,10 @@ const EmptyBox = ({
   const mainText = title.slice(0, -lastCharsCount);
   const lastTwoChars = title.slice(-lastCharsCount);
 
-   // 调用父组件方法
-   const handleEmptyClick = (event: any) => {
+  // 调用父组件方法
+  const handleEmptyClick = (event: any) => {
     onCreate(groupId);
-};
+  };
 
   return (
     <div className={styles.emptyItem} onClick={handleEmptyClick}>

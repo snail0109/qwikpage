@@ -161,18 +161,18 @@ export default function Home() {
   };
 
   // 删除分组
-  // const onDeleteGroupClick = (name: string) => {
-  //   resourceService
-  //     .delete_resource_group({
-  //       project_id,
-  //       resource_type,
-  //       group_name: name,
-  //     })
-  //     .then(() => {
-  //       message.success("删除成功");
-  //       refresh();
-  //     });
-  // };
+  const onDeleteGroupClick = (name: string) => {
+    resourceService
+      .delete_resource_group({
+        project_id,
+        resource_type,
+        group_name: name,
+      })
+      .then(() => {
+        message.success("删除成功");
+        refresh();
+      });
+  };
 
   // 删除资源
   const onDeleteResourceClick = async (groupName: string, resourceName: string) => {
@@ -285,6 +285,7 @@ export default function Home() {
           resource_type={resource_type}
           onImport={onImportClick}
           onEditGroup={onEditGroupClick}
+          onDeleteGroup={onDeleteGroupClick}
           onEditResource={onEditResourceClick}
           onDeleteResource={onDeleteResourceClick}
         >

@@ -23,6 +23,7 @@ export interface IResourceGroup {
   name: string;
   path: string;
   last_modified_time: string;
+  default_group: boolean;
   resources: Array<IResourceInfo>;
 }
 
@@ -95,7 +96,7 @@ function ResourceGroup(props: IResourceGroupProps) {
 
 function ResourceGroupList(props: IResourceGroupListProps) {
   const { data, ...rest } = props;
-  const { onImport, onEditGroup } = useResource();
+  const { onImport, onEditGroup, onDeleteGroup } = useResource();
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -116,9 +117,10 @@ function ResourceGroupList(props: IResourceGroupListProps) {
         key: item.path,
         label: (
           <GroupTitle
-            groupItem={{ id: item.name, name: item.name }}
+            groupItem={{ id: item.default_group ? '-1' : item.name, name: item.name }}
             createText="上传"
             onCreate={() => onImport(item.name)}
+            onDelete={onDeleteGroup}
             onUpdateGroup={onEditGroup}
           />
         ),
