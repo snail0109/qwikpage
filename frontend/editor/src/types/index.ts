@@ -40,6 +40,15 @@ export interface IPage {
   previewImg?: string,
 }
 
+
+export interface IUpdatePage {
+  id: string,
+  name: string,
+  path: string,
+  remark?: string,
+  projectId: string,
+}
+
 export interface PaginationInfo {
   pageNum: number,
   pageSize: number,

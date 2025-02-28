@@ -9,7 +9,7 @@ import { usePageStore } from '@/stores/pageStore';
  * 创建页面
  */
 export interface CreatePageRef {
-  open: (action: 'create' | 'edit' | 'copy', record?: IPage) => void;
+  open: (action: 'create' | 'edit' | 'copy', record?: Partial<IPage>) => void;
 }
 export interface IModalProp {
   createRef: MutableRefObject<{ open: (action: 'create' | 'edit' | 'copy', record?: IPage) => void } | undefined>;

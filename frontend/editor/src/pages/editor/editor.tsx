@@ -93,7 +93,7 @@ const Editor = () => {
     setLoaded(false);
     setCanvasWidth(storage.get('canvasWidth') || 'auto');
     pageService
-      .getPageDetail({id, projectId})
+      .getPageDetail({id, projectId: projectId!})
       .then((res: any) => {
         let pageData: any = {};
         try {

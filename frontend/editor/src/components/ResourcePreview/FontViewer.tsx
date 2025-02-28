@@ -38,7 +38,7 @@ const FontViewer = (props: IProps) => {
 
   useEffect(() => {
     invoke("parse_font_metadata", { path })
-      .then((res: FontProp) => {
+      .then((res: any) => {
         console.log(res);
         setFont(res);
         const url = convertFileSrc(path);

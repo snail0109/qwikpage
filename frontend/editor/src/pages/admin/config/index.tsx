@@ -66,7 +66,8 @@ const Config: React.FC = memo(() => {
         setDelLoading(true);
         try {
             if (id) {
-                await projectService.delProject({ id, mode: val });
+                // FIXME: 分组ID 
+                await projectService.delProject({ id });
                 message.success("删除成功");
                 navigate("/projects");
             }
