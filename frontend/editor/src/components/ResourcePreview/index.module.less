@@ -178,6 +178,20 @@
 .jsPreview {
   :global {
 
+    // .ant-table-wrapper table {
+    //   border-radius: 0 !important;
+    // }
+    .ant-table-wrapper .ant-table .ant-table-header {
+      border-radius: 0;
+    }
+
+    .ant-table-wrapper .ant-table-container table>thead>tr:first-child>*:first-child {
+      border-start-start-radius: 0 !important;
+    }
+
+    .ant-table-wrapper .ant-table-container table>thead>tr:first-child>*:last-child {
+      border-start-end-radius: 0 !important;
+    }
 
     .ant-table-thead {
       .ant-table-cell {

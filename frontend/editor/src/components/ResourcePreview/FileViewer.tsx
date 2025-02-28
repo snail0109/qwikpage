@@ -59,7 +59,7 @@ const JsPreviewer = (props: IProps) => {
 
   return (
     <div className={styles.jsPreview} key={resource_name}>
-      <Table<IResource> size="small" columns={columns} dataSource={data} />;
+      <Table<IResource> size="small" pagination={false} scroll={{ x: 0, y: 180 }} columns={columns} dataSource={data} />
     </div>
   )
 };
