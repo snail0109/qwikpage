@@ -264,9 +264,12 @@ impl ResourceConfig {
     // 删除项目删除全部资源
     pub async fn delete_resource_dir(project_id: &str) -> Result<bool, Error> {
         let prj_res_dir = get_app_root_resource_dir().join(project_id);
-        tokio::fs::remove_dir_all(prj_res_dir)
+        // 如果 prj_res_dir 存在则删除
+        if prj_res_dir.exists() {
+            tokio::fs::remove_dir_all(prj_res_dir)
             .await
             .map_err(|e| Error::new(e).context("Failed to remove file"))?;
+        }
         Ok(true)
     }
 }
