@@ -4,7 +4,7 @@ import type { MenuProps } from "antd";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
-import styles from "@/styles/card.module.less";
+import styles from "./index.module.less";
 import projectCardStyle from "./index.module.less";
 import problue from "@/assets/image/probg_blue.png";
 import progreen from "@/assets/image/progb_green.png";

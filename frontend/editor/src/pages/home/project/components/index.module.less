@@ -93,3 +93,28 @@
     }
   }
 }
+
+.description {
+  /* 高度 */
+  height: 40px;
+  
+  /* 文本截断 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  /* 字体样式 */
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  line-height: 20px;
+
+  /* 颜色 */
+  color: var(--mars-theme-text-secondary-color);
+
+  /* 间距 */
+  margin-bottom: 8px;
+}
