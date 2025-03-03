@@ -165,7 +165,7 @@ pub fn get_project_list_new(keyword: Option<String>) -> Result<Vec<ProjectSummar
 
 // 修改项目logo
 #[command]
-pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<bool, String> {
+pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<PathBuf, String> {
     info!("Project::upload_project_resource, params: {:#?}", params);
     let res = ResourceConfig::upload_project_resource(params);
     res.await.map_err(| op | op.to_string())

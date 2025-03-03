@@ -5,7 +5,7 @@ import { projectService } from "@/services";
 import { message } from "@/utils/AntdGlobal";
 import TextArea from "antd/es/input/TextArea";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
-import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core";
 import ProjectLogo from "./ProjectLogo";
 
 /**
@@ -77,9 +77,9 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
       params: {
         file_path: filePath,
       }
-    }).then(() => {
-      form.setFieldValue('logo', filePath)
-      setLogoUrl(convertFileSrc(filePath));
+    }).then((res) => {
+      form.setFieldValue('logo', res)
+      setLogoUrl(res as string);
     }).catch(error => {
       console.log(error)
     })

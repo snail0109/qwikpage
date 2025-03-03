@@ -2,7 +2,7 @@ import { useEffect, useState, memo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
 import { open } from "@tauri-apps/plugin-dialog";
-import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
 import { RollbackOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
@@ -122,9 +122,9 @@ const Config: React.FC = memo(() => {
             params: {
                 file_path: filePath,
             }
-        }).then(() => {
-            form.setFieldValue('logo', filePath)
-            setLogoUrl(convertFileSrc(filePath));
+        }).then((res) => {
+            form.setFieldValue('logo', res)
+            setLogoUrl(res as string);
         }).catch(error => {
             console.log(error)
         })

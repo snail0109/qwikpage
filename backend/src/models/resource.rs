@@ -282,7 +282,7 @@ impl ResourceConfig {
     }
 
     // 添加项目资源
-    pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<bool, Error> {
+    pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<PathBuf, Error> {
         // 构建项目资源目录路径
         let prj_res_dir = get_app_root_resource_dir()
             .join("project_logo");
@@ -307,10 +307,11 @@ impl ResourceConfig {
             return Err(Error::msg("文件名包含非法路径字符"));
         }
         // 构建目标文件路径
-        let new_file_path = prj_res_dir.join(file_name);
+        let new_file_path: PathBuf = prj_res_dir.join(file_name);
+        info!("创建资源分组目录jjjj: {:?}", new_file_path);
 
         // 执行文件复制操作，添加详细错误上下文
-        tokio::fs::copy(file_path, new_file_path)
+        tokio::fs::copy(file_path, new_file_path.clone())
             .await
             .with_context(|| "文件复制失败")?;
 
@@ -323,7 +324,7 @@ impl ResourceConfig {
             }
         }
 
-        Ok(true)
+        Ok(new_file_path)
     }
 }
 

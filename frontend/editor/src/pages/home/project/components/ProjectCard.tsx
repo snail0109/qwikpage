@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Avatar, Dropdown, Tooltip, message } from "antd";
 import type { MenuProps } from "antd";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { IProject } from "@/types";
 import styles from "./index.module.less";
 import projectCardStyle from "./index.module.less";
@@ -121,6 +121,9 @@ export default function Category({ list }: { list: IProject[] }) {
             <div className={projectCardStyle.projectGrid}>
                 {list.map((project) => {
                     const backgroundImage = themeColorToImageMap[project.themeColor];
+                    const src = project.logo.includes("com.qwikpage.desktop/resources/project_logo")
+                        ? convertFileSrc(project.logo)
+                        : project.logo;
                     return (
                         <div className={projectCardStyle.projectCard} key={project.id}>
                             {/* 卡片头部 */}
@@ -159,12 +162,15 @@ export default function Category({ list }: { list: IProject[] }) {
                             {/* 卡片预览 */}
                             <div className={projectCardStyle.moreInfo} style={{ right: 40 }}>
                                 <Tooltip title="预览">
-                                    <BrowseIcon className={projectCardStyle.moreIcon} onClick={() => handlePreview(project.id)} />
+                                    <BrowseIcon
+                                        className={projectCardStyle.moreIcon}
+                                        onClick={() => handlePreview(project.id)}
+                                    />
                                 </Tooltip>
                             </div>
 
                             {/* 项目Logo */}
-                            <Avatar src={project.logo} className={projectCardStyle.projectLogo} />
+                            <Avatar src={src} className={projectCardStyle.projectLogo} />
                         </div>
                     );
                 })}
