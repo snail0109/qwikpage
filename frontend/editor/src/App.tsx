@@ -33,7 +33,13 @@ function App() {
         components: {
           Button: {
             defaultBorderColor: '#D0DAE8',
-            fontWeight: 300
+            fontWeight: 300,
+            defaultShadow: 'none',
+            boxShadow: 'none'
+          },
+          Input: {
+            activeShadow: 'none',
+            boxShadow: 'none'
           },
           Menu: {
             darkItemBg: '#000',
