@@ -1,10 +1,11 @@
+use crate::code_generator::main::{export_code, ExportCodeParams};
+use log::error;
 use log::info;
 use serde_json::Value;
 use std::fs::File;
 use std::io::Write;
 use tauri::command;
 use tauri::AppHandle;
-use crate::code_generator::main::{ export_code, ExportCodeParams };
 
 #[command]
 pub fn export_json(file_path: String, json_data: Value) -> Result<(), String> {
@@ -22,6 +23,10 @@ pub fn export_json(file_path: String, json_data: Value) -> Result<(), String> {
 #[command]
 pub async fn export_project(app: AppHandle, params: ExportCodeParams) -> Result<(), String> {
     info!("export project start");
-    export_code(app, params).await;
+    if let Err(e) = export_code(app, params).await {
+        // 出现错误时记录日志并返回错误
+        error!("导出项目失败: {}", e);
+        return Err(format!("导出项目失败: {}", e));
+    }
     Ok(())
 }

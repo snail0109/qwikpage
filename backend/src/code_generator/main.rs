@@ -39,21 +39,18 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     // 创建代码存放目录
     let app_data_dir = get_app_root_dir();
     let code_dir = app_data_dir.join("qwikpage-code").join(&params.project_id);
-    if !code_dir.exists() {
-        info!("创建项目代码目录: {:?} 成功，开始下载模版......", code_dir);
-        async_fs::create_dir_all(&code_dir).await?;
-        // 下载模版
-        match download_temp(&code_dir, &params.export_type).await {
-            Ok(_) => {
-                info!("模板下载成功");
-            }
-            Err(e) => {
-                error!("下载模板失败: {}", e);
-                return Err(anyhow::anyhow!("下载模板失败: {}, 请关闭本地代理", e));
-            }
+    
+    info!("创建项目代码目录: {:?} 成功，开始下载模版......", code_dir);
+    async_fs::create_dir_all(&code_dir).await?;
+    // 下载模版
+    match download_temp(&code_dir, &params.export_type).await {
+        Ok(_) => {
+            info!("模板下载成功");
         }
-    } else {
-        info!("项目代码目录: {:?} 已经存在，直接开始导出......", code_dir);
+        Err(e) => {
+            error!("{}", e);
+            return Err(anyhow::anyhow!("下载模板失败: {}, 请关闭本地代理", e));
+        }
     }
 
     // 根据导出类型选择对应的生成器
@@ -63,10 +60,17 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
         ExportType::Vue => todo!(),
     };
 
-    generator.export_code(code_dir.clone(), page_list).await.map_err(
+    generator.export_code(&params.project_id, &code_dir, page_list).await.map_err(
         |e| {
             error!("导出代码失败: {}", e);
             anyhow::anyhow!("导出代码失败: {}", e)
+        },
+    )?;
+
+    generator.export_resources(&params.project_id, &code_dir).await.map_err(
+        |e| {
+            error!("导出资源文件失败: {}", e);
+            anyhow::anyhow!("导出资源文件失败: {}", e)
         },
     )?;
 

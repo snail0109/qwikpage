@@ -94,8 +94,10 @@ export default function Category({ list }: { list: IProject[] }) {
             return handleOpenProject(id);
         }
         if (["fishx", "vue", "fish"].includes(_key)) {
-            return handleExportProjectCode(id, _key).catch((res) => {
-                message.error(res);
+            return handleExportProjectCode(id, _key).then(res => {
+                message.success("导出成功，请到本地查看");
+            }).catch((error) => {
+                message.error(error);
             });
         }
         if (_key === "resource_mgr") {

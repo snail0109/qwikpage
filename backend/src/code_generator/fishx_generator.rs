@@ -1,258 +1,360 @@
 use crate::code_generator::code_generator::CodeGenerator;
 use crate::code_generator::utils::value_to_js;
 use crate::models::page::{Element, Page, PageContent};
+use crate::utils::get_app_root_resource_dir;
+use futures::future::BoxFuture;
+use log::info;
 use std::collections::HashSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use tokio::fs as async_fs;
+
+type Result<T> = std::result::Result<T, String>;
 
 const REPLACEMENT_CHARACTER: &str = "##replace##";
+
+const ROUTE_TEMPLATE: &str = r#"
+  {
+    path: '{path}',
+    component: './{component}',
+    exact: true,
+  },"#;
+
+const MENU_TEMPLATE: &str = r#"
+  {
+    path: '{route_path}',
+    name: '{route_name}',
+  },"#;
+
+const REACT_COMPONENT_TEMPLATE: &str = r#"
+import React, { useState, useEffect } from 'react';
+import { PageWrapper } from '@components/PageWrapper';
+{antd_import}
+import { usePageStore } from '@/stores/pageStore';
+import { useShallow } from 'zustand/react/shallow';
+import { Spin } from 'antd';
+
+function {compName}() {
+  const [loading, setLoading] = useState(true);
+  const { savePageInfo } = usePageStore(
+    useShallow((state) => ({
+      savePageInfo: state.savePageInfo,
+    }))
+  );
+
+  useEffect(() => {{
+    savePageInfo({
+      id: "{page_id}",
+      pageData: {page_str}
+    });
+    setLoading(false);
+  }}, []);
+
+  if (loading) return <Spin />;
+
+  return (
+    <PageWrapper>
+      {components}
+    </PageWrapper>
+  );
+}
+
+export default {compName};
+"#;
 
 pub struct FishxGenerator;
 
 impl CodeGenerator for FishxGenerator {
     async fn export_code(
         &self,
-        code_dir: std::path::PathBuf,
+        project_id: &str,
+        code_dir: &PathBuf,
         page_list: Vec<Page>,
-    ) -> Result<(), String> {
+    ) -> Result<()> {
         // 遍历页面列表并导出每个页面
-        let mut index = 1;
-        for page in &page_list {
-            self.export_page(index, code_dir.clone(), page).await?;
-            index += 1;
+        for (index, page) in page_list.iter().enumerate() {
+            self.export_page(index + 1, code_dir.clone(), page, project_id)
+                .await?;
         }
 
-        handle_routes(code_dir, page_list.len(), &page_list).await;
+        handle_routes(&code_dir, &page_list).await?;
 
         Ok(())
     }
 
-    async fn export_page(&self, index: usize, code_dir: PathBuf, page: &Page) -> Result<(), String> {
-        // 存储生成的组件字符
-    
-        let mut components = Vec::new();
-        // 存储组件类型
-        let mut import_components_types = HashSet::new();
-    
-        // TODO 处理页面级别的事件和属性
-    
+    async fn export_page(
+        &self,
+        index: usize,
+        code_dir: PathBuf,
+        page: &Page,
+        project_id: &str,
+    ) -> Result<()> {
+        // 处理 resource
+        let resource_path = get_app_root_resource_dir().join(project_id);
+        let resource_path_str = resource_path.to_str().unwrap();
+        // page_data_str 里面如果有  resource_path 则替换 为 /
+        let page_data_str = &page.page_data.replace(resource_path_str, "/");
+
         // TODO 处理事件
-    
+
         // page.page_data string 转JSON
-        let page_data: PageContent = match serde_json::from_str(&page.page_data) {
-            Ok(data) => data,
-            Err(e) => {
-                // 记录错误信息并返回错误
-                return Err(format!("解析 page_data 失败: {}", e));
-            }
-        };
-    
-        // 遍历页面元素
-        for element in &page_data.elements {
-            // import_components_types 传入到 generate_component_string 方法内部去调用
-            let component_str =
-                generate_component_string(&element, &page_data, &mut import_components_types);
-            import_components_types.insert(element.type_name.clone());
-            components.push(component_str);
-        }
-    
-        // 生成 antd 导入语句
-        let mut sorted_types: Vec<String> = import_components_types.into_iter().collect();
-        sorted_types.sort();
-        let antd_import = if !sorted_types.is_empty() {
-            format!(
-                "import {{ {} }} from '@/components';\n",
-                sorted_types.join(", ")
-            )
-        } else {
-            String::new()
-        };
-    
-        // 生成最终的代码, 组件名称 Pageindex
+        let page_data: PageContent = serde_json::from_str(&page_data_str)
+            .map_err(|e| format!("解析 page_data 失败: {}", e))?;
+
+        let (components, imports) = generate_components(&page_data.elements, &page_data);
+
         let comp_name = format!("Page{}", index);
-    
-        // 需要将 page 的 page_data 设置成 JSON对之后
-    
-        let page_json = serde_json::to_string_pretty(&page_data).unwrap();
-    
-        let output = format!(
-            r#"import React, {{ useState, useEffect }} from 'react';
-    import {{ PageWrapper }} from '@components/PageWrapper';
-    {antd_import}
-    import {{ usePageStore }} from '@/stores/pageStore';
-    import {{ useShallow }} from 'zustand/react/shallow';
-    import {{ Spin }} from 'antd';
-    function {compName}() {{
-    
-      const [loading, setLoading] = useState(true)
-      const {{ savePageInfo }} = usePageStore(
-        useShallow((state) => {{
-          return {{
-            savePageInfo: state.savePageInfo,
-        }};
-        }}),
-      );
-    
-      useEffect(() => {{
-        savePageInfo({{
-        "id": "{page_id}",
-        "pageData": {page_str}
-        }});
-        setLoading(false);
-      }}, []);
-    
-      if (loading) {{
-        return <Spin />;
-      }}
-    
-      return (
-        <PageWrapper>
-          {components}
-        </PageWrapper>
-      );
-    }}
-    
-    export default {compName};"#,
-            compName = &comp_name,
-            components = components.join("\n      "),
-            antd_import = antd_import,
-            page_str = page_json,
-            page_id = page.id,
-        );
-    
-        println!("{}", output);
-    
+
+        let output = generate_page_code(&comp_name, &page.id, &page_data, &components, &imports);
+
         // 将生成的代码写入 GeneratedPage.tsx 文件
-        // TODO: 约定一下输出文件的路径
         let fe_page_dir = code_dir
             .join("app")
             .join("src")
             .join("pages")
             .join(&comp_name);
-        if !fe_page_dir.exists() {
-            tokio::fs::create_dir_all(&fe_page_dir).await;
-        }
-    
-        tokio::fs::write(fe_page_dir.join("index.tsx"), output).await;
+
+        create_dir_if_not_exists(&fe_page_dir).await?;
+
+        write_file(fe_page_dir.join("index.tsx"), &output).await?;
         Ok(())
     }
-    
+
+    async fn export_resources(&self, project_id: &str, code_dir: &PathBuf) -> Result<()> {
+        // 获取项目资源目录
+        let prj_res_dir = get_app_root_resource_dir().join(project_id);
+
+        if !prj_res_dir.exists() {
+            info!("Resource directory does not exist: {:?}", prj_res_dir);
+            return Ok(());
+        }
+
+        // 目标目录：code_dir 的 public 子目录
+        let public_dir = code_dir.join("app").join("public");
+
+        // 确保目标目录存在
+        async_fs::create_dir_all(&public_dir)
+            .await
+            .map_err(|e| format!("Failed to create target directory: {}", e))?;
+
+        // 读取资源目录内容
+        let mut entries = async_fs::read_dir(&prj_res_dir)
+            .await
+            .map_err(|e| format!("Failed to read resource directory: {}", e))?;
+
+        // 复制目录内容
+        while let Some(entry) = entries.next_entry().await.map_err(|e| e.to_string())? {
+            let source_path = entry.path();
+            let file_name = entry
+                .file_name()
+                .into_string()
+                .map_err(|_| format!("Invalid file name for path: {:?}", source_path))?;
+            let target_path = public_dir.join(file_name);
+
+            if source_path.is_dir() {
+                // 如果是目录，递归复制
+                copy_directory_recursive(&source_path, &target_path).await?;
+            } else {
+                // 如果是文件，直接复制
+                async_fs::copy(&source_path, &target_path)
+                    .await
+                    .map_err(|e| format!("Failed to copy file: {}", e))?;
+            }
+        }
+
+        Ok(())
+    }
 }
 
-pub async fn handle_routes(code_dir: PathBuf, page_len: usize, page_list: &Vec<Page>) {
-    let root_code_path = code_dir.join("app").join("src");
-    // 读取路由文件
-    let routes_path = root_code_path.join("config").join("routes.ts");
+pub async fn handle_routes(code_dir: &PathBuf, pages: &Vec<Page>) -> Result<()> {
+    let root_path = code_dir.join("app").join("src");
+    let config_dir = root_path.join("config");
 
-    let menus_path = root_code_path.join("config").join("menu.ts");
+    let mut routes = String::new();
 
-    // 确保config目录存在
-    if !routes_path.parent().unwrap().exists() {
-        tokio::fs::create_dir_all(routes_path.parent().unwrap()).await;
-    }
+    let mut menus = String::new();
 
-    // 读取现有路由配置或创建新的
-    let routes_content = if routes_path.exists() {
-        tokio::fs::read_to_string(&routes_path).await.unwrap_or_else(|_| String::new())
-    } else {
-        String::new()
-    };
-
-    let menus_content = if menus_path.exists() {
-        tokio::fs::read_to_string(&menus_path).await.unwrap_or_else(|_| String::new())
-    } else {
-        String::new()
-    };
-
-    let mut new_routes = String::new();
-
-    let mut new_menus = String::new();
-
-    for index in 0..page_len {
+    for (index, page) in pages.iter().enumerate() {
         let comp_name = format!("Page{}", index + 1);
-        let page = page_list.get(index);
-        // TODO 如果页面也有 path 则 path 设置成页面的配置
         // 如果 page 对象 path 字段有值，则取path 没有则取comp_namel
-        let page_path = page
-            .and_then(|page| page.path.clone()) // 解包 page 和 page.path
-            .filter(|path| !path.is_empty()) // 过滤掉空字符串
-            // unwrap_or / + comp_name.clone()
-            .unwrap_or(format!("/{}", comp_name));
+        let default_path = format!("/{}", comp_name);
+        let path = page.path.as_deref().unwrap_or(&default_path);
 
         // 处理 Fishx 模版路由信息
-        let new_route = format!(
-            "\n      {{ path: '{route_path}', component: './{route_name}' }},",
-            route_path = page_path,
-            route_name = &comp_name
-        );
 
-        new_routes.push_str(&new_route);
+        routes.push_str(
+            &ROUTE_TEMPLATE
+                .replace("{path}", &path)
+                .replace("{component}", &comp_name),
+        );
 
         // 处理 Fishx 模版菜单信息
-        let new_menu = format!(
-            "\n  {{\n    path: '{route_path}',\n    name: '{route_name}',\n  }},",
-            route_path = page_path,
-            route_name = &comp_name
+        menus.push_str(
+            &MENU_TEMPLATE
+                .replace("{route_path}", &path)
+                .replace("{route_name}", &comp_name),
         );
-
-        new_menus.push_str(&new_menu);
     }
 
-    // 在数组结束前插入新路由
-    let updated_routes = if routes_content.contains(REPLACEMENT_CHARACTER) {
-        routes_content.replace(REPLACEMENT_CHARACTER, &format!("{}\n", new_routes))
-    } else {
-        routes_content
-    };
+    update_config_file(config_dir.join("routes.ts"), REPLACEMENT_CHARACTER, &routes).await?;
+    update_config_file(config_dir.join("menu.ts"), REPLACEMENT_CHARACTER, &menus).await?;
 
-    // 在数组结束前插入新菜单
-    let updated_menus = if menus_content.contains(REPLACEMENT_CHARACTER) {
-        menus_content.replace(REPLACEMENT_CHARACTER, &format!("{}\n", new_menus))
-    } else {
-        menus_content
-    };
-
-    // 写入更新后的路由配置
-    tokio::fs::write(&routes_path, updated_routes).await;
-
-    // 写入更新后的菜单配置
-    tokio::fs::write(&menus_path, updated_menus).await;
-
+    Ok(())
 }
 
-fn generate_component_string(
+fn generate_import_statement(components: &[String]) -> String {
+    if components.is_empty() {
+        return String::new();
+    }
+
+    format!(
+        "import {{ {} }} from '@/components';\n",
+        components.join(", ")
+    )
+}
+
+fn generate_components(
+    elements: &[Element],
+    page_data: &PageContent,
+) -> (Vec<String>, Vec<String>) {
+    let mut components = Vec::new();
+    let mut imports = HashSet::new();
+
+    for element in elements {
+        let (component_str, types) = process_element(element, page_data);
+        components.push(component_str);
+        imports.extend(types);
+    }
+
+    let mut sorted_imports: Vec<String> = imports.into_iter().collect();
+    sorted_imports.sort();
+    (components, sorted_imports)
+}
+
+fn process_element(element: &Element, page_data: &PageContent) -> (String, HashSet<String>) {
+    let mut imports = HashSet::new();
+    let component_str = generate_component(element, page_data, &mut imports);
+    (component_str, imports)
+}
+
+fn generate_component(
     element: &Element,
     page_data: &PageContent,
-    import_components_types: &mut HashSet<String>,
+    imports: &mut HashSet<String>,
 ) -> String {
-    let component_type = &element.type_name;
-    import_components_types.insert(component_type.clone());
-    // let text = String::from("Typography.Text");
-    // if component_type == "Text" {
-    //     component_type = &text;
-    // }
+    imports.insert(element.type_name.clone());
 
-    let element_id = &element.id;
-    let child_elements: &Vec<Element> = &element.elements;
-
-    // 获取组件的配置
-    let js_config = page_data
+    let config = page_data
         .elements_map
-        .get(element_id)
-        .map(|config| value_to_js(&config.config))
-        .unwrap_or_else(|| "null".to_string());
+        .get(&element.id)
+        .map(|c| value_to_js(&c.config))
+        .unwrap_or_else(|| "null".into());
 
-    // 递归处理子组件
-    let child_components: Vec<String> = child_elements
+    let children: Vec<String> = element
+        .elements
         .iter()
-        .map(|child| generate_component_string(child, page_data, import_components_types))
+        .map(|e| generate_component(e, page_data, imports))
         .collect();
 
-    // 如果 component_type 是 Button 也需要特殊处理
-
-    if child_components.is_empty() {
-        format!("<{component_type} config={{{js_config}}} />")
+    if children.is_empty() {
+        format!("<{} config={{{}}} />", element.type_name, config)
     } else {
-        let children_str = child_components.join("\n");
-        format!("<{component_type} config={{{js_config}}}>\n{children_str}\n</{component_type}>")
+        format!(
+            "<{} config={{{}}}>\n{}\n</{}>",
+            element.type_name,
+            config,
+            children.join("\n"),
+            element.type_name
+        )
     }
+}
+
+fn generate_page_code(
+    comp_name: &str,
+    page_id: &str,
+    page_data: &PageContent,
+    components: &[String],
+    imports: &[String],
+) -> String {
+    let antd_import = generate_import_statement(&imports);
+
+    let page_json = serde_json::to_string_pretty(page_data).unwrap_or_else(|_| "{}".into());
+
+    let output = REACT_COMPONENT_TEMPLATE
+        .replace("{antd_import}", &antd_import)
+        .replace("{compName}", &comp_name)
+        .replace("{page_id}", &page_id)
+        .replace("{page_str}", &page_json)
+        .replace("{components}", &components.join("\n      "));
+    output
+}
+
+async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
+    if !path.exists() {
+        async_fs::create_dir_all(path)
+            .await
+            .map_err(|e| format!("创建目录失败: {}", e))?;
+    }
+    Ok(())
+}
+
+async fn write_file(path: PathBuf, content: &str) -> Result<()> {
+    async_fs::write(&path, content)
+        .await
+        .map_err(|e| format!("写入文件失败: {}: {}", path.display(), e))
+}
+
+async fn read_file_if_exists(path: &Path) -> Result<String> {
+    match async_fs::read_to_string(path).await {
+        Ok(c) => Ok(c),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(String::new()),
+        Err(e) => Err(format!("读取文件失败: {}: {}", path.display(), e)),
+    }
+}
+
+async fn update_config_file(path: PathBuf, marker: &str, content: &str) -> Result<()> {
+    let original = read_file_if_exists(&path).await?;
+    let updated = original.replace(marker, &format!("{}\n", content));
+    write_file(path, &updated).await
+}
+
+// 递归复制目录
+fn copy_directory_recursive(
+    source_dir: &PathBuf,
+    target_dir: &PathBuf,
+) -> BoxFuture<'static, Result<()>> {
+    let source_dir = source_dir.clone();
+    let target_dir = target_dir.clone();
+    
+    Box::pin(async move {
+        // 确保目标目录存在
+        async_fs::create_dir_all(&target_dir)
+            .await
+            .map_err(|e| format!("创建目录失败: {}", e))?;
+
+        // 读取源目录内容
+        let mut entries = async_fs::read_dir(source_dir)
+            .await
+            .map_err(|e| format!("读取目录失败: {}", e))?;
+
+        while let Some(entry) = entries.next_entry().await.map_err(|e| e.to_string())? {
+            let source_path = entry.path();
+            let file_name = entry
+                .file_name()
+                .into_string()
+                .map_err(|_| format!("无效的文件名: {:?}", source_path))?;
+            let target_path = &target_dir.join(file_name);
+
+            if source_path.is_dir() {
+                // 递归复制子目录
+                copy_directory_recursive(&source_path, &target_path).await?;
+            } else {
+                // 复制文件
+                async_fs::copy(&source_path, &target_path)
+                    .await
+                    .map_err(|e| format!("复制文件失败: {}", e))?;
+            }
+        }
+
+        Ok(())
+    })
 }
