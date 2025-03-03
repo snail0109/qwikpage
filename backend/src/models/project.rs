@@ -1,7 +1,6 @@
 use anyhow::Error;
 use log::{error, info};
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
