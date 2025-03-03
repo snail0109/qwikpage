@@ -1,13 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import { ImageViewer, FontViewer, FileViewer } from "@/components/ResourcePreview";
 import { Col, Row, Collapse } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import GroupTitle from "@/components/GroupTitle";
 import { RESOURCE_TABS } from "../index";
 import { useResource } from "@/context/resource";
 import styles from "./resource.module.less";
 import type { IResource } from '@/types';
+import ExpandIcon from "@/assets/icons/ExpandIcon.svg?react";
 
 interface IResourceInfoProp extends IResource {
   resource_name: string;
@@ -114,7 +114,16 @@ function ResourceGroupList(props: IResourceGroupListProps) {
       className={styles.resourceGroup}
       ghost
       activeKey={activeKeys}
-      expandIcon={({ isActive }) => <PlusOutlined rotate={isActive ? 90 : 0} />}
+      expandIcon={({ isActive }) => (
+        <ExpandIcon
+          width={20}
+          height={20}
+          style={{
+            transform: isActive ? "rotate(0deg)" : "rotate(-90deg)",
+            transition: "transform 0.3s ease",
+          }}
+        />
+      )}
       onChange={onChange}
       items={data.map((item) => ({
         key: item.path,

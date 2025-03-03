@@ -2,7 +2,6 @@ import { resourceService } from "@/services";
 import { Button, Form, message, Layout, Divider, Tooltip, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
-import searchBarstyles from "./index.module.less";
 import { open } from "@tauri-apps/plugin-dialog";
 import { RedoOutlined, PlusOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import SearchBar from "@/components/Searchbar/SearchBar";
@@ -239,10 +238,10 @@ export default function Home() {
   };
 
   return (
-    <Layout.Content className={searchBarstyles.resourceContainer}>
+    <Layout.Content className={styles.resourceContainer}>
       {/* 搜索工具条 */}
       <SearchBar
-        className={searchBarstyles.searchBar}
+        className={styles.searchBar}
         showGroup={false}
         noNeedCreate
         noNeedFresh
@@ -253,23 +252,24 @@ export default function Home() {
         refresh={refresh}
       />
       <Divider />
-      <div className={searchBarstyles.topContainer}>
+      <div className={styles.topContainer}>
         <div>
           {RESOURCE_TABS.map((tab) => (
             <Button
               key={tab.value}
-              type={resource_type === tab.value ? "primary" : "default"}
-              className={styles.tabButton}
+              // type={resource_type === tab.value ? "primary" : "default"}
+              className={resource_type === tab.value ? styles.active : ''}
               onClick={() => onChangTab(tab)}
             >
               {tab.label}
+              <div className={styles.checkContainer}></div>
             </Button>
           ))}
         </div>
         <div>
           <Button
             type="dashed"
-            className={searchBarstyles.createGroupBtn}
+            className={styles.createGroupBtn}
             icon={<PlusOutlined />}
             onClick={handleAddResGroup}
           >
