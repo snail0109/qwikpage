@@ -276,7 +276,7 @@ export default function Home() {
             创建分组
           </Button>
           <Tooltip title="刷新">
-            <Button icon={<RedoOutlined />} onClick={refresh}></Button>
+            <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
           </Tooltip>
         </div>
       </div>
