@@ -54,7 +54,7 @@ export const router = [
         ],
       },
       {
-        path: '/project/:id',
+        path: '/project/:id/config',
         element: lazyLoad(React.lazy(() => import('@/pages/admin/admin'))),
         children: [
           {
