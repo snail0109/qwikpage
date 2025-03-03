@@ -9,7 +9,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { useOsInfo } from "@/utils/os";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { WindowControls } from "./WindowControls";
-
+import { projectService } from "@/services";
+import Logo from "@/assets/icons/qwikpage-logo.svg?react";
 const appWebview = getCurrentWebviewWindow();
 
 /**
@@ -18,11 +19,16 @@ const appWebview = getCurrentWebviewWindow();
 const Header = memo(() => {
     const [pageFrom, setPageFrom] = useState("projects");
     const navigate = useNavigate();
-    const { id } = useParams();
-    const ref = useRef(null);
     const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const projectId = searchParams.get('projectId') || undefined;
     const platform = useOsInfo();
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [headerStyle, setHeaderStyle] = useState<React.CSSProperties>({
+        paddingLeft: undefined,
+        paddingRight: '0',
+        transition: "padding-left 0.3s ease",
+    });
 
     const MAC_PADDING_LEFT = 72;
 
@@ -102,22 +108,39 @@ const Header = memo(() => {
         return await invoke<void>("open_folder");
     };
 
+    useEffect(() => {
+        const updateHeaderStyle = async () => {
+            const baseStyle: React.CSSProperties = {
+                paddingLeft: macStoplightsVisible ? MAC_PADDING_LEFT : undefined,
+                paddingRight: isMac ? '12px' : 0,
+                transition: "padding-left 0.3s ease",
+            };
+
+            if (location.pathname === '/project/pages' && projectId) {
+                const res = await projectService.getProjectDetail(projectId);
+                setHeaderStyle({
+                    ...baseStyle,
+                    backgroundImage: `url(/src/assets/image/header/headerT_${res.themeColor}.png)`,
+                    color: '#fff'
+                });
+                return;
+            }
+
+            setHeaderStyle(baseStyle);
+        };
+
+        updateHeaderStyle();
+    }, [location.pathname, projectId, macStoplightsVisible, isMac]);
+
     return (
         <>
             <Layout.Header
                 data-tauri-drag-region
                 className={styles.layoutHeader}
-                style={{
-                    paddingLeft: macStoplightsVisible ? MAC_PADDING_LEFT : undefined,
-                    paddingRight: isMac ? '12px' : 0,
-                    transition: "padding-left 0.3s ease", // 添加过渡效果
-                }}
+                style={headerStyle}
             >
-                <div className={styles.logo} onClick={goHome}>
-                    <img
-                        src={`${theme === "dark" ? "/imgs/qwikpage-logo.svg" : "/imgs/qwikpage-logo.svg"}`}
-                        width={20}
-                    />
+                <div className={styles.logo} onClick={goHome} style={{ color: location.pathname === '/project/pages' ? '#fff' : '#000' }}>
+                    <Logo style={{ color: location.pathname === '/project/pages' ? '#fff' : '#216EF7' }} />
                     <span>QwikPage</span>
                 </div>
                 {/* 用户信息&发布&发布记录 */}
