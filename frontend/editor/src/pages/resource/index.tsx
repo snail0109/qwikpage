@@ -1,5 +1,5 @@
 import { resourceService } from "@/services";
-import { Button, Form, message, Layout, Divider, Tooltip, Modal } from "antd";
+import { Button, Form, message, Layout, Divider, Tooltip, Modal, ConfigProvider } from "antd";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -252,34 +252,42 @@ export default function Home() {
         refresh={refresh}
       />
       <Divider />
-      <div className={styles.topContainer}>
-        <div>
-          {RESOURCE_TABS.map((tab) => (
+      <ConfigProvider theme={{
+        components: {
+          Button: {
+            defaultShadow: 'none'
+          }
+        }
+      }}>
+        <div className={styles.topContainer}>
+          <div>
+            {RESOURCE_TABS.map((tab) => (
+              <Button
+                key={tab.value}
+                autoInsertSpace={false}
+                className={resource_type === tab.value ? styles.active : ''}
+                onClick={() => onChangTab(tab)}
+              >
+                {tab.label}
+                <div className={styles.checkContainer}></div>
+              </Button>
+            ))}
+          </div>
+          <div>
             <Button
-              key={tab.value}
-              autoInsertSpace={false}
-              className={resource_type === tab.value ? styles.active : ''}
-              onClick={() => onChangTab(tab)}
+              type="dashed"
+              className={styles.createGroupBtn}
+              icon={<PlusOutlined />}
+              onClick={handleAddResGroup}
             >
-              {tab.label}
-              <div className={styles.checkContainer}></div>
+              创建分组
             </Button>
-          ))}
+            <Tooltip title="刷新">
+              <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
+            </Tooltip>
+          </div>
         </div>
-        <div>
-          <Button
-            type="dashed"
-            className={styles.createGroupBtn}
-            icon={<PlusOutlined />}
-            onClick={handleAddResGroup}
-          >
-            创建分组
-          </Button>
-          <Tooltip title="刷新">
-            <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
-          </Tooltip>
-        </div>
-      </div>
+      </ConfigProvider>
       <div className={styles.pagesContent}>
         <ResourceGroupProvider
           resource_type={resource_type}
