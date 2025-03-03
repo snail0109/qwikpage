@@ -109,6 +109,10 @@ function ResourceGroupList(props: IResourceGroupListProps) {
     setActiveKeys(key);
   };
 
+  const handleEdit = (oldName: string, newName: string) => {
+    return onEditGroup(oldName, newName)
+  }
+
   return (
     <Collapse
       className={styles.resourceGroup}
@@ -133,7 +137,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
             createText="上传"
             onCreate={() => onImport(item.name)}
             onDelete={onDeleteGroup}
-            onUpdateGroup={onEditGroup}
+            onUpdateGroup={(_, newName) => handleEdit(item.name, newName)}
           />
         ),
         children: <ResourceGroup {...rest} {...item} />,
