@@ -257,7 +257,7 @@ export default function Home() {
           {RESOURCE_TABS.map((tab) => (
             <Button
               key={tab.value}
-              // type={resource_type === tab.value ? "primary" : "default"}
+              autoInsertSpace={false}
               className={resource_type === tab.value ? styles.active : ''}
               onClick={() => onChangTab(tab)}
             >

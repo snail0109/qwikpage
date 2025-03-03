@@ -32,7 +32,8 @@ function App() {
         },
         components: {
           Button: {
-            defaultBorderColor: '#D0DAE8'
+            defaultBorderColor: '#D0DAE8',
+            fontWeight: 300
           },
           Menu: {
             darkItemBg: '#000',
