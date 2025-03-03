@@ -100,7 +100,7 @@ const CreateGroup = (
                     debugger
                     setLoading(false);
                 })
-                
+
         } catch (error) {
             setLoading(false);
         }
@@ -122,7 +122,7 @@ const CreateGroup = (
         >
             <Form layout="vertical" form={form} labelCol={{ span: 5 }} wrapperCol={{ span: 24 }}>
                 <Form.Item label={getLabel} name="group_name" rules={[{ required: true, message: `请输入${getLabel}` }]}>
-                    <Input placeholder={`请输入${getLabel}`} maxLength={15} showCount />
+                    <Input placeholder={`请输入${getLabel}`} maxLength={55} showCount />
                 </Form.Item>
             </Form>
         </Modal>
