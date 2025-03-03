@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
-import { CopyOutlined, DeleteOutlined, EyeOutlined, FileFilled } from '@ant-design/icons';
 import PageIcon from '@/components/icons/PageIcon';
 import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import CopyIcon from '@/assets/icons/Copy.svg?react';

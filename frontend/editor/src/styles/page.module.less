@@ -1,7 +1,6 @@
 /* -----------------------------------------列表页面通用样式----------------------------------------- */
 .project,
 .pageList,
-.libWrap,
 .workflow {
   padding: 17px 15px;
   height: calc(100vh - 64px);
@@ -15,14 +14,13 @@
   }
 }
 
-.pageList,
-.libList {
+.pageList {
   :global {
     .ant-card {
       transition: all 0.3s;
 
       &:hover {
-        border-color: #7d3fff;
+        border-color: #216ef7;
         box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
       }
     }
@@ -35,12 +33,7 @@
   right: 0px;
 }
 
-
-
-
-
-.project,
-.libList {
+.project {
   :global {
     .ant-card-body {
       padding-inline: 12px;
@@ -50,21 +43,6 @@
     .ant-card-actions li {
       margin: 8px 0;
     }
-  }
-}
-
-// 组件库
-.libWrap {
-  .search {
-    text-align: center;
-    margin-top: 30px;
-    margin-bottom: 50px;
-  }
-
-  .libList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
   }
 }
 
