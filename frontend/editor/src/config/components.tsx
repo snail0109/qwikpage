@@ -111,32 +111,32 @@ const components = [
       // },
     ],
   },
-  // {
-  //   type: 'Layout',
-  //   title: '布局组件',
-  //   data: [
-  //     {
-  //       icon: <IconSpace />,
-  //       name: '间距',
-  //       type: 'Space',
-  //     },
-  //     {
-  //       icon: <IconDivider />,
-  //       name: '分割线',
-  //       type: 'Divider',
-  //     },
-  //     {
-  //       icon: <IconRow />,
-  //       name: '行组件',
-  //       type: 'Row',
-  //     },
-  //     {
-  //       icon: <IconColumn />,
-  //       name: '列组件',
-  //       type: 'Col',
-  //     },
-  //   ],
-  // },
+  {
+    type: 'Layout',
+    title: '布局组件',
+    data: [
+      // {
+      //   icon: <IconSpace />,
+      //   name: '间距',
+      //   type: 'Space',
+      // },
+      // {
+      //   icon: <IconDivider />,
+      //   name: '分割线',
+      //   type: 'Divider',
+      // },
+      {
+        icon: <IconRow />,
+        name: '行组件',
+        type: 'Row',
+      },
+      {
+        icon: <IconColumn />,
+        name: '列组件',
+        type: 'Col',
+      },
+    ],
+  },
   {
     type: 'FormItems',
     title: '表单录入',
@@ -352,32 +352,32 @@ const components = [
       // },
     ],
   },
-  // {
-  //   type: 'FeedBack',
-  //   title: '反馈组件',
-  //   data: [
-  //     {
-  //       icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*Z9vzQZAdJDQAAAAAAAAAAAAADrJ8AQ/original',
-  //       name: '弹框',
-  //       type: 'Modal',
-  //     },
-  //     {
-  //       icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*BD2JSKm8I-kAAAAAAAAAAAAADrJ8AQ/original',
-  //       name: '抽屉',
-  //       type: 'Drawer',
-  //     },
-  //     {
-  //       icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*-e2IRroDJyEAAAAAAAAAAAAADrJ8AQ/original',
-  //       name: '结果页',
-  //       type: 'Result',
-  //     },
-  //     {
-  //       icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*ZdiZSLzEV0wAAAAAAAAAAAAADrJ8AQ/original',
-  //       name: '空状态',
-  //       type: 'Empty',
-  //     },
-  //   ],
-  // },
+  {
+    type: 'FeedBack',
+    title: '反馈组件',
+    data: [
+      {
+        icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*Z9vzQZAdJDQAAAAAAAAAAAAADrJ8AQ/original',
+        name: '弹框',
+        type: 'Modal',
+      },
+      {
+        icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*BD2JSKm8I-kAAAAAAAAAAAAADrJ8AQ/original',
+        name: '抽屉',
+        type: 'Drawer',
+      },
+      // {
+      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*-e2IRroDJyEAAAAAAAAAAAAADrJ8AQ/original',
+      //   name: '结果页',
+      //   type: 'Result',
+      // },
+      // {
+      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*ZdiZSLzEV0wAAAAAAAAAAAAADrJ8AQ/original',
+      //   name: '空状态',
+      //   type: 'Empty',
+      // },
+    ],
+  },
   {
     type: 'Basic',
     title: '数据展示',
