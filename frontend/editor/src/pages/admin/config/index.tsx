@@ -1,10 +1,13 @@
 import { useEffect, useState, memo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
+import { open } from "@tauri-apps/plugin-dialog";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
 import { RollbackOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
-import ColorRadioGroup from '@/components/RadioColorGroup/RadioColorGroup';
+import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
+import ProjectLogo from "@/components/ProjectLogo";
 import { projectService } from "@/services";
 import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
@@ -16,10 +19,11 @@ import UD from "@/assets/image/UD.png";
 const Config: React.FC = memo(() => {
     const [loading, setLoading] = useState<boolean>(false);
     const [delLoading, setDelLoading] = useState<boolean>(false);
-    const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [type, setType] = useState<"detail" | "edit" | "create">("detail");
-    const [selectedColor, setSelectedColor] = useState('');
-    const [groupId, setGroupId] = useState('');
+    const [selectedColor, setSelectedColor] = useState("");
+    const [groupId, setGroupId] = useState("");
+    const [logoUrl, setLogoUrl] = useState("");
 
     const { id } = useParams();
     const [form] = Form.useForm();
@@ -30,8 +34,9 @@ const Config: React.FC = memo(() => {
         if (!id) return;
         projectService.getProjectDetail(id).then((res) => {
             form.setFieldsValue(res);
-            setGroupId(res.groupId)
-            setSelectedColor(res.themeColor);  
+            setGroupId(res.groupId);
+            setSelectedColor(res.themeColor);
+            setLogoUrl(res.logo);
         });
     }, []);
 
@@ -61,7 +66,7 @@ const Config: React.FC = memo(() => {
 
     // 删除确认
     const handleDelConfirm = () => {
-        setOpen(true);
+        setOpenModal(true);
     };
     // 删除提交
     const handleOk = async () => {
@@ -76,7 +81,7 @@ const Config: React.FC = memo(() => {
             console.error("删除项目失败:", error);
             message.error("删除失败，请稍后重试");
         } finally {
-            setOpen(false);
+            setOpenModal(false);
             setDelLoading(false);
         }
     };
@@ -90,9 +95,39 @@ const Config: React.FC = memo(() => {
         variant: type === "detail" ? "borderless" : "outlined",
     };
 
+    // 设置项目主题色
     const handleColorChange = (value: string) => {
         setSelectedColor(value);
         form.setFieldsValue({ theme_color: value });
+    };
+
+    // 上传项目图标
+    const handleUpload = async () => {
+        const filePath = await open({
+            title: "Select File",
+            multiple: false,
+            filters: [
+                {
+                    name: "Files",
+                    extensions: ["jpg", "jpeg", "png", "svg"],
+                },
+            ],
+        });
+
+        if (!filePath || filePath?.length === 0) {
+            return;
+        }
+
+        invoke("upload_project_resource", {
+            params: {
+                file_path: filePath,
+            }
+        }).then(() => {
+            form.setFieldValue('logo', filePath)
+            setLogoUrl(convertFileSrc(filePath));
+        }).catch(error => {
+            console.log(error)
+        })
     };
 
     return (
@@ -140,7 +175,7 @@ const Config: React.FC = memo(() => {
                     />
                 </Form.Item>
                 <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
-                    <ImageFC />
+                    <ProjectLogo logoUrl={logoUrl} handleUpload={handleUpload} />
                 </Form.Item>
                 <h3>系统配置</h3>
                 <Form.Item label="系统布局" name="layout">
@@ -232,13 +267,13 @@ const Config: React.FC = memo(() => {
 
             {/* 项目删除弹框 */}
             <Modal
-                open={open}
+                open={openModal}
                 title="项目删除确认"
                 centered
                 onOk={() => handleOk()}
-                onCancel={() => setOpen(false)}
+                onCancel={() => setOpenModal(false)}
                 footer={[
-                    <Button key="back" onClick={() => setOpen(false)}>
+                    <Button key="back" onClick={() => setOpenModal(false)}>
                         关闭
                     </Button>,
                     <Button key="link" type="primary" danger loading={delLoading} onClick={() => handleOk()}>
@@ -252,10 +287,5 @@ const Config: React.FC = memo(() => {
         </>
     );
 });
-
-// 图片渲染
-const ImageFC = ({ value }: any) => {
-    return <Image src={value} style={{ width: 100 }} />;
-};
 
 export default Config;

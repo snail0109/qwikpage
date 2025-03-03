@@ -5,8 +5,8 @@ import { projectService } from "@/services";
 import { message } from "@/utils/AntdGlobal";
 import TextArea from "antd/es/input/TextArea";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
-import styles from "./index.module.less";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import ProjectLogo from "./ProjectLogo";
 
 /**
  * 创建项目
@@ -75,17 +75,15 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
 
     invoke("upload_project_resource", {
       params: {
-        file_path:filePath,
+        file_path: filePath,
       }
     }).then(() => {
       form.setFieldValue('logo', filePath)
-      setLogoUrl(convertFileSrc(filePath)); 
+      setLogoUrl(convertFileSrc(filePath));
     }).catch(error => {
       console.log(error)
     })
-
   };
-
 
   return (
     <Modal
@@ -121,16 +119,7 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
           <ColorRadioGroup selectedValue={selectedColor} onChange={handleColorChange} />
         </Form.Item>
         <Form.Item label="图标" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
-          <div className={styles.imageContainer}>
-            <Image
-              width={100}
-              src={logoUrl}
-              preview={false}
-            />
-            <div className={styles.mask} onClick={handleUpload}>
-              上传
-            </div>
-          </div>
+          <ProjectLogo logoUrl={logoUrl} handleUpload={handleUpload} />
         </Form.Item>
         <Form.Item>
           <Button block type="primary" onClick={handleOk} loading={loading}>
