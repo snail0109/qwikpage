@@ -2,7 +2,7 @@ use log::info;
 use tauri::command;
 
 use crate::models::resource::{
-    AddTempResourceParams, DeleteResource, OperResourceGroupParams, RenameResource, ResourceConfig, ResourceGroupInfo, ResourceQueryParams, UploadParams
+    DeleteResource, OperResourceGroupParams, RenameResource, ResourceConfig, ResourceGroupInfo, ResourceQueryParams, UploadParams
 };
 
 use super::cmd_response::CmdResponse;
@@ -89,14 +89,4 @@ pub fn parse_font_metadata(path: String) -> Result<FontMeta, String> {
         }),
         Err(e) => Err(format!("加载字体失败: {}", e)),
     }
-}
-
-
-
-// 添加项目资源，用于处理项目logo
-#[command]
-pub async fn add_project_resource(params: AddTempResourceParams) -> CmdResponse<bool> {
-    info!("add temp resource: {:?}", params);
-    let config = ResourceConfig::add_project_resource(params).await;
-    CmdResponse::from(config)
 }

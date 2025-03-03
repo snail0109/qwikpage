@@ -93,10 +93,10 @@ pub struct DeleteResource {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddTempResourceParams {
-    // 项目ID
-    pub project_id: String,
     // 原始文件本地路径
     pub file_path: String,
+    pub old_file_path: Option<String>,
+
 }
 
 pub struct ResourceConfig {}
@@ -282,11 +282,10 @@ impl ResourceConfig {
     }
 
     // 添加项目资源
-    pub async fn add_project_resource(params: AddTempResourceParams) -> Result<bool, Error> {
+    pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<bool, Error> {
         // 构建项目资源目录路径
         let prj_res_dir = get_app_root_resource_dir()
-            .join("project_logo")
-            .join(&params.project_id);
+            .join("project_logo");
 
         // 创建目录（如果不存在），使用create_dir_all自动处理已存在的情况
         tokio::fs::create_dir_all(&prj_res_dir)
@@ -303,6 +302,7 @@ impl ResourceConfig {
         let file_name_str = file_name
             .to_str()
             .ok_or_else(|| Error::msg("文件名包含无效字符"))?;
+
         if file_name_str.contains(|c| c == '/' || c == '\\') {
             return Err(Error::msg("文件名包含非法路径字符"));
         }
@@ -313,6 +313,15 @@ impl ResourceConfig {
         tokio::fs::copy(file_path, new_file_path)
             .await
             .with_context(|| "文件复制失败")?;
+
+        // old_file_path 有值，则删除改路径的文件
+        if let Some(old_path) = &params.old_file_path {
+            if Path::new(old_path).exists() {
+            tokio::fs::remove_file(old_path)
+                .await
+                .with_context(|| format!("无法删除旧文件: {}", old_path))?;
+            }
+        }
 
         Ok(true)
     }

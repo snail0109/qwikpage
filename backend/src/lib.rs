@@ -96,6 +96,7 @@ pub fn run() {
             project::get_project_detail,
             project::update_project,
             project::delete_project,
+            project::upload_project_resource,
             // reource
             resource::load_resource,
             resource::add_resource_group,

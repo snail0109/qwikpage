@@ -1,4 +1,4 @@
-import { Input, Modal, Form, Button, Image, Radio } from "antd";
+import { Input, Modal, Form, Button, Image } from "antd";
 import { useImperativeHandle, useState, forwardRef, memo } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { projectService } from "@/services";
@@ -6,6 +6,7 @@ import { message } from "@/utils/AntdGlobal";
 import TextArea from "antd/es/input/TextArea";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
 import styles from "./index.module.less";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 /**
  * 创建项目
@@ -72,9 +73,19 @@ const CreateProject = (props: { createRef: any; update?: () => void }, ref: any)
       return;
     }
 
-    form.setFieldValue('logo', filePath)
-    setLogoUrl(filePath); 
+    invoke("upload_project_resource", {
+      params: {
+        file_path:filePath,
+      }
+    }).then(() => {
+      form.setFieldValue('logo', filePath)
+      setLogoUrl(convertFileSrc(filePath)); 
+    }).catch(error => {
+      console.log(error)
+    })
+
   };
+
 
   return (
     <Modal

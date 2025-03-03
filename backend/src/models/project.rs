@@ -94,6 +94,7 @@ pub struct ProjectUpdateParams {
     pub tag: bool,                          // 是否显示标签页
     pub footer: bool,                       // 是否显示页脚
     pub system_theme_color: Option<String>, // 系统主题
+    pub logo: Option<String>, // 系统主题
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -191,6 +192,9 @@ impl Project {
         self.breadcrumb = params.breadcrumb;
         self.tag = params.tag;
         self.footer = params.footer;
+        if let Some(logo) = params.logo {
+            self.logo = logo;
+        }
         self.updated_at = get_current_time();
         match self.save() {
             Ok(_) => Ok(true),
@@ -247,22 +251,12 @@ impl Project {
         if !project_dir_path.exists() {
             fs::create_dir_all(&project_dir_path)?;
         }
-        // 处理一下 logo， 如果logo 是本地文件路径，则复制文件到项目目录下
-        let logo_file_path = Path::new(&params.logo);
-        let mut logo = params.logo.clone();
-        if logo_file_path.exists() {
-            let project_dir_path = get_app_root_dir().join(project_id.clone());
-            let project_logo_file_path = project_dir_path.join("logo.png");
-            fs::copy(logo_file_path, &project_logo_file_path)?;
-            logo = project_logo_file_path.to_string_lossy().to_string();
-        }
-
         let project = Project::new(
             project_id.clone(),
             params.name,
             params.theme_color,
             params.remark,
-            logo.to_string(),
+            params.logo,
             group_id.clone(),
         );
         project.save()?;
