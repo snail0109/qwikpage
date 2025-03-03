@@ -30,7 +30,7 @@ export default function ImageViewer(props: IProps) {
     return (
         <div className={styles.imagePreview} >
             {
-                src.includes('.svg') ? <img alt="资源预览" src={src} /> : (
+                src.includes('.svg') ? <img className={styles.imageContainer} alt="资源预览" src={src} /> : (
                     <Image
                         width="100%"
                         height="100%"

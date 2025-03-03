@@ -45,27 +45,27 @@ function ResourceInfo(props: IResourceInfoProp) {
     }
   }, [resource_type, props.name, props.last_modified_time]);
 
-  const colConfig = useMemo(() => {
-    let config: any = {
-      xs: 12,
-      sm: 12,
-      md: 8,
-      lg: 8,
-      xl: 6,
-      xxl: 4,
-    };
-    switch (resource_type) {
-      case RESOURCE_TABS[1].value:
-        config = { xs: 8, sm: 6, md: 4, lg: 3, xl: 2, xxl: 2 };
-        break;
-      case RESOURCE_TABS[0].value:
-      default:
-        break;
-    }
-    return config;
-  }, [resource_type]);
+  // const colConfig = useMemo(() => {
+  //   let config: any = {
+  //     xs: 12,
+  //     sm: 12,
+  //     md: 8,
+  //     lg: 8,
+  //     xl: 6,
+  //     xxl: 4,
+  //   };
+  //   switch (resource_type) {
+  //     case RESOURCE_TABS[1].value:
+  //       config = { xs: 8, sm: 6, md: 4, lg: 3, xl: 2, xxl: 2 };
+  //       break;
+  //     case RESOURCE_TABS[0].value:
+  //     default:
+  //       break;
+  //   }
+  //   return config;
+  // }, [resource_type]);
 
-  return <div {...colConfig}>{resourceInfo}</div>;
+  return <div>{resourceInfo}</div>;
 }
 
 function ResourceContainer(props: IResourceGroupProps) {
