@@ -116,7 +116,7 @@ const Header = memo(() => {
                 transition: "padding-left 0.3s ease",
             };
 
-            if (location.pathname === '/project/pages' && projectId) {
+            if (['/project/pages', '/resources'].includes(location.pathname) && projectId) {
                 const res = await projectService.getProjectDetail(projectId);
                 setHeaderStyle({
                     ...baseStyle,
@@ -139,8 +139,8 @@ const Header = memo(() => {
                 className={styles.layoutHeader}
                 style={headerStyle}
             >
-                <div className={styles.logo} onClick={goHome} style={{ color: location.pathname === '/project/pages' ? '#fff' : '#000' }}>
-                    <Logo style={{ color: location.pathname === '/project/pages' ? '#fff' : '#216EF7' }} />
+                <div className={styles.logo} onClick={goHome} style={{ color: ['/project/pages', '/resources'].includes(location.pathname) ? '#fff' : '#000' }}>
+                    <Logo style={{ color: ['/project/pages', '/resources'].includes(location.pathname) ? '#fff' : '#216EF7' }} />
                     <span>QwikPage</span>
                 </div>
                 {/* 用户信息&发布&发布记录 */}
