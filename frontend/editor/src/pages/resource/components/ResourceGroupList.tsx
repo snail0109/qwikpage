@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { ImageViewer, FontViewer, FileViewer } from "@/components/ResourcePreview";
-import { Col, Row, Collapse } from "antd";
+import { Col, Flex, Collapse } from "antd";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
 import GroupTitle from "@/components/GroupTitle";
 import { RESOURCE_TABS } from "../index";
@@ -65,7 +65,7 @@ function ResourceInfo(props: IResourceInfoProp) {
     return config;
   }, [resource_type]);
 
-  return <Col {...colConfig}>{resourceInfo}</Col>;
+  return <div {...colConfig}>{resourceInfo}</div>;
 }
 
 function ResourceContainer(props: IResourceGroupProps) {
@@ -73,11 +73,11 @@ function ResourceContainer(props: IResourceGroupProps) {
   const { resource_type } = useResource();
   return (
     [RESOURCE_TABS[0].value, RESOURCE_TABS[1].value].includes(resource_type) ? (
-      <Row gutter={[16, 24]} justify="start">
+      <Flex gap={25} wrap={true} justify="flex-start">
         {resources.map((item, index) => {
           return <ResourceInfo key={index} {...item} resource_name={name} />;
         })}
-      </Row>
+      </Flex>
     ) : <FileViewer resource_name={name} resource_path={path} data={resources} />
   )
 }
