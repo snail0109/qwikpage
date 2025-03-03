@@ -11,7 +11,7 @@ const ProjectLogo = ({ disabled = false, logoUrl, handleUpload }: ProjectLogoPro
     const src = logoUrl.includes("com.qwikpage.desktop/resources/project_logo") ? convertFileSrc(logoUrl) : logoUrl;
 
     return (
-        <div className={styles.imageContainer}>
+        <div className={`${styles.imageContainer} ${disabled ? styles.disabled : ''}`}>
             <img width={100} height={100} src={src} />
             <div className={styles.mask} onClick={handleUpload}>
                 上传

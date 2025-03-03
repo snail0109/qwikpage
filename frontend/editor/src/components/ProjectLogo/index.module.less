@@ -21,4 +21,11 @@
   &:hover .mask {
     display: flex;
   }
+
+  &.disabled {
+    cursor: not-allowed;
+    &:hover .mask {
+      display: none; // 当是 disabled 时，hover 不显示
+    }
+  }
 }
