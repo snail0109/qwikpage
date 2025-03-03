@@ -31,6 +31,9 @@ function App() {
           colorInfo: '#216EF7',
         },
         components: {
+          Button: {
+            defaultBorderColor: '#D0DAE8'
+          },
           Menu: {
             darkItemBg: '#000',
             darkItemHoverColor: '#216EF7',
