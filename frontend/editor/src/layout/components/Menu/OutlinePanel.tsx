@@ -1,11 +1,11 @@
-import { memo, useEffect, useMemo, useState } from 'react';
-import { Tree, Row } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import { usePageStore } from '@/stores/pageStore';
-import { useShallow } from 'zustand/react/shallow';
-import style from './index.module.less';
-import { cloneDeep } from 'lodash-es';
-import { getElement } from '@/utils/util';
+import { memo, useEffect, useMemo, useState } from "react";
+import { Tree, Row } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+import { usePageStore } from "@/stores/pageStore";
+import { useShallow } from "zustand/react/shallow";
+import style from "./index.module.less";
+import { cloneDeep } from "lodash-es";
+import { getElement } from "@/utils/util";
 /**
  * 大纲
  */
@@ -17,7 +17,7 @@ const OutlinePanel = memo(() => {
       selectedEl: state.selectedElement,
       setSelectedElement: state.setSelectedElement,
       dragSortElements: state.dragSortElements,
-    })),
+    }))
   );
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
@@ -25,11 +25,11 @@ const OutlinePanel = memo(() => {
     () => [
       {
         type: `页面【${pageName}】`,
-        id: 'page',
+        id: "page",
         elements,
       },
     ],
-    [elements],
+    [elements]
   );
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const OutlinePanel = memo(() => {
   const handleSelect = (selectedKeys: any, { node }: any) => {
     setSelectedKeys(selectedKeys);
     if (selectedKeys.length > 0) {
-      if (selectedKeys[0] === 'page') {
+      if (selectedKeys[0] === "page") {
         setSelectedElement(undefined);
       } else {
         setSelectedElement({
@@ -61,7 +61,7 @@ const OutlinePanel = memo(() => {
   const onDrop = (info: any) => {
     const { key: dragKey, type: dragType, name, elements: dragChildren } = info.dragNode;
     const { key: dropKey } = info.node;
-    const dropPos = info.node.pos.split('-');
+    const dropPos = info.node.pos.split("-");
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]); // the drop position relative to the drop node, inside 0, top -1, bottom 1
 
     const list: any[] = cloneDeep(elements);
@@ -81,7 +81,7 @@ const OutlinePanel = memo(() => {
     let parentId = null;
     // 移动到组件里面，添加为子组件
     if (!info.dropToGap) {
-      if (dropKey == 'page') {
+      if (dropKey == "page") {
         list.unshift(dropItem);
       } else {
         const { element } = getElement(list, dropKey);
@@ -107,16 +107,16 @@ const OutlinePanel = memo(() => {
   return (
     <Row className={style.outlinePanel}>
       <Tree
-        showLine
+        blockNode
+        showLine={{ showLeafIcon: true }}
         defaultExpandAll
-        draggable
-        switcherIcon={<DownOutlined />}
-        fieldNames={{ title: 'type', key: 'id', children: 'elements' }}
+        draggable={{ icon: false }}
+        fieldNames={{ title: "type", key: "id", children: "elements" }}
         treeData={treeData}
         selectedKeys={selectedKeys}
         onSelect={handleSelect}
         onDrop={onDrop}
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       />
     </Row>
   );
