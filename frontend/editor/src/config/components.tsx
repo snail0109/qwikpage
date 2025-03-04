@@ -48,6 +48,7 @@ import IconRignProgress from './icons/IconRingProgress';
 import IconCountDown from './icons/IconCountDown';
 import IconTag from './icons/IconTag';
 import IconDropdwon from './icons/IconDropdown';
+import IconFont from './icons/IconFont';
 /**
  * 组件配置列表
  */
@@ -171,21 +172,21 @@ const components = [
       //   name: '日期范围',
       //   type: 'DatePickerRange',
       // },
-      // {
-      //   icon: <IconFormRadio />,
-      //   name: '单选框',
-      //   type: 'Radio',
-      // },
-      // {
-      //   icon: <IconFormCheckbox />,
-      //   name: '多选框',
-      //   type: 'CheckBox',
-      // },
-      // {
-      //   icon: <IconFormSwitch />,
-      //   name: '开关',
-      //   type: 'Switch',
-      // },
+      {
+        icon: <IconFormRadio />,
+        name: '单选框',
+        type: 'Radio',
+      },
+      {
+        icon: <IconFormCheckbox />,
+        name: '多选框',
+        type: 'CheckBox',
+      },
+      {
+        icon: <IconFormSwitch />,
+        name: '开关',
+        type: 'Switch',
+      },
       // {
       //   icon: <IconFormTextArea />,
       //   name: '多行文本框',
@@ -397,11 +398,11 @@ const components = [
         name: '文本',
         type: 'Text',
       },
-      // {
-      //   icon: <IconLink />,
-      //   name: '超链接',
-      //   type: 'Link',
-      // },
+      {
+        icon: <IconLink />,
+        name: '超链接',
+        type: 'Link',
+      },
       // {
       //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*YL7PRYNtH-4AAAAAAAAAAAAADrJ8AQ/original',
       //   name: '统计数值',
@@ -412,11 +413,11 @@ const components = [
       //   name: '倒计时',
       //   type: 'CountDown',
       // },
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*PdAYS7anRpoAAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '图标',
-      //   type: 'Icon',
-      // },
+      {
+        icon: <IconFont />,
+        name: '图标',
+        type: 'Icon',
+      },
       // {
       //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*JJBSS5lBG4IAAAAAAAAAAAAADrJ8AQ/original',
       //   name: '头像',
