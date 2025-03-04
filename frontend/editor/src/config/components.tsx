@@ -91,11 +91,6 @@ const components = [
     title: '容器组件',
     data: [
       // {
-      //   icon: <IconFlex />,
-      //   name: 'Flex容器',
-      //   type: 'Flex',
-      // },
-      // {
       //   icon: <IconCard />,
       //   name: 'Card容器',
       //   type: 'Card',
@@ -126,11 +121,16 @@ const components = [
       //   name: '分割线',
       //   type: 'Divider',
       // },
-      {
-        icon: <IconRow />,
+       {
+        icon: <IconFlex />,
         name: '线性布局',
-        type: 'Row',
+        type: 'Flex',
       },
+      // {
+      //   icon: <IconRow />,
+      //   name: '栅格布局',
+      //   type: 'Row',
+      // },
       {
         icon: <IconColumn />,
         name: '栅格布局',
