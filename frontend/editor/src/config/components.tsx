@@ -134,7 +134,7 @@ const components = [
       {
         icon: <IconColumn />,
         name: '栅格布局',
-        type: 'Col',
+        type: 'Grid',
       },
     ],
   },
@@ -182,7 +182,7 @@ const components = [
       //   name: '倒计时',
       //   type: 'CountDown',
       // },
-      
+
       // {
       //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*JJBSS5lBG4IAAAAAAAAAAAAADrJ8AQ/original',
       //   name: '头像',
