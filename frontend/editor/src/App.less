@@ -33,3 +33,34 @@ html {
     display: none !important;
   }
 }
+
+// 全局滚动条样式
+@scrollbar-width: 6px;
+@scrollbar-thumb-border-radius: 6px;
+@scrollbar-thumb-bg: #cccccc;
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: @scrollbar-width;
+  height: @scrollbar-width;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: @scrollbar-thumb-border-radius;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: @scrollbar-thumb-border-radius;
+  cursor: pointer;
+}
+
+// 鼠标悬停时显示滚动条
+*:hover > ::-webkit-scrollbar-thumb {
+  background-color: @scrollbar-thumb-bg;
+  
+  &:hover {
+    background-color: @scrollbar-thumb-bg;
+  }
+}
