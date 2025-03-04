@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { usePageStore } from "@/stores/pageStore";
 import SpinLoading from "@/components/SpinLoading";
 import Notice from "../components/Notice";
-import "./index.less";
+import styles from "./index.module.less";
 import { PanelKey } from "../components/Menu";
 
 const Menu = lazy(() => import("../components/Menu"));
@@ -39,7 +39,7 @@ const EditLayout = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             {/* 编辑器 */}
-            <div style={{ height: "100vh" }}>
+            <div className={styles.editor} style={{ height: "100vh" }} >
                 <Notice />
                 <ConfigProvider
                     theme={{
@@ -54,7 +54,7 @@ const EditLayout = () => {
                 >
                     <Splitter onResize={setSizes}>
                         {/* 菜单及其tab */}
-                        <Splitter.Panel collapsible size={sizes[0]} min={266}>
+                        <Splitter.Panel collapsible size={sizes[0]} min={266} style={{ paddingRight: 10 }}>
                             <React.Suspense fallback={<SpinLoading />} >
                                 <Menu onTabChange={onTabChange} />
                             </React.Suspense>

@@ -1,0 +1,17 @@
+// 修改Allotment插件的默认样式
+:root {
+  --focus-border: var(--mars-primary-color);
+  --separator-border: var(--mars-border-color);
+}
+
+.editor {
+  :global {
+    .ant-splitter >.ant-splitter-bar .ant-splitter-bar-dragger::after {
+      background-color: #d8d8d8;
+    }
+    .ant-splitter >.ant-splitter-bar .ant-splitter-bar-collapse-bar {
+      color: #fff;
+    }
+  }
+}
+
