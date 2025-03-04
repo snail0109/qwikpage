@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 
 function PageWrapper(props) {
     const calcHeight = useMemo(() => {
-        return `calc(100vh - 64px)`;
+        return `100vh`;
     }, []);
     return (
         <Layout
@@ -12,7 +12,7 @@ function PageWrapper(props) {
             {props.children}
         </Layout>
     );
-    
+
 }
 
 

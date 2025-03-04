@@ -60,7 +60,7 @@ export default function Index() {
 
     return (
         <>
-            <Layout.Content className={pageStyle.pageList}>
+            <Layout.Content className={pageStyle.pageList} style={{ height: 'calc(100vh - 30px)' }}>
                 <SearchBar showGroup={false} form={form} from="页面" projectName={projectName} submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
                 <div className={pageStyle.pagesContent}>
                     <Spin spinning={loading} size="large" tip="加载中...">

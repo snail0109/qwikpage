@@ -16,7 +16,7 @@ const ConfigPanel = lazy(() => import("../components/ConfigPanel/ConfigPanel"));
  * 编辑器布局组件
  */
 const EditLayout = () => {
-    const [sizes, setSizes] = useState<(number | string)[]>([320, window.innerWidth - 640, 320]);
+    const [sizes, setSizes] = useState<(number | string)[]>([266, window.innerWidth - 640, 266]);
     const mode = usePageStore(useShallow((state) => state.mode));
     const [fullScreen, setFullScreen] = useState(false);
 
@@ -32,14 +32,14 @@ const EditLayout = () => {
         if (mode === "preview") {
             setSizes([0, "100%", 0]);
         } else {
-            setSizes([320, window.innerWidth - 640, 320]);
+            setSizes([266, window.innerWidth - 516, 250]);
         }
     }, [mode]);
     // 模式切换，会导致子组件重新渲染
     return (
         <DndProvider backend={HTML5Backend}>
             {/* 编辑器 */}
-            <div style={{ height: "calc(100vh - 64px)" }}>
+            <div style={{ height: "100vh" }}>
                 <Notice />
                 <ConfigProvider
                     theme={{
@@ -53,17 +53,20 @@ const EditLayout = () => {
                     }}
                 >
                     <Splitter onResize={setSizes}>
-                        <Splitter.Panel collapsible size={sizes[0]} min={320}>
-                            <React.Suspense fallback={<SpinLoading />}>
+                        {/* 菜单及其tab */}
+                        <Splitter.Panel collapsible size={sizes[0]} min={266}>
+                            <React.Suspense fallback={<SpinLoading />} >
                                 <Menu onTabChange={onTabChange} />
                             </React.Suspense>
                         </Splitter.Panel>
                         {!fullScreen && (
                             <>
+                                {/* 编辑器 */}
                                 <Splitter.Panel size={sizes[1]}>
                                     <Outlet></Outlet>
                                 </Splitter.Panel>
-                                <Splitter.Panel collapsible size={sizes[2]} min={320}>
+                                {/* 配置面板 */}
+                                <Splitter.Panel collapsible size={sizes[2]} min={250}>
                                     <React.Suspense fallback={<SpinLoading />}>
                                         <ConfigPanel />
                                     </React.Suspense>

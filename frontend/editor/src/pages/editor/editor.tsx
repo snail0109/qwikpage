@@ -93,7 +93,7 @@ const Editor = () => {
     setLoaded(false);
     setCanvasWidth(storage.get('canvasWidth') || 'auto');
     pageService
-      .getPageDetail({id, projectId: projectId!})
+      .getPageDetail({ id, projectId: projectId! })
       .then((res: any) => {
         let pageData: any = {};
         try {
@@ -333,14 +333,14 @@ const Editor = () => {
         <div
           id="designer"
           className={styles['designer-editor']}
-          style={{ height: mode === 'preview' ? 'calc(100vh - 64px)' : 'calc(100vh - 104px)' }}
+          style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 40px)' }}
         >
           <div
             id="editor"
             className={styles.pageWrapper}
             style={
               mode === 'preview'
-                ? { height: 'calc(100vh - 64px)', overflow: 'auto', padding: 0 }
+                ? { height: '100vh', overflow: 'auto', padding: 0 }
                 : { width: canvasWidth === 'auto' ? editorWidth : canvasWidth }
             }
             onMouseOver={handleRunOver}

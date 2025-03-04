@@ -46,7 +46,7 @@ const SideMenu = () => {
       mode="inline"
       theme={theme}
       style={{
-        height: 'calc(100vh - 64px)',
+        height: '100vh',
       }}
       selectedKeys={selectedKeys}
       onClick={handleClickMenu}

@@ -102,7 +102,7 @@ const Menu = ({ onTabChange }: { onTabChange: (tab: string) => void }) => {
                 size={"small"}
                 defaultActiveKey={panels[0].key}
                 tabPosition="left"
-                tabBarStyle={{ width: 50, height: "calc(100vh - 64px)" }}
+                tabBarStyle={{ width: 50, height: "100vh" }}
                 className={styles.leftTool}
                 centered={true}
                 items={panels.map((item) => {

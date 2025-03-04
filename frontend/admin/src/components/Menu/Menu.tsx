@@ -73,11 +73,11 @@ const MenuComponent: React.FC = () => {
         projectInfo.menuMode === 'horizontal'
           ? { width: 'calc(100vw - 458px)' }
           : {
-              width: collapsed ? 79 : 255,
-              background: projectInfo.menuThemeColor === 'light' ? '#fff' : '#001529',
-              borderRight: projectInfo.layout === 2 ? '1px solid #e8e9eb' : 'none',
-              overflowX: 'hidden',
-            }
+            width: collapsed ? 79 : 255,
+            background: projectInfo.menuThemeColor === 'light' ? '#fff' : '#001529',
+            borderRight: projectInfo.layout === 2 ? '1px solid #e8e9eb' : 'none',
+            overflowX: 'hidden',
+          }
       }
     >
       <ConfigProvider
@@ -95,7 +95,7 @@ const MenuComponent: React.FC = () => {
           onClick={onClick}
           theme={projectInfo.menuThemeColor as MenuTheme}
           selectedKeys={selectedKeys}
-          style={projectInfo.menuMode === 'horizontal' ? {} : { height: 'calc(100vh - 64px)', border: 'none', overflowY: 'auto' }}
+          style={projectInfo.menuMode === 'horizontal' ? {} : { height: '100vh', border: 'none', overflowY: 'auto' }}
           mode={projectInfo.menuMode}
           inlineCollapsed={projectInfo.menuMode === 'horizontal' ? undefined : collapsed}
           items={menuList}

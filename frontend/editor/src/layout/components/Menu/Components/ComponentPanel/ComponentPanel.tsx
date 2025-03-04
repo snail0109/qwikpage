@@ -78,7 +78,7 @@ const ComponentPanel = () => {
         children: (
           <>
             <Collapse
-              style={{ height: list.length > 0 ? 'calc(100vh - 185px)' : '', overflowY: 'auto' }}
+              style={{ height: list.length > 0 ? 'calc(100vh - 123px)' : '', overflowY: 'auto' }}
               items={list}
               ghost
               expandIconPosition={'end'}

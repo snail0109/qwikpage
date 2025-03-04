@@ -60,7 +60,7 @@ const AdminLayout = () => {
 
   // 计算渲染区容器实际高度
   // const calcHeight = useMemo(() => {
-  //   return projectInfo.tag ? `calc(100vh - 114px)` : `calc(100vh - 64px)`;
+  //   return projectInfo.tag ? `calc(100vh - 114px)` : `100vh`;
   // }, [projectInfo.tag]);
 
   // 定义Footer
