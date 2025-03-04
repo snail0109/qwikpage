@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 25</title>
+    <g id="一期-主要界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="首页-组件" transform="translate(-289, -827)" stroke="#333333">
+            <g id="编组-28" transform="translate(277, 810)">
+                <g id="编组-25" transform="translate(12, 17)">
+                    <rect id="矩形" stroke-width="1.1" fill="#FFFFFF" x="0.55" y="0.55" width="14.9" height="12.9" rx="2"></rect>
+                    <line x1="0.5" y1="4.5" x2="14.5" y2="4.5" id="直线-4" stroke-linecap="square"></line>
+                    <line x1="3.76923086" y1="7" x2="7.5" y2="7" id="路径-4"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
