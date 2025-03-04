@@ -70,51 +70,51 @@ const components = [
     hidden: true,
     data: [],
   },
-  {
-    type: 'Advanced',
-    title: '高级组件',
-    data: [
-      {
-        icon: <IconSearchForm />,
-        name: '行内表单',
-        type: 'SearchForm',
-      },
-      {
-        icon: <IconBaseTable />,
-        name: '基础表格',
-        type: 'MarsTable',
-      },
-    ],
-  },
-  {
-    type: 'Container',
-    title: '容器组件',
-    data: [
-      {
-        icon: <IconFlex />,
-        name: 'Flex容器',
-        type: 'Flex',
-      },
-      // {
-      //   icon: <IconCard />,
-      //   name: 'Card容器',
-      //   type: 'Card',
-      // },
-      {
-        icon: <IconForm />,
-        name: 'Form容器',
-        type: 'Form',
-      },
-      // {
-      //   icon: <IconDiv />,
-      //   name: 'Div容器',
-      //   type: 'Div',
-      // },
-    ],
-  },
+  // {
+  //   type: 'Advanced',
+  //   title: '高级组件',
+  //   data: [
+  //     {
+  //       icon: <IconSearchForm />,
+  //       name: '行内表单',
+  //       type: 'SearchForm',
+  //     },
+  //     {
+  //       icon: <IconBaseTable />,
+  //       name: '基础表格',
+  //       type: 'MarsTable',
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: 'Container',
+  //   title: '容器组件',
+  //   data: [
+  //     {
+  //       icon: <IconFlex />,
+  //       name: 'Flex容器',
+  //       type: 'Flex',
+  //     },
+  //     // {
+  //     //   icon: <IconCard />,
+  //     //   name: 'Card容器',
+  //     //   type: 'Card',
+  //     // },
+  //     {
+  //       icon: <IconForm />,
+  //       name: 'Form容器',
+  //       type: 'Form',
+  //     },
+  //     // {
+  //     //   icon: <IconDiv />,
+  //     //   name: 'Div容器',
+  //     //   type: 'Div',
+  //     // },
+  //   ],
+  // },
   {
     type: 'Layout',
-    title: '布局组件',
+    title: '布局',
     data: [
       // {
       //   icon: <IconSpace />,
@@ -128,24 +128,91 @@ const components = [
       // },
       {
         icon: <IconRow />,
-        name: '行组件',
+        name: '线性布局',
         type: 'Row',
       },
       {
         icon: <IconColumn />,
-        name: '列组件',
+        name: '栅格布局',
         type: 'Col',
       },
     ],
   },
   {
+    type: 'Basic',
+    title: '展示',
+    data: [
+      {
+        icon: <IconButton />,
+        name: '按钮',
+        type: 'Button',
+      },
+      {
+        icon: <IconFont />,
+        name: '图标',
+        type: 'Icon',
+      },
+      {
+        icon: <IconText />,
+        name: '文本',
+        type: 'Text',
+      },
+      {
+        icon: <IconLink />,
+        name: '超链接',
+        type: 'Link',
+      },
+      {
+        icon: <IconImage />,
+        name: '图片',
+        type: 'Image',
+      },
+      // {
+      //   icon: <IconTitle />,
+      //   name: '标题',
+      //   type: 'Title',
+      // },
+      // {
+      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*YL7PRYNtH-4AAAAAAAAAAAAADrJ8AQ/original',
+      //   name: '统计数值',
+      //   type: 'Statistic',
+      // },
+      // {
+      //   icon: <IconCountDown />,
+      //   name: '倒计时',
+      //   type: 'CountDown',
+      // },
+      
+      // {
+      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*JJBSS5lBG4IAAAAAAAAAAAAADrJ8AQ/original',
+      //   name: '头像',
+      //   type: 'Avatar',
+      // },
+      // {
+      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*cJopQrf0ncwAAAAAAAAAAAAADrJ8AQ/original',
+      //   name: '二维码',
+      //   type: 'QRCode',
+      // },
+      // {
+      //   icon: <IconTag />,
+      //   name: '标签',
+      //   type: 'Tag',
+      // },
+    ],
+  },
+  {
     type: 'FormItems',
-    title: '表单录入',
+    title: '表单',
     data: [
       {
         icon: <IconFormInput />,
         name: '文本框',
         type: 'Input',
+      },
+      {
+        icon: <IconFormItem />,
+        name: '表单项',
+        type: 'FormItem',
       },
       // {
       //   icon: <IconFormInputNumber />,
@@ -173,14 +240,14 @@ const components = [
       //   type: 'DatePickerRange',
       // },
       {
-        icon: <IconFormRadio />,
-        name: '单选框',
-        type: 'Radio',
-      },
-      {
         icon: <IconFormCheckbox />,
         name: '多选框',
         type: 'CheckBox',
+      },
+      {
+        icon: <IconFormRadio />,
+        name: '单选框',
+        type: 'Radio',
       },
       {
         icon: <IconFormSwitch />,
@@ -237,11 +304,6 @@ const components = [
       //   name: '静态项',
       //   type: 'StaticItem',
       // },
-      {
-        icon: <IconFormItem />,
-        name: '表单项',
-        type: 'FormItem',
-      },
       // {
       //   icon: <IconColorPicker />,
       //   name: '颜色选择器',
@@ -305,54 +367,49 @@ const components = [
   //     },
   //   ],
   // },
-  {
-    type: 'Functional',
-    title: '功能组件',
-    data: [
-      {
-        icon: <IconButton />,
-        name: '按钮',
-        type: 'Button',
-      },
-      // {
-      //   icon: <IconList />,
-      //   name: '列表组件',
-      //   type: 'List',
-      // },
-      // {
-      //   icon: <IconDescriptions />,
-      //   name: '描述列表',
-      //   type: 'Descriptions',
-      // },
+  // {
+  //   type: 'Functional',
+  //   title: '功能组件',
+  //   data: [
+  //     // {
+  //     //   icon: <IconList />,
+  //     //   name: '列表组件',
+  //     //   type: 'List',
+  //     // },
+  //     // {
+  //     //   icon: <IconDescriptions />,
+  //     //   name: '描述列表',
+  //     //   type: 'Descriptions',
+  //     // },
 
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*677sTqCpE3wAAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '步骤条',
-      //   type: 'Steps',
-      // },
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*72NDQqXkyOEAAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '标签页',
-      //   type: 'Tabs',
-      // },
-      // {
-      //   icon: '',
-      //   name: '子标签页',
-      //   type: 'Tab',
-      //   hidden: true,
-      // },
-      // {
-      //   icon: <IconCarousel />,
-      //   name: '轮播图',
-      //   type: 'Carousel',
-      // },
-      // {
-      //   icon: <IconDropdwon />,
-      //   name: '下拉菜单',
-      //   type: 'Dropdown',
-      // },
-    ],
-  },
+  //     // {
+  //     //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*677sTqCpE3wAAAAAAAAAAAAADrJ8AQ/original',
+  //     //   name: '步骤条',
+  //     //   type: 'Steps',
+  //     // },
+  //     // {
+  //     //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*72NDQqXkyOEAAAAAAAAAAAAADrJ8AQ/original',
+  //     //   name: '标签页',
+  //     //   type: 'Tabs',
+  //     // },
+  //     // {
+  //     //   icon: '',
+  //     //   name: '子标签页',
+  //     //   type: 'Tab',
+  //     //   hidden: true,
+  //     // },
+  //     // {
+  //     //   icon: <IconCarousel />,
+  //     //   name: '轮播图',
+  //     //   type: 'Carousel',
+  //     // },
+  //     // {
+  //     //   icon: <IconDropdwon />,
+  //     //   name: '下拉菜单',
+  //     //   type: 'Dropdown',
+  //     // },
+  //   ],
+  // },
   {
     type: 'FeedBack',
     title: '反馈组件',
@@ -376,62 +433,6 @@ const components = [
       //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*ZdiZSLzEV0wAAAAAAAAAAAAADrJ8AQ/original',
       //   name: '空状态',
       //   type: 'Empty',
-      // },
-    ],
-  },
-  {
-    type: 'Basic',
-    title: '数据展示',
-    data: [
-      {
-        icon: <IconImage />,
-        name: '图片',
-        type: 'Image',
-      },
-      // {
-      //   icon: <IconTitle />,
-      //   name: '标题',
-      //   type: 'Title',
-      // },
-      {
-        icon: <IconText />,
-        name: '文本',
-        type: 'Text',
-      },
-      {
-        icon: <IconLink />,
-        name: '超链接',
-        type: 'Link',
-      },
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*YL7PRYNtH-4AAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '统计数值',
-      //   type: 'Statistic',
-      // },
-      // {
-      //   icon: <IconCountDown />,
-      //   name: '倒计时',
-      //   type: 'CountDown',
-      // },
-      {
-        icon: <IconFont />,
-        name: '图标',
-        type: 'Icon',
-      },
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*JJBSS5lBG4IAAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '头像',
-      //   type: 'Avatar',
-      // },
-      // {
-      //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*cJopQrf0ncwAAAAAAAAAAAAADrJ8AQ/original',
-      //   name: '二维码',
-      //   type: 'QRCode',
-      // },
-      // {
-      //   icon: <IconTag />,
-      //   name: '标签',
-      //   type: 'Tag',
       // },
     ],
   },
