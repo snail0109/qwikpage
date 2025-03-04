@@ -86,32 +86,32 @@ const components = [
   //     },
   //   ],
   // },
-  // {
-  //   type: 'Container',
-  //   title: '容器组件',
-  //   data: [
-  //     {
-  //       icon: <IconFlex />,
-  //       name: 'Flex容器',
-  //       type: 'Flex',
-  //     },
-  //     // {
-  //     //   icon: <IconCard />,
-  //     //   name: 'Card容器',
-  //     //   type: 'Card',
-  //     // },
-  //     {
-  //       icon: <IconForm />,
-  //       name: 'Form容器',
-  //       type: 'Form',
-  //     },
-  //     // {
-  //     //   icon: <IconDiv />,
-  //     //   name: 'Div容器',
-  //     //   type: 'Div',
-  //     // },
-  //   ],
-  // },
+  {
+    type: 'Container',
+    title: '容器组件',
+    data: [
+      // {
+      //   icon: <IconFlex />,
+      //   name: 'Flex容器',
+      //   type: 'Flex',
+      // },
+      // {
+      //   icon: <IconCard />,
+      //   name: 'Card容器',
+      //   type: 'Card',
+      // },
+      {
+        icon: <IconForm />,
+        name: 'Form容器',
+        type: 'Form',
+      },
+      // {
+      //   icon: <IconDiv />,
+      //   name: 'Div容器',
+      //   type: 'Div',
+      // },
+    ],
+  },
   {
     type: 'Layout',
     title: '布局',
@@ -224,11 +224,11 @@ const components = [
       //   name: '密码框',
       //   type: 'InputPassword',
       // },
-      // {
-      //   icon: <IconFormSelect />,
-      //   name: '下拉框',
-      //   type: 'Select',
-      // },
+      {
+        icon: <IconFormSelect />,
+        name: '下拉框',
+        type: 'Select',
+      },
       // {
       //   icon: <IconFormDate />,
       //   name: '日期',

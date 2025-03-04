@@ -1,15 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './index.module.less';
-import { Badge, Button, Tooltip } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Badge, Button, Tooltip, theme } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { usePageStore } from '@/stores/pageStore';
 import { getComponentRef } from '@/packages/utils/useComponentRefs';
+import DrawerIcon from '@/assets/icons/drawer.svg?react';
+import ModalIcon from '@/assets/icons/modal.svg?react';
+import DeleteIcon from '@/assets/icons/Delete.svg?react';
+import { getComponent } from '@/packages/index';
+import { createId } from '@/utils/util';
 
 type CollectorItem = {
   id: string;
   name: string;
+  title: string;
 };
+const ELE_MAP: any = {
+  1: {
+    name: '弹框',
+    type: 'Modal'
+  },
+  2: {
+    name: '抽屉',
+    type: 'Drawer'
+  }
+}
+const { useToken } = theme;
 const FloatingCollector = () => {
+  const { token } = useToken();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [modalList, setModalList] = useState<CollectorItem[]>([]);
@@ -17,10 +35,11 @@ const FloatingCollector = () => {
   const [currentItems, setCurrentItems] = useState<CollectorItem[]>([]);
   const [currentType, setCurrentType] = useState<number>(1);
 
-  const { elementsMap, removeElements } = usePageStore((state) => {
+  const { elementsMap, removeElements, addElement } = usePageStore((state) => {
     return {
       elementsMap: state.page.pageData.elementsMap,
       removeElements: state.removeElements,
+      addElement: state.addElement
     };
   });
 
@@ -28,38 +47,72 @@ const FloatingCollector = () => {
   useEffect(() => {
     setModalList([]);
     setDrawerList([]);
-    Object.keys(elementsMap)
-      .filter((id) => id.startsWith('Modal') || id.startsWith('Drawer'))
-      ?.forEach((id: string) => {
-        if (id.startsWith('Modal')) {
-          setModalList((prevList) => [...prevList, { id, name: `Modal(${id})` }]);
-        } else {
-          setDrawerList((prevList) => [...prevList, { id, name: `Drawer(${id})` }]);
-        }
-      });
+    const floats = Object.keys(elementsMap)
+      .filter((id) => id.startsWith('Modal') || id.startsWith('Drawer'));
+    const modals = floats.filter(v => v.startsWith('Modal'));
+    const drawers = floats.filter(v => v.startsWith('Drawer'));
+    modals.forEach((id, index) => {
+      const modal = elementsMap[id];
+      if (modal) {
+        setModalList((prevList) => [...prevList, { id, name: `Modal(${id})`, title: `弹窗${index + 1}` }]);
+      }
+    });
+    drawers.forEach((id, index) => {
+      const drawer = elementsMap[id];
+      if (drawer) {
+        setDrawerList((prevList) => [...prevList, { id, name: `Drawer(${id})`, title: `侧边弹窗${index + 1}` }]);
+      }
+    });
   }, [elementsMap]);
 
   // 更新当前显示的列表
   useEffect(() => {
     setCurrentItems(currentType === 1 ? modalList : drawerList);
-    setIsExpanded(isExpanded && currentType === 1 ? modalList.length > 0 : drawerList.length > 0);
+    // setIsExpanded(isExpanded && currentType === 1 ? modalList.length > 0 : drawerList.length > 0);
   }, [currentType, modalList, drawerList]);
 
   // 切换类型
   const handleTypeClick = (type: number) => {
+    const changed = currentType !== type;
     setCurrentType(type);
-    setIsExpanded(!isExpanded);
+    if (changed) {
+      setIsExpanded(true)
+    } else {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   // 打开弹框或抽屉
-  const handleItemClick = useCallback((item: CollectorItem, type: string) => {
-    setSelectedItem(item.id);
-    if (type === 'double') {
-      setIsExpanded(false);
-      const ref = getComponentRef(item.id);
-      ref.open({});
+  const handleItemClick = useCallback((item: CollectorItem) => {
+    if (selectedItem && selectedItem !== item.id) {
+      // 先关闭上一次弹框
+      const prevRef = getComponentRef(selectedItem);
+      if (prevRef) {
+        prevRef.close();
+      }
     }
-  }, []);
+    setSelectedItem(item.id);
+    const ref = getComponentRef(item.id);
+    ref.open({});
+    // setTimeout(() => {
+    //   setIsExpanded(false);
+    // }, 300);
+  }, [selectedItem]);
+
+  const handleCreate = useCallback(async () => {
+    const ele = ELE_MAP[currentType];
+    const { config, events, methods = [] } = (await getComponent(ele.type + 'Config'))?.default || {};
+    const newId = createId(ele.type);
+    addElement({
+      type: ele.type,
+      name: ele.name,
+      id: newId,
+      elements: [],
+      config,
+      events,
+      methods,
+    });
+  }, [currentType])
 
   // 删除弹框或抽屉
   const handleDelete = useCallback((targetId: string) => {
@@ -73,60 +126,46 @@ const FloatingCollector = () => {
       {isExpanded && (
         <div className={`${styles.collectorContent} ${styles.expanded}`}>
           <div className={styles.itemList}>
-            {currentItems.map((item) => (
-              <Tooltip title="单击选中，双击打开" placement="top" key={item.id}>
-                <Button
-                  onClick={() => handleItemClick(item, 'single')}
-                  onDoubleClick={() => handleItemClick(item, 'double')}
-                  className={`${styles.item} ${selectedItem === item.id ? styles.active : ''}`}
-                >
-                  <span className={styles.title}>{item.name}</span>
-                  <span className={styles.action}>
-                    <DeleteOutlined
-                      style={{ marginLeft: '5px' }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item.id);
-                      }}
-                    />
-                  </span>
-                </Button>
-              </Tooltip>
+            {currentItems.map((item, index) => (
+              <div
+                onClick={() => handleItemClick(item)}
+                className={`${styles.item} ${selectedItem === item.id ? styles.active : ''}`}
+              >
+                <span className={styles.title}>{item.title}</span>
+                <span className={styles.action}>
+                  <DeleteIcon
+                    style={{ fontSize: 17 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.id);
+                    }}
+                  />
+                </span>
+              </div>
             ))}
           </div>
+          <Button block variant="dashed" color="primary" icon={<PlusOutlined />} onClick={handleCreate}>创建</Button>
         </div>
       )}
 
       <div className={`${styles.iconContainer} ${isExpanded ? styles.expanded : ''}`}>
-        <Button disabled={modalList.length === 0} className={styles.iconButton} onClick={() => handleTypeClick(1)}>
-          <Badge count={modalList.length} size="small" color="#7d3fff" showZero>
-            <ModalIcon />
-          </Badge>
-          <span style={{ marginLeft: '5px' }}>弹窗</span>
-        </Button>
-        <Button disabled={drawerList.length === 0} className={styles.iconButton} onClick={() => handleTypeClick(2)}>
-          <Badge count={drawerList.length} size="small" color="#7d3fff" showZero>
-            <DrawerIcon />
-          </Badge>
-          <span style={{ marginLeft: '5px' }}>抽屉</span>
-        </Button>
+        <Tooltip title="弹框" placement="right">
+          <Button className={styles.iconButton} onClick={() => handleTypeClick(1)}>
+            <Badge count={modalList.length} size="small" color={token.colorPrimary} showZero>
+              <ModalIcon />
+            </Badge>
+          </Button>
+        </Tooltip>
+        <Tooltip title="抽屉" placement="right">
+          <Button className={styles.iconButton} onClick={() => handleTypeClick(2)}>
+            <Badge count={drawerList.length} size="small" color={token.colorPrimary} showZero>
+              <DrawerIcon />
+            </Badge>
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
 };
-
-const ModalIcon: React.FC = () => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    <path d="M9 4v16M15 4v16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 4" />
-  </svg>
-);
-
-const DrawerIcon: React.FC = () => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 3h18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" />
-    <path d="M15 3v18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
 
 export default FloatingCollector;

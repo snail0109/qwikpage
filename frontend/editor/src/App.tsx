@@ -29,6 +29,7 @@ function App() {
           colorPrimary: '#216EF7',
           colorLink: '#216EF7',
           colorInfo: '#216EF7',
+          controlHeight: 28,
         },
         components: {
           Button: {
