@@ -7,7 +7,7 @@ export const getPageDetail = (pageId: string) => {
 
 // 根据projectId和page path获取页面详情
 export const getPageDetailWithPath = (projectId: string, pageUrl: string) => {
-  return request.get(`/page/detail/${projectId}/${pageUrl}`);
+  return request.get(`/page/detail/${projectId}/${pageUrl || "*"}`);
 }
 
 

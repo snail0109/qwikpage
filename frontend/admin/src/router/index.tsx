@@ -24,6 +24,10 @@ export const router = [
         element: lazyLoad(React.lazy(() => import('@/pages/500'))),
       },
       {
+        index: true, // 添加 index 路由
+        element: lazyLoad(React.lazy(() => import('@/pages/project'))), // 默认组件
+      },
+      {
         path: '*',
         element: lazyLoad(React.lazy(() => import('@/pages/project'))),
       },
