@@ -120,6 +120,7 @@ pub fn run() {
             code::export_project,
             // 系统配置
             config::open_folder,
+            config::get_system_fonts,
             config::open_target_folder,
             config::set_theme,
             config::get_app_conf,

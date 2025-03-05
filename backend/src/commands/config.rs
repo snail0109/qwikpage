@@ -1,6 +1,7 @@
 use crate::{models::conf::AppConf, utils::get_app_root_dir};
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
+use font_kit::source::SystemSource;
 
 #[command]
 pub fn open_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
@@ -43,4 +44,12 @@ pub fn set_theme(app: AppHandle, theme: String) {
 #[command]
 pub fn get_app_conf(app: AppHandle) -> AppConf {
     AppConf::load(&app).unwrap()
+}
+
+// 获取系统字体信息
+#[command]
+pub fn get_system_fonts() -> Result<Vec<String>, String> {
+    let source = SystemSource::new();
+
+    Ok(source.all_families().map_err(|e| e.to_string())?)
 }
