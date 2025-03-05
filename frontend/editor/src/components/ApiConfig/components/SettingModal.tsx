@@ -125,6 +125,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       width={"450px"}
       title="接口配置"
       open={open}
+      onCancel={handleCancel}
       footer={customFooter}
     >
       <ConfigProvider
