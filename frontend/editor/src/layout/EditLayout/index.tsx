@@ -12,21 +12,33 @@ import { PanelKey } from "../components/Menu";
 
 const Menu = lazy(() => import("../components/Menu"));
 const ConfigPanel = lazy(() => import("../components/ConfigPanel/ConfigPanel"));
+
+// 左侧菜单宽度
+const DEFAULT_LEFT_SIZE = 270;
+// 配置面板宽度
+const DEFAULT_CONFIG_SIZE = 250;
+// 菜单固定宽度
+const MENU_SIZE = 50;
+
 /**
  * 编辑器布局组件
  */
 const EditLayout = () => {
-    const [sizes, setSizes] = useState<(number | string)[]>([266, window.innerWidth - 640, 266]);
+    const [sizes, setSizes] = useState<(number | string)[]>([DEFAULT_LEFT_SIZE, window.innerWidth - (DEFAULT_LEFT_SIZE + DEFAULT_CONFIG_SIZE), DEFAULT_CONFIG_SIZE]);
     const mode = usePageStore(useShallow((state) => state.mode));
-    const [fullScreen, setFullScreen] = useState(false);
     const [menuCollapsed, setMenuCollapsed] = useState(false);
-    const [lastMenuWidth, setLastMenuWidth] = useState<number>(270);
+    // 拖拽后左侧宽度
+    const [lastLeftWidth, setLastLeftWidth] = useState<number>(DEFAULT_LEFT_SIZE);
+    // 拖拽后配置面板宽度
+    const [lastConfigWidth, setLastConfigWidth] = useState<number>(DEFAULT_CONFIG_SIZE);
 
     const onTabChange = (tab: string) => {
         if ([PanelKey.CodingPanel, PanelKey.ApiList, PanelKey.Variable].includes(tab)) {
-            setFullScreen(true);
+            // 全屏
+            setSizes([window.innerWidth, 0, 0]);
         } else {
-            setFullScreen(false);
+            // 非全屏
+            setSizes([lastLeftWidth, window.innerWidth - (lastLeftWidth + lastConfigWidth), lastConfigWidth]);
         }
     };
 
@@ -34,19 +46,26 @@ const EditLayout = () => {
         setMenuCollapsed(collapsed);
         if (collapsed) {
             const currentWidth = Number(sizes[0]);
-            if (currentWidth > 50) {
-                setLastMenuWidth(currentWidth);
+            if (currentWidth > MENU_SIZE) {
+                setLastLeftWidth(currentWidth);
             }
-            setSizes([50, Number(sizes[1]) + (Number(sizes[0]) - 50), sizes[2]]);
+            // 拖拽后左侧宽度
+            setSizes([MENU_SIZE, Number(sizes[1]) + (Number(sizes[0]) - MENU_SIZE), sizes[2]]);
         } else {
-            setSizes([lastMenuWidth, Number(sizes[1]) - (lastMenuWidth - 50), sizes[2]]);
+            // 展开后左侧宽度
+            setSizes([lastLeftWidth, Number(sizes[1]) - (lastLeftWidth - MENU_SIZE), sizes[2]]);
         }
     };
 
     const handleResize = (newSizes: (number | string)[]) => {
         setSizes(newSizes);
-        if (!menuCollapsed && typeof newSizes[0] === 'number' && newSizes[0] > 50) {
-            setLastMenuWidth(newSizes[0]);
+        if (!menuCollapsed && typeof newSizes[0] === 'number' && newSizes[0] > MENU_SIZE) {
+            // 拖拽后左侧宽度
+            setLastLeftWidth(newSizes[0]);
+        }
+        if (typeof newSizes[2] === 'number' && newSizes[2] > 0) {
+            // 拖拽后配置面板宽度
+            setLastConfigWidth(newSizes[2]);
         }
     };
 
@@ -54,7 +73,7 @@ const EditLayout = () => {
         if (mode === "preview") {
             setSizes([0, "100%", 0]);
         } else {
-            setSizes([270, window.innerWidth - 520, 250]);
+            setSizes([DEFAULT_LEFT_SIZE, window.innerWidth - (DEFAULT_LEFT_SIZE + DEFAULT_CONFIG_SIZE), DEFAULT_CONFIG_SIZE]);
         }
     }, [mode]);
     // 模式切换，会导致子组件重新渲染
@@ -80,8 +99,8 @@ const EditLayout = () => {
                     >
                         {/* 菜单及其tab */}
                         <Splitter.Panel
-                            size={menuCollapsed ? 50 : sizes[0]}
-                            min={menuCollapsed ? 50 : 270}
+                            size={menuCollapsed ? MENU_SIZE : sizes[0]}
+                            min={menuCollapsed ? MENU_SIZE : DEFAULT_LEFT_SIZE}
                             resizable={!menuCollapsed}
                             style={{
                                 overflow: 'visible',
@@ -93,20 +112,16 @@ const EditLayout = () => {
                                 <Menu onTabChange={onTabChange} onCollapse={onMenuCollapse} />
                             </React.Suspense>
                         </Splitter.Panel>
-                        {!fullScreen && (
-                            <>
-                                {/* 编辑器 */}
-                                <Splitter.Panel size={sizes[1]}>
-                                    <Outlet></Outlet>
-                                </Splitter.Panel>
-                                {/* 配置面板 */}
-                                <Splitter.Panel collapsible size={sizes[2]} min={250}>
-                                    <React.Suspense fallback={<SpinLoading />}>
-                                        <ConfigPanel />
-                                    </React.Suspense>
-                                </Splitter.Panel>
-                            </>
-                        )}
+                        {/* 编辑器 */}
+                        <Splitter.Panel size={sizes[1]}>
+                            <Outlet></Outlet>
+                        </Splitter.Panel>
+                        {/* 配置面板 */}
+                        <Splitter.Panel collapsible size={sizes[2]} min={DEFAULT_CONFIG_SIZE}>
+                            <React.Suspense fallback={<SpinLoading />}>
+                                <ConfigPanel />
+                            </React.Suspense>
+                        </Splitter.Panel>
                     </Splitter>
                 </ConfigProvider>
             </div>
