@@ -98,15 +98,20 @@ const panels = [
 interface MenuProps {
     onTabChange: (tab: string) => void;
     onCollapse?: (collapsed: boolean) => void;
+    collapsed?: boolean;
 }
 
 const Menu: React.FC<MenuProps> = (props) => {
-    const { onTabChange, onCollapse } = props;
-    const [collapsed, setCollapsed] = useState(false);
+    const { onTabChange, onCollapse, collapsed: externalCollapsed } = props;
+    const [internalCollapsed, setInternalCollapsed] = useState(false);
+
+    const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
 
     const handleCollapseToggle = () => {
         const newCollapsed = !collapsed;
-        setCollapsed(newCollapsed);
+        if (externalCollapsed === undefined) {
+            setInternalCollapsed(newCollapsed);
+        }
         if (onCollapse) {
             onCollapse(newCollapsed);
         }

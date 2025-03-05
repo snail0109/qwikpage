@@ -27,18 +27,49 @@ const EditLayout = () => {
     const [sizes, setSizes] = useState<(number | string)[]>([DEFAULT_LEFT_SIZE, window.innerWidth - (DEFAULT_LEFT_SIZE + DEFAULT_CONFIG_SIZE), DEFAULT_CONFIG_SIZE]);
     const mode = usePageStore(useShallow((state) => state.mode));
     const [menuCollapsed, setMenuCollapsed] = useState(false);
+    const [previousMenuCollapsed, setPreviousMenuCollapsed] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
     // 拖拽后左侧宽度
     const [lastLeftWidth, setLastLeftWidth] = useState<number>(DEFAULT_LEFT_SIZE);
     // 拖拽后配置面板宽度
     const [lastConfigWidth, setLastConfigWidth] = useState<number>(DEFAULT_CONFIG_SIZE);
 
     const onTabChange = (tab: string) => {
-        if ([PanelKey.CodingPanel, PanelKey.ApiList, PanelKey.Variable].includes(tab)) {
-            // 全屏
+        const isFullscreenTab = [PanelKey.CodingPanel, PanelKey.ApiList, PanelKey.Variable].includes(tab);
+
+        if (isFullscreenTab) {
+            // 切换到全屏模式
+            // 保存当前菜单折叠状态
+            setPreviousMenuCollapsed(menuCollapsed);
+            // 如果左侧菜单是折叠状态，需要展开
+            if (menuCollapsed) {
+                setMenuCollapsed(false);
+            }
             setSizes([window.innerWidth, 0, 0]);
+            setIsFullscreen(true);
         } else {
-            // 非全屏
-            setSizes([lastLeftWidth, window.innerWidth - (lastLeftWidth + lastConfigWidth), lastConfigWidth]);
+            // 切换到非全屏模式
+
+            // 只有在从全屏模式切换回来时才恢复之前保存的折叠状态
+            if (isFullscreen) {
+                setMenuCollapsed(previousMenuCollapsed);
+
+                // 根据折叠状态设置合适的尺寸
+                if (previousMenuCollapsed) {
+                    setSizes([MENU_SIZE, window.innerWidth - (MENU_SIZE + lastConfigWidth), lastConfigWidth]);
+                } else {
+                    setSizes([lastLeftWidth, window.innerWidth - (lastLeftWidth + lastConfigWidth), lastConfigWidth]);
+                }
+
+                setIsFullscreen(false);
+            } else {
+                // 在非全屏标签之间切换，保持当前的折叠状态
+                if (menuCollapsed) {
+                    setSizes([MENU_SIZE, window.innerWidth - (MENU_SIZE + lastConfigWidth), lastConfigWidth]);
+                } else {
+                    setSizes([lastLeftWidth, window.innerWidth - (lastLeftWidth + lastConfigWidth), lastConfigWidth]);
+                }
+            }
         }
     };
 
@@ -49,7 +80,7 @@ const EditLayout = () => {
             if (currentWidth > MENU_SIZE) {
                 setLastLeftWidth(currentWidth);
             }
-            // 拖拽后左侧宽度
+            // 折叠后左侧宽度
             setSizes([MENU_SIZE, Number(sizes[1]) + (Number(sizes[0]) - MENU_SIZE), sizes[2]]);
         } else {
             // 展开后左侧宽度
@@ -109,7 +140,11 @@ const EditLayout = () => {
                             }}
                         >
                             <React.Suspense fallback={<SpinLoading />} >
-                                <Menu onTabChange={onTabChange} onCollapse={onMenuCollapse} />
+                                <Menu
+                                    onTabChange={onTabChange}
+                                    onCollapse={onMenuCollapse}
+                                    collapsed={menuCollapsed}
+                                />
                             </React.Suspense>
                         </Splitter.Panel>
                         {/* 编辑器 */}
