@@ -6,9 +6,12 @@
       padding: 0 12.5px;
       justify-content: center;
     }
+
     .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab:not(:first-child) {
-      margin-top: 25px; /* 其他元素的 margin-top 为 25px */
+      margin-top: 25px;
+      /* 其他元素的 margin-top 为 25px */
     }
+
     .ant-tabs-tab .anticon:not(:last-child) {
       margin-right: 0;
     }
@@ -17,11 +20,13 @@
 
 .menuContent {
   margin-left: -14px;
+
   :global {
     .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab {
       margin-top: 6px;
       margin-bottom: 6px;
     }
+
     .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-tab:not(:first-child) {
       margin-top: 6px;
     }
@@ -30,17 +35,39 @@
 
 // 组件大纲
 .outlinePanel {
-  height: calc(100vh - 110px);
+  height: calc(100vh - 70px);
   overflow-y: auto;
+
   :global {
+    .ant-tree-list-holder-inner .ant-tree-treenode {
+      &:hover {
+        background-color: #f6f6f6;
+        border-radius: 4px
+      }   
+    }
+
+    .ant-tree .ant-tree-treenode-selected {
+      background-color: #e8f0ff;
+      border-radius: 4px
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper:hover {
+      background-color: unset;
+    }
     .ant-tree .ant-tree-node-selected {
       // background-color: #9d5cff;
       // color: #fff;
-
     }
+
+    // tree showline时隐藏连接线（因为想用他自带的图标）
+    .ant-tree-show-line .ant-tree-indent-unit:before {
+      border-inline-end: unset;
+    }
+
     .ant-tree .ant-tree-node-content-wrapper {
       padding-inline: unset;
     }
+
     .ant-tree .ant-tree-switcher {
       margin-inline-end: unset;
     }
@@ -78,11 +105,13 @@
     -webkit-box-pack: center;
     -webkit-box-align: center;
     transition: all 0.3s;
+
     img {
       width: 40px;
       height: 40px;
     }
   }
+
   .itemName {
     display: flex;
     -webkit-box-pack: center;

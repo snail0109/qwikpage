@@ -1,6 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Tree, Row } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Tree } from "antd";
 import { usePageStore } from "@/stores/pageStore";
 import { useShallow } from "zustand/react/shallow";
 import style from "./index.module.less";
@@ -21,16 +20,7 @@ const OutlinePanel = memo(() => {
   );
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
-  const treeData: any = useMemo(
-    () => [
-      {
-        type: `页面【${pageName}】`,
-        id: "page",
-        elements,
-      },
-    ],
-    [elements]
-  );
+  const treeData: any = useMemo(() => elements, [elements]);
 
   useEffect(() => {
     if (selectedEl) {
@@ -105,9 +95,8 @@ const OutlinePanel = memo(() => {
   };
 
   return (
-    <Row className={style.outlinePanel}>
+    <div className={style.outlinePanel}>
       <Tree
-        blockNode
         showLine={{ showLeafIcon: true }}
         defaultExpandAll
         draggable={{ icon: false }}
@@ -116,9 +105,9 @@ const OutlinePanel = memo(() => {
         selectedKeys={selectedKeys}
         onSelect={handleSelect}
         onDrop={onDrop}
-        style={{ width: "100%" }}
+        blockNode
       />
-    </Row>
+    </div>
   );
 });
 
