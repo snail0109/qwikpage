@@ -1,21 +1,17 @@
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
+
+use crate::models::page::PageContent;
+use crate::utils::get_app_root_resource_dir;
+use futures::future::BoxFuture;
 use log::info;
 use reqwest;
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{fs, path::PathBuf};
-use zip;
 use tokio::fs as async_fs;
 
-const REPLACEMENT_CHARACTER: &str = "##replace##";
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "snake_case")]
-pub enum ExportType {
-    Fishx,
-    Fish,
-    Vue,
-}
-
+use super::error::{CodeGenError, Result};
 
 // 将 JSON 值转换为 JavaScript 表示的字符串
 pub fn value_to_js(v: &Value) -> String {
@@ -47,41 +43,190 @@ pub fn escape_string(s: &str) -> String {
         .replace('\t', "\\t")
 }
 
+/// 创建目录（如果不存在）
+pub async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
+    if !path.exists() {
+        async_fs::create_dir_all(path)
+            .await
+            .map_err(|e| CodeGenError::Io(e))?;
+    }
+    Ok(())
+}
 
-
-pub async fn download_temp(code_dir: &PathBuf, export_type: &ExportType) -> Result<(), String> {
-    // 根据 export_type 设置 template_url
-    info!("export_type: {:#?}", export_type);
-    let template_url = match export_type {
-        ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip"),
-        ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-vue3/app.zip"),
-        ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-fish/app.zip"),
-    };
-    // 下载代码模板
-    let template_path = code_dir.join("fishx-template.zip");
-
-    info!("下载代码模板......");
-    let response =
-        reqwest::get(template_url)
+/// 写入文件
+pub async fn write_file(path: PathBuf, content: &str) -> Result<()> {
+    async_fs::write(&path, content)
         .await
-        .map_err(|e| format!("下载模板失败: {}", e))?;
+        .map_err(|e| CodeGenError::Io(e))
+}
+
+/// 读取文件（如果存在）
+pub async fn read_file_if_exists(path: &Path) -> Result<String> {
+    match async_fs::read_to_string(path).await {
+        Ok(c) => Ok(c),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(String::new()),
+        Err(e) => Err(CodeGenError::Io(e)),
+    }
+}
+
+/// 更新配置文件
+pub async fn update_config_file(path: PathBuf, marker: &str, content: &str) -> Result<()> {
+    let original = read_file_if_exists(&path).await?;
+    let updated = original.replace(marker, &format!("{}\n", content));
+    write_file(path, &updated).await
+}
+
+/// 递归复制目录
+pub fn copy_directory_recursive(
+    source_dir: &PathBuf,
+    target_dir: &PathBuf,
+) -> BoxFuture<'static, Result<()>> {
+    let source_dir = source_dir.clone();
+    let target_dir = target_dir.clone();
+
+    Box::pin(async move {
+        // 确保目标目录存在
+        async_fs::create_dir_all(&target_dir)
+            .await
+            .map_err(|e| CodeGenError::Io(e))?;
+
+        // 读取源目录内容
+        let mut entries = async_fs::read_dir(source_dir)
+            .await
+            .map_err(|e| CodeGenError::Io(e))?;
+
+        while let Some(entry) = entries
+            .next_entry()
+            .await
+            .map_err(|e| CodeGenError::Io(e))?
+        {
+            let source_path = entry.path();
+            let file_name = entry
+                .file_name()
+                .into_string()
+                .map_err(|_| CodeGenError::Other(format!("无效的文件名: {:?}", source_path)))?;
+            let target_path = &target_dir.join(file_name);
+
+            if source_path.is_dir() {
+                // 递归复制子目录
+                copy_directory_recursive(&source_path, &target_path).await?;
+            } else {
+                // 复制文件
+                async_fs::copy(&source_path, &target_path)
+                    .await
+                    .map_err(|e| CodeGenError::Io(e))?;
+            }
+        }
+
+        Ok(())
+    })
+}
+
+/// 导出资源文件
+pub async fn export_resources(
+    project_id: &str,
+    code_dir: &PathBuf,
+    public_dir_name: &str,
+) -> Result<()> {
+    // 获取项目资源目录
+    let prj_res_dir = get_app_root_resource_dir().join(project_id);
+
+    if !prj_res_dir.exists() {
+        info!("资源目录不存在: {:?}", prj_res_dir);
+        return Ok(());
+    }
+
+    // 目标目录：code_dir 的 public 子目录
+    let public_dir = code_dir.join(public_dir_name);
+
+    // 确保目标目录存在
+    async_fs::create_dir_all(&public_dir)
+        .await
+        .map_err(|e| CodeGenError::Io(e))?;
+
+    // 读取资源目录内容
+    let mut entries = async_fs::read_dir(&prj_res_dir)
+        .await
+        .map_err(|e| CodeGenError::Io(e))?;
+
+    // 复制目录内容
+    while let Some(entry) = entries
+        .next_entry()
+        .await
+        .map_err(|e| CodeGenError::Io(e))?
+    {
+        let source_path = entry.path();
+        let file_name = entry
+            .file_name()
+            .into_string()
+            .map_err(|_| CodeGenError::Other(format!("无效的文件名: {:?}", source_path)))?;
+        let target_path = public_dir.join(file_name);
+
+        if source_path.is_dir() {
+            // 如果是目录，递归复制
+            copy_directory_recursive(&source_path, &target_path).await?;
+        } else {
+            // 如果是文件，直接复制
+            async_fs::copy(&source_path, &target_path)
+                .await
+                .map_err(|e| CodeGenError::Io(e))?;
+        }
+    }
+
+    Ok(())
+}
+
+/// 处理页面数据，替换资源路径
+pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
+    let resource_path = get_app_root_resource_dir().join(project_id);
+    let resource_path_str = resource_path.to_str().unwrap_or("");
+
+    // 替换资源路径
+    let processed_data = page_data.replace(resource_path_str, "/");
+
+    // 解析JSON
+    serde_json::from_str(&processed_data).map_err(|e| CodeGenError::Json(e))
+}
+
+/// 替换模板中的变量
+pub fn replace_template(template: &str, replacements: &HashMap<&str, impl AsRef<str>>) -> String {
+    let mut result = template.to_string();
+    for (key, value) in replacements {
+        result = result.replace(&format!("{{{}}}", key), value.as_ref());
+    }
+    result
+}
+
+/// 下载并解压模板文件
+pub async fn download_template(template_url: &str, output_dir: &PathBuf) -> Result<()> {
+    // 下载代码模板
+    let template_path = output_dir.join("template.zip");
+
+    info!("下载代码模板: {}", template_url);
+    let response = reqwest::get(template_url)
+        .await
+        .map_err(|e| CodeGenError::DownloadError(e.to_string()))?;
+
     let content = response
         .bytes()
         .await
-        .map_err(|e| format!("读取响应内容失败: {}", e))?;
+        .map_err(|e| CodeGenError::DownloadError(e.to_string()))?;
 
-    info!("保存zip文件");
+    info!("保存zip文件到: {:?}", template_path);
     async_fs::write(&template_path, content)
-    .await
-    .map_err(|e| format!("保存模板文件失败: {}", e))?;
+        .await
+        .map_err(|e| CodeGenError::Io(e))?;
 
     info!("解压文件");
-    let file = fs::File::open(&template_path).map_err(|e| format!("打开zip文件失败: {}", e))?;
-    let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("读取zip文件失败: {}", e))?;
-    extract_archive(&mut archive, code_dir)?;
+    let file = std::fs::File::open(&template_path).map_err(|e| CodeGenError::Io(e))?;
+
+    let mut archive = zip::ZipArchive::new(file)
+        .map_err(|e| CodeGenError::Other(format!("读取zip文件失败: {}", e)))?;
+
+    extract_archive(&mut archive, output_dir)?;
 
     info!("删除zip文件");
-    fs::remove_file(&template_path).map_err(|e| format!("删除zip文件失败: {}", e))?;
+    std::fs::remove_file(&template_path).map_err(|e| CodeGenError::Io(e))?;
 
     // mac 下会生成 __MACOSX 文件
     #[cfg(target_os = "macos")]
@@ -90,30 +235,44 @@ pub async fn download_temp(code_dir: &PathBuf, export_type: &ExportType) -> Resu
     Ok(())
 }
 
-fn extract_archive(archive: &mut zip::ZipArchive<fs::File>, code_dir: &PathBuf) -> Result<(), String> {
+/// 解压文件
+fn extract_archive(
+    archive: &mut zip::ZipArchive<std::fs::File>,
+    output_dir: &PathBuf,
+) -> Result<()> {
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i).map_err(|e| format!("访问zip文件条目失败: {}", e))?;
-        let outpath = code_dir.join(file.name());
+        let mut file = archive
+            .by_index(i)
+            .map_err(|e| CodeGenError::Other(format!("访问zip文件条目失败: {}", e)))?;
+
+        let outpath = output_dir.join(file.name());
+
         if file.name().ends_with('/') {
-            fs::create_dir_all(&outpath).map_err(|e| format!("创建目录失败: {}", e))?;
+            std::fs::create_dir_all(&outpath).map_err(|e| CodeGenError::Io(e))?;
         } else {
             if let Some(p) = outpath.parent() {
                 if !p.exists() {
-                    fs::create_dir_all(p).map_err(|e| format!("创建父目录失败: {}", e))?;
+                    std::fs::create_dir_all(p).map_err(|e| CodeGenError::Io(e))?;
                 }
             }
-            let mut outfile = fs::File::create(&outpath).map_err(|e| format!("创建文件失败: {}", e))?;
-            std::io::copy(&mut file, &mut outfile).map_err(|e| format!("复制文件内容失败: {}", e))?;
+
+            let mut outfile = std::fs::File::create(&outpath).map_err(|e| CodeGenError::Io(e))?;
+
+            std::io::copy(&mut file, &mut outfile).map_err(|e| CodeGenError::Io(e))?;
         }
     }
+
     Ok(())
 }
 
+/// 删除macOS特有的文件夹
 #[cfg(target_os = "macos")]
-fn remove_macosx_folder(template_path: &PathBuf) -> Result<(), String> {
+fn remove_macosx_folder(template_path: &PathBuf) -> Result<()> {
     let macosx_path = template_path.with_file_name("__MACOSX");
+
     if macosx_path.exists() {
-        fs::remove_dir_all(macosx_path).map_err(|e| format!("删除macosx文件夹失败: {}", e))?;
+        std::fs::remove_dir_all(macosx_path).map_err(|e| CodeGenError::Io(e))?;
     }
+
     Ok(())
 }
