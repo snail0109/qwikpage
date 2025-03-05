@@ -1,5 +1,5 @@
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useOsInfo } from "@/utils/os";
 import { Button, Flex } from "antd";
 import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
@@ -23,10 +23,14 @@ export function WindowControls({ className, onlyX }: Props) {
         return null;
     }
 
+    const isChangeTheme = useMemo(() => {
+        return ['/project/pages', '/resources'].includes(location.pathname)
+    }, [location.pathname])
+
     return (
         <Flex justify="end" style={{ width: WINDOW_CONTROLS_WIDTH }} data-tauri-drag-region>
             <Button type="text" onClick={() => getCurrentWebviewWindow().minimize()}>
-                <MinusOutlined style={{ color: location.pathname === '/project/pages' ? '#fff' : '#000' }} />
+                <MinusOutlined style={{ color: isChangeTheme ? '#fff' : '#000' }} />
             </Button>
             <Button
                 type="text"
@@ -35,7 +39,7 @@ export function WindowControls({ className, onlyX }: Props) {
                     await w.toggleMaximize();
                     setMaximized(await w.isMaximized());
                 }}
-                style={{ color: location.pathname === '/project/pages' ? '#fff' : '#000' }}
+                style={{ color: isChangeTheme ? '#fff' : '#000' }}
             >
                 {maximized ? (
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -51,7 +55,7 @@ export function WindowControls({ className, onlyX }: Props) {
                 )}
             </Button>
             <Button type="text" onClick={() => getCurrentWebviewWindow().close()}>
-                <CloseOutlined style={{ color: location.pathname === '/project/pages' ? '#fff' : '#000' }} />
+                <CloseOutlined style={{ color: isChangeTheme ? '#fff' : '#000' }} />
             </Button>
         </Flex>
     );
