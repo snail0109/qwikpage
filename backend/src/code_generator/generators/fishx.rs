@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use log::info;
 
-use crate::code_generator::error::Result;
+use crate::error::Result;
 use crate::code_generator::utils::value_to_js;
 use crate::models::page::{Element, PageContent};
 

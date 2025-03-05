@@ -11,7 +11,7 @@ use reqwest;
 use serde_json::Value;
 use tokio::fs as async_fs;
 
-use super::error::{CodeGenError, Result};
+use crate::error::{CmdError, Result};
 
 // 将 JSON 值转换为 JavaScript 表示的字符串
 pub fn value_to_js(v: &Value) -> String {
@@ -48,7 +48,7 @@ pub async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
     if !path.exists() {
         async_fs::create_dir_all(path)
             .await
-            .map_err(|e| CodeGenError::Io(e))?;
+            .map_err(|e| CmdError::Io(e))?;
     }
     Ok(())
 }
@@ -57,7 +57,7 @@ pub async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
 pub async fn write_file(path: PathBuf, content: &str) -> Result<()> {
     async_fs::write(&path, content)
         .await
-        .map_err(|e| CodeGenError::Io(e))
+        .map_err(|e| CmdError::Io(e))
 }
 
 /// 读取文件（如果存在）
@@ -65,7 +65,7 @@ pub async fn read_file_if_exists(path: &Path) -> Result<String> {
     match async_fs::read_to_string(path).await {
         Ok(c) => Ok(c),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(String::new()),
-        Err(e) => Err(CodeGenError::Io(e)),
+        Err(e) => Err(CmdError::Io(e)),
     }
 }
 
@@ -88,23 +88,23 @@ pub fn copy_directory_recursive(
         // 确保目标目录存在
         async_fs::create_dir_all(&target_dir)
             .await
-            .map_err(|e| CodeGenError::Io(e))?;
+            .map_err(|e| CmdError::Io(e))?;
 
         // 读取源目录内容
         let mut entries = async_fs::read_dir(source_dir)
             .await
-            .map_err(|e| CodeGenError::Io(e))?;
+            .map_err(|e| CmdError::Io(e))?;
 
         while let Some(entry) = entries
             .next_entry()
             .await
-            .map_err(|e| CodeGenError::Io(e))?
+            .map_err(|e| CmdError::Io(e))?
         {
             let source_path = entry.path();
             let file_name = entry
                 .file_name()
                 .into_string()
-                .map_err(|_| CodeGenError::Other(format!("无效的文件名: {:?}", source_path)))?;
+                .map_err(|_| CmdError::Other(format!("无效的文件名: {:?}", source_path)))?;
             let target_path = &target_dir.join(file_name);
 
             if source_path.is_dir() {
@@ -114,7 +114,7 @@ pub fn copy_directory_recursive(
                 // 复制文件
                 async_fs::copy(&source_path, &target_path)
                     .await
-                    .map_err(|e| CodeGenError::Io(e))?;
+                    .map_err(|e| CmdError::Io(e))?;
             }
         }
 
@@ -142,24 +142,24 @@ pub async fn export_resources(
     // 确保目标目录存在
     async_fs::create_dir_all(&public_dir)
         .await
-        .map_err(|e| CodeGenError::Io(e))?;
+        .map_err(|e| CmdError::Io(e))?;
 
     // 读取资源目录内容
     let mut entries = async_fs::read_dir(&prj_res_dir)
         .await
-        .map_err(|e| CodeGenError::Io(e))?;
+        .map_err(|e| CmdError::Io(e))?;
 
     // 复制目录内容
     while let Some(entry) = entries
         .next_entry()
         .await
-        .map_err(|e| CodeGenError::Io(e))?
+        .map_err(|e| CmdError::Io(e))?
     {
         let source_path = entry.path();
         let file_name = entry
             .file_name()
             .into_string()
-            .map_err(|_| CodeGenError::Other(format!("无效的文件名: {:?}", source_path)))?;
+            .map_err(|_| CmdError::Other(format!("无效的文件名: {:?}", source_path)))?;
         let target_path = public_dir.join(file_name);
 
         if source_path.is_dir() {
@@ -169,7 +169,7 @@ pub async fn export_resources(
             // 如果是文件，直接复制
             async_fs::copy(&source_path, &target_path)
                 .await
-                .map_err(|e| CodeGenError::Io(e))?;
+                .map_err(|e| CmdError::Io(e))?;
         }
     }
 
@@ -196,7 +196,7 @@ pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageConten
     let processed_data = page_data.replace(resource_path_str, "/");
 
     // 解析JSON
-    serde_json::from_str(&processed_data).map_err(|e| CodeGenError::Json(e))
+    serde_json::from_str(&processed_data).map_err(|e| CmdError::Json(e))
 }
 
 /// 替换模板中的变量
@@ -216,28 +216,28 @@ pub async fn download_template(template_url: &str, output_dir: &PathBuf) -> Resu
     info!("下载代码模板: {}", template_url);
     let response = reqwest::get(template_url)
         .await
-        .map_err(|e| CodeGenError::DownloadError(e.to_string()))?;
+        .map_err(|e| CmdError::DownloadError(e.to_string()))?;
 
     let content = response
         .bytes()
         .await
-        .map_err(|e| CodeGenError::DownloadError(e.to_string()))?;
+        .map_err(|e| CmdError::DownloadError(e.to_string()))?;
 
     info!("保存zip文件到: {:?}", template_path);
     async_fs::write(&template_path, content)
         .await
-        .map_err(|e| CodeGenError::Io(e))?;
+        .map_err(|e| CmdError::Io(e))?;
 
     info!("解压文件");
-    let file = std::fs::File::open(&template_path).map_err(|e| CodeGenError::Io(e))?;
+    let file = std::fs::File::open(&template_path).map_err(|e| CmdError::Io(e))?;
 
     let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| CodeGenError::Other(format!("读取zip文件失败: {}", e)))?;
+        .map_err(|e| CmdError::Other(format!("读取zip文件失败: {}", e)))?;
 
     extract_archive(&mut archive, output_dir)?;
 
     info!("删除zip文件");
-    std::fs::remove_file(&template_path).map_err(|e| CodeGenError::Io(e))?;
+    std::fs::remove_file(&template_path).map_err(|e| CmdError::Io(e))?;
 
     // mac 下会生成 __MACOSX 文件
     #[cfg(target_os = "macos")]
@@ -254,22 +254,22 @@ fn extract_archive(
     for i in 0..archive.len() {
         let mut file = archive
             .by_index(i)
-            .map_err(|e| CodeGenError::Other(format!("访问zip文件条目失败: {}", e)))?;
+            .map_err(|e| CmdError::Other(format!("访问zip文件条目失败: {}", e)))?;
 
         let outpath = output_dir.join(file.name());
 
         if file.name().ends_with('/') {
-            std::fs::create_dir_all(&outpath).map_err(|e| CodeGenError::Io(e))?;
+            std::fs::create_dir_all(&outpath).map_err(|e| CmdError::Io(e))?;
         } else {
             if let Some(p) = outpath.parent() {
                 if !p.exists() {
-                    std::fs::create_dir_all(p).map_err(|e| CodeGenError::Io(e))?;
+                    std::fs::create_dir_all(p).map_err(|e| CmdError::Io(e))?;
                 }
             }
 
-            let mut outfile = std::fs::File::create(&outpath).map_err(|e| CodeGenError::Io(e))?;
+            let mut outfile = std::fs::File::create(&outpath).map_err(|e| CmdError::Io(e))?;
 
-            std::io::copy(&mut file, &mut outfile).map_err(|e| CodeGenError::Io(e))?;
+            std::io::copy(&mut file, &mut outfile).map_err(|e| CmdError::Io(e))?;
         }
     }
 
@@ -282,7 +282,7 @@ fn remove_macosx_folder(template_path: &PathBuf) -> Result<()> {
     let macosx_path = template_path.with_file_name("__MACOSX");
 
     if macosx_path.exists() {
-        std::fs::remove_dir_all(macosx_path).map_err(|e| CodeGenError::Io(e))?;
+        std::fs::remove_dir_all(macosx_path).map_err(|e| CmdError::Io(e))?;
     }
 
     Ok(())

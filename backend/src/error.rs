@@ -1,10 +1,11 @@
 use thiserror::Error;
 use std::io;
 
-pub type Result<T> = std::result::Result<T, CodeGenError>;
+pub type Result<T> = std::result::Result<T, CmdError>;
 
 #[derive(Error, Debug)]
-pub enum CodeGenError {
+pub enum CmdError {
+    // 出码
     #[error("下载模板失败: {0} 请关闭代理",)]
     DownloadError(String),
 
@@ -14,8 +15,6 @@ pub enum CodeGenError {
     #[error("项目没有页面")]
     NoPages,
 
-    #[error("资源错误: {0}")]
-    ResourceError(String),
 
     #[error("IO错误: {0}")]
     Io(#[from] io::Error),
@@ -35,18 +34,21 @@ pub enum CodeGenError {
     #[error("配置错误: {0}")]
     ConfigError(String),
 
+    #[error("资源错误: {0}")]
+    ResourceError(String),
+
     #[error("其他错误: {0}")]
     Other(String),
 }
 
-impl From<String> for CodeGenError {
+impl From<String> for CmdError {
     fn from(error: String) -> Self {
-        CodeGenError::Other(error)
+        CmdError::Other(error)
     }
 }
 
-impl From<&str> for CodeGenError {
+impl From<&str> for CmdError {
     fn from(error: &str) -> Self {
-        CodeGenError::Other(error.to_string())
+        CmdError::Other(error.to_string())
     }
 } 

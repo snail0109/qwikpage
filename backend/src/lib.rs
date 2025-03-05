@@ -6,6 +6,7 @@ mod service;
 mod setup;
 mod types;
 mod utils;
+mod error;
 
 use crate::{
     commands::{code, config, group, page, project, resource},

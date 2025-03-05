@@ -3,7 +3,7 @@ pub mod fishx;
 use fishx::FishxGenerator;
 
 use crate::code_generator::config::GeneratorConfig;
-use crate::code_generator::error::Result;
+use crate::error::Result;
 use crate::models::page::{Element, Page, PageContent};
 
 
