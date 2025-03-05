@@ -2,6 +2,7 @@ import { Row } from "antd";
 import Editor, { loader } from "@monaco-editor/react";
 import { useRef, useEffect, useState } from "react";
 import { usePageStore } from "@/stores/pageStore";
+import styles from "./index.module.less";
 
 /**
  * 代码面板
@@ -26,6 +27,10 @@ const CodingPanel = () => {
     function handleEditorDidMount(editor: { getValue: () => string }) {
         editorRef.current = editor;
         editorRef.current?.setValue(JSON.stringify({ page }, null, 2));
+        // // 设置中文语言包
+        // editorRef.current?.setModelLanguage(editor.getModel(), "json");
+        // // 设置 Monaco 编辑器的语言环境为中文
+        // editorRef.current?.setLocale('zh-cn'); // 设置为中文
     }
 
     useEffect(() => {
@@ -37,6 +42,7 @@ const CodingPanel = () => {
             <Editor
                 height="calc(100vh - 36px)"
                 language="json"
+                className={styles.dslEditor}
                 theme={theme === "dark" ? "vs-dark" : "vs-light"}
                 options={{
                     lineNumbers: "on",

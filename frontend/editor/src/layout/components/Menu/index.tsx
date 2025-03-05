@@ -14,7 +14,7 @@ import styles from "./index.module.less";
 // 组件大纲
 const OutlinePanel = lazy(() => import("./OutlinePanel"));
 // 页面源码
-const CodingPanel = lazy(() => import("./Components/CodingPanel"));
+const CodingPanel = lazy(() => import("./Components/CodingPanel/CodingPanel"));
 // 接口列表
 const ApiList = lazy(() => import("./Components/ApiList/ApiList"));
 // 页面变量

@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams, useOutletContext } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Layout, Button, message } from "antd";
-import { SettingOutlined, SaveOutlined, ExportOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import storage from "@/utils/storage";
@@ -12,6 +12,8 @@ import { WindowControls } from "./WindowControls";
 import { save } from "@tauri-apps/plugin-dialog";
 import { projectService, pageService } from "@/services";
 import Logo from "@/assets/icons/qwikpage-logo.svg?react";
+import ExportIcon from "@/assets/icons/ExportIcon.svg?react";
+import SaveIcon from "@/assets/icons/SaveIcon.svg?react";
 import { PanelKey } from "@/constants/panelKeys";
 const appWebview = getCurrentWebviewWindow();
 
@@ -245,7 +247,7 @@ const Header = memo(() => {
                         <>
                             <div className={styles.dslBtns}>
                                 <Button
-                                    icon={<SaveOutlined />}
+                                    icon={<SaveIcon />}
                                     type="text"
                                     iconPosition={'start'}
                                     size="small"
@@ -255,7 +257,7 @@ const Header = memo(() => {
                                     保存
                                 </Button>
                                 <Button
-                                    icon={<ExportOutlined />}
+                                    icon={<ExportIcon />}
                                     type="text"
                                     iconPosition={'start'}
                                     size="small"
