@@ -1,11 +1,12 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
-import { Form, Modal, Tabs } from 'antd';
-import type { TabsProps } from 'antd';
-import BaseSetting from './BaseSetting';
-import ReturnStructure from './ReturnStructure';
-import ReturnTips from './ReturnTips';
-import { usePageStore } from '@/stores/pageStore';
-import { generateUUID } from '@/utils/util';
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { Form, Modal, Tabs, ConfigProvider, Button } from "antd";
+import type { TabsProps } from "antd";
+import BaseSetting from "./BaseSetting";
+import ReturnStructure from "./ReturnStructure";
+import ReturnTips from "./ReturnTips";
+import { usePageStore } from "@/stores/pageStore";
+import { generateUUID } from "@/utils/util";
+import styles from "../index.module.less";
 
 export type SettingModalProp = {
   update?: (id: string) => void;
@@ -22,22 +23,22 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   // 初始化接口配置数据
   const initValue = {
-    method: 'GET',
-    url: '',
-    sourceType: 'json',
-    params: [{ key: '', value: '' }],
-    contentType: 'application/json',
-    replaceData: 'merge',
+    method: "GET",
+    url: "",
+    sourceType: "json",
+    params: [{ key: "", value: "" }],
+    contentType: "application/json",
+    replaceData: "merge",
     isCors: true,
     result: {
-      code: 'code',
-      data: 'data',
-      msg: 'msg',
+      code: "code",
+      data: "data",
+      msg: "msg",
       codeValue: 0,
     },
     tips: {
-      success: '请求成功',
-      fail: '请求失败',
+      success: "请求成功",
+      fail: "请求失败",
       isSuccess: true,
       isError: true,
     },
@@ -57,22 +58,22 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     },
   }));
 
-  const items: TabsProps['items'] = [
+  const items: TabsProps["items"] = [
     {
-      key: 'base-set',
+      key: "base-set",
       label: `接口设置`,
       forceRender: true,
       children: <BaseSetting />,
     },
     {
-      key: 'structure',
-      label: '返回结构设置',
+      key: "structure",
+      label: "返回结构设置",
       forceRender: true,
       children: <ReturnStructure />,
     },
     {
-      key: 'tips',
-      label: '消息提示设置',
+      key: "tips",
+      label: "消息提示设置",
       forceRender: true,
       children: <ReturnTips />,
     },
@@ -100,11 +101,43 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     setOpen(false);
     form.resetFields();
   }
+
+  const customFooter = () => (
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button color="primary" variant="outlined" onClick={handleCancel}>
+          测试
+        </Button>
+        <div>
+          <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
+            取消
+          </Button>
+          <Button type="primary" onClick={handleOk}>
+            确定
+          </Button>
+        </div>
+      </div>
+  );
+  
+
   return (
-    <Modal width={'800px'} okText="确认" cancelText="取消" title="接口配置" open={open} onOk={handleOk} onCancel={handleCancel}>
-      <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 19 }} style={{ maxWidth: 800 }} autoComplete="off">
-        <Tabs defaultActiveKey="1" items={items} />
-      </Form>
+    <Modal
+      wrapClassName={styles.apiSettingModal}
+      width={"450px"}
+      title="接口配置"
+      open={open}
+      footer={customFooter}
+    >
+      <ConfigProvider
+        theme={{
+          token: {
+            fontSize: 12,
+          },
+        }}
+      >
+        <Form form={form} layout="vertical" style={{ maxWidth: 450 }} autoComplete="off">
+          <Tabs defaultActiveKey="1" items={items} size="small" />
+        </Form>
+      </ConfigProvider>
     </Modal>
   );
 };

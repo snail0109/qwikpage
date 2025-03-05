@@ -8,3 +8,35 @@
   margin-bottom: 10px;
   padding: 0 10px;
 }
+
+.apiSettingModal {
+  .corsExtra {
+    padding-left: 6px;
+    color: var(--ant-color-text-description);
+  }
+  :global {
+    .ant-tabs {
+      .ant-tabs-tab {
+        font-size: var(--ant-modal-title-font-size);
+      }
+    }
+
+    .ant-form-item {
+      position: relative;
+
+      .ant-form-item-control {
+        position: unset;
+      }
+
+      .ant-form-item-additional .ant-form-item-extra {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+      }
+
+      .ant-switch.ant-switch-checked {
+        background-color: #23971F;
+      }
+    }
+  }
+}
