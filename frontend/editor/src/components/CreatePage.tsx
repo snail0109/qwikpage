@@ -159,7 +159,7 @@ const CreatePage = (props: IModalProp) => {
         >
           <Input placeholder="请输入页面路径，例如: /dashboard" />
         </Form.Item>
-        <Form.Item label="所属项目" name="projectId" rules={[{ required: true, message: '请选择所属项目' }]}>
+        <Form.Item hidden label="所属项目" name="projectId" rules={[{ required: true, message: '请选择所属项目' }]}>
           <Select
             placeholder="请选择所属项目"
             options={projectList}
