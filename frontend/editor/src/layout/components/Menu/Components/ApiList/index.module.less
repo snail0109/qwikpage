@@ -7,20 +7,33 @@
   font-size: 12px;
   border-radius: 6px;
 }
+
 .apiConfigHeader {
-  width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
-  margin-bottom: 5px;
+  height: 36px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+
+  :global {
+    .ant-btn {
+      padding: unset;
+    }
+  }
+
 }
+
 .apiConfigBottom {
   width: 100%;
 }
+
 .apiConfigName {
   max-width: calc(100% - 96px);
   text-overflow: ellipsis;
 }
+
 .apiConfigAction {
   width: 96px;
 }
