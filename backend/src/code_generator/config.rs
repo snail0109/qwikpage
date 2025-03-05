@@ -57,9 +57,18 @@ impl ExportType {
     /// 获取模板URL
     pub fn get_template_url(&self) -> String {
         match self {
-            ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-fishx/app.zip"),
-            ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-vue3/app.zip"),
-            ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-fish/app.zip"),
+            ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-template/fishx.zip"),
+            ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-template/vue.zip"),
+            ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-template/vue.zip"),
+        }
+    }
+
+     /// 转换为字符串
+     pub fn to_string(&self) -> String {
+        match self {
+            ExportType::Fishx => String::from("fishx"),
+            ExportType::Fish => String::from("fish"),
+            ExportType::Vue => String::from("vue"),
         }
     }
 }

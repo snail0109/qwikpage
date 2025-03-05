@@ -15,6 +15,10 @@ use crate::code_generator::utils::{
     replace_template, update_config_file, write_file,
 };
 
+const BASE_DIR_NAME: &str = "fishx";  
+
+const PUBLIC_RESPIRCE_PATH: &str = "fishx/public";  
+
 /// Fishx框架代码生成器
 #[derive(Debug)]
 
@@ -64,7 +68,7 @@ impl CodeGenerator for FishxGenerator {
         // 创建页面目录
         let pages_dir = config
             .output_dir
-            .join("app")
+            .join(BASE_DIR_NAME)
             .join("src")
             .join("pages")
             .join(&comp_name);
@@ -78,7 +82,7 @@ impl CodeGenerator for FishxGenerator {
 
     async fn export_resources(&self, config: &GeneratorConfig) -> Result<()> {
         // 使用基础生成器的资源导出功能
-        export_resources(&config.project_id, &config.output_dir, "app/public").await
+        export_resources(&config.project_id, &config.output_dir, PUBLIC_RESPIRCE_PATH).await
     }
 
     async fn download_template(&self, config: &GeneratorConfig) -> Result<()> {
@@ -119,8 +123,8 @@ impl CodeGenerator for FishxGenerator {
 
 impl FishxGenerator {
     /// 处理路由和菜单
-    async fn handle_routes(&self, code_dir: &PathBuf, pages: &[Page]) -> Result<()> {
-        let config_dir = code_dir.join("app").join("src").join("config");
+    async fn handle_routes(&self, output_dir: &PathBuf, pages: &[Page]) -> Result<()> {
+        let config_dir = output_dir.join(BASE_DIR_NAME).join("src").join("config");
 
         let mut routes = String::new();
         let mut menus = String::new();

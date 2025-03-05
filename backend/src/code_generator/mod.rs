@@ -25,7 +25,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     info!("======开始导出代码========");
 
     info!("查询项目 {:?} 页面信息", &params.project_id);
-    let page_list = Page::list_with_options(params.project_id.clone()).unwrap();
+    let page_list = Page::list_with_options(params.project_id.clone())?;
 
     let page_len = page_list.len();
     if page_len == 0 {
@@ -58,13 +58,11 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         ExportType::Vue => todo!(),
     };
 
-    info!("使用 {} 生成器导出代码", generator.name());
-
     // 下载模板
     info!("开始下载模板...");
     generator.download_template(&config).await.map_err(|e| {
         error!("下载模板失败: {}", e);
-        CodeGenError::DownloadError(e.to_string()) 
+        CodeGenError::DownloadError(e.to_string())
     })?;
     info!("模板下载成功");
 
