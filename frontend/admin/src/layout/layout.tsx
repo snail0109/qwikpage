@@ -39,9 +39,8 @@ const AdminLayout = () => {
         if (!detail.id) {
           return navigate('/404?type=project');
         }
-        const paths = pathname.split("/").filter(v => v)
-        if (paths.length <= 2 || pathname.endsWith('welcome')) {
-          navigate(`/project/${projectId}/welcome`);
+        if (pathname.endsWith('welcome')) {
+          return navigate(`/project/${projectId}/welcome`);
         }
         const { menuTree, buttons, pageMap, menuMap } = arrayToTree([]);
         storage.set('buttons', buttons);

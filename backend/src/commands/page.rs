@@ -43,6 +43,12 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Pag
         "Page::get_page_detail_with_path start, project_id: {:?}, path: {}",
         project_id, path
     );
+    // 如果 path 是 "*", 则将其处理为 "/"
+    let effective_path = if path == "*" {
+        "/".to_string()
+    } else {
+        format!("/{}", path)
+    };
     let pages_list: PageList =
         Page::list(1, 20, project_id, Some("".to_string())).map_err(|e| {
             error!("Failed to list pages: {}", e);
@@ -50,16 +56,16 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Pag
         })?;
     // 查找与给定 path 匹配的页面
     for page in pages_list.list {
-        if page.path.as_ref() == Some(&format!("/{}", path)) {
+        if page.path.as_ref() == Some(&effective_path) {
             // 进行匹配
-            info!("Page::getMartten, path: {}", path);
+            info!("Page::getMartten, path: {}", effective_path);
             return Ok(page);
         }
     }
     // 如果没有找到匹配的页面，返回一个错误
     Err(ErrorResponse::not_found(format!(
         "未找到匹配的页面，路径: {}",
-        path
+        effective_path
     )))
 }
 

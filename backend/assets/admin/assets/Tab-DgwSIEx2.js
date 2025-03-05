@@ -1,1 +1,0 @@
-import{r as e,j as t}from"./index-BRa5tvbC.js";import{M as n}from"./Page-BVmDNsSs.js";import"./index-PbVBqIn6.js";import"./index-CErGxmFP.js";const l=({config:s,elements:a},o)=>{const[i,r]=e.useState(!0);return e.useImperativeHandle(o,()=>({show(){r(!0)},hide(){r(!1)}})),i&&t.jsx("div",{style:s.style,children:t.jsx(n,{elements:a})})},f=e.forwardRef(l);export{f as default};
