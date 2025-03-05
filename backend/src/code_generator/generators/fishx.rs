@@ -132,7 +132,12 @@ impl FishxGenerator {
 
             // 路由
             let mut route_replacements = HashMap::new();
-            route_replacements.insert("path", path);
+            // path 如果是* 处理 为 /
+            if path == "*" {
+                route_replacements.insert("path", "/");
+            } else {
+                route_replacements.insert("path", path);
+            }
             route_replacements.insert("component", &comp_name);
             routes.push_str(&replace_template(react::ROUTE, &route_replacements));
 
