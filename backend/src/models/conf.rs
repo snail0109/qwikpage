@@ -8,15 +8,27 @@ use std::{
 };
 use tauri::{AppHandle, Manager};
 
+use crate::utils::get_app_root_dir;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppConf {
     pub theme: String,
+    pub font_family: String,
+    pub project_root_dir: String
 }
 // 应用级别配置
 impl AppConf {
     pub fn new() -> Self {
+        // mac 和 windows 使用不同的默认字体
+        let font_family = if cfg!(target_os = "macos") {
+            "PingFang SC".to_string()
+        } else {
+            "Microsoft YaHei".to_string()
+        };
         Self {
             theme: "system".to_string(),
+            font_family: font_family,
+            project_root_dir: get_app_root_dir().to_string_lossy().to_string()
         }
     }
 

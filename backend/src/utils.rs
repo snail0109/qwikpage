@@ -86,3 +86,14 @@ pub fn format_system_size(size: u64) -> String {
         }
     }
 }
+
+
+
+// 判断 path 是有效文件，忽略隐藏文件
+pub fn is_valid_file(path: &PathBuf) -> bool {
+    let file_name = path.file_name().unwrap().to_str().unwrap();
+    if file_name.starts_with(".") {
+        return false;
+    }
+    path.is_file()
+}

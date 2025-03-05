@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
-use crate::utils::{get_app_root_dir, get_current_time};
+use crate::utils::{get_app_root_dir, get_current_time, is_valid_file};
 
 use super::group::GroupConfig;
 use super::resource::ResourceConfig;
@@ -232,7 +232,8 @@ impl Project {
         for entry in entries {
             let entry = entry.unwrap();
             let path = entry.path();
-            if path.is_file() {
+            if is_valid_file(&path) {
+                info!("entry path: {}", path.to_str().unwrap());
                 if path.extension().unwrap() != "json" {
                     continue;
                 }
