@@ -77,7 +77,7 @@ const Page: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: 'calc(100vh - 40px - 40px)',
+        minHeight: 'calc(100vh - 74px - 40px)',
         ...config.style,
         // transform: `translate(${position.x}px, ${position.y}px)`,
         // cursor: isDragging ? 'move' : 'default',

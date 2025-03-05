@@ -333,7 +333,7 @@ const Editor = () => {
         <div
           id="designer"
           className={styles['designer-editor']}
-          style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 40px)' }}
+          style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 74px)' }}
         >
           <div
             id="editor"
