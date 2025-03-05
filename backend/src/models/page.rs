@@ -42,7 +42,7 @@ pub struct PageContent {
     #[serde(rename = "elementsMap")]
     pub elements_map: HashMap<String, ElementObj>,
     pub apis: HashMap<Uuid, Value>,
-    pub interceptor: Interceptor,
+    pub interceptor: Option<Interceptor>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

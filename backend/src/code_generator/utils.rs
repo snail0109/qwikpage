@@ -3,8 +3,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::models::page::PageContent;
 use crate::utils::get_app_root_resource_dir;
+use crate::models::page::PageContent;
 use futures::future::BoxFuture;
 use log::info;
 use reqwest;
@@ -178,8 +178,19 @@ pub async fn export_resources(
 
 /// 处理页面数据，替换资源路径
 pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
+    info!("process_page_data...");
     let resource_path = get_app_root_resource_dir().join(project_id);
     let resource_path_str = resource_path.to_str().unwrap_or("");
+
+    // 如果 page_data 为空，返回一个空的PageContent
+    if page_data.is_empty() {
+        return Ok(PageContent {
+            elements: vec![],
+            elements_map: HashMap::new(),
+            apis: HashMap::new(),
+            interceptor: None,
+        });
+    }
 
     // 替换资源路径
     let processed_data = page_data.replace(resource_path_str, "/");

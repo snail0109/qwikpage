@@ -3,7 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 const ReturnStructure = function () {
   return (
     <>
-      <p style={{ lineHeight: '35px', color: '#5c5c5c', marginLeft: '70px', marginBottom: '10px' }}>
+      <p style={{ lineHeight: '35px', color: '#5c5c5c', marginBottom: '10px' }}>
         <InfoCircleOutlined />
         <span style={{ marginLeft: 5 }}>用来定义接口返回结构，推荐结构：{`{ code: 0, data: {}, msg: '' }`}</span>
       </p>

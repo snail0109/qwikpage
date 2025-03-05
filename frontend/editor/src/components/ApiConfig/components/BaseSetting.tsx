@@ -1,6 +1,7 @@
 import VariableBind from "@/components/VariableBind/VariableBind";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Form, Radio, Input, Switch, Space, Popover } from "antd";
+import styles from '../index.module.less';
 
 const SettingForm = function () {
     return (
@@ -19,7 +20,15 @@ const SettingForm = function () {
             >
                 <Input placeholder="请输入接口中文名称，eg: 用户列表" maxLength={20} showCount />
             </Form.Item>
-            <Form.Item label="请求方式" name="method">
+            <Form.Item
+                label="请求方式"
+                name="method"
+                rules={[
+                    {
+                        required: true,
+                    },
+                ]}
+            >
                 <Radio.Group buttonStyle="solid">
                     <Radio.Button value="GET">GET</Radio.Button>
                     <Radio.Button value="POST">POST</Radio.Button>
@@ -101,8 +110,9 @@ const SettingForm = function () {
                     <Radio.Button value="reserve">保留参数</Radio.Button>
                 </Radio.Group>
             </Form.Item>
-            <Form.Item label="开启代理" name="isCors" extra="开启接口代理对解决跨域问题很有用">
+            <Form.Item label="开启代理" name="isCors">
                 <Switch />
+                <span className={styles.corsExtra}>开启接口代理对解决跨域问题很有用</span>
             </Form.Item>
         </>
     );

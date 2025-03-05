@@ -1,53 +1,53 @@
 import { ReactNode } from 'react';
-import IconBaseTable from './icons/IconBaseTable';
-import IconTitle from './icons/IconTitle';
-import IconCard from './icons/IconCard';
+// import IconBaseTable from './icons/IconBaseTable';
+// import IconTitle from './icons/IconTitle';
+// import IconCard from './icons/IconCard';
 import IconForm from './icons/IconForm';
-import IconDiv from './icons/IconDiv';
+// import IconDiv from './icons/IconDiv';
 import IconFlex from './icons/IconFlex';
-import IconSpace from './icons/IconSpace';
-import IconDivider from './icons/IconDivider';
-import IconRow from './icons/IconRow';
+// import IconSpace from './icons/IconSpace';
+// import IconDivider from './icons/IconDivider';
+// import IconRow from './icons/IconRow';
 import IconColumn from './icons/IconColumn';
 import IconFormInput from './icons/IconFormInput';
-import IconFormInputNumber from './icons/IconFromInputNumber';
-import IconFormInputPassword from './icons/IconFormInputPassword';
+// import IconFormInputNumber from './icons/IconFromInputNumber';
+// import IconFormInputPassword from './icons/IconFormInputPassword';
 import IconFormSelect from './icons/IconFormSelect';
-import IconFormDate from './icons/IconFormDate';
-import IconFormDatepicker from './icons/IconFormDatepicker';
+// import IconFormDate from './icons/IconFormDate';
+// import IconFormDatepicker from './icons/IconFormDatepicker';
 import IconFormRadio from './icons/IconFormRadio';
 import IconFormCheckbox from './icons/IconFormCheckbox';
 import IconFormSwitch from './icons/IconFormSwitch';
-import IconFormTimepicker from './icons/IconFormTimePicker';
+// import IconFormTimepicker from './icons/IconFormTimePicker';
 import IconImage from './icons/IconImage';
-import IconIframe from './icons/IconIFrame';
-import IconList from './icons/IconList';
-import IconFormStatic from './icons/IconFormStatic';
+// import IconIframe from './icons/IconIFrame';
+// import IconList from './icons/IconList';
+// import IconFormStatic from './icons/IconFormStatic';
 import IconFormItem from './icons/IconFormItem';
 import IconLink from './icons/IconLink';
-import IconPieChart from './icons/IconPieChart';
-import IconLineChart from './icons/IconLineChart';
-import IconColumnChart from './icons/IconColumnChart';
-import IconBarChart from './icons/IconBarChart';
-import IconTinyColumn from './icons/IconTinyColumn';
-import IconProgress from './icons/IconProgress';
-import IconTinyLine from './icons/IconTinyLine';
+// import IconPieChart from './icons/IconPieChart';
+// import IconLineChart from './icons/IconLineChart';
+// import IconColumnChart from './icons/IconColumnChart';
+// import IconBarChart from './icons/IconBarChart';
+// import IconTinyColumn from './icons/IconTinyColumn';
+// import IconProgress from './icons/IconProgress';
+// import IconTinyLine from './icons/IconTinyLine';
 import IconText from './icons/IconText';
-import IconTime from './icons/IconFormTime';
-import IconFormList from './icons/IconFormList';
-import IconFormTextArea from './icons/IconFormTextArea';
-import IconDescriptions from './icons/IconDescriptions';
+// import IconTime from './icons/IconFormTime';
+// import IconFormList from './icons/IconFormList';
+// import IconFormTextArea from './icons/IconFormTextArea';
+// import IconDescriptions from './icons/IconDescriptions';
 import IconButton from './icons/IconButton';
-import IconRate from './icons/IconRate';
-import IconJson from './icons/IconJson';
-import IconColorPicker from './icons/IconColorPicker';
-import IconSearchForm from './icons/IconSearcFrom';
-import IconRichText from './icons/IconRichText';
-import IconCarousel from './icons/IconCarousel';
-import IconRignProgress from './icons/IconRingProgress';
-import IconCountDown from './icons/IconCountDown';
-import IconTag from './icons/IconTag';
-import IconDropdwon from './icons/IconDropdown';
+// import IconRate from './icons/IconRate';
+// import IconJson from './icons/IconJson';
+// import IconColorPicker from './icons/IconColorPicker';
+// import IconSearchForm from './icons/IconSearcFrom';
+// import IconRichText from './icons/IconRichText';
+// import IconCarousel from './icons/IconCarousel';
+// import IconRignProgress from './icons/IconRingProgress';
+// import IconCountDown from './icons/IconCountDown';
+// import IconTag from './icons/IconTag';
+// import IconDropdwon from './icons/IconDropdown';
 import IconFont from './icons/IconFont';
 /**
  * 组件配置列表
@@ -121,7 +121,7 @@ const components = [
       //   name: '分割线',
       //   type: 'Divider',
       // },
-       {
+      {
         icon: <IconFlex />,
         name: '线性布局',
         type: 'Flex',
