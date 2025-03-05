@@ -49,6 +49,7 @@ tokio = { version = "1.43.0", features = ["sync"] }
 futures = "0.3"
 sanitize-filename = "0.6.0"
 font-kit = "0.14.2"
+thiserror = "2"
 
 [target.'cfg(windows)'.dependencies]
 deelevate = "0.2.0"

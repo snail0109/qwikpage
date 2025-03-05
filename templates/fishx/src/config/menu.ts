@@ -1,8 +1,4 @@
 const asideMenuConfig = [
-  {
-    path: '/',
-    name: 'Home',
-  },
   ##replace##
 ];
 
