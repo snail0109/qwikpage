@@ -93,3 +93,68 @@
     font-size: 12px;
   }
 }
+
+.menuContainer {
+  position: relative;
+  height: 100%;
+  width: 100%; /* 确保容器占满Splitter.Panel的宽度 */
+}
+
+.collapseButtonContainer {
+  position: absolute;
+  top: 50%;
+  z-index: 9999;
+  transform: translateY(-50%);
+}
+
+.collapseButton {
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 21px;
+  border-radius: 3px;
+  transition: all 0.3s;
+  color: transparent;  /* 默认文字颜色 */
+  
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #1677ff;
+    color: #fff;
+  }
+}
+
+.tabsContainer {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tabs {
+  display: flex;
+  flex: 1;
+}
+
+.tabContent {
+  flex: 1;
+  overflow: auto;
+}
+
+/* 可以添加一个样式类用于折叠状态 */
+.collapsedMenu {
+  .leftTool {
+    :global {
+      .ant-tabs-nav {
+        width: 50px !important; /* 强制覆盖宽度 */
+        min-width: 50px !important;
+      }
+      
+      .ant-tabs-content-holder {
+        display: none !important; /* 完全隐藏内容区域 */
+      }
+    }
+  }
+}

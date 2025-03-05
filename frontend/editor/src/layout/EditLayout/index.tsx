@@ -19,6 +19,8 @@ const EditLayout = () => {
     const [sizes, setSizes] = useState<(number | string)[]>([266, window.innerWidth - 640, 266]);
     const mode = usePageStore(useShallow((state) => state.mode));
     const [fullScreen, setFullScreen] = useState(false);
+    const [menuCollapsed, setMenuCollapsed] = useState(false);
+    const [lastMenuWidth, setLastMenuWidth] = useState<number>(270);
 
     const onTabChange = (tab: string) => {
         if ([PanelKey.CodingPanel, PanelKey.ApiList, PanelKey.Variable].includes(tab)) {
@@ -28,11 +30,31 @@ const EditLayout = () => {
         }
     };
 
+    const onMenuCollapse = (collapsed: boolean) => {
+        setMenuCollapsed(collapsed);
+        if (collapsed) {
+            const currentWidth = Number(sizes[0]);
+            if (currentWidth > 50) {
+                setLastMenuWidth(currentWidth);
+            }
+            setSizes([50, Number(sizes[1]) + (Number(sizes[0]) - 50), sizes[2]]);
+        } else {
+            setSizes([lastMenuWidth, Number(sizes[1]) - (lastMenuWidth - 50), sizes[2]]);
+        }
+    };
+
+    const handleResize = (newSizes: (number | string)[]) => {
+        setSizes(newSizes);
+        if (!menuCollapsed && typeof newSizes[0] === 'number' && newSizes[0] > 50) {
+            setLastMenuWidth(newSizes[0]);
+        }
+    };
+
     useEffect(() => {
         if (mode === "preview") {
             setSizes([0, "100%", 0]);
         } else {
-            setSizes([266, window.innerWidth - 516, 250]);
+            setSizes([270, window.innerWidth - 520, 250]);
         }
     }, [mode]);
     // 模式切换，会导致子组件重新渲染
@@ -52,11 +74,23 @@ const EditLayout = () => {
                         },
                     }}
                 >
-                    <Splitter onResize={setSizes}>
+                    <Splitter
+                        onResize={handleResize}
+                        style={{ gap: menuCollapsed ? 0 : undefined }}
+                    >
                         {/* 菜单及其tab */}
-                        <Splitter.Panel collapsible size={sizes[0]} min={266} style={{ paddingRight: 10 }}>
+                        <Splitter.Panel
+                            size={menuCollapsed ? 50 : sizes[0]}
+                            min={menuCollapsed ? 50 : 270}
+                            resizable={!menuCollapsed}
+                            style={{
+                                overflow: 'visible',
+                                position: 'relative',
+                                paddingRight: menuCollapsed ? 0 : 10,
+                            }}
+                        >
                             <React.Suspense fallback={<SpinLoading />} >
-                                <Menu onTabChange={onTabChange} />
+                                <Menu onTabChange={onTabChange} onCollapse={onMenuCollapse} />
                             </React.Suspense>
                         </Splitter.Panel>
                         {!fullScreen && (

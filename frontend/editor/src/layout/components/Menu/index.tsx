@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Col, Flex, Row, Space, Tabs, Tooltip } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
 import ComponentIcon from "@/assets/icons/Component.svg?react";
 import OutlineIcon from "@/assets/icons/Outline.svg?react";
 import InterfaceIcon from "@/assets/icons/Interface.svg?react";
@@ -95,14 +95,48 @@ const panels = [
  * 生成左侧组件列表
  */
 
-const Menu = ({ onTabChange }: { onTabChange: (tab: string) => void }) => {
+interface MenuProps {
+    onTabChange: (tab: string) => void;
+    onCollapse?: (collapsed: boolean) => void;
+}
+
+const Menu: React.FC<MenuProps> = (props) => {
+    const { onTabChange, onCollapse } = props;
+    const [collapsed, setCollapsed] = useState(false);
+
+    const handleCollapseToggle = () => {
+        const newCollapsed = !collapsed;
+        setCollapsed(newCollapsed);
+        if (onCollapse) {
+            onCollapse(newCollapsed);
+        }
+    };
+
     return (
-        <>
+        <div className={`${styles.menuContainer} ${collapsed ? styles.collapsedMenu : ''}`}>
+            <div className={styles.collapseButtonContainer} style={{ right: collapsed ? '-16px' : '-26px' }}>
+                <div
+                    className={styles.collapseButton}
+                    onClick={handleCollapseToggle}
+                    style={{
+                        backgroundColor: collapsed ? '#1677ff' : undefined,
+                        color: collapsed ? '#fff' : undefined
+                    }}
+                >
+                    {collapsed ? <RightOutlined /> : <LeftOutlined />}
+                </div>
+            </div>
+
             <Tabs
                 size={"small"}
                 defaultActiveKey={panels[0].key}
                 tabPosition="left"
-                tabBarStyle={{ width: 50, height: "100vh" }}
+                tabBarStyle={{
+                    width: 50,
+                    height: "100vh",
+                    margin: collapsed ? 0 : undefined,
+                    padding: collapsed ? 0 : undefined
+                }}
                 className={styles.leftTool}
                 centered={true}
                 items={panels.map((item) => {
@@ -114,7 +148,7 @@ const Menu = ({ onTabChange }: { onTabChange: (tab: string) => void }) => {
                                 <span style={{ fontSize: 12 }}>{item.label}</span>
                             </Flex>
                         ),
-                        children: (
+                        children: !collapsed ? (
                             <div className={styles.menuContent}>
                                 <Row style={{ height: 36 }} align={"middle"} justify={"space-between"}>
                                     <Col>
@@ -123,12 +157,12 @@ const Menu = ({ onTabChange }: { onTabChange: (tab: string) => void }) => {
                                 </Row>
                                 <Suspense fallback={<SpinLoading />}>{item.children?.()}</Suspense>
                             </div>
-                        ),
+                        ) : null,
                     };
                 })}
                 onChange={onTabChange}
             />
-        </>
+        </div>
     );
 };
 
