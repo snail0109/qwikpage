@@ -1,4 +1,6 @@
 use std::collections::HashSet;
+use log::info;
+
 use crate::code_generator::error::Result;
 use crate::code_generator::utils::value_to_js;
 use crate::models::page::{Element, PageContent};
@@ -95,6 +97,8 @@ impl CodeGenerator for FishxGenerator {
     }
     
     fn generate_components(&self, elements: &[crate::models::page::Element], page_data: &crate::models::page::PageContent) -> Result<(Vec<String>, Vec<String>)> {
+        info!("generate_components...");
+
         let mut components = Vec::new();
         let mut imports = HashSet::new();
 
