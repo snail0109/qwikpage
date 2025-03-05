@@ -8,7 +8,7 @@ import { usePageStore } from "@/stores/pageStore";
 import SpinLoading from "@/components/SpinLoading";
 import Notice from "../components/Notice";
 import styles from "./index.module.less";
-import { PanelKey } from "../components/Menu";
+import { PanelKey } from "@/constants/panelKeys";
 
 const Menu = lazy(() => import("../components/Menu"));
 const ConfigPanel = lazy(() => import("../components/ConfigPanel/ConfigPanel"));
@@ -29,12 +29,20 @@ const EditLayout = () => {
     const [menuCollapsed, setMenuCollapsed] = useState(false);
     const [previousMenuCollapsed, setPreviousMenuCollapsed] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    // 添加当前选中的标签状态
+    const { setCurrentTab } = usePageStore(state => ({
+        setCurrentTab: state.setCurrentTab
+    }));
     // 拖拽后左侧宽度
     const [lastLeftWidth, setLastLeftWidth] = useState<number>(DEFAULT_LEFT_SIZE);
     // 拖拽后配置面板宽度
     const [lastConfigWidth, setLastConfigWidth] = useState<number>(DEFAULT_CONFIG_SIZE);
 
     const onTabChange = (tab: string) => {
+        // 使用 store 的 setCurrentTab 代替本地状态
+        console.log("EditLayout接收到的标签:", tab);
+        setCurrentTab(tab);
+
         const isFullscreenTab = [PanelKey.CodingPanel, PanelKey.ApiList, PanelKey.Variable].includes(tab);
 
         if (isFullscreenTab) {
@@ -149,7 +157,7 @@ const EditLayout = () => {
                         </Splitter.Panel>
                         {/* 编辑器 */}
                         <Splitter.Panel size={sizes[1]}>
-                            <Outlet></Outlet>
+                            <Outlet />
                         </Splitter.Panel>
                         {/* 配置面板 */}
                         <Splitter.Panel collapsible size={sizes[2]} min={DEFAULT_CONFIG_SIZE}>

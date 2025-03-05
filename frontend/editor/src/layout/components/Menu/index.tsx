@@ -8,15 +8,8 @@ import DSLIcon from "@/assets/icons/DSL.svg?react";
 import VariableIcon from "@/assets/icons/Variable.svg?react";
 import ComponentPanel from "./Components/ComponentPanel/ComponentPanel";
 import SpinLoading from "@/components/SpinLoading";
+import { PanelKey } from "@/constants/panelKeys";
 import styles from "./index.module.less";
-
-export const PanelKey = {
-    ComponentPanel: "ComponentPanel",
-    OutlinePanel: "OutlinePanel",
-    CodingPanel: "CodingPanel",
-    ApiList: "ApiList",
-    Variable: "Variable",
-};
 
 // 组件大纲
 const OutlinePanel = lazy(() => import("./OutlinePanel"));
@@ -165,7 +158,10 @@ const Menu: React.FC<MenuProps> = (props) => {
                         ) : null,
                     };
                 })}
-                onChange={onTabChange}
+                onChange={(key) => {
+                    console.log("切换到标签:", key);
+                    onTabChange(key);
+                }}
             />
         </div>
     );

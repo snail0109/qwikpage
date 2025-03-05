@@ -63,6 +63,7 @@ export interface PageState {
       };
     };
   };
+  currentTab: string;
 }
 export interface PageAction {
   savePageInfo: (pageInfo: any) => void;
@@ -89,6 +90,7 @@ export interface PageAction {
   setInterceptor: (payload: any) => void;
   updateToolbar: () => void;
   clearPageInfo: () => void;
+  setCurrentTab: (tab: string) => void;
 }
 export const usePageStore = create<PageState & PageAction>((set) => ({
   mode: 'edit',
@@ -568,4 +570,6 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       }),
     );
   },
+  currentTab: "",
+  setCurrentTab: (tab: string) => set({ currentTab: tab }),
 }));

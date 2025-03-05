@@ -99,6 +99,24 @@
     border-left: 1px solid #ccc;
 }
 
+.dslBtns {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-right: -8px;
+
+    :global {
+        .ant-btn-sm {
+            font-size: 12px;
+            color: #000000;
+            font-weight: 500;
+            .ant-btn-icon {
+                font-size: 14px;
+            }
+        }
+    }
+}
+
 @keyframes octocat-wave {
 
     0%,

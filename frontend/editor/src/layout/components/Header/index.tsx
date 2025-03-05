@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Layout, Button, Space, Switch } from "antd";
-import { SunOutlined, MoonFilled, SettingOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate, useParams, useOutletContext } from "react-router-dom";
+import { Layout, Button, message } from "antd";
+import { SettingOutlined, SaveOutlined, ExportOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import storage from "@/utils/storage";
@@ -9,8 +9,10 @@ import { invoke } from "@tauri-apps/api/core";
 import { useOsInfo } from "@/utils/os";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { WindowControls } from "./WindowControls";
-import { projectService } from "@/services";
+import { save } from "@tauri-apps/plugin-dialog";
+import { projectService, pageService } from "@/services";
 import Logo from "@/assets/icons/qwikpage-logo.svg?react";
+import { PanelKey } from "@/constants/panelKeys";
 const appWebview = getCurrentWebviewWindow();
 
 /**
@@ -29,6 +31,8 @@ const Header = memo(() => {
         paddingRight: '0',
         transition: "padding-left 0.3s ease",
     });
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [exportLoading, setExportLoading] = useState(false);
 
     const MAC_PADDING_LEFT = 72;
 
@@ -38,13 +42,15 @@ const Header = memo(() => {
         setIsFullscreen(fullscreen);
     };
 
-    const { mode, theme, setMode, setTheme } = usePageStore((state) => {
+    const { mode, theme, setMode, setTheme, page, savePageInfo, currentTab } = usePageStore((state) => {
         return {
             page: state.page,
             mode: state.mode,
             theme: state.theme,
             setMode: state.setMode,
             setTheme: state.setTheme,
+            savePageInfo: state.savePageInfo,
+            currentTab: state.currentTab,
         };
     });
 
@@ -132,6 +138,95 @@ const Header = memo(() => {
         updateHeaderStyle();
     }, [location.pathname, projectId, macStoplightsVisible, isMac]);
 
+    console.log(location.pathname);
+
+    // 判断是否显示DSL相关按钮
+    console.log("Header中的currentTab:", currentTab);
+    console.log("PanelKey.CodingPanel:", PanelKey.CodingPanel);
+    const showDSLButtons = currentTab === PanelKey.CodingPanel;
+
+    // 保存DSL的处理函数
+    const handleSave = async (event: React.MouseEvent) => {
+        event.stopPropagation();
+        setSaveLoading(true);
+
+        try {
+            // 获取当前页面数据
+            const value = JSON.parse(localStorage.getItem('current_dsl_content') || '{}');
+
+            if (!value || !value.page) {
+                message.error("页面数据格式异常，请检查重试");
+                return;
+            }
+
+            const { name, remark, pageData } = value.page;
+            const params = {
+                id: page.id,
+                name,
+                remark,
+                pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
+                projectId: page.projectId,
+            };
+
+            await pageService.updatePageData(params);
+            savePageInfo({
+                ...params,
+                pageData: JSON.parse(params.pageData),
+            });
+            message.success("保存成功");
+        } catch (error) {
+            message.error("保存失败");
+            console.error('保存失败:', error);
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    // 导出DSL的处理函数
+    const handleExport = async (event: React.MouseEvent) => {
+        event.stopPropagation();
+        setExportLoading(true);
+
+        try {
+            // 获取当前页面数据
+            const value = JSON.parse(localStorage.getItem('current_dsl_content') || '{}');
+
+            if (!value || !value.page) {
+                message.error("页面数据格式异常，请检查重试");
+                return;
+            }
+
+            const { name, remark, pageData } = value.page;
+            const jsonData = {
+                id: page.id,
+                name,
+                remark,
+                pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
+            };
+
+            // 弹出保存文件的对话框
+            const filePath = await save({
+                filters: [
+                    {
+                        name: "JSON",
+                        extensions: ["json"],
+                    },
+                ],
+            });
+
+            if (filePath) {
+                // 调用后端命令，将 JSON 数据写入文件
+                await invoke("export_json", { filePath, jsonData });
+                message.success("导出成功");
+            }
+        } catch (error) {
+            message.error("导出失败");
+            console.error('导出失败:', error);
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
     return (
         <>
             <Layout.Header
@@ -145,6 +240,34 @@ const Header = memo(() => {
                 </div>
                 {/* 用户信息&发布&发布记录 */}
                 <div className={styles.user}>
+                    {/* 仅在DSL页签时显示按钮 */}
+                    {showDSLButtons && (
+                        <>
+                            <div className={styles.dslBtns}>
+                                <Button
+                                    icon={<SaveOutlined />}
+                                    type="text"
+                                    iconPosition={'start'}
+                                    size="small"
+                                    loading={saveLoading}
+                                    onClick={handleSave}
+                                >
+                                    保存
+                                </Button>
+                                <Button
+                                    icon={<ExportOutlined />}
+                                    type="text"
+                                    iconPosition={'start'}
+                                    size="small"
+                                    loading={exportLoading}
+                                    onClick={handleExport}
+                                >
+                                    导出
+                                </Button>
+                            </div>
+                            <div className={styles.divider}></div>
+                        </>
+                    )}
                     {/* 系统设置的按钮图标 */}
                     <SettingOutlined onClick={onOpenSettingClick} />
                     {!isMac && (
