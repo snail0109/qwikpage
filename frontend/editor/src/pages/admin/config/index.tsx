@@ -7,11 +7,38 @@ import { message } from "@/utils/AntdGlobal";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
+import RadioButtonGroup from "@/components/RadioButtonGroup";
 import ProjectLogo from "@/components/ProjectLogo";
 import { projectService } from "@/services";
 import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
 import UD from "@/assets/image/UD.png";
+
+const MenuModeOptions = [
+    [{
+        label: "垂直",
+        value: "vertical",
+    },
+    {
+        label: "内嵌",
+        value: "inline",
+    },],
+    [{
+        label: "水平",
+        value: "horizontal",
+    },]
+];
+
+const MenyThemeColor = [
+    {
+        label: "深色",
+        value: "dark",
+    },
+    {
+        label: "浅色",
+        value: "light",
+    }
+]
 
 /**
  * 项目配置
@@ -119,13 +146,20 @@ const Config: React.FC = memo(() => {
         invoke("upload_project_resource", {
             params: {
                 file_path: filePath,
-            }
-        }).then((res) => {
-            form.setFieldValue('logo', res)
-            setLogoUrl(res as string);
-        }).catch(error => {
-            console.log(error)
+            },
         })
+            .then((res) => {
+                form.setFieldValue("logo", res);
+                setLogoUrl(res as string);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    // 切换自定义radiobutton的事件
+    const handleChangeTab = (fieldName: string) => (selectedOption: { label: string; value: string }) => {
+        form.setFieldsValue({ [fieldName]: selectedOption.value });
     };
 
     return (
@@ -199,27 +233,34 @@ const Config: React.FC = memo(() => {
                 <Form.Item noStyle shouldUpdate>
                     {(form: any) => {
                         const layout = form.getFieldValue("layout");
-                        return layout === 1 ? (
+                        const menuMode = form.getFieldValue('menuMode')
+                        const targetOptions = layout === 1 ? MenuModeOptions[0] : MenuModeOptions[1]
+                        return (
                             <Form.Item label="菜单模式" name="menuMode">
-                                <Radio.Group {...props} buttonStyle="solid">
-                                    <Radio.Button value="vertical">垂直</Radio.Button>
-                                    <Radio.Button value="inline">内嵌</Radio.Button>
-                                </Radio.Group>
+                                <RadioButtonGroup
+                                    disabled={type === "detail"}
+                                    options={targetOptions}
+                                    selected={menuMode}
+                                    onChangeTab={handleChangeTab('menuMode')}
+                                />
                             </Form.Item>
-                        ) : (
-                            <Form.Item label="菜单模式" name="menuMode">
-                                <Radio.Group {...props} buttonStyle="solid">
-                                    <Radio.Button value="horizontal">水平</Radio.Button>
-                                </Radio.Group>
-                            </Form.Item>
-                        );
+                        )
                     }}
                 </Form.Item>
-                <Form.Item label="菜单主题" name="menuThemeColor">
-                    <Radio.Group {...props}>
-                        <Radio value="dark">深色</Radio>
-                        <Radio value="light">浅色</Radio>
-                    </Radio.Group>
+                <Form.Item noStyle shouldUpdate>
+                    {(form: any) => {
+                        const menuThemeColor = form.getFieldValue('menuThemeColor')
+                        return (
+                            <Form.Item label="菜单主题" name="menuThemeColor">
+                                <RadioButtonGroup
+                                    disabled={type === "detail"}
+                                    options={MenyThemeColor}
+                                    selected={menuThemeColor}
+                                    onChangeTab={handleChangeTab('menuThemeColor')}
+                                />
+                            </Form.Item>
+                        )
+                    }}
                 </Form.Item>
                 <Form.Item label="系统主题" name="systemThemeColor">
                     <ColorPicker {...props} />
@@ -236,8 +277,13 @@ const Config: React.FC = memo(() => {
                 <div className={styles.editBtn}>
                     {type === "detail" ? (
                         <Space>
-                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}></Button>
-                            <Button type="primary" onClick={() => { setType("edit"); }}>
+                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/projects")}></Button>
+                            <Button
+                                type="primary"
+                                onClick={() => {
+                                    setType("edit");
+                                }}
+                            >
                                 编辑
                             </Button>
                             <Button color="danger" variant="outlined" onClick={handleDelConfirm} loading={delLoading}>
@@ -246,15 +292,13 @@ const Config: React.FC = memo(() => {
                         </Space>
                     ) : (
                         <Space>
-                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}></Button>
+                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/projects")}></Button>
                             <Button type="primary" loading={loading} onClick={handleSubmit}>
                                 保存
                             </Button>
                             <Button color="danger" variant="outlined" onClick={handleDelConfirm} loading={delLoading}>
                                 删除项目
                             </Button>
-
-
                         </Space>
                     )}
                 </div>
