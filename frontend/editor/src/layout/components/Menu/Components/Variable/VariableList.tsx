@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Button, Table, Divider } from 'antd';
+import { Button, Table, Divider, ConfigProvider } from 'antd';
 import { FieldNumberOutlined, FieldStringOutlined, PlusOutlined } from '@ant-design/icons';
 import VariableSetting from './VariableSetting';
 import { PageVariable } from '@/packages/types';
@@ -80,7 +80,16 @@ export default () => {
   };
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            headerBg: '#EDEDED',
+            headerBorderRadius: 2,
+          },
+        },
+      }}
+    >
       <div className={styles.variableConfigHeader}>
         <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
           新增
@@ -109,6 +118,6 @@ export default () => {
         />
       </div>
       <VariableSetting ref={variableRef} />
-    </>
+    </ConfigProvider>
   );
 };
