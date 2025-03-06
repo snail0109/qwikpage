@@ -8,13 +8,13 @@ use std::{
 };
 use tauri::{AppHandle, Manager};
 
-use crate::utils::get_app_root_dir;
+use crate::utils::get_store_path;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppConf {
     pub theme: String,
     pub font_family: String,
-    pub project_root_dir: String
+    pub dsl_code_dir: String
 }
 // 应用级别配置
 impl AppConf {
@@ -28,7 +28,7 @@ impl AppConf {
         Self {
             theme: "system".to_string(),
             font_family: font_family,
-            project_root_dir: get_app_root_dir().to_string_lossy().to_string()
+            dsl_code_dir: get_store_path().to_string_lossy().to_string()
         }
     }
 
@@ -48,7 +48,7 @@ impl AppConf {
             let config = Self::new();
             config.save(app)?;
             return Ok(config);
-        }
+        } 
 
         // a convenience function for using [`File::open`] and [`read_to_string`]
         let contents = fs::read_to_string(path)?;

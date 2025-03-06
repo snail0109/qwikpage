@@ -1,7 +1,12 @@
 use chrono::{DateTime, Local};
-use log::info;
-use std::{fs::create_dir_all, net::TcpStream, path::PathBuf, time::SystemTime};
 use dirs;
+use log::info;
+use std::{
+    fs::{self, create_dir_all},
+    net::TcpStream,
+    path::PathBuf,
+    time::SystemTime,
+};
 
 use crate::constans::{APP_IDENTIFIER, DATA_FORMAT};
 
@@ -46,8 +51,6 @@ pub fn get_app_root_resource_dir() -> PathBuf {
     resources_dir
 }
 
-
-
 // 格式化时间
 pub fn format_system_time(system_time: SystemTime) -> String {
     let datetime: DateTime<Local> = system_time.into();
@@ -87,8 +90,6 @@ pub fn format_system_size(size: u64) -> String {
     }
 }
 
-
-
 // 判断 path 是有效文件，忽略隐藏文件
 pub fn is_valid_file(path: &PathBuf) -> bool {
     let file_name = path.file_name().unwrap().to_str().unwrap();
@@ -96,4 +97,19 @@ pub fn is_valid_file(path: &PathBuf) -> bool {
         return false;
     }
     path.is_file()
+}
+
+// 获取项目代码和出码的默认根目录
+pub fn get_store_path() -> PathBuf {
+    // 如果 dirs::home_dir() 有值则用这个，没有使用get_app_root_dir
+    match dirs::home_dir() {
+        Some(path) => {
+            let path = path.join("Library").join("Preferences").join("QwikPage");
+            if !path.exists() {
+                fs::create_dir_all(&path).unwrap();
+            }
+            path
+        }
+        None => get_app_root_dir(),
+    }
 }
