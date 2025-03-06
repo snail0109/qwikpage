@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Button, Table, List, Divider } from "antd";
+import { Button, Table, Tag, Divider } from "antd";
 import { PlusOutlined, SettingOutlined } from "@ant-design/icons";
 import type { TableProps } from "antd";
 import SettingModal from "@/components/ApiConfig/components/SettingModal";
@@ -17,9 +17,12 @@ export default () => {
       title: "名称",
       dataIndex: "name",
       key: "name",
+      width: "40%",
       render: (_, row) => (
         <div className={styles.iconCol}>
-          {row.method}
+          <Tag>
+            {row.method.toUpperCase()}
+          </Tag>
           {row.name}
         </div>
       ),
@@ -35,10 +38,11 @@ export default () => {
       width: 120,
       align: "center",
       render: (event, row) => (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', alignItems: "center" }}>
           <Button type="link" onClick={() => handleEdit(event, row)}>
             修改
           </Button>
+          <Divider type="vertical" />
           <Button type="link" onClick={() => handleRemove(event, row.id)}>
             删除
           </Button>
