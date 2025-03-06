@@ -10,12 +10,21 @@ use tauri::{AppHandle, Manager};
 
 use crate::utils::get_store_path;
 
+
+const DEFAULT_FONT_SIZE : u32 = 12;
+const DEFAULT_FONT_BOLD : &str  = "normal";
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppConf {
-    pub theme: String,
-    pub font_family: String,
-    pub dsl_code_dir: String
+    pub theme: String,         // 主题
+    pub language: String,      // 预研
+    pub font_size: u32,     // 字体大小
+    pub font_bold: String,     // 是否粗体
+    pub font_family: String,   // 字体
+    pub check_update: bool,    // 自动更新
+    pub dsl_code_dir: String   // DSL代码目录
 }
+
 // 应用级别配置
 impl AppConf {
     pub fn new() -> Self {
@@ -27,8 +36,12 @@ impl AppConf {
         };
         Self {
             theme: "system".to_string(),
+            language: "auto".to_string(),
+            font_size: DEFAULT_FONT_SIZE,
+            font_bold: DEFAULT_FONT_BOLD.to_string(),
             font_family: font_family,
-            dsl_code_dir: get_store_path().to_string_lossy().to_string()
+            check_update: false,
+            dsl_code_dir: get_store_path().join("code").to_string_lossy().to_string()
         }
     }
 

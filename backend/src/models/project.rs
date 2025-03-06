@@ -78,6 +78,7 @@ pub struct Project {
     pub system_theme_color: Option<String>, // 系统主题颜色
     pub created_at: String,
     pub updated_at: String,
+    pub code_export_path: Option<String>,   // 代码导出路径
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -94,6 +95,7 @@ pub struct ProjectUpdateParams {
     pub footer: bool,                       // 是否显示页脚
     pub system_theme_color: Option<String>, // 系统主题
     pub logo: Option<String>, // 系统主题
+    pub code_export_path: Option<String>,   // 代码导出路径
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -153,6 +155,7 @@ impl Project {
             system_theme_color: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
+            code_export_path: None,
         }
     }
 
