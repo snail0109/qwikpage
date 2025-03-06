@@ -31,7 +31,6 @@ function Category() {
         setLoading(true);
         cmd_invoke("load_groups_with_projects", { keyword })
             .then((res) => {
-                console.log("load_groups_with_projects", res);
                 setDataSource(res.groups);
                 setActiveKeys(res.groups.map((item: { id: string }) => item.id));
             })

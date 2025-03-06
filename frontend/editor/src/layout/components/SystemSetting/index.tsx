@@ -1,17 +1,20 @@
+import { Button } from "antd";
+import useAppConfigStore from "@/stores/appConfigStore";
 import { invoke } from "@tauri-apps/api/core";
 import { Modal } from "antd";
 import React, { MutableRefObject, useImperativeHandle } from "react";
 
 export type ISystemSettingRef = {
-    open: () => void 
-}
+    open: () => void;
+};
 
 interface ISystemSettingProps {
-    settingRef: MutableRefObject<ISystemSettingRef | undefined>
+    settingRef: MutableRefObject<ISystemSettingRef | undefined>;
 }
 
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = React.useState(false);
+    const { update, ...rest } = useAppConfigStore();
 
     useImperativeHandle(props.settingRef, () => ({
         async open() {
@@ -31,6 +34,9 @@ export function SystemSetting(props: ISystemSettingProps) {
         return await invoke<void>("open_folder");
     };
 
+    const onUpdate = async (key,value) => {
+        await update(key,value)
+    };
 
     return (
         <Modal
@@ -43,6 +49,21 @@ export function SystemSetting(props: ISystemSettingProps) {
             cancelText="取消"
         >
             <div>系统设置</div>
+            {JSON.stringify(rest)}
+            <Button
+                onClick={() => {
+                    onUpdate("fontSize", 10 * Math.random());
+                }}
+            >
+                修改字体大小
+            </Button>
+            <Button
+                onClick={() => {
+                    onUpdate("theme", "light");
+                }}
+            >
+                修改主题
+            </Button>
         </Modal>
     );
 }

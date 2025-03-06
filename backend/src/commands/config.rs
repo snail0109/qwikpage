@@ -1,4 +1,5 @@
-use crate::{models::conf::AppConf, utils::get_app_root_dir};
+
+use crate::utils::get_app_root_dir;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
 use font_kit::source::SystemSource;
@@ -30,22 +31,6 @@ pub fn open_target_folder<R: Runtime>(app: AppHandle<R>, path: &str) -> Result<(
     Ok(())
 }
 
-#[command]
-pub fn set_theme(app: AppHandle, theme: String) {
-    let conf = AppConf::load(&app).unwrap();
-    conf.amend(serde_json::json!({"theme": theme}))
-        .unwrap()
-        .save(&app)
-        .unwrap();
-
-    // app.restart();
-}
-
-#[command]
-pub fn get_app_conf(app: AppHandle) -> AppConf {
-    AppConf::load(&app).unwrap()
-}
-
 // 获取系统字体信息
 #[command]
 pub fn get_system_fonts() -> Result<Vec<String>, String> {
@@ -53,3 +38,10 @@ pub fn get_system_fonts() -> Result<Vec<String>, String> {
 
     Ok(source.all_families().map_err(|e| e.to_string())?)
 }
+
+
+// #[command]
+// pub fn get_config(state: tauri::State<AppConfState> ) -> AppConf {
+//     let state = state.0.lock().unwrap();
+//     state.clone()
+// }

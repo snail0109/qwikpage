@@ -1,12 +1,12 @@
 mod code_generator;
 mod commands;
 mod constans;
+mod error;
 mod models;
 mod service;
 mod setup;
 mod types;
 mod utils;
-mod error;
 
 use crate::{
     commands::{code, config, group, page, project, resource},
@@ -14,16 +14,24 @@ use crate::{
     utils::{get_app_root_dir, is_port_in_use},
 };
 use log::{error, info};
+use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
+use utils::get_app_root_resource_dir;
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
 const DEFAULT_WINDOW_HEIGHT: f64 = 600.0;
 
 const MIN_WINDOW_WIDTH: f64 = 300.0;
 const MIN_WINDOW_HEIGHT: f64 = 300.0;
+
+// Global AppHandle
+pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
+
+// pub struct AppConfState(pub Mutex<AppConf>);
+
 
 pub fn run() {
     tauri::Builder::default()
@@ -44,8 +52,12 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
+        // .manage(AppConfState(Mutex::new(AppConf::default())))
         .setup(|app| {
             info!("============== Start App ==============");
+            // Global AppHandle
+            APP.get_or_init(|| app.handle().clone());
             let mut win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
                 .title("")
                 .resizable(true)
@@ -70,7 +82,13 @@ pub fn run() {
             }
             win_builder.build().unwrap();
 
+            // Init Config
+            info!("Init App Config Store");
             setup::init(app)?;
+
+            // 初始化 resources 目录
+            get_app_root_resource_dir();
+
             let handle = app.handle().clone();
             // mount the rocket instance
             let port = 8789;
@@ -121,9 +139,7 @@ pub fn run() {
             // 系统配置
             config::open_folder,
             config::get_system_fonts,
-            config::open_target_folder,
-            config::set_theme,
-            config::get_app_conf,
+            config::open_target_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");

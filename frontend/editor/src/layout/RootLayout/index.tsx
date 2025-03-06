@@ -4,10 +4,13 @@ import { useEffect } from 'react';
 import useAppConfigStore from '@/stores/appConfigStore';
 export default function Root() {
 
-  const { initConfig }  = useAppConfigStore();
+  
+  const { initConfig, ...rest }  = useAppConfigStore();
   useEffect(() => {
-    // initConfig();
+    initConfig();
   }, [])
+
+  console.log("config value", rest)
 
   return (
     <>
@@ -16,3 +19,4 @@ export default function Root() {
     </>
   );
 }
+

@@ -28,6 +28,7 @@
     "dialog:allow-message",
     "dialog:allow-ask",
     "dialog:allow-confirm",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+    "store:default"
   ]
 }
