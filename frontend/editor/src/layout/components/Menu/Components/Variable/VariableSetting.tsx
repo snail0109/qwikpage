@@ -79,7 +79,7 @@ const VariableSetting = (_: any, ref: any) => {
     setDataType('string');
   };
   return (
-    <Modal title="添加变量" open={visible} width={410} onOk={handleOk} onCancel={handleCancel} okText="提交" cancelText="取消">
+    <Modal title={type === 'add' ? '添加变量' : '修改变量'} open={visible} width={410} onOk={handleOk} onCancel={handleCancel} okText="提交" cancelText="取消">
       <ConfigProvider
         theme={{
           token: {
