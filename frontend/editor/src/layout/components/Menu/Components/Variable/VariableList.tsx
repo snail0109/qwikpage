@@ -1,9 +1,12 @@
 import { useRef } from 'react';
-import { Button, Flex, List } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Table, Divider } from 'antd';
+import { FieldNumberOutlined, FieldStringOutlined, PlusOutlined } from '@ant-design/icons';
 import VariableSetting from './VariableSetting';
 import { PageVariable } from '@/packages/types';
 import { usePageStore } from '@/stores/pageStore';
+import type { TableProps } from "antd";
+import styles from './index.module.less';
+
 export default () => {
   const variableRef = useRef<{ open: (type: 'add' | 'edit', variable?: PageVariable) => void }>();
   // 页面组件
@@ -11,6 +14,53 @@ export default () => {
     variables: state.page.pageData.variables,
     removeVariable: state.removeVariable,
   }));
+
+  console.log(variables);
+
+  const columns: TableProps<PageVariable>["columns"] = [
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      width: "20%",
+      align: "center",
+      render: (_, row) => (
+        <div className={styles.iconCol}>
+          {row.type === 'string' ? <FieldStringOutlined /> : <FieldNumberOutlined />}
+          {row.name}
+        </div>
+      ),
+    },
+    {
+      title: "变量默认值",
+      dataIndex: "defaultValue",
+      key: "defaultValue",
+      width: "30%",
+    },
+    {
+      title: "变量说明",
+      dataIndex: "remark",
+      key: "remark",
+      width: "30%",
+    },
+    {
+      title: "操作",
+      key: "action",
+      width: 120,
+      align: "center",
+      render: (_, row) => (
+        <div style={{ display: 'flex', alignItems: "center" }}>
+          <Button type="link" onClick={(event) => handleEdit(event, row)}>
+            修改
+          </Button>
+          <Divider type="vertical" />
+          <Button type="link" onClick={(event) => handleRemove(event, row.name)}>
+            删除
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   // 新增变量
   const handleAdd = () => {
@@ -31,25 +81,33 @@ export default () => {
 
   return (
     <>
-      <Flex justify="space-between" align="center" style={{ borderBottom: '1px solid var(--mars-theme-card-border-color)' }}>
+      <div className={styles.variableConfigHeader}>
         <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
           新增
         </Button>
-      </Flex>
-      <List
-        style={{ height: 'calc(100vh - 150px)', overflowY: 'auto' }}
-        itemLayout="horizontal"
+      </div>
+      <Table<PageVariable>
+        size="small"
+        columns={columns}
         dataSource={variables}
-        renderItem={(item) => {
-          return (
-            <List.Item
-              actions={[<a onClick={(event) => handleEdit(event, item)}>修改</a>, <a onClick={(event) => handleRemove(event, item.name)}>删除</a>]}
-            >
-              <List.Item.Meta title={`${item.name}`} description={item.remark} />
-            </List.Item>
-          );
-        }}
+        className={styles.variableConfigTable}
+        pagination={false}
       />
+      <div className={styles.pageVariableConfig}>
+        <div className={styles.pageVariableConfigHeader}>
+          <span style={{ fontWeight: "bold" }}>页面变量</span>
+          <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
+            新增
+          </Button>
+        </div>
+        <Table<PageVariable>
+          size="small"
+          columns={columns}
+          dataSource={variables}
+          className={styles.variableConfigTable}
+          pagination={false}
+        />
+      </div>
       <VariableSetting ref={variableRef} />
     </>
   );

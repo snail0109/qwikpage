@@ -1,0 +1,51 @@
+.variableConfigHeader {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  height: 36px;
+  position: absolute;
+  right: 5px;
+  top: 0px;
+
+  :global {
+    .ant-btn {
+      padding: unset;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+}
+
+.variableConfigTable {
+  height: calc(50vh - 72px);
+  margin-right: 5px;
+  overflow-y: auto;
+}
+
+.pageVariableConfig {
+  margin-top: 10px;
+  .pageVariableConfigHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 36px;
+    margin-right: 5px;
+    :global {
+    .ant-btn {
+      padding: unset;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+  }
+}
+
+.iconCol {
+  display: flex;
+  align-items: center;
+  padding-left: 32px;
+
+  >span {
+    margin-right: 5px;
+  }
+}

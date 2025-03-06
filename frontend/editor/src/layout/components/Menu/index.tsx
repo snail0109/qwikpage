@@ -77,7 +77,7 @@ const panels = [
         key: PanelKey.Variable,
         icon: <VariableIcon style={{ fontSize: 16 }} />,
         label: "变量",
-        title: "页面变量",
+        title: "项目变量",
         children: () => {
             return <VariableList />;
         },
