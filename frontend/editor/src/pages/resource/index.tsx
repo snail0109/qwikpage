@@ -10,6 +10,7 @@ import { IOperResourceGroupParams } from "@/services/resource";
 import { ResourceGroupProvider } from "@/context/resource";
 import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
 import ResourceUpload from "@/components/ResourceUpload";
+import { invoke } from "@tauri-apps/api/core";
 
 export const RESOURCE_TABS = [
   {
@@ -100,8 +101,13 @@ export default function Home() {
     createGroupRef.current?.open({ action: "create" });
   };
 
-  const handleOpenDir = () => {
-
+  const handleOpenDir = async () => {
+    const path = data[0]?.path;
+    if (path) {
+      const paths = path.split("/");
+      const resource_path = paths.slice(0, paths.length - 1).join("/");
+      invoke("open_target_folder", { path: resource_path });
+    }
   }
 
   // 上传资源
