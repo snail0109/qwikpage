@@ -22,15 +22,12 @@ const CodingPanel = () => {
         paths: {
             vs: `https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/dev/vs`,
         },
+        'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
     });
 
     function handleEditorDidMount(editor: { getValue: () => string }) {
         editorRef.current = editor;
         editorRef.current?.setValue(JSON.stringify({ page }, null, 2));
-        // // 设置中文语言包
-        // editorRef.current?.setModelLanguage(editor.getModel(), "json");
-        // // 设置 Monaco 编辑器的语言环境为中文
-        // editorRef.current?.setLocale('zh-cn'); // 设置为中文
     }
 
     useEffect(() => {
