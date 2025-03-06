@@ -8,6 +8,24 @@ import { usePageStore } from "@/stores/pageStore";
 import InterceptorModal from "@/components/ApiConfig/components/InterceptorModal";
 import styles from "./index.module.less";
 
+// 获取 Tag 的颜色和内容
+const getTagProps = (method: ApiType["method"]) => {
+  switch (method.toUpperCase()) {
+    case 'GET':
+      return { color: '#279226', text: 'GET' };
+    case 'POST':
+      return { color: '#F15C1D', text: 'POST' };
+    case 'PUT':
+      return { color: '#3463DA', text: 'PUT' };
+    case 'PATCH':
+      return { color: '#22B7A6', text: 'PUT' };
+    case 'DELETE':
+      return { color: '#BC3B3B', text: 'DELETE' };
+    default:
+      return { color: '#BC3B3B', text: method };
+  }
+};
+
 export default () => {
   const modalRef = useRef<{ showModal: (data?: any) => void }>();
   const interceptorRef = useRef<{ showModal: (data?: any) => void }>();
@@ -18,14 +36,17 @@ export default () => {
       dataIndex: "name",
       key: "name",
       width: "40%",
-      render: (_, row) => (
-        <div className={styles.iconCol}>
-          <Tag>
-            {row.method.toUpperCase()}
-          </Tag>
-          {row.name}
-        </div>
-      ),
+      render: (_, row) => {
+        const { color, text } = getTagProps(row.method);
+        return (
+          <div className={styles.iconCol}>
+            <Tag color={color}>
+              {text}
+            </Tag>
+            {row.name}
+          </div>
+        );
+      },
     },
     {
       title: "URL",
