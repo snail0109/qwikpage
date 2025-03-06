@@ -3,7 +3,7 @@ import { Button, Form, message, Layout, Divider, Tooltip, Modal, ConfigProvider 
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import { open } from "@tauri-apps/plugin-dialog";
-import { RedoOutlined, PlusOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import { RedoOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import CreateGroup, { IOpenParams } from "./components/CreateGroup";
 import { IOperResourceGroupParams } from "@/services/resource";
@@ -99,6 +99,10 @@ export default function Home() {
   const handleAddResGroup = () => {
     createGroupRef.current?.open({ action: "create" });
   };
+
+  const handleOpenDir = () => {
+
+  }
 
   // 上传资源
   const onImportClick = async (name: string) => {
@@ -275,12 +279,16 @@ export default function Home() {
           </div>
           <div>
             <Button
-              type="dashed"
               className={styles.createGroupBtn}
-              icon={<PlusOutlined />}
               onClick={handleAddResGroup}
             >
               创建分组
+            </Button>
+            <Button
+              className={styles.createGroupBtn}
+              onClick={handleOpenDir}
+            >
+              打开目录
             </Button>
             <Tooltip title="刷新">
               <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>

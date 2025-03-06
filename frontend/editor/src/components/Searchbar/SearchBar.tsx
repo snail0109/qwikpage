@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Space, Tooltip, Divider } from 'antd';
-import { PlusOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
 import styles from './index.module.less';
 
 const SearchBar = (props: any) => {
@@ -36,7 +36,7 @@ const SearchBar = (props: any) => {
         <Space>
           {
             !noNeedCreate && (
-              <Button type="dashed" icon={<PlusOutlined />} onClick={from === '分组' ? onCreateGroup : onCreate}>
+              <Button onClick={from === '分组' ? onCreateGroup : onCreate}>
                 创建{from}
               </Button>
             )

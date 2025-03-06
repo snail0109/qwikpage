@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Input, Divider, Modal } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import styles from "./index.module.less";
 import EditIcon from "@/assets/icons/EditIcon.svg?react";
 
@@ -104,7 +104,7 @@ const GroupTitle = ({ groupItem, createText = "新增项目", onCreate, onDelete
                             </div>
                         )}
                     </div>
-                    <Button color="primary" variant="link" onClick={onCreateProject}>
+                    <Button icon={<PlusOutlined />} color="primary" variant="dashed" onClick={onCreateProject}>
                         {createText}
                     </Button>
                 </div>

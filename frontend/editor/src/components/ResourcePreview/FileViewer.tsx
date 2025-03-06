@@ -39,19 +39,19 @@ const JsPreviewer = (props: IProps) => {
       title: '大小',
       dataIndex: 'file_size',
       key: 'file_size',
-      minWidth: 200
+      width: 70
     },
     {
       title: '时间',
       dataIndex: 'last_modified_time',
       key: 'last_modified_time',
-      width: 200
+      width: 100
     },
     {
       title: '操作',
       key: 'action',
-      width: 80,
-      align: 'center',
+      width: 75,
+      align: 'right',
       render: (_, row) => (
         <span className={styles.actionTool}>
           <Tooltip title="查看">
