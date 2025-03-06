@@ -4,7 +4,7 @@ import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
-import { RollbackOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
 import ProjectLogo from "@/components/ProjectLogo";
@@ -89,10 +89,8 @@ const Config: React.FC = memo(() => {
     // 属性设置：默认只读，编辑模式下可输入
     const props: {
         disabled: boolean;
-        variant: "outlined" | "borderless";
     } = {
         disabled: type === "detail",
-        variant: type === "detail" ? "borderless" : "outlined",
     };
 
     // 设置项目主题色
@@ -154,9 +152,15 @@ const Config: React.FC = memo(() => {
                 <Form.Item label="项目ID" name="id" hidden>
                     <Input />
                 </Form.Item>
-                <h3>基础配置</h3>
+                <div className={styles.titleWrap}>
+                    <div className={styles.prefixIcon}></div>
+                    <div className={styles.title}>项目配置</div>
+                </div>
                 <Form.Item label="项目名称" name="name" rules={[{ required: true, message: "请输入项目名称" }]}>
                     <Input placeholder={"项目名称: Mars"} {...props} maxLength={15} showCount />
+                </Form.Item>
+                <Form.Item label="导出目录" name="export_dir">
+                    <Input placeholder={"导出项目所在的目录"} {...props} maxLength={15} showCount />
                 </Form.Item>
                 <Form.Item label="项目描述" name="remark">
                     <Input.TextArea
@@ -177,7 +181,6 @@ const Config: React.FC = memo(() => {
                 <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
                     <ProjectLogo disabled={type === "detail"} logoUrl={logoUrl} handleUpload={handleUpload} />
                 </Form.Item>
-                <h3>系统配置</h3>
                 <Form.Item label="系统布局" name="layout">
                     <Radio.Group
                         {...props}
@@ -233,35 +236,27 @@ const Config: React.FC = memo(() => {
                 <div className={styles.editBtn}>
                     {type === "detail" ? (
                         <Space>
-                            <Button
-                                type="primary"
-                                icon={<EditOutlined />}
-                                onClick={() => {
-                                    setType("edit");
-                                }}
-                            >
+                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}></Button>
+                            <Button type="primary" onClick={() => { setType("edit"); }}>
                                 编辑
                             </Button>
-                            <Button icon={<RollbackOutlined />} onClick={() => navigate("/projects")}>
-                                返回
+                            <Button color="danger" variant="outlined" onClick={handleDelConfirm} loading={delLoading}>
+                                删除项目
                             </Button>
                         </Space>
                     ) : (
                         <Space>
-                            <Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={handleSubmit}>
+                            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}></Button>
+                            <Button type="primary" loading={loading} onClick={handleSubmit}>
                                 保存
                             </Button>
-                            <Button icon={<RollbackOutlined />} onClick={() => setType("detail")}>
-                                取消
+                            <Button color="danger" variant="outlined" onClick={handleDelConfirm} loading={delLoading}>
+                                删除项目
                             </Button>
+
+
                         </Space>
                     )}
-                </div>
-                <h3>危险区域</h3>
-                <div className={styles.delBtn}>
-                    <Button danger type="primary" onClick={handleDelConfirm} loading={delLoading}>
-                        删除项目
-                    </Button>
                 </div>
             </Form>
 
