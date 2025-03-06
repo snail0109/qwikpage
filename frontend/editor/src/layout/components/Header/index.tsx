@@ -15,6 +15,7 @@ import Logo from "@/assets/icons/qwikpage-logo.svg?react";
 import ExportIcon from "@/assets/icons/ExportIcon.svg?react";
 import SaveIcon from "@/assets/icons/SaveIcon.svg?react";
 import { PanelKey } from "@/constants/panelKeys";
+import { ISystemSettingRef, SystemSetting } from "../SystemSetting";
 const appWebview = getCurrentWebviewWindow();
 
 /**
@@ -35,6 +36,8 @@ const Header = memo(() => {
     });
     const [saveLoading, setSaveLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
+
+    const settingRef = useRef<ISystemSettingRef>();
 
     const MAC_PADDING_LEFT = 72;
 
@@ -113,7 +116,7 @@ const Header = memo(() => {
     };
 
     const onOpenSettingClick = async () => {
-        return await invoke<void>("open_folder");
+        settingRef.current?.open();
     };
 
     useEffect(() => {
@@ -284,6 +287,7 @@ const Header = memo(() => {
                     <WindowControls />
                 </div>
             </Layout.Header>
+            <SystemSetting settingRef={settingRef} />
         </>
     );
 });
