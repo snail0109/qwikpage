@@ -24,7 +24,7 @@ export interface IDragTargetItem {
 /**
  * 组件最小颗粒度类型定义
  */
-export type ComItemType = Pick<ComponentType, 'id' | 'type' | 'name' | 'parentId' | 'elements' | 'remoteUrl' | 'remoteConfigUrl' | 'remoteCssUrl'>;
+export type ComItemType = Pick<ComponentType, 'id' | 'type' | 'name' | 'parentId' | 'inForm' | 'elements' | 'remoteUrl' | 'remoteConfigUrl' | 'remoteCssUrl'>;
 
 /**
  * stor中状态对应的组件类型，这是原始的组件类型
@@ -43,6 +43,8 @@ export type ComponentType<T = any> = {
   remoteConfigUrl?: string;
   remoteCssUrl?: string;
   parentId?: string;
+  inForm?: boolean; // 是否处于表单内
+  formItemValue?: any; // 表单项的value
   config: ConfigType<T>;
   // 属性中用于展示的事件，跟配置中的事件不同
   events?: Array<{ name: string; value: string }>;

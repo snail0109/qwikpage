@@ -7,7 +7,7 @@ import { handleActionFlow } from '@/utils/action';
 import * as util from '@/utils/util';
 import { usePageStore } from '@/stores/pageStore';
 import { ComponentType } from '@/types';
-import AuthButton from '@components/Functional/Button/AuthButton';
+import AuthButton from '@components/Basic/Button/AuthButton';
 import { get } from 'lodash-es';
 import { isNumber } from 'lodash-es';
 import { EllipsisOutlined } from '@ant-design/icons';

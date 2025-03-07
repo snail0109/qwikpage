@@ -8,7 +8,7 @@ import { handleActionFlow } from '@materials/utils/action';
 import * as util from '@materials/utils/util';
 import { usePageStore } from '@materials/stores/pageStore';
 import { ComponentType } from '@materials/types';
-import AuthButton from '@materials/Functional/Button/AuthButton';
+import AuthButton from '@materials/Basic/Button/AuthButton';
 import { get } from 'lodash-es';
 import { isNumber } from 'lodash-es';
 import { EllipsisOutlined } from '@ant-design/icons';

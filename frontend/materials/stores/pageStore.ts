@@ -37,6 +37,8 @@ export interface PageState {
       variableData: { [key: string]: any };
       // 表单数据
       formData: { [key: string]: any };
+      // 表单控件数据
+      formItemData: { [key: string]: any };
       // 全局拦截器
       interceptor: {
         headers?: {
@@ -55,6 +57,7 @@ export interface PageAction {
   savePageInfo: (pageInfo: any) => void;
   setVariableData: (payload: any) => void;
   setFormData: (payload: any) => void;
+  setFormItemData: (payload: any) => void;
   clearPageInfo: () => void;
 }
 export const usePageStore = create<PageState & PageAction>((set) => ({
@@ -92,6 +95,8 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       variableData: {},
       // 表单数据
       formData: {},
+      // 表单控件数据
+      formItemData: {},
       // 全局拦截器
       interceptor: {
         headers: [{ key: '', value: '' }],
@@ -122,6 +127,13 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
         } else {
           state.page.pageData.formData[name] = { ...state.page.pageData.formData[name], ...value };
         }
+      }),
+    );
+  },
+  setFormItemData({ name, value }: any) {
+    set(
+      produce((state) => {
+        state.page.pageData.formItemData[name] = value;
       }),
     );
   },

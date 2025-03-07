@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRafState } from 'ahooks';
 import MarsRender from '@/packages/MarsRender/MarsRender';
 import { usePageStore } from '@/stores/pageStore';
 import { handleActionFlow } from '@/packages/utils/action';
+import { FormContext } from '@/packages/utils/context';
+import { isNotEmpty, getInitValue } from '@/packages/utils/util';
 
 /**
  * @param props 组件本身属性
@@ -15,10 +17,12 @@ const Page: React.FC = () => {
   const cache = useRef({ offset: { x: 0, y: 0 }, isDragging: false });
 
   // 页面组件
-  const { config, elements, setSelectedElement } = usePageStore((state) => {
+  const { config, elements, formItemData, setFormItemData, setSelectedElement } = usePageStore((state) => {
     return {
       config: state.page.pageData.config,
       elements: state.page.pageData.elements,
+      formItemData: state.page.pageData.formItemData,
+      setFormItemData: state.setFormItemData,
       setSelectedElement: state.setSelectedElement,
     };
   });
@@ -74,19 +78,38 @@ const Page: React.FC = () => {
     });
   }, [config.events]);
 
+  const initValues = useCallback((type: string, name: string, value: any) => {
+    if (name && isNotEmpty(value)) {
+      const initValue = getInitValue(type, value);
+      setFormItemData({
+        name,
+        value: initValue,
+      });
+    }
+  }, []);
+
+  const getValue = useCallback((name: string) => {
+    const value = formItemData[name];
+    return value;
+  }, [formItemData]);
+
+
   return (
-    <div
-      style={{
-        minHeight: 'calc(100vh - 74px - 40px)',
-        ...config.style,
-        // transform: `translate(${position.x}px, ${position.y}px)`,
-        // cursor: isDragging ? 'move' : 'default',
-      }}
-      id="page"
-    // onMouseDown={handleMouseDown}
-    >
-      {<MarsRender elements={elements || []} />}
-    </div>
+    // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
+    <FormContext.Provider value={{ initValues, getValue }}>
+      <div
+        style={{
+          minHeight: 'calc(100vh - 74px - 40px)',
+          ...config.style,
+          // transform: `translate(${position.x}px, ${position.y}px)`,
+          // cursor: isDragging ? 'move' : 'default',
+        }}
+        id="page"
+      // onMouseDown={handleMouseDown}
+      >
+        {<MarsRender elements={elements || []} />}
+      </div>
+    </FormContext.Provider>
   );
 };
 export default Page;

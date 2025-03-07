@@ -242,6 +242,7 @@ export function renderFormula(formula: string, eventParams: any = {}) {
       page: { pageData },
     } = usePageStore.getState();
     const formData = cloneDeep(pageData.formData || {});
+    const formItemData = cloneDeep(pageData.formItemData || {});
     originIds.forEach((id: string) => {
       // 如果绑定的是表单项，则通过Form实例对象获取对应表单值
       const formValues = pageData.formData?.[id] || {};
@@ -260,6 +261,7 @@ export function renderFormula(formula: string, eventParams: any = {}) {
       eventParams,
       FORMAT,
       ...formData,
+      ...formItemData,
     };
     const result = dynamicFunc(context, eventParams || {});
     if (typeof result === 'function') return result(context, eventParams || {});
@@ -457,3 +459,26 @@ export const handleFormatter = (formatter: any) => {
     }
   };
 };
+
+/**
+ * 根据输入类型和值返回初始化值。
+ * 
+ * @param {string} type - 输入控件的类型，例如 'InputNumber', 'DatePicker', 'DatePickerRange', 'TimePicker'。
+ * @param {any} value - 需要初始化的值。
+ * @returns {any} - 根据类型处理后的初始值。
+ */
+export const getInitValue = (type: string, value: any) => {
+  if (isNotEmpty(value)) {
+    let initValue = value;
+    if (type === 'InputNumber') initValue = Number(value);
+    if (type === 'DatePicker') initValue = getDateByType(value);
+    if (type === 'DatePickerRange') initValue = getDateRangeByType(value);
+    if (type === 'TimePicker') initValue = dayjs(value, 'HH:mm:ss');
+    return initValue;
+  }
+  if (type === 'InputNumber') return null;
+  if (type === 'DatePicker') return '';
+  if (type === 'DatePickerRange') return ['', ''];
+  if (type === 'TimePicker') return '';
+  return '';
+}

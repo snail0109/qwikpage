@@ -21,7 +21,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
   });
 
   /**
-   * 逻辑表达式中，只展示表单和表格对象
+   * 逻辑表达式中，只展示表单和表格对象和不处于表单内的表单控件
    * @returns
    */
   const getFormAndTable = useCallback(() => {
@@ -43,6 +43,12 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
           element.elements = element.elements.filter((item: any) => item.name);
         }
         list.push(element);
+      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !elementsMap[id].inForm) {
+        // 收集不处于表单中的表单控件
+        const { element }: any = getElement(cloneDeep(elements), id);
+        if (!element) return;
+        element.name = id;
+        list.push(element)
       }
     });
     return list;
@@ -54,28 +60,28 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
       name: `页面【${pageName}】`,
       id: 'page',
       elements: [
-        {
-          name: '系统变量',
-          id: 'SystemVariable',
-          type: 'SystemVariable',
-          elements: [
-            {
-              type: 'Store',
-              id: 'userId',
-              name: 'userId',
-            },
-            {
-              type: 'Store',
-              id: 'nickName',
-              name: 'nickName',
-            },
-            {
-              type: 'Store',
-              id: 'userName',
-              name: 'userName',
-            },
-          ],
-        },
+        // {
+        //   name: '系统变量',
+        //   id: 'SystemVariable',
+        //   type: 'SystemVariable',
+        //   elements: [
+        //     {
+        //       type: 'Store',
+        //       id: 'userId',
+        //       name: 'userId',
+        //     },
+        //     {
+        //       type: 'Store',
+        //       id: 'nickName',
+        //       name: 'nickName',
+        //     },
+        //     {
+        //       type: 'Store',
+        //       id: 'userName',
+        //       name: 'userName',
+        //     },
+        //   ],
+        // },
         {
           name: '全局变量',
           id: 'PageVariable',
@@ -181,9 +187,13 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
       if (name) form.setFieldValue('expression', `${beforeExpression} context.${node.parentId}.${name}`.trimStart());
     } else if (node.type === 'Form' || node.type === 'SearchForm') {
       form.setFieldValue('expression', `${beforeExpression}  context.${node.id}`);
-    } else {
+    } else if (node.inForm) {
+      // 表单内的表单项
       const formItem = elementsMap[node.id]?.config.props.formItem;
       form.setFieldValue('expression', `${beforeExpression} context.${node.parentId}.${formItem.name}`.trimStart());
+    } else {
+      // 不在表单内的表单项
+      form.setFieldValue('expression', `${beforeExpression} context.${node.id}`);
     }
   };
 

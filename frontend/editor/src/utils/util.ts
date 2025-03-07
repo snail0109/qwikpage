@@ -135,7 +135,7 @@ export function arrayToTree(array: any, parentId = null) {
       if (!parentItem.children) parentItem.children = [];
       parentItem.children?.push(map[item.id]);
       // 按照sortNum进行降序排序
-      parentItem.children = parentItem.children.sort((a: any, b : any) => a.sortNum - b.sortNum);
+      parentItem.children = parentItem.children.sort((a: any, b: any) => a.sortNum - b.sortNum);
     }
   });
   return Object.values(map)
@@ -277,8 +277,8 @@ export function getPageId(pageId: string | undefined, pageMap: Record<string, an
   if (!pageId || !pageMap) return "0";
   const id = pageId
     ? Object.values(pageMap).filter((item) => {
-        return item.path.startsWith('/') ? item.path.slice(1) === pageId : item.path === pageId;
-      })?.[0]?.pageId
+      return item.path.startsWith('/') ? item.path.slice(1) === pageId : item.path === pageId;
+    })?.[0]?.pageId
     : pageId;
   return id;
 }
@@ -334,4 +334,27 @@ export function newArrayToTree(array: IMenuItem[] = []) {
     pageMap,
     menuMap,
   };
+}
+
+/**
+ * 判断是否在表单中。
+ * @param elementId - 元素的唯一标识符id
+ * @param elementsMap - 元素elementsMap对象。
+ */
+export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: ComponentType<any> }) {
+  const currentElement = elementsMap[elementId];
+  if (!currentElement) return false;
+  const { formItem } = currentElement.config.props || {};
+  if (!formItem) {
+    return false;
+  }
+  const { parentId } = currentElement;
+  if (!parentId) return false;
+  const parentElement = elementsMap[parentId];
+  if (!parentElement) return false;
+  const { type } = parentElement;
+  if (type === 'Form') {
+    return true;
+  }
+  return judgeIfInForm(parentId, elementsMap);
 }

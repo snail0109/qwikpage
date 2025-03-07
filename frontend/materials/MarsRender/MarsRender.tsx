@@ -20,12 +20,13 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
   const [Component, setComponent] = useState<any>(null);
   const [config, setConfig] = useState<ConfigType>();
   const [cached, setCached] = useState(false);
-  const { elementsMap, variableData, formData } = usePageStore(
+  const { elementsMap, variableData, formData, formItemData } = usePageStore(
     useShallow((state) => ({
       elementsMap: state.page.pageData.elementsMap,
       variables: state.page.pageData.variables,
       variableData: state.page.pageData.variableData,
       formData: state.page.pageData.formData,
+      formItemData: state.page.pageData.formItemData,
     })),
   );
 
@@ -81,30 +82,35 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
         handleBindVariable(draft);
       });
     });
-  }, [variableData, formData, elementsMap]);
+  }, [variableData, formData, formItemData, elementsMap]);
 
   // 处理表单正则
   const handleFormRegExp = (config: ConfigType) => {
     if (config.props?.formItem) {
-      const rules = config.props?.formItem.rules || [];
-      rules.map((item: any) => {
-        if (item.pattern) {
-          // 把字符串转成正则对象
-          item.pattern = new RegExp(item.pattern);
+      // 判断当前控件是否处于Form内，是则解析正则等表单项属性
+      if (item.inForm) {
+        const rules = config.props?.formItem.rules || [];
+        rules.map((item: any) => {
+          if (item.pattern) {
+            // 把字符串转成正则对象
+            item.pattern = new RegExp(item.pattern);
+          }
+        });
+        config.props.formItem.rules = rules;
+        // FormList比较特殊，需要传递索引
+        if (item.parentId?.startsWith('FormList') && config.props.formItem.name) {
+          config.props.formItem.name = [item.name, config.props.formItem.name];
         }
-      });
-      config.props.formItem.rules = rules;
-      // FormList比较特殊，需要传递索引
-      if (item.parentId?.startsWith('FormList') && config.props.formItem.name) {
-        config.props.formItem.name = [item.name, config.props.formItem.name];
-      }
-      // 处理表单布局
-      const { labelCol, wrapperCol } = config.props.formItem;
-      if (isNull(labelCol?.span) && isNull(labelCol?.offset)) {
-        delete config.props.formItem?.labelCol;
-      }
-      if (isNull(wrapperCol?.span) && isNull(wrapperCol?.offset)) {
-        delete config.props.formItem?.wrapperCol;
+        // 处理表单布局
+        const { labelCol, wrapperCol } = config.props.formItem;
+        if (isNull(labelCol?.span) && isNull(labelCol?.offset)) {
+          delete config.props.formItem?.labelCol;
+        }
+        if (isNull(wrapperCol?.span) && isNull(wrapperCol?.offset)) {
+          delete config.props.formItem?.wrapperCol;
+        }
+      } else {
+        config.props.formItem.label = ''; // 清空标题
       }
     }
   };
@@ -174,6 +180,8 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
           <Component
             id={item.id}
             type={item.type}
+            inForm={item.inForm}
+            formItemValue={formItemData[item.id]}
             config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
             elements={item.elements || []}
             // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数

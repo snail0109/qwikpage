@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { produce } from 'immer';
 import { ComponentType, ApiType, PageVariable, EventType, ComItemType } from '@/packages/types';
 import { cloneDeep } from 'lodash-es';
-import { createId, getElement } from '@/utils/util';
+import { createId, getElement, judgeIfInForm } from '@/utils/util';
 import { merge } from 'lodash-es';
 /**
  * 页面信息存储
@@ -50,6 +50,9 @@ export interface PageState {
       variableData: { [key: string]: any };
       // 表单数据
       formData: { [key: string]: any };
+      // 表单控件数据
+      formItemData: { [key: string]: any };
+
       // 全局拦截器
       interceptor: {
         headers?: {
@@ -87,6 +90,7 @@ export interface PageAction {
   removeVariable: (name: string) => void;
   setVariableData: (payload: any) => void;
   setFormData: (payload: any) => void;
+  setFormItemData: (payload: any) => void;
   setInterceptor: (payload: any) => void;
   updateToolbar: () => void;
   clearPageInfo: () => void;
@@ -134,6 +138,8 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       variableData: {},
       // 表单数据
       formData: {},
+      // 表单控件数据
+      formItemData: {},
       // 全局拦截器
       interceptor: {
         headers: [{ key: '', value: '' }],
@@ -218,15 +224,24 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
           remoteConfigUrl: element.remoteConfigUrl,
           remoteCssUrl: element.remoteCssUrl,
         });
-        if (element.config.props.formItem) {
-          childElement.config.props.formItem.name = createId(element.type, 6);
-        }
         // 添加当前组件对象
         state.page.pageData.elementsMap[element.id] = childElement;
         // 添加子组件对象
         element.elements?.map((item) => {
           state.page.pageData.elementsMap[item.id] = item;
         });
+        // 判断当前元素是否为表单内控件
+        if (element.config.props.formItem) {
+          const inForm = judgeIfInForm(childElement.id, state.page.pageData.elementsMap);
+          childElement.inForm = inForm;
+          state.page.pageData.elements[state.page.pageData.elements.length - 1].inForm = inForm;
+          if (inForm) {
+            // 为表单内控件添加name属性
+            childElement.config.props.formItem.name = createId(element.type, 6);
+          } else {
+            delete childElement.config.props.formItem.name;
+          }
+        }
       }),
     );
   },
@@ -258,16 +273,24 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
                 remoteConfigUrl: element.remoteConfigUrl,
                 remoteCssUrl: element.remoteCssUrl,
               });
-              // 默认给表单组件添加name属性
-              if (element.type !== 'FormItem' && element.config.props.formItem) {
-                childElement.config.props.formItem.name = createId(element.type, 6);
-              }
               // 添加当前组件对象
               state.page.pageData.elementsMap[element.id] = childElement;
               // 添加子组件对象
               element.elements?.map((item) => {
                 state.page.pageData.elementsMap[item.id] = item;
               });
+              // 判断当前元素是否为表单内控件
+              if (element.type !== 'FormItem' && element.config.props.formItem) {
+                const inForm = judgeIfInForm(childElement.id, state.page.pageData.elementsMap);
+                childElement.inForm = inForm;
+                item.elements[item.elements.length - 1].inForm = inForm;
+                if (inForm) {
+                  // 为表单内控件添加name属性
+                  childElement.config.props.formItem.name = createId(element.type, 6);
+                } else {
+                  delete childElement.config.props.formItem.name;
+                }
+              }
               break;
             } else if (item.elements?.length) {
               deepFind(item.elements);
@@ -505,6 +528,13 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
       }),
     );
   },
+  setFormItemData({ name, value }: any) {
+    set(
+      produce((state) => {
+        state.page.pageData.formItemData[name] = value;
+      }),
+    );
+  },
   setInterceptor(payload: any) {
     set(
       produce((state) => {
@@ -559,6 +589,8 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
             variableData: {},
             // 表单数据
             formData: {},
+            // 表单控件数据(控件脱离表单管理)
+            formItemData: {},
             // 全局拦截器
             interceptor: {
               headers: [{ key: '', value: '' }],

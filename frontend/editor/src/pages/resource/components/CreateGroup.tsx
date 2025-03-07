@@ -97,7 +97,6 @@ const CreateGroup = (
                     setVisible(false);
                 })
                 .catch(error => {
-                    debugger
                     setLoading(false);
                 })
 

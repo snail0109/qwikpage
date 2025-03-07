@@ -4,7 +4,7 @@ import { Drawer, Spin } from 'antd';
 import MarsRender from '@materials/MarsRender/MarsRender';
 import * as icons from '@ant-design/icons';
 import { handleActionFlow } from '@materials/utils/action';
-import AuthButton from '@materials/Functional/Button/AuthButton';
+import AuthButton from '@materials/Basic/Button/AuthButton';
 
 const AntDrawer = forwardRef(({ config, elements, onClose, onAfterOpenChange }: ComponentType, ref: any) => {
   const [visible, setVisible] = useState(false);

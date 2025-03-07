@@ -46,12 +46,7 @@ const DragMenuItem = (props: IDragTarget) => {
   const handleClick = async (item: IDragTarget) => {
     // 生成默认配置
     const { config, events, methods = [], elements = [] } = (await getComponent(item.type + 'Config'))?.default || {};
-    debugger
     const newId = createId(item.type);
-    if (!checkComponentType(item.type, selectedElement?.id, selectedElement?.type, elementsMap)) {
-      message.info('请把表单项放在Form容器内');
-      return;
-    }
     const childElement =
       elements.map(async (child: IDragTarget & { id: string }) => {
         const { config, events, methods = [] }: any = (await getComponent(child.type + 'Config'))?.default || {};

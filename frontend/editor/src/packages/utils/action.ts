@@ -392,7 +392,7 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
     if (action.assignmentWay === 'static') {
       value = action.value;
     } else {
-      value = defaultVariable(action.variableType, data.data);
+      value = defaultVariable(action.variableType, data);
     }
   }
   usePageStore.getState().setVariableData({

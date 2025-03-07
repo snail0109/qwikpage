@@ -1,7 +1,10 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useCallback } from 'react';
 import MarsRender from '@materials/MarsRender/MarsRender';
+import { FormContext } from '@materials/utils/context';
+import { usePageStore } from '@materials/stores/pageStore';
 import { handleActionFlow } from '@materials/utils/action';
 import { ComItemType, ConfigType } from '@materials/types/index';
+import { isNotEmpty, getInitValue } from '@materials/utils/util';
 
 /**
  * @param props 组件本身属性
@@ -9,6 +12,13 @@ import { ComItemType, ConfigType } from '@materials/types/index';
  * @returns
  */
 const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemType[] }) => {
+
+  const { formItemData, setFormItemData } = usePageStore((state) => {
+    return {
+      formItemData: state.page.pageData.formItemData,
+      setFormItemData: state.setFormItemData,
+    };
+  });
   useEffect(() => {
     config?.events?.forEach((event: any) => {
       if (event.actions?.length > 0) {
@@ -16,6 +26,27 @@ const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemTyp
       }
     });
   }, [config?.events]);
-  return <div style={config?.style}>{<MarsRender elements={elements || []} />}</div>;
+
+  const initValues = useCallback((type: string, name: string, value: any) => {
+    if (name && isNotEmpty(value)) {
+      const initValue = getInitValue(type, value);
+      setFormItemData({
+        name,
+        value: initValue,
+      });
+    }
+  }, []);
+
+  const getValue = useCallback((name: string) => {
+    const value = formItemData[name];
+    return value;
+  }, [formItemData]);
+
+  return (
+    // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
+    <FormContext.Provider value={{ initValues, getValue }}>
+      <div style={config?.style}>{<MarsRender elements={elements || []} />}</div>
+    </FormContext.Provider>
+  );
 };
 export default memo(Page);

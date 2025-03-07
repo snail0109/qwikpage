@@ -23,11 +23,11 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MCheckBox = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) => {
+const MCheckBox = ({ id, type, config, inForm, formItemValue, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
-  const { initValues } = useFormContext();
+  const { initValues, getValue } = useFormContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
   /**
@@ -35,7 +35,7 @@ const MCheckBox = ({ type, config, onChange }: ComponentType<IConfig>, ref: any)
    * 此处需要注意：默认值可能是一个数组，必须比对字符串，否则会出现死循环
    */
   useEffect(() => {
-    const name: string = config.props.formItem?.name;
+    const name: string = config.props.formItem?.name || id;
     const value = config.props.defaultValue || [];
     initValues(type, name, value);
   }, [JSON.stringify(config.props.defaultValue)]);
@@ -100,12 +100,21 @@ const MCheckBox = ({ type, config, onChange }: ComponentType<IConfig>, ref: any)
         // 重新加载表格数据
         getDataList(data);
       },
+      getValue: () => {
+        const name = config.props.formItem?.name || id;
+        return getValue(name)
+      }
     };
   });
 
   const handleChange = (val: any) => {
+    const name = config.props.formItem?.name || id;
+    if (!inForm) {
+      // 控件不在表单内需要自行维护值
+      initValues(type, name, val);
+    }
     onChange?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
 
@@ -114,6 +123,7 @@ const MCheckBox = ({ type, config, onChange }: ComponentType<IConfig>, ref: any)
       <Form.Item {...config.props.formItem}>
         <Checkbox.Group
           {...config.props.formWrap}
+          value={formItemValue}
           disabled={disabled}
           options={data}
           style={config.style}

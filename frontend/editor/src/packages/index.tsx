@@ -7,7 +7,6 @@ const componentMap: { [key: string]: any } = {};
  * 动态加载组件和Schema配置
  */
 const modules: { [key: string]: () => Promise<any> } = import.meta.glob('./[a-zA-Z]+/**');
-console.log(">>>>modules", modules)
 
 for (const path in modules) {
   const [type, name] = path.split('/').slice(-2);

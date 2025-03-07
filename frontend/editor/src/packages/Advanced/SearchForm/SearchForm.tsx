@@ -8,7 +8,7 @@ import { DownOutlined, UpOutlined, SearchOutlined, RedoOutlined } from '@ant-des
 import * as icons from '@ant-design/icons';
 import { usePageStore } from '@/stores/pageStore';
 import { FormContext } from '@/packages/utils/context';
-import { dateFormat, getDateByType, getDateRangeByType, isNotEmpty } from '../../utils/util';
+import { dateFormat, isNotEmpty, getInitValue } from '../../utils/util';
 import { handleActionFlow } from '@/packages/utils/action';
 import styles from './index.module.less';
 import dayjs from 'dayjs';
@@ -162,11 +162,7 @@ const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset }:
   // 设置默认值
   const initValues = useCallback((type: string, name: string, value: any) => {
     if (name && isNotEmpty(value)) {
-      let initValue = value;
-      if (type === 'InputNumber') initValue = Number(value);
-      if (type === 'DatePicker') initValue = getDateByType(value);
-      if (type === 'DatePickerRange') initValue = getDateRangeByType(value);
-      if (type === 'TimePicker') initValue = dayjs(value, 'HH:mm:ss');
+      const initValue = getInitValue(type, value);
       setInitialValues({ [name]: initValue });
       form.setFieldValue([name], initValue);
       setFormData({
