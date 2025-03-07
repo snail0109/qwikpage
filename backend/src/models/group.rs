@@ -6,7 +6,7 @@ use std::fs;
 use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
-use crate::commands::project::get_project_list_new;
+use crate::models::project::Project;
 use crate::utils::get_current_time;
 use crate::storage::get_config_path;
 
@@ -131,7 +131,7 @@ impl GroupConfig {
 
     // 查询所有分组并遍历分组下的项目
     pub fn get_project_details(&self, keyword: Option<String>) -> Result<GroupList, Error> {
-        let projects = get_project_list_new(keyword).unwrap();
+        let projects = Project::get_project_list_inner(keyword).unwrap();
         // 收集所有已被分配的项目ID
         let mut assigned_project_ids = HashSet::new();
 

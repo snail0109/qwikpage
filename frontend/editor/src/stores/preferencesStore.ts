@@ -37,8 +37,11 @@ const usePreferencesStore = create<PreferencesStore>()(
             set_preferences: async (preferences: PreferencesState) => {
                 try {
                     await invoke("set_preferences", { preferences });
+                    // 更新本地状态
+                    set(preferences);
                 } catch (error) {
-                    console.error("初始化配置失败:", error);
+                    console.error("Failed to update preferences:", error);
+                    throw error;
                 }
             },
         }),

@@ -1,10 +1,8 @@
-use crate::{
-    models::preferences::Preferences,
-    storage::get_config_path,
-};
+use crate::{models::preferences::Preferences, storage::get_config_path, PreferencesState};
 use font_kit::source::SystemSource;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
+use log;
 
 #[command]
 pub fn open_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
@@ -41,20 +39,23 @@ pub fn get_system_fonts() -> Result<Vec<String>, String> {
     Ok(source.all_families().map_err(|e| e.to_string())?)
 }
 
-
 // 加载系统配置
 #[command]
-pub fn get_preferences() -> Result<Preferences, String> {
-    Preferences::get_preferences().map_err(|e| e.to_string())
+pub fn get_preferences(
+    preferences_state: tauri::State<PreferencesState>,
+) -> Result<Preferences, String> {
+    let preferences_state = preferences_state.0.lock().unwrap();
+    preferences_state.get_preferences()
 }
 
 // 更新系统配置
 #[command]
-pub fn set_preferences(preferences: Preferences) -> Result<(), String> {
-    let conf = Preferences::get_preferences().unwrap();
-    conf.set_preferences(serde_json::json!(preferences))
-        .unwrap()
-        .save()
-        .map_err(|e| e.to_string())?;
+pub fn set_preferences(
+    preferences_state: tauri::State<PreferencesState>,
+    preferences: Preferences,
+) -> Result<(), String> {
+    let mut preferences_state = preferences_state.0.lock().map_err(|e| e.to_string())?;
+    preferences_state.set_preferences(preferences).map_err(|e| e.to_string())?;
+    log::info!("Preferences updated successfully");
     Ok(())
 }

@@ -1,37 +1,13 @@
 use crate::commands::cmd_response::CmdResponse;
 use crate::models::project::{
-    Project, ProjectAddParams, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE
+    get_project_list_inner, Project, ProjectAddParams, ProjectList, add_project_inner, ProjectUpdateParams
 };
 use crate::models::resource::{AddTempResourceParams, ResourceConfig};
-use crate::utils::paginate;
-use crate::storage::get_config_path;
 use anyhow::Result;
-use log::{error, info};
-use std::fs;
-use std::path::{Path, PathBuf};
+use log::info;
+use std::path::PathBuf;
 use tauri::command;
 
-// 加载项目详情信息
-fn load_project(project_path: &Path) -> Option<Project> {
-    let project_file = project_path.join(PROJECT_CONFIG_FILE);
-    if project_file.exists() {
-        match fs::read_to_string(&project_file) {
-            Ok(json) => match serde_json::from_str(&json) {
-                Ok(project) => Some(project),
-                Err(e) => {
-                    error!("Failed to deserialize project file: {}", e);
-                    None
-                }
-            },
-            Err(e) => {
-                error!("Failed to read project file: {}", e);
-                None
-            }
-        }
-    } else {
-        None
-    }
-}
 
 // 获取项目列表
 #[command]
@@ -40,51 +16,7 @@ pub fn get_project_list(
     page_size: usize,
     keyword: Option<String>,
 ) -> Result<ProjectList, String> {
-    info!(
-        "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
-        page_num, page_size, keyword
-    );
-    let root_dir: PathBuf = get_config_path();
-    let mut project_list = Vec::new();
-
-    if let Ok(entries) = fs::read_dir(&root_dir) {
-        for entry in entries {
-            if let Ok(entry) = entry {
-                let project_path = entry.path();
-                // 过滤页面目录
-                if project_path
-                    .file_name()
-                    .map_or(false, |name| name == "page")
-                {
-                    continue;
-                }
-                if project_path.is_dir() {
-                    if let Some(project) = load_project(&project_path) {
-                        // 如果keyword传入了值，只返回匹配的项目
-                        if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword)
-                            {
-                                continue;
-                            }
-                        }
-                        let count = Project::count_pages_in_project(&project.id);
-                        project_list.push(ProjectSummary {
-                            id: project.id,
-                            name: project.name,
-                            remark: project.remark,
-                            theme_color: project.theme_color,
-                            updated_at: project.updated_at,
-                            logo: project.logo,
-                            count,
-                        });
-                    }
-                }
-            }
-        }
-    }
-    // 分页逻辑
-    let (list, total) = paginate(project_list, page_num, page_size);
-    Ok(ProjectList { total, list })
+    get_project_list_inner(page_num, page_size, keyword)
 }
 
 // 获取项目详情
@@ -98,7 +30,7 @@ pub fn get_project_detail(id: String) -> CmdResponse<Project> {
 #[command]
 pub fn add_project(params: ProjectAddParams) -> CmdResponse<Project> {
     info!("Project::add_project start, params: {:#?}", params);
-    let project = Project::add_project(params);
+    let project = add_project_inner(params);
     CmdResponse::from(project)
 }
 
@@ -117,51 +49,6 @@ pub async fn delete_project(id: String, group_id: String) -> CmdResponse<bool> {
     info!("Project::delete_project start, id: {}", id.clone());
     let res = Project::delete(id, group_id).await;
     CmdResponse::from(res)
-}
-
-// 获取项目列表
-#[command]
-pub fn get_project_list_new(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
-    info!("Project::get_project_list start, keyword: {:?}", keyword);
-    let root_dir: PathBuf = get_config_path();
-    let mut project_list = Vec::new();
-
-    if let Ok(entries) = fs::read_dir(&root_dir) {
-        for entry in entries {
-            if let Ok(entry) = entry {
-                let project_path = entry.path();
-                // 过滤页面目录
-                if project_path
-                    .file_name()
-                    .map_or(false, |name| name == "page")
-                {
-                    continue;
-                }
-                if project_path.is_dir() {
-                    if let Some(project) = load_project(&project_path) {
-                        // 如果keyword传入了值，只返回匹配的项目
-                        if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword)
-                            {
-                                continue;
-                            }
-                        }
-                        let count = Project::count_pages_in_project(&project.id);
-                        project_list.push(ProjectSummary {
-                            id: project.id,
-                            name: project.name,
-                            remark: project.remark,
-                            theme_color: project.theme_color,
-                            updated_at: project.updated_at,
-                            logo: project.logo,
-                            count,
-                        });
-                    }
-                }
-            }
-        }
-    }
-    Ok(project_list)
 }
 
 // 修改项目logo

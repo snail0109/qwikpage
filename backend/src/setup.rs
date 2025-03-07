@@ -1,7 +1,7 @@
 use std::fs;
 
 use crate::storage::{
-    get_app_data_path, get_app_root_resource_dir, get_config_path, get_default_code_path,
+    get_app_data_path, get_app_root_resource_dir, get_config_path,
 };
 use anyhow::Result;
 

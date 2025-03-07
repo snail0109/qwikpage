@@ -1,10 +1,11 @@
 use anyhow::Error;
 use log::{error, info};
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
-use crate::utils::{get_current_time, is_valid_file};
+use crate::utils::{get_current_time, is_valid_file, paginate};
 use crate::storage::{ get_config_path, get_default_build_path};
 
 use super::group::GroupConfig;
@@ -130,6 +131,7 @@ pub struct ProjectAddParams {
 // 项目配置文件
 pub const PROJECT_CONFIG_FILE: &str = "project.json";
 
+
 impl Project {
     pub fn new(
         id: String,
@@ -248,38 +250,159 @@ impl Project {
         count
     }
 
-    pub fn add_project(params: ProjectAddParams) -> Result<Project, Error> {
-        let project_id = uuid::Uuid::new_v4().to_string();
-        let group_id = params.group_id.clone();
-        info!("add project: {}", &project_id);
-        let project_dir_path = get_config_path().join(project_id.clone());
-        if !project_dir_path.exists() {
-            fs::create_dir_all(&project_dir_path)?;
-        }
-        let project = Project::new(
-            project_id.clone(),
-            params.name,
-            params.theme_color,
-            params.remark,
-            params.logo,
-            group_id.clone(),
-        );
-        project.save()?;
 
-        // group_id 为 None 时，添加到默认分组
-        let mut config = GroupConfig::load().map_err(|e| {
-            error!("Failed to load group configuration: {}", e);
-            anyhow::anyhow!("加载分组配置失败: {}", e)
-        })?;
-        config
-            .add_group_project(group_id.clone(), project_id.clone())
-            .map_err(|e| {
-                error!(
-                    "Failed to add project {} to group {}: {}",
-                    project_id, group_id, e
-                );
-                anyhow::anyhow!("添加项目 {} 到分组 {} 失败: {}", project_id, group_id, e)
-            })?;
-        Ok(project)
+    pub fn get_project_list_inner(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
+        info!("Project::get_project_list start, keyword: {:?}", keyword);
+        let root_dir: PathBuf = get_config_path();
+        let mut project_list = Vec::new();
+    
+        if let Ok(entries) = fs::read_dir(&root_dir) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let project_path = entry.path();
+                    // 过滤页面目录
+                    if project_path
+                        .file_name()
+                        .map_or(false, |name| name == "page")
+                    {
+                        continue;
+                    }
+                    if project_path.is_dir() {
+                        if let Some(project) = load_project(&project_path) {
+                            // 如果keyword传入了值，只返回匹配的项目
+                            if let Some(keyword) = &keyword {
+                                if !project.name.contains(keyword)
+                                {
+                                    continue;
+                                }
+                            }
+                            let count = Project::count_pages_in_project(&project.id);
+                            project_list.push(ProjectSummary {
+                                id: project.id,
+                                name: project.name,
+                                remark: project.remark,
+                                theme_color: project.theme_color,
+                                updated_at: project.updated_at,
+                                logo: project.logo,
+                                count,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        Ok(project_list)
     }
+    
+}
+
+
+// 加载项目详情信息
+fn load_project(project_path: &Path) -> Option<Project> {
+    let project_file = project_path.join(PROJECT_CONFIG_FILE);
+    if project_file.exists() {
+        match fs::read_to_string(&project_file) {
+            Ok(json) => match serde_json::from_str(&json) {
+                Ok(project) => Some(project),
+                Err(e) => {
+                    error!("Failed to deserialize project file: {}", e);
+                    None
+                }
+            },
+            Err(e) => {
+                error!("Failed to read project file: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    }
+}
+
+
+pub fn get_project_list_inner(
+    page_num: usize,
+    page_size: usize,
+    keyword: Option<String>,
+) -> Result<ProjectList, String> {
+    info!(
+        "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
+        page_num, page_size, keyword
+    );
+    let root_dir: PathBuf = get_config_path();
+    let mut project_list = Vec::new();
+
+    if let Ok(entries) = fs::read_dir(&root_dir) {
+        for entry in entries {
+            if let Ok(entry) = entry {
+                let project_path = entry.path();
+                // 过滤页面目录
+                if project_path
+                    .file_name()
+                    .map_or(false, |name| name == "page")
+                {
+                    continue;
+                }
+                if project_path.is_dir() {
+                    if let Some(project) = load_project(&project_path) {
+                        // 如果keyword传入了值，只返回匹配的项目
+                        if let Some(keyword) = &keyword {
+                            if !project.name.contains(keyword)
+                            {
+                                continue;
+                            }
+                        }
+                        let count = Project::count_pages_in_project(&project.id);
+                        project_list.push(ProjectSummary {
+                            id: project.id,
+                            name: project.name,
+                            remark: project.remark,
+                            theme_color: project.theme_color,
+                            updated_at: project.updated_at,
+                            logo: project.logo,
+                            count,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    // 分页逻辑
+    let (list, total) = paginate(project_list, page_num, page_size);
+    Ok(ProjectList { total, list })
+}
+
+pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
+    let project_id = uuid::Uuid::new_v4().to_string();
+    let group_id = params.group_id.clone();
+    info!("add project: {}", &project_id);
+    let project_dir_path = get_config_path().join(project_id.clone());
+    if !project_dir_path.exists() {
+        fs::create_dir_all(&project_dir_path)?;
+    }
+    let project = Project::new(
+        project_id.clone(),
+        params.name,
+        params.theme_color,
+        params.remark,
+        params.logo,
+        group_id.clone(),
+    );
+    project.save()?;
+
+    // group_id 为 None 时，添加到默认分组
+    let mut config = GroupConfig::load().map_err(|e| {
+        error!("Failed to load group configuration: {}", e);
+        anyhow::anyhow!("加载分组配置失败: {}", e)
+    })?;
+    config
+        .add_group_project(group_id.clone(), project_id.clone())
+        .map_err(|e| {
+            error!(
+                "Failed to add project {} to group {}: {}",
+                project_id, group_id, e
+            );
+            anyhow::anyhow!("添加项目 {} 到分组 {} 失败: {}", project_id, group_id, e)
+        })?;
+    Ok(project)
 }

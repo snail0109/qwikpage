@@ -1,7 +1,7 @@
 use tauri::command;
 
 use super::cmd_response::CmdResponse;
-use crate::models::group::{GroupConfig, GroupList};
+use crate::{models::group::{GroupConfig, GroupList}, PreferencesState};
 
 // 查询所有分组信息
 #[command]
@@ -12,7 +12,12 @@ pub fn load_groups() -> CmdResponse<GroupConfig> {
 
 // 查询所有分组信息
 #[command]
-pub fn load_groups_with_projects(keyword: Option<String>) -> CmdResponse<GroupList> {
+pub fn load_groups_with_projects(
+    preferences_state: tauri::State<PreferencesState>,
+    keyword: Option<String>,
+) -> CmdResponse<GroupList> {
+    let preferences_state = preferences_state.0.lock().unwrap();
+    println!("preferences_state.project_path , {}", preferences_state.project_path);
     match GroupConfig::load() {
         Ok(config) => {
             let res = config.get_project_details(keyword);
