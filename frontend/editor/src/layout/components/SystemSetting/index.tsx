@@ -34,8 +34,8 @@ export function SystemSetting(props: ISystemSettingProps) {
         return await invoke<void>("open_folder");
     };
 
-    const onUpdate = async (key,value) => {
-        await update(key,value)
+    const onUpdate = async (key: string, value: any) => {
+        await update(key, value)
     };
 
     return (
