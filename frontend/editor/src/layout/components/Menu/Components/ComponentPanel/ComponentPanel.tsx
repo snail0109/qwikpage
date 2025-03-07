@@ -5,6 +5,7 @@ import { useDebounceFn } from 'ahooks';
 import DragMenuItem from '../DragMenuItem';
 import components, { SysComItem } from '@/config/components';
 import styles from './index.module.less';
+import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
 /**
  * 组件面板
  */
@@ -85,7 +86,16 @@ const ComponentPanel = () => {
               size={'small'}
               activeKey={activeKeys}
               onChange={handleCollapse}
-              expandIcon={({ isActive }) => <UpOutlined rotate={isActive ? 0 : -180} />}
+              expandIcon={({ isActive }) => (
+                <ExpandArrowIcon
+                  width={12}
+                  height={12}
+                  style={{
+                    transform: isActive ? "rotate(0deg)" : "rotate(-180deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
+              )}
             />
             {list.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
           </>

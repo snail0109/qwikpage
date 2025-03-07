@@ -8,6 +8,7 @@ import { pageService } from '@/services';
 import storage from '@/utils/storage';
 import styles from './index.module.less';
 import { message } from '@/utils/AntdGlobal';
+import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
 
 /**
  * 编辑器顶部工具条
@@ -111,6 +112,15 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
             style={{ width: 100 }}
             value={canvasWidth}
             onChange={handleClickCanvas}
+            suffixIcon={
+              <ExpandArrowIcon
+                width={12}
+                height={12}
+                style={{
+                  transform: "rotate(-180deg)",
+                }}
+              />
+            }
           />
           <Button type="text" icon={<SettingOutlined />} onClick={handleEditPage}>
             设置
