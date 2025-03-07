@@ -62,24 +62,24 @@ const GroupTitle = ({ groupItem, createText = "新增项目", onCreate, onDelete
     };
 
     return (
-        <>
-            <div key={groupItem.id} className={styles.group}>
-                <div className={styles.groupHeader}>
-                    <div>
-                        {isEditing ? (
-                            <Input
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onBlur={handleBlur}
-                                onKeyDown={handleKeyDown}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                }}
-                                autoFocus
-                            />
-                        ) : (
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                {groupItem.name}
+        <div key={groupItem.id} className={styles.group}>
+            <div className={styles.groupHeader}>
+                <div>
+                    {isEditing ? (
+                        <Input
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onBlur={handleBlur}
+                            onKeyDown={handleKeyDown}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                            }}
+                            autoFocus
+                        />
+                    ) : (
+                        <div className={styles.groupNameWrap}>
+                            {groupItem.name}
+                            <div className={styles.iconContainer}>
                                 <EditIcon
                                     className={styles.editIcon}
                                     onClick={(event) => {
@@ -96,20 +96,20 @@ const GroupTitle = ({ groupItem, createText = "新增项目", onCreate, onDelete
                                                 event.stopPropagation();
                                             }}
                                         />
-                                        <Modal title="删除分组" open={open} onOk={handleDelete} onCancel={handleCancel}>
-                                            <p>确定删除当前分组？</p>
-                                        </Modal>
                                     </>
                                 )}
                             </div>
-                        )}
-                    </div>
-                    <Button icon={<PlusOutlined />} color="primary" variant="outlined" onClick={onCreateProject}>
-                        {createText}
-                    </Button>
+                        </div>
+                    )}
                 </div>
+                <Button icon={<PlusOutlined />} color="primary" variant="outlined" onClick={onCreateProject}>
+                    {createText}
+                </Button>
             </div>
-        </>
+            <Modal title="删除分组" open={open} onOk={handleDelete} onCancel={handleCancel}>
+                <p>确定删除当前分组？</p>
+            </Modal>
+        </div>
     );
 };
 

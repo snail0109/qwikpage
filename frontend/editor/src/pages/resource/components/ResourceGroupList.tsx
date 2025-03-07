@@ -116,6 +116,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
   return (
     <Collapse
       className={styles.resourceGroup}
+      collapsible="icon"
       ghost
       activeKey={activeKeys}
       expandIcon={({ isActive }) => (

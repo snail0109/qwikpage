@@ -105,6 +105,7 @@ function Category() {
                     <Collapse
                         ghost
                         // 设置默认展开所有项
+                        collapsible="icon"
                         activeKey={activeKeys}
                         onChange={onChange}
                         items={dataSource.map((item: any) => {
