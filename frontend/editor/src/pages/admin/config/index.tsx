@@ -165,14 +165,16 @@ const Config: React.FC = memo(() => {
 
     // 修改导出目录
     const changeCodeExportDir = async (defaultDir: string) => {
-        const filePath = await open({
-            title: "选择目录",
+        const dirPath = await open({
             multiple: false,
             defaultPath: defaultDir,
             directory: true
         });
 
-        form.setFieldValue('codeExportPath',filePath );
+        if (!dirPath || dirPath?.length === 0) {
+            return;
+          }
+        form.setFieldValue('codeExportPath',dirPath );
     }
 
     return (
