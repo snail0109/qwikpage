@@ -5,20 +5,19 @@
  */
 import { FormInstance } from 'antd';
 import { createContext, useContext } from 'react';
-import { message } from './AntdGlobal';
 
 export const FormContext = createContext<{
   form?: FormInstance;
   initValues: (type: string, name: string, value: any) => void;
+  getValue: (name: string) => any;
 } | null>(null);
 
 export const useFormContext = () => {
   const context = useContext(FormContext);
   if (!context) {
-    console.warn('表单组件必须放在Form组件、SearchForm组件或者GridForm组件内');
-    message.warning('表单项必须放在Form组件、SearchForm组件或者GridForm组件内');
     return {
-      initValues() {},
+      initValues() { },
+      getValue() { return null; },
     };
   }
   return context;

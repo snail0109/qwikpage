@@ -4,8 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { FormContext } from '@/utils/context';
 import { usePageStore } from '@/stores/pageStore';
 import { ComponentType } from '@/types';
-import { dateFormat, getDateByType, getDateRangeByType, isNotEmpty } from '@/utils/util';
-import dayjs from 'dayjs';
+import { dateFormat, isNotEmpty, getInitValue } from '@/utils/util';
 /**
  *
  * @param props 组件本身属性
@@ -89,11 +88,7 @@ const MForm = ({ id, config, elements, onFinish, onChange, children }: Component
   // 设置默认值
   const initValues = useCallback((type: string, name: string, value: any) => {
     if (name && isNotEmpty(value)) {
-      let initValue = value;
-      if (type === 'InputNumber') initValue = Number(value);
-      if (type === 'DatePicker') initValue = getDateByType(value);
-      if (type === 'DatePickerRange') initValue = getDateRangeByType(value);
-      if (type === 'TimePicker') initValue = dayjs(value, 'HH:mm:ss');
+      const initValue = getInitValue(type, value);
       setInitialValues({ [name]: initValue });
       form.setFieldValue([name], initValue);
       setFormData({
@@ -102,9 +97,14 @@ const MForm = ({ id, config, elements, onFinish, onChange, children }: Component
       });
     }
   }, []);
+
+  // 获取表单内某项的值
+  const getValue = useCallback((name: string) => {
+    return form.getFieldValue(name);
+  }, []);
   return (
     visible && (
-      <FormContext.Provider value={{ initValues }}>
+      <FormContext.Provider value={{ initValues, getValue }}>
         <Form form={form} style={config.style} {...config.props} initialValues={initialValues} onFinish={handleFinish} onValuesChange={handleChange}>
           {/* <MarsRender elements={elements} /> */}
           {children}
