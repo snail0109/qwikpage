@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
-use crate::utils::{get_app_root_dir, get_current_time, is_valid_file};
+use crate::utils::{get_app_root_dir, get_current_time, get_store_path, is_valid_file};
 
 use super::group::GroupConfig;
 use super::resource::ResourceConfig;
@@ -155,7 +155,7 @@ impl Project {
             system_theme_color: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
-            code_export_path: None,
+            code_export_path: Some(get_store_path().join("build").to_string_lossy().to_string()),
         }
     }
 
