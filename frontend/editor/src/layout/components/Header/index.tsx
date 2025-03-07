@@ -16,7 +16,20 @@ import ExportIcon from "@/assets/icons/ExportIcon.svg?react";
 import SaveIcon from "@/assets/icons/SaveIcon.svg?react";
 import { PanelKey } from "@/constants/panelKeys";
 import { ISystemSettingRef, SystemSetting } from "../SystemSetting";
+import problue from "@/assets/image/header/headerT_blue.png";
+import progreen from "@/assets/image/header/headerT_green.png";
+import propurple from "@/assets/image/header/headerT_purple.png";
+import prored from "@/assets/image/header/headerT_red.png";
+
 const appWebview = getCurrentWebviewWindow();
+
+// 根据 themeColor 映射到相应的图片
+const themeColorToImageMap: { [key: string]: string } = {
+    blue: problue,
+    green: progreen,
+    purple: propurple,
+    red: prored,
+};
 
 /**
  * 编辑器顶部组件
@@ -129,9 +142,10 @@ const Header = memo(() => {
 
             if (['/project/pages', '/resources'].includes(location.pathname) && projectId) {
                 const res = await projectService.getProjectDetail(projectId);
+                const backgroundImage = themeColorToImageMap[res.themeColor];
                 setHeaderStyle({
                     ...baseStyle,
-                    backgroundImage: `url(/src/assets/image/header/headerT_${res.themeColor}.png)`,
+                    backgroundImage: `url(${backgroundImage})`,
                     color: '#fff'
                 });
                 return;
