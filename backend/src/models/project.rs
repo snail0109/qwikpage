@@ -191,6 +191,7 @@ impl Project {
         self.menu_mode = params.menu_mode;
         self.menu_theme_color = params.menu_theme_color;
         self.system_theme_color = params.system_theme_color;
+        self.code_export_path = params.code_export_path;
         self.breadcrumb = params.breadcrumb;
         self.tag = params.tag;
         self.footer = params.footer;

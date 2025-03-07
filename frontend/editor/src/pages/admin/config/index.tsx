@@ -4,7 +4,7 @@ import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, EllipsisOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
 import RadioButtonGroup from "@/components/RadioButtonGroup";
@@ -74,7 +74,7 @@ const Config: React.FC = memo(() => {
             const value = form.getFieldsValue();
             setLoading(true);
             // value 转化成 snake_case格式
-            const { menuMode, menuThemeColor, systemThemeColor, ...rest } = value;
+            const { menuMode, menuThemeColor, systemThemeColor, codeExportPath, ...rest } = value;
 
             await projectService.updateProject({
                 ...rest,
@@ -82,6 +82,7 @@ const Config: React.FC = memo(() => {
                 system_theme_color: systemThemeColor,
                 menu_mode: menuMode,
                 menu_theme_color: menuThemeColor,
+                code_export_path: codeExportPath,
             });
             message.success("更新成功");
             setLoading(false);
@@ -95,7 +96,7 @@ const Config: React.FC = memo(() => {
     const handleDelConfirm = () => {
         setOpenModal(true);
     };
-    // 删除提交
+    // 删除项目
     const handleOk = async () => {
         setDelLoading(true);
         try {
@@ -162,6 +163,18 @@ const Config: React.FC = memo(() => {
         form.setFieldsValue({ [fieldName]: selectedOption.value });
     };
 
+    // 修改导出目录
+    const changeCodeExportDir = async (defaultDir: string) => {
+        const filePath = await open({
+            title: "选择目录",
+            multiple: false,
+            defaultPath: defaultDir,
+            directory: true
+        });
+
+        form.setFieldValue('codeExportPath',filePath );
+    }
+
     return (
         <>
             <Form
@@ -193,8 +206,8 @@ const Config: React.FC = memo(() => {
                 <Form.Item label="项目名称" name="name" rules={[{ required: true, message: "请输入项目名称" }]}>
                     <Input placeholder={"项目名称: Mars"} {...props} maxLength={15} showCount />
                 </Form.Item>
-                <Form.Item label="导出目录" name="export_dir">
-                    <Input placeholder={"导出项目所在的目录"} {...props} maxLength={15} showCount />
+                <Form.Item label="导出目录" name="codeExportPath">
+                    <Input placeholder={"导出项目所在的目录"} addonAfter={<EllipsisOutlined onClick={() => changeCodeExportDir(form.getFieldValue('codeExportPath'))}/>} {...props}  />
                 </Form.Item>
                 <Form.Item label="项目描述" name="remark">
                     <Input.TextArea
