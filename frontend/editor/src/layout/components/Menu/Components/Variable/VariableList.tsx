@@ -23,7 +23,7 @@ export default () => {
       dataIndex: "name",
       key: "name",
       width: "20%",
-      align: "center",
+      align: "left",
       render: (_, row) => (
         <div className={styles.iconCol}>
           {row.type === 'string' ? <FieldStringOutlined /> : <FieldNumberOutlined />}
@@ -35,22 +35,22 @@ export default () => {
       title: "变量默认值",
       dataIndex: "defaultValue",
       key: "defaultValue",
-      width: "30%",
+      width: "25%",
     },
     {
       title: "变量说明",
       dataIndex: "remark",
       key: "remark",
-      width: "30%",
+      width: "35%",
     },
     {
       title: "操作",
       key: "action",
       width: 120,
-      align: "center",
+      align: "left",
       render: (_, row) => (
         <div style={{ display: 'flex', alignItems: "center" }}>
-          <Button type="link" onClick={(event) => handleEdit(event, row)}>
+          <Button type="link" onClick={(event) => handleEdit(event, row)} style={{ paddingLeft: 0 }}>
             修改
           </Button>
           <Divider type="vertical" />
@@ -84,7 +84,6 @@ export default () => {
       theme={{
         components: {
           Table: {
-            headerBg: '#EDEDED',
             headerBorderRadius: 2,
           },
         },

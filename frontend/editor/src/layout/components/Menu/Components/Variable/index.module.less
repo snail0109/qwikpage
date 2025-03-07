@@ -20,6 +20,11 @@
   height: calc(50vh - 72px);
   margin-right: 5px;
   overflow-y: auto;
+  :global {
+    .ant-table-thead>tr>th:first-child {
+      padding-left: 45px !important;
+    }
+  }
 }
 
 .pageVariableConfig {
@@ -43,7 +48,8 @@
 .iconCol {
   display: flex;
   align-items: center;
-  padding-left: 32px;
+  justify-content: left;
+  padding-left: 20px;
 
   >span {
     display: inline-block;
