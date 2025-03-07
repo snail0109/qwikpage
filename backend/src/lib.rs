@@ -24,7 +24,6 @@ use once_cell::sync::OnceCell;
 use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
-use storage::get_app_root_resource_dir;
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
 const DEFAULT_WINDOW_HEIGHT: f64 = 600.0;
@@ -139,7 +138,6 @@ pub fn run() {
             code::export_json,
             code::export_project,
             // 系统配置
-            preferences::open_folder,
             preferences::get_system_fonts,
             preferences::open_target_folder,
             preferences::get_preferences,

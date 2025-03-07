@@ -25,20 +25,8 @@ pub struct Preferences {
 impl Preferences {
     pub fn new() -> Preferences {
         let path = get_config_path().join("preferences.json");
-        let font_family = if cfg!(target_os = "macos") {
-            "PingFang SC".to_string()
-        } else {
-            "Microsoft YaHei Mono".to_string()
-        };
-        let mut preferences = Preferences {
-            theme: "auto".to_string(),
-            language: "auto".to_string(),
-            font_size: DEFAULT_FONT_SIZE,
-            font_bold: DEFAULT_FONT_BOLD.to_string(),
-            font_family: font_family,
-            check_update: false,
-            project_path: get_default_code_path(),
-        };
+       
+        let mut preferences = default_preferences();
         
         match fs::read_to_string(path) {
             Ok(contents) => match serde_json::from_str(&contents) {
@@ -90,3 +78,20 @@ impl Preferences {
     }
 }
 
+
+pub fn default_preferences() -> Preferences {
+    let font_family = if cfg!(target_os = "macos") {
+        "PingFang SC".to_string()
+    } else {
+        "Microsoft YaHei Mono".to_string()
+    };
+    Preferences {
+        theme: "auto".to_string(),
+        language: "auto".to_string(),
+        font_size: DEFAULT_FONT_SIZE,
+        font_bold: DEFAULT_FONT_BOLD.to_string(),
+        font_family,
+        check_update: false,
+        project_path: get_default_code_path(),
+    }
+}
