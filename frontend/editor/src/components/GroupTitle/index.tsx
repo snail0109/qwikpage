@@ -104,7 +104,7 @@ const GroupTitle = ({ groupItem, createText = "新增项目", onCreate, onDelete
                             </div>
                         )}
                     </div>
-                    <Button icon={<PlusOutlined />} color="primary" variant="dashed" onClick={onCreateProject}>
+                    <Button icon={<PlusOutlined />} color="primary" variant="outlined" onClick={onCreateProject}>
                         {createText}
                     </Button>
                 </div>
