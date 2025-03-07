@@ -1,4 +1,4 @@
-use crate::{models::preferences::{default_preferences, Preferences}, PreferencesState};
+use crate::{models::preferences::{default_preferences, Preferences}, storage::get_config_path, PreferencesState};
 use font_kit::source::SystemSource;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
