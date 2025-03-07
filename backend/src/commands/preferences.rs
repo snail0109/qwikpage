@@ -1,8 +1,11 @@
-
-use crate::utils::get_app_root_dir;
+use crate::{
+    models::preferences::Preferences,
+    utils::get_app_root_dir,
+};
+use font_kit::source::SystemSource;
+use serde_json::Value;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
-use font_kit::source::SystemSource;
 
 #[command]
 pub fn open_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
@@ -40,8 +43,19 @@ pub fn get_system_fonts() -> Result<Vec<String>, String> {
 }
 
 
-// #[command]
-// pub fn get_config(state: tauri::State<AppConfState> ) -> AppConf {
-//     let state = state.0.lock().unwrap();
-//     state.clone()
-// }
+// 加载系统配置
+#[command]
+pub fn get_preferences() -> Result<Preferences, String> {
+    Preferences::get_preferences().map_err(|e| e.to_string())
+}
+
+// 更新系统配置
+#[command]
+pub fn set_preferences(key: String, value: Value) -> Result<(), String> {
+    let conf = Preferences::get_preferences().unwrap();
+    conf.set_preferences(serde_json::json!({key: value}))
+        .unwrap()
+        .save()
+        .map_err(|e| e.to_string());
+    Ok(())
+}

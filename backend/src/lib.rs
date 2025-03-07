@@ -9,7 +9,7 @@ mod types;
 mod utils;
 
 use crate::{
-    commands::{code, config, group, page, project, resource},
+    commands::{code, preferences, group, page, project, resource},
     service::configure_rocket,
     utils::{get_app_root_dir, is_port_in_use},
 };
@@ -137,9 +137,11 @@ pub fn run() {
             code::export_json,
             code::export_project,
             // 系统配置
-            config::open_folder,
-            config::get_system_fonts,
-            config::open_target_folder
+            preferences::open_folder,
+            preferences::get_system_fonts,
+            preferences::open_target_folder,
+            preferences::get_preferences,
+            preferences::set_preferences,
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");

@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import useAppConfigStore from "@/stores/appConfigStore";
+import usePreferencesStore from "@/stores/preferencesStore";
 import { invoke } from "@tauri-apps/api/core";
 import { Modal } from "antd";
 import React, { MutableRefObject, useImperativeHandle } from "react";
@@ -14,7 +14,7 @@ interface ISystemSettingProps {
 
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = React.useState(false);
-    const { update, ...rest } = useAppConfigStore();
+    const { set_preferences, ...rest } = usePreferencesStore();
 
     useImperativeHandle(props.settingRef, () => ({
         async open() {
@@ -35,7 +35,7 @@ export function SystemSetting(props: ISystemSettingProps) {
     };
 
     const onUpdate = async (key: string, value: any) => {
-        await update(key, value)
+        await set_preferences(key, value)
     };
 
     return (
@@ -59,7 +59,7 @@ export function SystemSetting(props: ISystemSettingProps) {
             </Button>
             <Button
                 onClick={() => {
-                    onUpdate("theme", "light");
+                    onUpdate("codeBuildPath", "");
                 }}
             >
                 修改主题
