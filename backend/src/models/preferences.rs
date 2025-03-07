@@ -1,10 +1,9 @@
 use anyhow::Error;
 use log::{error, info};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::{collections::BTreeMap, fs, path::PathBuf};
+use std::fs;
 
-use crate::{commands::preferences, storage::{get_config_path, get_default_code_path}};
+use crate::storage::{get_config_path, get_default_code_path};
 
 const DEFAULT_FONT_SIZE: u32 = 12;
 const DEFAULT_FONT_BOLD: &str = "normal";

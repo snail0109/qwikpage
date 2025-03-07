@@ -1,4 +1,4 @@
-use crate::{models::preferences::{default_preferences, Preferences}, storage::get_config_path, PreferencesState};
+use crate::{models::preferences::{default_preferences, Preferences}, PreferencesState};
 use font_kit::source::SystemSource;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
@@ -63,3 +63,15 @@ pub fn restore_preferences(
     log::info!("Preferences updated successfully");
     Ok(())
 }
+
+
+// 打开配置目录
+#[command]
+pub fn open_preferences<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
+    let root_dir = get_config_path();
+    app.opener()
+        .open_path(root_dir.to_string_lossy().to_string(), None::<&str>)
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+

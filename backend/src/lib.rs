@@ -142,6 +142,8 @@ pub fn run() {
             preferences::open_target_folder,
             preferences::get_preferences,
             preferences::set_preferences,
+            preferences::restore_preferences,
+            preferences::open_preferences,
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
