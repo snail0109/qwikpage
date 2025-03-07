@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::BTreeMap, fs, path::PathBuf};
 
-use crate::storage::{get_config_path, get_default_project_path};
+use crate::storage::{get_config_path, get_default_code_path};
 
 const DEFAULT_FONT_SIZE: u32 = 12;
 const DEFAULT_FONT_BOLD: &str = "normal";
@@ -36,7 +36,7 @@ impl Preferences {
             font_bold: DEFAULT_FONT_BOLD.to_string(),
             font_family: font_family,
             check_update: false,
-            project_path: get_default_project_path(),
+            project_path: get_default_code_path(),
         }
     }
 

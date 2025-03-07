@@ -44,11 +44,11 @@ pub fn get_app_data_path() -> PathBuf {
     }
 }
 
-pub fn get_default_project_path() -> String {
+pub fn get_default_code_path() -> String {
     get_app_data_path().join("code").to_string_lossy().to_string()
 }
 
-pub fn get_default_code_path() -> String {
+pub fn get_default_build_path() -> String {
     get_app_data_path().join("build").to_string_lossy().to_string()
 }
 

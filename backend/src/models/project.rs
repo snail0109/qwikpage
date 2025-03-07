@@ -5,7 +5,7 @@ use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
 use crate::utils::{get_current_time, is_valid_file};
-use crate::storage::{ get_config_path, get_default_code_path};
+use crate::storage::{ get_config_path, get_default_build_path};
 
 use super::group::GroupConfig;
 use super::resource::ResourceConfig;
@@ -156,7 +156,7 @@ impl Project {
             system_theme_color: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
-            code_export_path: Some(get_default_code_path()),
+            code_export_path: Some(get_default_build_path()),
         }
     }
 
