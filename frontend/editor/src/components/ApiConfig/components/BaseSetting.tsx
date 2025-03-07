@@ -1,6 +1,6 @@
 import VariableBind from "@/components/VariableBind/VariableBind";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Form, Radio, Input, Switch, Space, Popover } from "antd";
+import { Form, Radio, Input, Switch, Space } from "antd";
 import styles from '../index.module.less';
 
 const SettingForm = function () {

@@ -10,6 +10,7 @@ export interface PreferencesState {
     fontFamily: string;
     checkUpdate: boolean;
     projectPath: string;
+    systemFontFamilys: string[];
 }
 interface PreferencesStore extends PreferencesState {
     get_preferences: () => Promise<void>;
@@ -26,10 +27,17 @@ const usePreferencesStore = create<PreferencesStore>()(
             fontFamily: "system",
             checkUpdate: false,
             projectPath: "system",
+            systemFontFamilys:[],
             get_preferences: async () => {
                 try {
                     const preferences: PreferencesState = await invoke("get_preferences");
-                    set(preferences);
+                    // 检查 systemFontFamilys 是否为空，如果为空则调用接口获取字体
+                    if (preferences.systemFontFamilys.length === 0) {
+                        const systemFonts: string[] = await invoke("get_system_fonts");
+                        set({ ...preferences, systemFontFamilys: systemFonts }); // 更新状态
+                    } else {
+                        set(preferences);
+                    }
                 } catch (error) {
                     console.error("初始化配置失败:", error);
                 }

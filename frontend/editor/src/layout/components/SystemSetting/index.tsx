@@ -1,8 +1,8 @@
-import { Button } from "antd";
-import usePreferencesStore from "@/stores/preferencesStore";
-import { invoke } from "@tauri-apps/api/core";
-import { Modal } from "antd";
 import React, { MutableRefObject, useImperativeHandle } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { Modal, Form, Select, Input, Checkbox, Button } from "antd";
+import { EllipsisOutlined } from "@ant-design/icons";
+import usePreferencesStore from "@/stores/preferencesStore";
 
 export type ISystemSettingRef = {
     open: () => void;
@@ -15,6 +15,8 @@ interface ISystemSettingProps {
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = React.useState(false);
     const { set_preferences, ...rest } = usePreferencesStore();
+    const { systemFontFamilys } = usePreferencesStore.getState();
+    const [form] = Form.useForm();
 
     useImperativeHandle(props.settingRef, () => ({
         async open() {
@@ -24,6 +26,7 @@ export function SystemSetting(props: ISystemSettingProps) {
 
     const handleOk = () => {
         setVisible(false);
+        onUpdate();
     };
 
     const handleCancel = () => {
@@ -43,21 +46,69 @@ export function SystemSetting(props: ISystemSettingProps) {
             fontFamily: "PingFang SC",
             checkUpdate: true,
             projectPath: "/Users/dxy/Download",
+            systemFontFamilys,
         });
     };
+
+    const customFooter = () => (
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <Button color="primary" variant="outlined" onClick={onOpenDirClick} style={{ marginRight: '8px' }}>
+                    打开配置目录
+                </Button>
+                <Button color="primary" variant="outlined" onClick={onUpdate}>
+                    重置为默认
+                </Button>
+            </div>
+
+            <div>
+                <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
+                    取消
+                </Button>
+                <Button type="primary" onClick={handleOk}>
+                    保存
+                </Button>
+            </div>
+        </div>
+    );
 
     return (
         <Modal
             title="系统设置"
             open={visible}
-            onOk={handleOk}
             onCancel={handleCancel}
             width={500}
-            okText="确定"
-            cancelText="取消"
+            footer={customFooter}
         >
-            <div>系统设置</div>
-            {JSON.stringify(rest)}
+            <Form form={form} layout="vertical" autoComplete="off">
+                <Form.Item
+                    label="字体"
+                    name="fontfamily"
+                >
+                    <Select
+                        placeholder="请选择字体"
+                        options={systemFontFamilys}
+                        fieldNames={{ label: 'name', value: 'id' }}
+                    // optionRender={(option) => (
+
+                    // )}
+                    />
+                </Form.Item>
+                <Form.Item
+                    label="数据存放目录"
+                    name="fontfamily"
+                >
+                    <Input placeholder={"数据存放目录"} addonAfter={<EllipsisOutlined onClick={() => {}} />} {...props} />
+                </Form.Item>
+                <Form.Item
+                    label="更新"
+                    name="fontfamily"
+                    valuePropName="checked"
+                >
+                    <Checkbox>自动检查更新</Checkbox>
+                </Form.Item>
+            </Form>
+            {/* {JSON.stringify(rest)}
             <Button
                 onClick={() => {
                     onUpdate();
@@ -71,7 +122,7 @@ export function SystemSetting(props: ISystemSettingProps) {
                 }}
             >
                 修改主题
-            </Button>
+            </Button> */}
         </Modal>
     );
 }

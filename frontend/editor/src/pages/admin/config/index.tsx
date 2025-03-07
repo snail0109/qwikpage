@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Form, Input, Button, Space, Radio, Switch, Modal, Image } from "antd";
+import { Form, Input, Button, Space, Radio, Switch, Modal } from "antd";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
@@ -173,8 +173,8 @@ const Config: React.FC = memo(() => {
 
         if (!dirPath || dirPath?.length === 0) {
             return;
-          }
-        form.setFieldValue('codeExportPath',dirPath );
+        }
+        form.setFieldValue('codeExportPath', dirPath);
     }
 
     return (
@@ -209,7 +209,7 @@ const Config: React.FC = memo(() => {
                     <Input placeholder={"项目名称: Mars"} {...props} maxLength={15} showCount />
                 </Form.Item>
                 <Form.Item label="导出目录" name="codeExportPath">
-                    <Input placeholder={"导出项目所在的目录"} addonAfter={<EllipsisOutlined onClick={() => changeCodeExportDir(form.getFieldValue('codeExportPath'))}/>} {...props}  />
+                    <Input placeholder={"导出项目所在的目录"} addonAfter={<EllipsisOutlined onClick={() => changeCodeExportDir(form.getFieldValue('codeExportPath'))} />} {...props} />
                 </Form.Item>
                 <Form.Item label="项目描述" name="remark">
                     <Input.TextArea
