@@ -34,8 +34,16 @@ export function SystemSetting(props: ISystemSettingProps) {
         return await invoke<void>("open_folder");
     };
 
-    const onUpdate = async (key: string, value: any) => {
-        await set_preferences(key, value)
+    const onUpdate = async () => {
+        await set_preferences({
+            theme: "light",
+            language: "zh",
+            fontSize: 20,
+            fontBold: "bold",
+            fontFamily: "PingFang SC",
+            checkUpdate: true,
+            projectPath: "/Users/dxy/Download",
+        });
     };
 
     return (
@@ -52,14 +60,14 @@ export function SystemSetting(props: ISystemSettingProps) {
             {JSON.stringify(rest)}
             <Button
                 onClick={() => {
-                    onUpdate("fontSize", 10 * Math.random());
+                    onUpdate();
                 }}
             >
                 修改字体大小
             </Button>
             <Button
                 onClick={() => {
-                    onUpdate("codeBuildPath", "");
+                    onUpdate();
                 }}
             >
                 修改主题

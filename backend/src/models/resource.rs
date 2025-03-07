@@ -3,7 +3,8 @@ use log::info;
 use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{format_system_size, format_system_time, get_app_root_resource_dir};
+use crate::utils::{format_system_size, format_system_time};
+use crate::storage::get_app_root_resource_dir;
 use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};

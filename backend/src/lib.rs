@@ -7,11 +7,13 @@ mod service;
 mod setup;
 mod types;
 mod utils;
+mod storage;
 
 use crate::{
     commands::{code, preferences, group, page, project, resource},
     service::configure_rocket,
-    utils::{get_app_root_dir, is_port_in_use},
+    utils::is_port_in_use,
+    storage::get_config_path,
 };
 use log::{error, info};
 use once_cell::sync::OnceCell;
@@ -19,7 +21,7 @@ use once_cell::sync::OnceCell;
 use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
-use utils::get_app_root_resource_dir;
+use storage::get_app_root_resource_dir;
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
 const DEFAULT_WINDOW_HEIGHT: f64 = 600.0;
@@ -41,7 +43,7 @@ pub fn run() {
                 .targets([
                     Target::new(TargetKind::Stdout),
                     Target::new(TargetKind::Folder {
-                        path: get_app_root_dir(),
+                        path: get_config_path(),
                         file_name: None,
                     }),
                     Target::new(TargetKind::Webview),

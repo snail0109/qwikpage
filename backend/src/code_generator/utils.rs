@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::utils::get_app_root_resource_dir;
+use crate::storage::get_app_root_resource_dir;
 use crate::models::page::PageContent;
 use futures::future::BoxFuture;
 use log::info;

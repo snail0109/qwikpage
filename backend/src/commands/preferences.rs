@@ -1,15 +1,14 @@
 use crate::{
     models::preferences::Preferences,
-    utils::get_app_root_dir,
+    storage::get_config_path,
 };
 use font_kit::source::SystemSource;
-use serde_json::Value;
 use tauri::{command, AppHandle, Runtime};
 use tauri_plugin_opener::OpenerExt;
 
 #[command]
 pub fn open_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
-    let root_dir = get_app_root_dir();
+    let root_dir = get_config_path();
     app.opener()
         .open_path(root_dir.to_string_lossy().to_string(), None::<&str>)
         .map_err(|e| e.to_string())?;
@@ -51,11 +50,11 @@ pub fn get_preferences() -> Result<Preferences, String> {
 
 // 更新系统配置
 #[command]
-pub fn set_preferences(key: String, value: Value) -> Result<(), String> {
+pub fn set_preferences(preferences: Preferences) -> Result<(), String> {
     let conf = Preferences::get_preferences().unwrap();
-    conf.set_preferences(serde_json::json!({key: value}))
+    conf.set_preferences(serde_json::json!(preferences))
         .unwrap()
         .save()
-        .map_err(|e| e.to_string());
+        .map_err(|e| e.to_string())?;
     Ok(())
 }

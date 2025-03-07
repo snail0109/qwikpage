@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
-use crate::utils::{get_app_root_dir, get_current_time, get_store_path, is_valid_file};
+use crate::utils::{get_current_time, is_valid_file};
+use crate::storage::{ get_config_path, get_default_code_path};
 
 use super::group::GroupConfig;
 use super::resource::ResourceConfig;
@@ -155,12 +156,12 @@ impl Project {
             system_theme_color: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
-            code_export_path: Some(get_store_path().join("build").to_string_lossy().to_string()),
+            code_export_path: Some(get_default_code_path()),
         }
     }
 
     pub fn save(&self) -> Result<bool, Error> {
-        let project_dir_path = get_app_root_dir().join(self.id.clone());
+        let project_dir_path = get_config_path().join(self.id.clone());
         if !project_dir_path.exists() {
             fs::create_dir_all(&project_dir_path)?;
         }
@@ -171,7 +172,7 @@ impl Project {
     }
 
     pub fn load(project_id: String) -> io::Result<Self> {
-        let project_file = get_app_root_dir()
+        let project_file = get_config_path()
             .join(project_id)
             .join(PROJECT_CONFIG_FILE);
         match fs::read_to_string(project_file) {
@@ -209,7 +210,7 @@ impl Project {
     }
 
     pub async fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
-        let project_dir = get_app_root_dir().join(&project_id);
+        let project_dir = get_config_path().join(&project_id);
         tokio::fs::remove_dir_all(project_dir).await?;
         let mut config = GroupConfig::load()?;
         if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
@@ -226,7 +227,7 @@ impl Project {
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
-        let page_dir = get_app_root_dir().join(&project_id).join(PAGE_DIR);
+        let page_dir = get_config_path().join(&project_id).join(PAGE_DIR);
         // 目录不存在则返回 0
         if !page_dir.exists() {
             return 0;
@@ -251,7 +252,7 @@ impl Project {
         let project_id = uuid::Uuid::new_v4().to_string();
         let group_id = params.group_id.clone();
         info!("add project: {}", &project_id);
-        let project_dir_path = get_app_root_dir().join(project_id.clone());
+        let project_dir_path = get_config_path().join(project_id.clone());
         if !project_dir_path.exists() {
             fs::create_dir_all(&project_dir_path)?;
         }

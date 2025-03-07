@@ -1,5 +1,6 @@
 use crate::constans::PAGE_DIR;
-use crate::utils::{get_app_root_dir, get_current_time, is_valid_file, paginate};
+use crate::utils::{get_current_time, is_valid_file, paginate};
+use crate::storage::get_config_path;
 use anyhow::Error;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
@@ -117,7 +118,7 @@ impl Page {
     }
 
     pub fn get_page_dir(project_id: &String) -> PathBuf {
-        let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
+        let page_dir: PathBuf = get_config_path().join(project_id).join(PAGE_DIR);
         page_dir
     }
 
@@ -208,7 +209,7 @@ impl Page {
 
     // 新增页面
     pub fn add_page(params: PageAddParams) -> Result<Page, Error> {
-        let page_dir: PathBuf = get_app_root_dir().join(&params.project_id).join(PAGE_DIR);
+        let page_dir: PathBuf = get_config_path().join(&params.project_id).join(PAGE_DIR);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir).map_err(|e| format!("创建目录失败: {}", e));
         }
@@ -228,7 +229,7 @@ impl Page {
 
     // 更新页面
     pub fn update(params: PageUpdateParams) -> Result<bool, Error> {
-        let page_dir: PathBuf = get_app_root_dir().join(params.project_id).join(PAGE_DIR);
+        let page_dir: PathBuf = get_config_path().join(params.project_id).join(PAGE_DIR);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
         }
@@ -253,7 +254,7 @@ impl Page {
     }
 
     pub fn copy(params: PageCopyParams) -> Result<String, Error> {
-        let page_dir: PathBuf = get_app_root_dir().join(&params.project_id).join(PAGE_DIR);
+        let page_dir: PathBuf = get_config_path().join(&params.project_id).join(PAGE_DIR);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
         }

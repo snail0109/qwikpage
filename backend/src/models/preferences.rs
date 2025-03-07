@@ -1,9 +1,9 @@
-use log::error;
+use log::{error, info};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::BTreeMap, fs, path::PathBuf};
 
-use crate::utils::{get_app_root_dir, get_store_path};
+use crate::storage::{get_config_path, get_default_project_path};
 
 const DEFAULT_FONT_SIZE: u32 = 12;
 const DEFAULT_FONT_BOLD: &str = "normal";
@@ -17,7 +17,7 @@ pub struct Preferences {
     pub font_bold: String,    // 是否粗体
     pub font_family: String,  // 字体
     pub check_update: bool,   // 自动更新
-    pub code_build_path: String, // DSL代码目录
+    pub project_path: String, // DSL代码目录
 }
 
 // 应用级别配置
@@ -36,16 +36,17 @@ impl Preferences {
             font_bold: DEFAULT_FONT_BOLD.to_string(),
             font_family: font_family,
             check_update: false,
-            code_build_path: get_store_path().join("code").to_string_lossy().to_string(),
+            project_path: get_default_project_path(),
         }
     }
 
     pub fn get_preferences_path() -> Result<PathBuf, Box<dyn std::error::Error>> {
-        let preferences_dir = get_app_root_dir().join("preferences.json");
+        let preferences_dir = get_config_path().join("preferences.json");
         Ok(preferences_dir)
     }
 
     pub fn get_preferences() -> Result<Self, Box<dyn std::error::Error>> {
+        info!("Preferences::load preferences");
         let path = Self::get_preferences_path()?;
 
         if !path.exists() {
@@ -54,13 +55,12 @@ impl Preferences {
             return Ok(preferences);
         }
 
-        // a convenience function for using [`File::open`] and [`read_to_string`]
         let contents = fs::read_to_string(path)?;
         let preferences: Result<Preferences, _> = serde_json::from_str(&contents);
 
         // Handle conditional fields and fallback to defaults if necessary
         if let Err(e) = &preferences {
-            error!("[conf::load] {}", e);
+            error!("[preferences::load] {}", e);
             let mut preferences = Self::new();
             preferences = preferences.set_preferences(serde_json::from_str(&contents)?)?;
             preferences.save()?;
@@ -84,6 +84,7 @@ impl Preferences {
     }
 
     pub fn set_preferences(self, json: Value) -> Result<Self, serde_json::Error> {
+        info!("Preferences::set_preferences {}", json);
         let val = serde_json::to_value(self)?;
         let mut preferences: BTreeMap<String, Value> = serde_json::from_value(val)?;
         let new_json: BTreeMap<String, Value> = serde_json::from_value(json)?;
@@ -94,7 +95,7 @@ impl Preferences {
 
         let preferences_str = serde_json::to_string_pretty(&preferences)?;
         serde_json::from_str::<Preferences>(&preferences_str).map_err(|err| {
-            error!("[conf::amend] {}", err);
+            error!("[Preferences::set_preferences] {}", err);
             err
         })
     }

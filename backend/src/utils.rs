@@ -1,6 +1,7 @@
 use chrono::{DateTime, Local};
 use dirs;
 use log::info;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, create_dir_all},
     net::TcpStream,
@@ -30,26 +31,6 @@ pub fn is_port_in_use(port: u16) -> bool {
     TcpStream::connect(address).is_ok()
 }
 
-// 获取应用根目录
-pub fn get_app_root_dir() -> PathBuf {
-    let root_dir: PathBuf = dirs::data_dir().unwrap().join(APP_IDENTIFIER);
-    if !root_dir.exists() {
-        info!("create root dir: {:?}", root_dir);
-        create_dir_all(&root_dir).unwrap();
-    }
-    root_dir
-}
-
-// 获取应用资源目录
-pub fn get_app_root_resource_dir() -> PathBuf {
-    let root_dir = get_app_root_dir();
-    let resources_dir = root_dir.join("resources");
-    if !resources_dir.exists() {
-        info!("create resources dir: {:?}", resources_dir);
-        create_dir_all(&resources_dir).expect("failed to create resources dir");
-    }
-    resources_dir
-}
 
 // 格式化时间
 pub fn format_system_time(system_time: SystemTime) -> String {
@@ -97,19 +78,4 @@ pub fn is_valid_file(path: &PathBuf) -> bool {
         return false;
     }
     path.is_file()
-}
-
-// 获取项目代码和出码的默认根目录
-pub fn get_store_path() -> PathBuf {
-    // 如果 dirs::home_dir() 有值则用这个，没有使用get_app_root_dir
-    match dirs::home_dir() {
-        Some(path) => {
-            let path = path.join("Library").join("Preferences").join("QwikPage");
-            if !path.exists() {
-                fs::create_dir_all(&path).unwrap();
-            }
-            path
-        }
-        None => get_app_root_dir(),
-    }
 }

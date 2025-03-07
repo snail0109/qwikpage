@@ -2,7 +2,7 @@ use crate::commands::cmd_response::CmdResponse;
 use crate::constans::PAGE_DIR;
 use crate::models::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::models::response::ErrorResponse;
-use crate::utils::get_app_root_dir;
+use crate::storage::get_config_path;
 use anyhow::Result;
 use log::{error, info};
 use std::path::PathBuf;
@@ -27,7 +27,7 @@ pub fn get_page_list(
 #[command]
 pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
     info!("Page::get_page_detail start, id: {}", id);
-    let page_dir: PathBuf = get_app_root_dir().join(project_id).join(PAGE_DIR);
+    let page_dir: PathBuf = get_config_path().join(project_id).join(PAGE_DIR);
     if !page_dir.exists() {
         error!("页面目录不存在");
         return Err(ErrorResponse::not_found("页面目录不存在".to_string()));

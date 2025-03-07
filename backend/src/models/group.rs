@@ -7,7 +7,8 @@ use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
 use crate::commands::project::get_project_list_new;
-use crate::utils::{get_app_root_dir, get_current_time};
+use crate::utils::get_current_time;
+use crate::storage::get_config_path;
 
 use super::project::ProjectSummary;
 
@@ -53,7 +54,7 @@ fn default_group() -> Group {
 impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
-        let path = get_app_root_dir().join("group.json");
+        let path = get_config_path().join("group.json");
         if !path.exists() {
             let mut  def_group = default_group();
             def_group.created_at = Some(get_current_time());
@@ -84,7 +85,7 @@ impl GroupConfig {
 
     /// 将配置保存到文件
     pub fn save(&self) -> io::Result<()> {
-        let path = get_app_root_dir().join("group.json");
+        let path = get_config_path().join("group.json");
         let json = serde_json::to_string_pretty(self).unwrap();
         fs::write(path, json)
     }

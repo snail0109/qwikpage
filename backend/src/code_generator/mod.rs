@@ -12,7 +12,7 @@ use tauri::AppHandle;
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
 
-use crate::{models::page::Page, utils::get_app_root_dir};
+use crate::{models::page::Page, storage::get_config_path};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
@@ -33,7 +33,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     }
 
     // 创建代码存放目录
-    let app_data_dir = get_app_root_dir();
+    let app_data_dir = get_config_path();
     let code_dir = app_data_dir.join("qwikpage-code").join(&params.project_id);
 
     info!("创建项目代码目录: {:?}", code_dir);
@@ -41,7 +41,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     // 创建生成器配置
     let template_url = params.export_type.get_template_url();
-    let resource_dir = crate::utils::get_app_root_resource_dir().join(&params.project_id);
+    let resource_dir = crate::storage::get_app_root_resource_dir().join(&params.project_id);
 
     let config = GeneratorConfig::new(
         params.project_id.clone(),

@@ -3,7 +3,8 @@ use crate::models::project::{
     Project, ProjectAddParams, ProjectList, ProjectSummary, ProjectUpdateParams, PROJECT_CONFIG_FILE
 };
 use crate::models::resource::{AddTempResourceParams, ResourceConfig};
-use crate::utils::{get_app_root_dir, paginate};
+use crate::utils::paginate;
+use crate::storage::get_config_path;
 use anyhow::Result;
 use log::{error, info};
 use std::fs;
@@ -43,7 +44,7 @@ pub fn get_project_list(
         "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
         page_num, page_size, keyword
     );
-    let root_dir: PathBuf = get_app_root_dir();
+    let root_dir: PathBuf = get_config_path();
     let mut project_list = Vec::new();
 
     if let Ok(entries) = fs::read_dir(&root_dir) {
@@ -122,7 +123,7 @@ pub async fn delete_project(id: String, group_id: String) -> CmdResponse<bool> {
 #[command]
 pub fn get_project_list_new(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
     info!("Project::get_project_list start, keyword: {:?}", keyword);
-    let root_dir: PathBuf = get_app_root_dir();
+    let root_dir: PathBuf = get_config_path();
     let mut project_list = Vec::new();
 
     if let Ok(entries) = fs::read_dir(&root_dir) {
