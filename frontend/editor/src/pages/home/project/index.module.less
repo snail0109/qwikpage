@@ -1,0 +1,56 @@
+.projectList {
+  padding: 17px 15px;
+  height: 100vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+
+  .projectContent {
+    flex: 1;
+  }
+}
+
+.projectList {
+  :global {
+    .ant-card {
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #216ef7;
+        box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}
+
+// 分组折叠面样式改写
+.projectContent {
+  :global {
+    .ant-collapse {
+      .ant-collapse-header {
+        align-items: center;
+        padding: 0px;
+        margin-top: 12px;
+        border-bottom: 1px solid #F3F3F3;
+      }
+
+      .ant-collapse-content .ant-collapse-content-box {
+        padding-top: 15px;
+      }
+    }
+
+    .ant-collapse>.ant-collapse-item:last-child>.ant-collapse-header {
+      border-radius: unset !important;
+    }
+
+    .ant-collapse .ant-collapse-item-disabled>.ant-collapse-header {
+      color: unset;
+      cursor: unset;
+
+      .ant-collapse-expand-icon {
+        cursor: not-allowed;
+      }
+    }
+  }
+}

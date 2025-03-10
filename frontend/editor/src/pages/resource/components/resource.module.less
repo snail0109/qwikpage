@@ -29,5 +29,18 @@
     .ant-collapse-item:first-child>.ant-collapse-header {
       border-radius: 0;
     }
+
+    .ant-collapse-item:last-child>.ant-collapse-header {
+      border-radius: unset !important;
+    }
+
+    .ant-collapse-item-disabled>.ant-collapse-header {
+      color: unset;
+      cursor: unset;
+
+      .ant-collapse-expand-icon {
+        cursor: not-allowed;
+      }
+    }
   }
 }

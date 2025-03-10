@@ -4,7 +4,7 @@ import CreatePage, { CreatePageRef } from "@/components/CreatePage";
 import SearchBar from "@/components/Searchbar/SearchBar";
 import GroupTitle from "@/components/GroupTitle";
 import ProjectCard from "./components/ProjectCard";
-import styles from "@/styles/page.module.less";
+import styles from "./index.module.less";
 import CreateProject from "@/components/CreateProject";
 import CreateGroup from "@/components/CreateGroup";
 import EmptyBox from "@/components/EmptyBox/EmptyBox";
@@ -88,7 +88,7 @@ function Category() {
     };
 
     return (
-        <Layout.Content className={styles.pageList}>
+        <Layout.Content className={styles.projectList}>
             {/* 搜索工具条 */}
             <SearchBar
                 showGroup={false}
@@ -104,13 +104,14 @@ function Category() {
                 <Spin spinning={loading} size="large" tip="加载中...">
                     <Collapse
                         ghost
-                        // 设置默认展开所有项
                         collapsible="icon"
+                        // 设置默认展开所有项
                         activeKey={activeKeys}
                         onChange={onChange}
                         items={dataSource.map((item: any) => {
                             return {
                                 key: item.id,
+                                collapsible: item.projects.length <= 0 ? "disabled" : "icon",
                                 label: (
                                     <GroupTitle
                                         groupItem={item}

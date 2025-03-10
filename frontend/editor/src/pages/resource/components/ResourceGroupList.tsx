@@ -132,6 +132,7 @@ function ResourceGroupList(props: IResourceGroupListProps) {
       onChange={onChange}
       items={data.map((item) => ({
         key: item.path,
+        collapsible: item.resources.length <= 0 ? "disabled" : "icon",
         label: (
           <GroupTitle
             groupItem={{ id: item.default_group ? '-1' : item.name, name: item.name }}
