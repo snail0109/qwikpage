@@ -7,6 +7,7 @@ import VsEditor from '../VsEditor';
 import { getElement } from '@/utils/util';
 import styles from './variable.module.less';
 import { cloneDeep } from 'lodash-es';
+import components from '@/config/components';
 
 const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, ref: any) => {
   const [visible, setVisible] = useState(false);
@@ -47,7 +48,16 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
         // 收集不处于表单中的表单控件
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
-        element.name = id;
+        let eleName = id;
+        components.some(v => {
+          const targetEle = (v.data || []).find(item => item.type === element.type)
+          if (targetEle) {
+            eleName = `${targetEle.name}(${id})`
+            return true;
+          }
+          return false;
+        })
+        element.name = eleName;
         list.push(element)
       }
     });
