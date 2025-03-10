@@ -1,15 +1,11 @@
 use chrono::{DateTime, Local};
-use dirs;
-use log::info;
-use serde::{Deserialize, Serialize};
 use std::{
-    fs::{self, create_dir_all},
     net::TcpStream,
     path::PathBuf,
     time::SystemTime,
 };
 
-use crate::constans::{APP_IDENTIFIER, DATA_FORMAT};
+use crate::constans::DATA_FORMAT;
 
 // 获取当前时间
 pub fn get_current_time() -> String {

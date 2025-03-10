@@ -18,7 +18,6 @@ use crate::{
     storage::get_config_path,
 };
 use log::{error, info};
-use models::preferences::Preferences;
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
@@ -33,9 +32,6 @@ const MIN_WINDOW_HEIGHT: f64 = 300.0;
 
 // Global AppHandle
 pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
-
-pub struct PreferencesState(pub Arc<Mutex<Preferences>>);
-
 
 pub fn run() {
     tauri::Builder::default()
@@ -57,7 +53,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::default().build())
-        .manage(PreferencesState(Arc::new(Mutex::new(Preferences::new()))))
         .setup(|app| {
             info!("============== Start App ==============");
             // Global AppHandle

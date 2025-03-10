@@ -4,7 +4,6 @@ import { open as oepnDataDir } from "@tauri-apps/plugin-dialog";
 import { Modal, Form, Select, Input, Checkbox, Button } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import usePreferencesStore from "@/stores/preferencesStore";
-import { rest } from "lodash-es";
 
 export type ISystemSettingRef = {
     open: () => void;
@@ -16,7 +15,19 @@ interface ISystemSettingProps {
 
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = useState(false);
-    const { set_preferences, get_system_fonts, systemFontFamilys, restore_preferences, ...rest } = usePreferencesStore();
+    const {
+        set_preferences,
+        get_system_fonts,
+        systemFontFamilys,
+        restore_preferences,
+        theme,
+        fontBold,
+        fontFamily,
+        fontSize,
+        projectPath,
+        checkUpdate,
+        language
+    } = usePreferencesStore();
     const [form] = Form.useForm();
 
     useImperativeHandle(props.settingRef, () => ({
@@ -33,11 +44,11 @@ export function SystemSetting(props: ISystemSettingProps) {
 
     useEffect(() => {
         form.setFieldsValue({
-            fontfamily: rest.fontFamily,
-            dataDir: rest.projectPath,
-            update: rest.checkUpdate,
+            fontfamily: fontFamily,
+            dataDir: projectPath,
+            update: checkUpdate,
         });
-    }, [form, rest]);
+    }, [form]);
 
     // 保存
     const handleOk = async () => {
@@ -57,36 +68,44 @@ export function SystemSetting(props: ISystemSettingProps) {
 
     // 修改数据存放目录
     const handleOpenDir = async () => {
-        const defaultDir = form.getFieldValue('dataDir');
+        const defaultDir = form.getFieldValue("dataDir");
         const dirPath = await oepnDataDir({
             multiple: false,
             defaultPath: defaultDir,
-            directory: true
+            directory: true,
         });
 
         if (!dirPath || dirPath?.length === 0) {
             return;
         }
-        form.setFieldValue('dataDir', dirPath);
-    }
+        form.setFieldValue("dataDir", dirPath);
+    };
 
     const onUpdate = async () => {
         const valid = await form.validateFields();
         if (!valid) return;
         const values = form.getFieldsValue();
         await set_preferences({
-            ...rest,
             fontFamily: values.fontfamily,
             projectPath: values.dataDir,
             checkUpdate: values.update,
+            theme: theme,
+            language: language,
+            fontSize: fontSize,
+            fontBold: fontBold,
         });
         setVisible(false);
     };
 
     const customFooter = () => (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
-                <Button color="primary" variant="outlined" onClick={onOpenPreferencesDir} style={{ marginRight: '8px' }}>
+                <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={onOpenPreferencesDir}
+                    style={{ marginRight: "8px" }}
+                >
                     打开配置目录
                 </Button>
                 <Button color="primary" variant="outlined" onClick={onUpdate}>
@@ -95,7 +114,7 @@ export function SystemSetting(props: ISystemSettingProps) {
             </div>
 
             <div>
-                <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
+                <Button onClick={handleCancel} style={{ marginRight: "8px" }}>
                     取消
                 </Button>
                 <Button type="primary" onClick={handleOk}>
@@ -106,34 +125,22 @@ export function SystemSetting(props: ISystemSettingProps) {
     );
 
     return (
-        <Modal
-            title="系统设置"
-            open={visible}
-            onCancel={handleCancel}
-            width={500}
-            footer={customFooter}
-        >
+        <Modal title="系统设置" open={visible} onCancel={handleCancel} width={500} footer={customFooter}>
             <Form form={form} layout="vertical" autoComplete="off">
-                <Form.Item
-                    label="字体"
-                    name="fontfamily"
-                >
+                <Form.Item label="字体" name="fontfamily">
                     <Select
                         placeholder="请选择字体"
-                        options={(systemFontFamilys || []).map(font => ({ label: font, value: font }))}
+                        options={(systemFontFamilys || []).map((font) => ({ label: font, value: font }))}
                     />
                 </Form.Item>
-                <Form.Item
-                    label="数据存放目录"
-                    name="dataDir"
-                >
-                    <Input placeholder={"数据存放目录"} addonAfter={<EllipsisOutlined onClick={handleOpenDir} />} {...props} />
+                <Form.Item label="数据存放目录" name="dataDir">
+                    <Input
+                        placeholder={"数据存放目录"}
+                        addonAfter={<EllipsisOutlined onClick={handleOpenDir} />}
+                        {...props}
+                    />
                 </Form.Item>
-                <Form.Item
-                    label="更新"
-                    name="update"
-                    valuePropName="checked"
-                >
+                <Form.Item label="更新" name="update" valuePropName="checked">
                     <Checkbox>自动检查更新</Checkbox>
                 </Form.Item>
             </Form>
