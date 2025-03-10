@@ -4,7 +4,6 @@ import { useOsInfo } from "@/utils/os";
 import { Button, Flex } from "antd";
 import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
-export const WINDOW_CONTROLS_WIDTH = "8rem";
 
 interface Props {
     className?: string;
@@ -28,7 +27,7 @@ export function WindowControls({ className, onlyX }: Props) {
     }, [location.pathname])
 
     return (
-        <Flex justify="end" style={{ width: WINDOW_CONTROLS_WIDTH }} data-tauri-drag-region>
+        <Flex justify="end" data-tauri-drag-region>
             <Button type="text" onClick={() => getCurrentWebviewWindow().minimize()}>
                 <MinusOutlined style={{ color: isChangeTheme ? '#fff' : '#000' }} />
             </Button>
