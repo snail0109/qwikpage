@@ -1,8 +1,10 @@
-import { useState,useEffect,  MutableRefObject, useImperativeHandle } from "react";
+import { useState, useEffect, MutableRefObject, useImperativeHandle } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open as oepnDataDir } from "@tauri-apps/plugin-dialog";
 import { Modal, Form, Select, Input, Checkbox, Button } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import usePreferencesStore from "@/stores/preferencesStore";
+import { rest } from "lodash-es";
 
 export type ISystemSettingRef = {
     open: () => void;
@@ -14,7 +16,7 @@ interface ISystemSettingProps {
 
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = useState(false);
-    const { set_preferences, get_system_fonts, systemFontFamilys, ...rest } = usePreferencesStore();
+    const { set_preferences, get_system_fonts, systemFontFamilys, restore_preferences, ...rest } = usePreferencesStore();
     const [form] = Form.useForm();
 
     useImperativeHandle(props.settingRef, () => ({
@@ -24,6 +26,7 @@ export function SystemSetting(props: ISystemSettingProps) {
         },
     }));
 
+    // 获取系统字体列表
     const fetchSystemFonts = async () => {
         await get_system_fonts();
     };
@@ -32,25 +35,45 @@ export function SystemSetting(props: ISystemSettingProps) {
         form.setFieldsValue({
             fontfamily: rest.fontFamily,
             dataDir: rest.projectPath,
-            update: rest.checkUpdate || true,
+            update: rest.checkUpdate,
         });
     }, [form, rest]);
 
-    const handleOk = () => {
+    // 保存
+    const handleOk = async () => {
+        await onUpdate();
         setVisible(false);
-        onUpdate();
     };
 
+    // 取消
     const handleCancel = () => {
         setVisible(false);
     };
 
-    const onOpenDirClick = async () => {
-        return await invoke<void>("open_folder");
+    // 打开配置目录
+    const onOpenPreferencesDir = async () => {
+        return await invoke<void>("open_preferences");
     };
 
+    // 修改数据存放目录
+    const handleOpenDir = async () => {
+        const defaultDir = form.getFieldValue('dataDir');
+        const dirPath = await oepnDataDir({
+            multiple: false,
+            defaultPath: defaultDir,
+            directory: true
+        });
+
+        if (!dirPath || dirPath?.length === 0) {
+            return;
+        }
+        form.setFieldValue('dataDir', dirPath);
+    }
+
     const onUpdate = async () => {
-        const values = await form.validateFields();
+        const valid = await form.validateFields();
+        if (!valid) return;
+        const values = form.getFieldsValue();
         await set_preferences({
             ...rest,
             fontFamily: values.fontfamily,
@@ -63,7 +86,7 @@ export function SystemSetting(props: ISystemSettingProps) {
     const customFooter = () => (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>
-                <Button color="primary" variant="outlined" onClick={onOpenDirClick} style={{ marginRight: '8px' }}>
+                <Button color="primary" variant="outlined" onClick={onOpenPreferencesDir} style={{ marginRight: '8px' }}>
                     打开配置目录
                 </Button>
                 <Button color="primary" variant="outlined" onClick={onUpdate}>
@@ -98,14 +121,13 @@ export function SystemSetting(props: ISystemSettingProps) {
                     <Select
                         placeholder="请选择字体"
                         options={(systemFontFamilys || []).map(font => ({ label: font, value: font }))}
-                        // fieldNames={{ label: 'name', value: 'id' }}
                     />
                 </Form.Item>
                 <Form.Item
                     label="数据存放目录"
                     name="dataDir"
                 >
-                    <Input placeholder={"数据存放目录"} addonAfter={<EllipsisOutlined onClick={() => {}} />} {...props} />
+                    <Input placeholder={"数据存放目录"} addonAfter={<EllipsisOutlined onClick={handleOpenDir} />} {...props} />
                 </Form.Item>
                 <Form.Item
                     label="更新"
@@ -115,21 +137,6 @@ export function SystemSetting(props: ISystemSettingProps) {
                     <Checkbox>自动检查更新</Checkbox>
                 </Form.Item>
             </Form>
-            {/* {JSON.stringify(rest)}
-            <Button
-                onClick={() => {
-                    onUpdate();
-                }}
-            >
-                修改字体大小
-            </Button>
-            <Button
-                onClick={() => {
-                    onUpdate();
-                }}
-            >
-                修改主题
-            </Button> */}
         </Modal>
     );
 }

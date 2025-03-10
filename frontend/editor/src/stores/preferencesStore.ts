@@ -16,6 +16,7 @@ interface PreferencesStore extends PreferencesState {
     get_preferences: () => Promise<void>;
     set_preferences: (config: PreferencesState) => Promise<void>;
     get_system_fonts: () => Promise<void>;
+    restore_preferences: () => Promise<void>;
 }
 
 const usePreferencesStore = create<PreferencesStore>()(
@@ -26,7 +27,7 @@ const usePreferencesStore = create<PreferencesStore>()(
             fontSize: 12,
             fontBold: "normal",
             fontFamily: "system",
-            checkUpdate: false,
+            checkUpdate: true,
             projectPath: "system",
             systemFontFamilys: [],
             get_preferences: async () => {
@@ -54,6 +55,15 @@ const usePreferencesStore = create<PreferencesStore>()(
                     set({ systemFontFamilys: systemFonts });
                 } catch (error) {
                     console.error("获取系统字体失败:", error);
+                }
+            },
+            restore_preferences: async () => {
+                try {
+                    const preferences: PreferencesState = await invoke("restore_preferences");
+                    set(preferences);
+                
+                } catch (error) {
+                    console.error("初始化配置失败:", error);
                 }
             },
         }),
