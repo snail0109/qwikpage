@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useImperativeHandle } from "react";
+import { useState,useEffect,  MutableRefObject, useImperativeHandle } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Modal, Form, Select, Input, Checkbox, Button } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
@@ -13,16 +13,28 @@ interface ISystemSettingProps {
 }
 
 export function SystemSetting(props: ISystemSettingProps) {
-    const [visible, setVisible] = React.useState(false);
-    const { set_preferences, ...rest } = usePreferencesStore();
-    const { systemFontFamilys } = usePreferencesStore.getState();
+    const [visible, setVisible] = useState(false);
+    const { set_preferences, get_system_fonts, systemFontFamilys, ...rest } = usePreferencesStore();
     const [form] = Form.useForm();
 
     useImperativeHandle(props.settingRef, () => ({
         async open() {
             setVisible(true);
+            fetchSystemFonts();
         },
     }));
+
+    const fetchSystemFonts = async () => {
+        await get_system_fonts();
+    };
+
+    useEffect(() => {
+        form.setFieldsValue({
+            fontfamily: rest.fontFamily,
+            dataDir: rest.projectPath,
+            update: rest.checkUpdate || true,
+        });
+    }, [form, rest]);
 
     const handleOk = () => {
         setVisible(false);
@@ -38,16 +50,14 @@ export function SystemSetting(props: ISystemSettingProps) {
     };
 
     const onUpdate = async () => {
+        const values = await form.validateFields();
         await set_preferences({
-            theme: "light",
-            language: "zh",
-            fontSize: 20,
-            fontBold: "bold",
-            fontFamily: "PingFang SC",
-            checkUpdate: true,
-            projectPath: "/Users/dxy/Download",
-            systemFontFamilys,
+            ...rest,
+            fontFamily: values.fontfamily,
+            projectPath: values.dataDir,
+            checkUpdate: values.update,
         });
+        setVisible(false);
     };
 
     const customFooter = () => (
@@ -87,22 +97,19 @@ export function SystemSetting(props: ISystemSettingProps) {
                 >
                     <Select
                         placeholder="请选择字体"
-                        options={systemFontFamilys}
-                        fieldNames={{ label: 'name', value: 'id' }}
-                    // optionRender={(option) => (
-
-                    // )}
+                        options={(systemFontFamilys || []).map(font => ({ label: font, value: font }))}
+                        // fieldNames={{ label: 'name', value: 'id' }}
                     />
                 </Form.Item>
                 <Form.Item
                     label="数据存放目录"
-                    name="fontfamily"
+                    name="dataDir"
                 >
                     <Input placeholder={"数据存放目录"} addonAfter={<EllipsisOutlined onClick={() => {}} />} {...props} />
                 </Form.Item>
                 <Form.Item
                     label="更新"
-                    name="fontfamily"
+                    name="update"
                     valuePropName="checked"
                 >
                     <Checkbox>自动检查更新</Checkbox>
