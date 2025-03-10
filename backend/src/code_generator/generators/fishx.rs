@@ -1,8 +1,8 @@
-use std::collections::HashSet;
 use log::info;
+use std::collections::HashSet;
 
-use crate::error::Result;
 use crate::code_generator::utils::value_to_js;
+use crate::error::Result;
 use crate::models::page::{Element, PageContent};
 
 use crate::code_generator::config::GeneratorConfig;
@@ -17,9 +17,9 @@ use crate::code_generator::utils::{
     replace_template, update_config_file, write_file,
 };
 
-const BASE_DIR_NAME: &str = "fishx";  
+const BASE_DIR_NAME: &str = "fishx";
 
-const PUBLIC_RESPIRCE_PATH: &str = "fishx/public";  
+const PUBLIC_RESPIRCE_PATH: &str = "fishx/public";
 
 /// Fishx框架代码生成器
 #[derive(Debug)]
@@ -44,8 +44,7 @@ impl CodeGenerator for FishxGenerator {
         let page_data = process_page_data(&page.page_data, &config.project_id)?;
 
         // 生成组件
-        let (components, imports) =
-            self.generate_components(&page_data.elements, &page_data)?;
+        let (components, imports) = self.generate_components(&page_data.elements, &page_data)?;
 
         // 组件代码
         let components_str = components.join("\n");
@@ -95,8 +94,12 @@ impl CodeGenerator for FishxGenerator {
     fn name(&self) -> &'static str {
         "Fishx"
     }
-    
-    fn generate_components(&self, elements: &[crate::models::page::Element], page_data: &crate::models::page::PageContent) -> Result<(Vec<String>, Vec<String>)> {
+
+    fn generate_components(
+        &self,
+        elements: &[crate::models::page::Element],
+        page_data: &crate::models::page::PageContent,
+    ) -> Result<(Vec<String>, Vec<String>)> {
         info!("generate_components...");
 
         let mut components = Vec::new();
@@ -112,7 +115,7 @@ impl CodeGenerator for FishxGenerator {
         sorted_imports.sort();
         Ok((components, sorted_imports))
     }
-    
+
     fn generate_import_statement(&self, components: &[String]) -> String {
         if components.is_empty() {
             return String::new();
@@ -165,13 +168,22 @@ impl FishxGenerator {
         Ok(())
     }
 
-    fn process_element(&self, element: &Element, page_data: &PageContent) -> Result<(String, HashSet<String>)> {
+    fn process_element(
+        &self,
+        element: &Element,
+        page_data: &PageContent,
+    ) -> Result<(String, HashSet<String>)> {
         let mut imports = HashSet::new();
         let component_str = self.generate_component(element, page_data, &mut imports)?;
         Ok((component_str, imports))
     }
 
-    fn generate_component(&self, element: &Element, page_data: &PageContent, imports: &mut HashSet<String>) -> Result<String> {
+    fn generate_component(
+        &self,
+        element: &Element,
+        page_data: &PageContent,
+        imports: &mut HashSet<String>,
+    ) -> Result<String> {
         imports.insert(element.type_name.clone());
 
         let config = page_data
@@ -187,18 +199,22 @@ impl FishxGenerator {
             .collect::<Result<Vec<String>>>()?;
 
         let component_str = if children.is_empty() {
-            format!("<{} config={{{}}} />", element.type_name, config)
+            format!(
+                "<{} id=\"{}\" type=\"{}\" config={{{}}} />",
+                element.type_name, element.id, element.type_name, config
+            )
         } else {
             format!(
-                "<{} config={{{}}}>\n{}\n</{}>",
+                "<{} id=\"{}\" type=\"{}\" config={{{}}}>\n{}\n</{}>",
+                element.type_name,
+                element.id,
                 element.type_name,
                 config,
                 children.join("\n"),
                 element.type_name
             )
         };
-        
+
         Ok(component_str)
     }
 }
-
