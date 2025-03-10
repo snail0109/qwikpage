@@ -3,8 +3,9 @@ import React, { forwardRef, memo, useCallback, useImperativeHandle, useState } f
 import { useShallow } from 'zustand/react/shallow';
 import { FormContext } from '@/utils/context';
 import { usePageStore } from '@/stores/pageStore';
-import { ComponentType } from '@/types';
+import { ComponentType, MaterialProp } from '@/types';
 import { dateFormat, isNotEmpty, getInitValue } from '@/utils/util';
+import Material from '@/components/Material';
 /**
  *
  * @param props 组件本身属性
@@ -12,7 +13,7 @@ import { dateFormat, isNotEmpty, getInitValue } from '@/utils/util';
  * @param attr 组件其它属性，比如：id、type、className
  * @returns
  */
-const MForm = ({ id, config, elements, onFinish, onChange, children }: ComponentType, ref: any) => {
+const MForm = ({ id, config, elements = [], onFinish, onChange, children }: ComponentType, ref: any) => {
   const [form] = Form.useForm();
   const { formData, setFormData } = usePageStore(
     useShallow((state) => {
@@ -102,12 +103,26 @@ const MForm = ({ id, config, elements, onFinish, onChange, children }: Component
   const getValue = useCallback((name: string) => {
     return form.getFieldValue(name);
   }, []);
+
+  const processedChildren = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+
+    // 获取子组件原始 props
+    const childProps = child.props as MaterialProp;
+
+    return (
+      <Material
+        {...childProps} // 传递原始配置
+      >
+        {child}
+      </Material>
+    );
+  });
   return (
     visible && (
-      <FormContext.Provider value={{ initValues, getValue }}>
+      <FormContext.Provider value={{ initValues, getValue, inForm: true }}>
         <Form form={form} style={config.style} {...config.props} initialValues={initialValues} onFinish={handleFinish} onValuesChange={handleChange}>
-          {/* <MarsRender elements={elements} /> */}
-          {children}
+          {processedChildren}
         </Form>
       </FormContext.Provider>
     )

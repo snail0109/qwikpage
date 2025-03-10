@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * 可拖拽的目标组件
  * @param icon 组件图片
@@ -24,7 +26,7 @@ export interface IDragTargetItem {
 /**
  * 组件最小颗粒度类型定义
  */
-export type ComItemType = Pick<ComponentType, 'id' | 'type' | 'name' | 'parentId' | 'inForm' | 'elements' | 'remoteUrl' | 'remoteConfigUrl' | 'remoteCssUrl'>;
+export type ComItemType = Pick<ComponentType, 'id' | 'type' | 'name' | 'parentId' | 'inForm' | 'children' | 'remoteUrl' | 'remoteConfigUrl' | 'remoteCssUrl'>;
 
 /**
  * stor中状态对应的组件类型，这是原始的组件类型
@@ -52,6 +54,7 @@ export type ComponentType<T = any> = {
   methods: ComponentMethodType[];
   apis: { [key: string]: ApiType };
   elements: ComponentType<T>[];
+  children: React.ReactNode[];
 } & OnProps<string>;
 
 type OnProps<TKeys extends string> = {
@@ -240,4 +243,11 @@ export interface PageVariable {
   defaultValue: any;
   type: any;
   remark: string;
+}
+
+export interface MaterialProp<T = any> {
+  id: string;
+  type: string;
+  config: ConfigType<T>;
+  children: React.ReactNode;
 }

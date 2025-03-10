@@ -5,9 +5,8 @@ import { DownOutlined, UpOutlined, SearchOutlined, RedoOutlined } from '@ant-des
 import * as icons from '@ant-design/icons';
 import { usePageStore } from '@/stores/pageStore';
 import { FormContext } from '@/utils/context';
-import { dateFormat, getDateByType, getDateRangeByType, isNotEmpty } from '@/utils/util';
+import { dateFormat, isNotEmpty, getInitValue } from '@/utils/util';
 import { handleActionFlow } from '@/utils/action';
-import dayjs from 'dayjs';
 import styles from './index.module.less';
 export interface IConfig {
   form: {
@@ -131,11 +130,7 @@ const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset, c
   // 设置默认值
   const initValues = useCallback((type: string, name: string, value: any) => {
     if (name && isNotEmpty(value)) {
-      let initValue = value;
-      if (type === 'InputNumber') initValue = Number(value);
-      if (type === 'DatePicker') initValue = getDateByType(value);
-      if (type === 'DatePickerRange') initValue = getDateRangeByType(value);
-      if (type === 'TimePicker') initValue = dayjs(value, 'HH:mm:ss');
+      const initValue = getInitValue(type, value);
       setInitialValues({ [name]: initValue });
       form.setFieldValue([name], initValue);
       setFormData({
@@ -144,10 +139,14 @@ const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset, c
       });
     }
   }, []);
+  // 获取表单内某项的值
+  const getValue = useCallback((name: string) => {
+    return form.getFieldValue(name);
+  }, []);
   const iconsList: { [key: string]: any } = icons;
   return (
     visible && (
-      <FormContext.Provider value={{ initValues }}>
+      <FormContext.Provider value={{ initValues, getValue, inForm: true }}>
         <Form form={form} layout="inline" style={config.style} initialValues={initialValues} onValuesChange={handleValuesChange}>
           <div className={styles.formWrap} style={!isExpand ? { height: 32, overflow: 'hidden' } : {}}>
             {/* <MarsRender elements={elements} /> */}

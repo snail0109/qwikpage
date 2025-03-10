@@ -23,11 +23,11 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MCheckBox = ({ id, type, config, inForm, formItemValue, onChange }: ComponentType<IConfig>, ref: any) => {
+const MCheckBox = ({ id, type, config, formItemValue, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
-  const { initValues, getValue } = useFormContext();
+  const { initValues, getValue, inForm } = useFormContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
   /**
