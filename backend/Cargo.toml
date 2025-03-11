@@ -55,11 +55,12 @@ tauri-plugin-store = "2"
 
 [target.'cfg(windows)'.dependencies]
 deelevate = "0.2.0"
-winreg = { version = "0.53", features = ["transactions"] }
-windows-registry = "0.4"
+winreg = { version = "0.55", features = ["transactions"] }
+windows-registry = "0.5"
 windows-sys = { version = "0.59", features = [
   "Win32_System_LibraryLoader",
   "Win32_System_SystemInformation",
 ] }
-windows-core = "0.58.0"
-webview2-com = "0.34"
+windows-core = "0.60.1"
+webview2-com = "0.36"
+
