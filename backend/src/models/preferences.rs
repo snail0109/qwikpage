@@ -1,5 +1,8 @@
+use std::path::PathBuf;
+
 use anyhow::Error;
 use log::{error, info};
+use rocket::http::uri::Path;
 use serde::{Deserialize, Serialize};
 
 use crate::storage;
@@ -69,5 +72,9 @@ impl Preferences {
             *current = preferences;
         });
         Ok(())
+    }
+
+    pub fn get_project_path(&self) -> PathBuf {
+       PathBuf::from(self.project_path.clone())
     }
 }

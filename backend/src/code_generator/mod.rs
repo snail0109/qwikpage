@@ -3,8 +3,10 @@ mod generators;
 mod templates;
 mod utils;
 
+use std::path::PathBuf;
+
 use config::{ExportType, GeneratorConfig};
-use crate::error::{CmdError, Result};
+use crate::{error::{CmdError, Result}, models::project::Project};
 use generators::{fishx::FishxGenerator, Generator};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
@@ -12,7 +14,7 @@ use tauri::AppHandle;
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
 
-use crate::{models::page::Page, storage::get_config_path};
+use crate::models::page::Page;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
@@ -24,6 +26,10 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     info!("======开始导出代码========");
 
     info!("查询项目 {:?} 页面信息", &params.project_id);
+    let project = Project::load(params.project_id.clone()).map_err(| e| {
+        error!("查询项目 {:?} 项目信息失败: {:?}", &params.project_id, e);
+        e
+    })?;
     let page_list = Page::list_with_options(params.project_id.clone())?;
 
     let page_len = page_list.len();
@@ -33,11 +39,11 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     }
 
     // 创建代码存放目录
-    let app_data_dir = get_config_path();
-    let code_dir = app_data_dir.join("qwikpage-code").join(&params.project_id);
+    let code_export_path = project.code_export_path;
+    let project_export_path = PathBuf::from(code_export_path).join(&params.project_id);
 
-    info!("创建项目代码目录: {:?}", code_dir);
-    async_fs::create_dir_all(&code_dir).await?;
+    info!("创建项目代码目录: {:?}", project_export_path);
+    async_fs::create_dir_all(&project_export_path).await?;
 
     // 创建生成器配置
     let template_url = params.export_type.get_template_url();
@@ -45,7 +51,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     let config = GeneratorConfig::new(
         params.project_id.clone(),
-        code_dir.clone(),
+        project_export_path.clone(),
         template_url,
         resource_dir,
     );
@@ -82,7 +88,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     // 打开文件目录
     app.opener()
-        .open_path(code_dir.to_string_lossy().to_string(), None::<&str>)
+        .open_path(project_export_path.to_string_lossy().to_string(), None::<&str>)
         .map_err(|e| {
             error!("打开文件目录失败: {}", e);
             CmdError::Other(e.to_string())

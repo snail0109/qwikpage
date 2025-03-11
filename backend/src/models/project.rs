@@ -6,8 +6,9 @@ use std::{fs, io};
 
 use crate::constans::PAGE_DIR;
 use crate::utils::{get_current_time, is_valid_file, paginate};
-use crate::storage::{ get_config_path, get_default_build_path};
+use crate::storage::{ get_default_build_path};
 
+use super::config::Config;
 use super::group::GroupConfig;
 use super::resource::ResourceConfig;
 
@@ -80,7 +81,7 @@ pub struct Project {
     pub system_theme_color: Option<String>, // 系统主题颜色
     pub created_at: String,
     pub updated_at: String,
-    pub code_export_path: Option<String>,   // 代码导出路径
+    pub code_export_path: String,   // 代码导出路径
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -97,7 +98,7 @@ pub struct ProjectUpdateParams {
     pub footer: bool,                       // 是否显示页脚
     pub system_theme_color: Option<String>, // 系统主题
     pub logo: Option<String>, // 系统主题
-    pub code_export_path: Option<String>,   // 代码导出路径
+    pub code_export_path: String,   // 代码导出路径
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -158,12 +159,13 @@ impl Project {
             system_theme_color: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
-            code_export_path: Some(get_default_build_path()),
+            code_export_path: get_default_build_path(),
         }
     }
 
     pub fn save(&self) -> Result<bool, Error> {
-        let project_dir_path = get_config_path().join(self.id.clone());
+        let root_dir = &Config::global().preferences().get_project_path();
+        let project_dir_path = root_dir.join(self.id.clone());
         if !project_dir_path.exists() {
             fs::create_dir_all(&project_dir_path)?;
         }
@@ -174,7 +176,8 @@ impl Project {
     }
 
     pub fn load(project_id: String) -> io::Result<Self> {
-        let project_file = get_config_path()
+        let root_dir = &Config::global().preferences().get_project_path();
+        let project_file = root_dir
             .join(project_id)
             .join(PROJECT_CONFIG_FILE);
         match fs::read_to_string(project_file) {
@@ -212,7 +215,8 @@ impl Project {
     }
 
     pub async fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
-        let project_dir = get_config_path().join(&project_id);
+        let root_dir = &Config::global().preferences().get_project_path();
+        let project_dir = root_dir.join(&project_id);
         tokio::fs::remove_dir_all(project_dir).await?;
         let mut config = GroupConfig::load()?;
         if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
@@ -229,7 +233,8 @@ impl Project {
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
-        let page_dir = get_config_path().join(&project_id).join(PAGE_DIR);
+        let root_dir = &Config::global().preferences().get_project_path();
+        let page_dir = root_dir.join(&project_id).join(PAGE_DIR);
         // 目录不存在则返回 0
         if !page_dir.exists() {
             return 0;
@@ -253,7 +258,7 @@ impl Project {
 
     pub fn get_project_list_inner(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
         info!("Project::get_project_list start, keyword: {:?}", keyword);
-        let root_dir: PathBuf = get_config_path();
+        let root_dir = &Config::global().preferences().get_project_path();
         let mut project_list = Vec::new();
     
         if let Ok(entries) = fs::read_dir(&root_dir) {
@@ -329,7 +334,7 @@ pub fn get_project_list_inner(
         "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
         page_num, page_size, keyword
     );
-    let root_dir: PathBuf = get_config_path();
+    let root_dir = &Config::global().preferences().get_project_path();
     let mut project_list = Vec::new();
 
     if let Ok(entries) = fs::read_dir(&root_dir) {
@@ -376,7 +381,8 @@ pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
     let project_id = uuid::Uuid::new_v4().to_string();
     let group_id = params.group_id.clone();
     info!("add project: {}", &project_id);
-    let project_dir_path = get_config_path().join(project_id.clone());
+    let root_dir = &Config::global().preferences().get_project_path();
+    let project_dir_path = root_dir.join(project_id.clone());
     if !project_dir_path.exists() {
         fs::create_dir_all(&project_dir_path)?;
     }

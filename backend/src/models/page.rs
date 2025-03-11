@@ -1,8 +1,8 @@
 use crate::constans::PAGE_DIR;
+use crate::models::response::ErrorResponse;
 use crate::utils::{get_current_time, is_valid_file, paginate};
-use crate::storage::get_config_path;
 use anyhow::Error;
-use log::{info, warn};
+use log::{error, info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -12,6 +12,8 @@ use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::types::interceptor::Interceptor;
+
+use super::config::Config;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Element {
@@ -118,7 +120,8 @@ impl Page {
     }
 
     pub fn get_page_dir(project_id: &String) -> PathBuf {
-        let page_dir: PathBuf = get_config_path().join(project_id).join(PAGE_DIR);
+        let root_dir = &Config::global().preferences().get_project_path();
+        let page_dir: PathBuf = root_dir.join(project_id).join(PAGE_DIR);
         page_dir
     }
 
@@ -208,10 +211,10 @@ impl Page {
     }
 
     // 新增页面
-    pub fn add_page(params: PageAddParams) -> Result<Page, Error> {
-        let page_dir: PathBuf = get_config_path().join(&params.project_id).join(PAGE_DIR);
+    pub fn add_page(params: PageAddParams) -> Result<Page, String> {
+        let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
-            fs::create_dir_all(&page_dir).map_err(|e| format!("创建目录失败: {}", e));
+            fs::create_dir_all(&page_dir).map_err(|e| format!("创建目录失败: {}", e))?;
         }
         let page_id = Uuid::new_v4().to_string();
         let page = Page::new(
@@ -223,13 +226,13 @@ impl Page {
             params.project_id,
         );
         let page_file = page_dir.join(format!("{}.json", page_id.clone()));
-        page.save(page_file);
+        page.save(page_file).map_err(|e| format!("保存页面失败: {}", e))?;
         Ok(page)
     }
 
     // 更新页面
     pub fn update(params: PageUpdateParams) -> Result<bool, Error> {
-        let page_dir: PathBuf = get_config_path().join(params.project_id).join(PAGE_DIR);
+        let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
         }
@@ -254,7 +257,7 @@ impl Page {
     }
 
     pub fn copy(params: PageCopyParams) -> Result<String, Error> {
-        let page_dir: PathBuf = get_config_path().join(&params.project_id).join(PAGE_DIR);
+        let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
         }
@@ -274,4 +277,49 @@ impl Page {
         page.save(new_page_file);
         Ok(new_page_id)
     }
+
+    pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
+        info!("Page::get_page_detail start, id: {}", id);
+        let page_dir = Self::get_page_dir(&project_id);
+        if !page_dir.exists() {
+            error!("页面目录不存在");
+            return Err(ErrorResponse::not_found("页面目录不存在".to_string()));
+        }
+        let page_file = page_dir.join(format!("{}.json", id));
+        let page = Self::load(&page_file).unwrap();
+        Ok(page)
+    }
+
+
+    pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Page, ErrorResponse> {
+        info!(
+            "Page::get_page_detail_with_path start, project_id: {:?}, path: {}",
+            project_id, path
+        );
+        // 如果 path 是 "*", 则将其处理为 "/"
+        let effective_path = if path == "*" {
+            "/".to_string()
+        } else {
+            format!("/{}", path)
+        };
+        let pages_list: PageList =
+            Self::list(1, 20, project_id, Some("".to_string())).map_err(|e| {
+                error!("Failed to list pages: {}", e);
+                ErrorResponse::not_found(format!("无法获取页面列表: {}", e))
+            })?;
+        // 查找与给定 path 匹配的页面
+        for page in pages_list.list {
+            if page.path.as_ref() == Some(&effective_path) {
+                // 进行匹配
+                info!("Page::getMartten, path: {}", effective_path);
+                return Ok(page);
+            }
+        }
+        // 如果没有找到匹配的页面，返回一个错误
+        Err(ErrorResponse::not_found(format!(
+            "未找到匹配的页面，路径: {}",
+            effective_path
+        )))
+    }
+    
 }

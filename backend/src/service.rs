@@ -1,4 +1,3 @@
-use crate::commands::page;
 use crate::models::{page::Page, project::Project};
 use anyhow::Result;
 use rocket::Config;
@@ -79,7 +78,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 // 获取页面详情
 #[get("/page/detail/id/<project_id>/<id>")]
 pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
-    match page::get_page_detail_with_id(id, project_id) {
+    match Page::get_page_detail_with_id(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }
@@ -88,7 +87,7 @@ pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Stat
 // 获取页面详情
 #[get("/page/detail/<project_id>/<path>")]
 pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Json<Page>, Status> {
-    match page::get_page_detail_with_path(project_id, path) {
+    match Page::get_page_detail_with_path(project_id, path) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }
