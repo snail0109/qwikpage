@@ -1,7 +1,7 @@
 import { useState, useEffect, MutableRefObject, useImperativeHandle } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open as oepnDataDir } from "@tauri-apps/plugin-dialog";
-import { Modal, Form, Select, Input, Checkbox, Button } from "antd";
+import { Modal, Form, Select, Input, Checkbox, Button, message } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import usePreferencesStore from "@/stores/preferencesStore";
 
@@ -15,11 +15,12 @@ interface ISystemSettingProps {
 
 export function SystemSetting(props: ISystemSettingProps) {
     const [visible, setVisible] = useState(false);
+
     const {
         set_preferences,
         get_system_fonts,
+        get_preferences,
         systemFontFamilys,
-        restore_preferences,
         theme,
         fontBold,
         fontFamily,
@@ -28,6 +29,7 @@ export function SystemSetting(props: ISystemSettingProps) {
         checkUpdate,
         language
     } = usePreferencesStore();
+
     const [form] = Form.useForm();
 
     useImperativeHandle(props.settingRef, () => ({
@@ -53,7 +55,7 @@ export function SystemSetting(props: ISystemSettingProps) {
     // 保存
     const handleOk = async () => {
         await onUpdate();
-        setVisible(false);
+        handleCancel();
     };
 
     // 取消
@@ -65,6 +67,17 @@ export function SystemSetting(props: ISystemSettingProps) {
     const onOpenPreferencesDir = async () => {
         return await invoke<void>("open_preferences");
     };
+
+    // 重置为默认
+    const onRestore = async () => {
+        await invoke("restore_preferences")
+        const preferences =  await get_preferences();
+        form.setFieldsValue({
+            fontfamily: preferences.fontFamily,
+            dataDir: preferences.projectPath,
+            update: preferences.checkUpdate,
+        });
+    }
 
     // 修改数据存放目录
     const handleOpenDir = async () => {
@@ -94,7 +107,6 @@ export function SystemSetting(props: ISystemSettingProps) {
             fontSize: fontSize,
             fontBold: fontBold,
         });
-        setVisible(false);
     };
 
     const customFooter = () => (
@@ -108,7 +120,7 @@ export function SystemSetting(props: ISystemSettingProps) {
                 >
                     打开配置目录
                 </Button>
-                <Button color="primary" variant="outlined" onClick={onUpdate}>
+                <Button color="primary" variant="outlined" onClick={onRestore}>
                     重置为默认
                 </Button>
             </div>

@@ -13,10 +13,9 @@ export interface PreferencesState {
     systemFontFamilys?: string[]; 
 }
 interface PreferencesStore extends PreferencesState {
-    get_preferences: () => Promise<void>;
+    get_preferences: () => Promise<PreferencesState>;
     set_preferences: (config: PreferencesState) => Promise<void>;
     get_system_fonts: () => Promise<void>;
-    restore_preferences: () => Promise<void>;
 }
 
 const usePreferencesStore = create<PreferencesStore>()(
@@ -34,9 +33,10 @@ const usePreferencesStore = create<PreferencesStore>()(
                 try {
                     const preferences: PreferencesState = await invoke("get_preferences");
                     set(preferences);
-                
+                    return preferences;
                 } catch (error) {
                     console.error("初始化配置失败:", error);
+                    throw error;
                 }
             },
             set_preferences: async (preferences: PreferencesState) => {
@@ -56,16 +56,7 @@ const usePreferencesStore = create<PreferencesStore>()(
                 } catch (error) {
                     console.error("获取系统字体失败:", error);
                 }
-            },
-            restore_preferences: async () => {
-                try {
-                    const preferences: PreferencesState = await invoke("restore_preferences");
-                    set(preferences);
-                
-                } catch (error) {
-                    console.error("初始化配置失败:", error);
-                }
-            },
+            }
         }),
         {
             name: "preferences",

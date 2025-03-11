@@ -34,7 +34,7 @@ impl Default for Preferences {
             language: "auto".to_string(),
             font_size: DEFAULT_FONT_SIZE,
             font_bold: DEFAULT_FONT_BOLD.to_string(),
-            check_update: false,
+            check_update: true,
             project_path: storage::get_default_code_path(),
         }
     }
