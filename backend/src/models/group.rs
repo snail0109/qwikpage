@@ -7,8 +7,8 @@ use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
 use crate::models::project::Project;
-use crate::utils::get_current_time;
 use crate::storage::get_config_path;
+use crate::utils::get_current_time;
 
 use super::project::ProjectSummary;
 
@@ -50,13 +50,12 @@ fn default_group() -> Group {
     }
 }
 
-
 impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
         let path = get_config_path().join("group.json");
         if !path.exists() {
-            let mut  def_group = default_group();
+            let mut def_group = default_group();
             def_group.created_at = Some(get_current_time());
             def_group.updated_at = Some(get_current_time());
             let config = GroupConfig {
@@ -72,7 +71,7 @@ impl GroupConfig {
             }
             Err(e) if e.kind() == ErrorKind::NotFound => {
                 // 如果文件不存在，返回默认分组
-                let mut  def_group = default_group();
+                let mut def_group = default_group();
                 def_group.created_at = Some(get_current_time());
                 def_group.updated_at = Some(get_current_time());
                 Ok(GroupConfig {
@@ -98,7 +97,7 @@ impl GroupConfig {
             name,
             projects: None,
             created_at: Some(get_current_time()),
-            updated_at: Some(get_current_time())
+            updated_at: Some(get_current_time()),
         };
         self.groups.push(group);
         info!("group added: {:?}", self.groups);
@@ -159,6 +158,27 @@ impl GroupConfig {
                 projects: Some(projects_in_group),
             });
         }
+
+        // 处理未分配的项目
+        let unassigned_projects: Vec<_> = projects
+            .iter()
+            .filter(|p| !assigned_project_ids.contains(&p.id))
+            .cloned()
+            .collect();
+
+        if !unassigned_projects.is_empty() {
+            // 遍历 group_list  如果 id wei -1，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
+            for group in &mut group_list {
+                if group.id == "-1".to_string() {
+                    if let Some(projects) = &mut group.projects {
+                        projects.extend(unassigned_projects.iter().cloned());
+                    } else {
+                        group.projects = Some(unassigned_projects.clone());
+                    }
+                }
+            }
+        }
+
         // 按照创建时间对 group_list 进行排序
         group_list.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         Ok(GroupList { groups: group_list })
@@ -200,10 +220,7 @@ impl GroupConfig {
                 }
             }
         }
-        Err(anyhow::anyhow!(
-            "Project {} not found in group {}",
-            project_id,
-            group_id
-        ))
+        // 兼容处理手工复制的项目没有直接加入分组的情况
+       Ok(())
     }
 }
