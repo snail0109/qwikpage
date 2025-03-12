@@ -132,7 +132,7 @@ else
 fi
 
 # build the app with release config
-cd "$PWD/.." && pnpm tauri build --debug \
+cd "$PWD/.." && pnpm tauri build \
 	--verbose \
 	--features "$FEATURES" \
 	--config "$TMP_DIR/tauri.conf.json"

@@ -4,7 +4,7 @@ use crate::{
 };
 use font_kit::source::SystemSource;
 use log;
-use tauri::{command, AppHandle, Runtime};
+use tauri::{command, AppHandle, Runtime, process::current_binary, Manager};
 use tauri_plugin_opener::OpenerExt;
 
 // 打开指定路径的文件夹
@@ -69,4 +69,28 @@ pub fn open_preferences<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
         .open_path(root_dir.to_string_lossy().to_string(), None::<&str>)
         .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[command]
+pub async fn restart_app(app: AppHandle){
+  app.restart();
+}
+
+#[command]
+pub fn restart_application<R: Runtime>(app_handle: AppHandle<R>) {
+  let env = app_handle.env();
+  let path = current_binary(&env).unwrap();
+  let arg = std::env::args().collect::<Vec<String>>();
+  let mut args = vec!["launch".to_string(), "--".to_string()];
+  // filter out the first arg
+  if arg.len() > 1 {
+      args.extend(arg.iter().skip(1).cloned());
+  }
+  log::info!("restart app: {:#?} with args: {:#?}", path, args);
+  std::process::Command::new(path)
+      .args(args)
+      .spawn()
+      .expect("application failed to start");
+  app_handle.exit(0);
+  std::process::exit(0);
 }
