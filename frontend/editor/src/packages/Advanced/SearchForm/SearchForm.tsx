@@ -174,6 +174,7 @@ const SearchForm = ({ id, type, config, elements, onSearch, onChange, onReset }:
   const iconsList: { [key: string]: any } = icons;
   return (
     visible && (
+      // @ts-ignore
       <FormContext.Provider value={{ initValues }}>
         <Form
           form={form}

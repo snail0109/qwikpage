@@ -42,6 +42,8 @@ tauri-plugin-os = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
 # tauri-plugin-fs = { version = "2.0.0", features = ["watch"] }
 tauri-plugin-single-instance = "2"
 zip = "2.2.2"

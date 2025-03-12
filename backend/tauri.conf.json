@@ -1,40 +1,37 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "QwikPage",
-  "version": "0.0.1-alpha.20250310.1",
+  "version": "0.0.1-alpha.20250311.2",
   "identifier": "com.qwikpage.desktop",
   "build": {
-    "beforeDevCommand": "pnpm start:editor",
-    "devUrl": "http://localhost:8080",
-    "beforeBuildCommand": "pnpm build:editor",
-    "frontendDist": "../dist/editor"
+      "beforeDevCommand": "pnpm start:editor",
+      "devUrl": "http://localhost:8080",
+      "beforeBuildCommand": "pnpm build:editor",
+      "frontendDist": "../dist/editor"
   },
   "app": {
-    "withGlobalTauri": true,
-    "windows": [],
-    "security": {
-      "assetProtocol": {
-        "enable": true,
-        "scope": {
-          "allow": [
-            "$APPDATA/resources/**"
-          ]
-        }
+      "withGlobalTauri": true,
+      "windows": [],
+      "security": {
+          "assetProtocol": {
+              "enable": true,
+              "scope": {
+                  "allow": ["$APPDATA/resources/**"]
+              }
+          }
       }
-    }
   },
   "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
-    "resources":[
-      "assets"
-    ]
+      "createUpdaterArtifacts": true,
+      "active": true,
+      "targets": "all",
+      "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+      "resources": ["assets"]
+  },
+  "plugins": {
+      "updater": {
+          "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI2QzlEOTc5MUY1QjY3OApSV1I0dHZXUmw1MXNDd0FaWmFrOHhTSGo3V2pWdkZmbFhuUlBmVEtvRjVQQUdKMXc2ZFRBMVRvTQo=",
+          "endpoints": ["https://github.com/dingxyang/qwikpage/releases/latest/download/latest.json"]
+      }
   }
 }

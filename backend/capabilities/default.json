@@ -6,6 +6,8 @@
     "main"
   ],
   "permissions": [
+    "updater:default",
+    "process:default",
     "core:default",
     "core:webview:allow-set-webview-zoom",
     "core:window:allow-close",

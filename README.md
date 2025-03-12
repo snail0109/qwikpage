@@ -68,6 +68,11 @@ pnpm tauri dev // 不执行cargo build，启动会自动下载依赖
 ```
 
 ## 打包
+```bash
+export TAURI_SIGNING_PRIVATE_KEY=
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=
+./scripts/release.sh --channel nightly --version "0.0.2"
+```
 
 ```bash
 pnpm tauri build
