@@ -22,12 +22,12 @@ use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
 
-#[cfg(target_os = "windows")]
-use {
-    tauri::Manager,
-    webview2_com::Error as Webview2Error,
-    windows_registry::{RegKey, SecurityAccessFlags},
-};
+// #[cfg(target_os = "windows")]
+// use {
+//     tauri::Manager,
+//     webview2_com::Error as Webview2Error,
+//     windows_registry::{RegKey, SecurityAccessFlags},
+// };
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
 const DEFAULT_WINDOW_HEIGHT: f64 = 600.0;
@@ -38,34 +38,34 @@ const MIN_WINDOW_HEIGHT: f64 = 300.0;
 // Global AppHandle
 pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
 
-#[cfg(target_os = "windows")]
-fn check_webview2_installation() -> Result<(), String> {
-    // 检查注册表中是否存在WebView2 Runtime
-    let hklm = RegKey::predef(windows_registry::enums::HKEY::HKEY_LOCAL_MACHINE);
-    let webview2_key = hklm
-        .open_subkey_with_flags(
-            r"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
-            SecurityAccessFlags::READ,
-        )
-        .or_else(|_| {
-            hklm.open_subkey_with_flags(
-                r"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
-                SecurityAccessFlags::READ,
-            )
-        });
+// #[cfg(target_os = "windows")]
+// fn check_webview2_installation() -> Result<(), String> {
+//     // 检查注册表中是否存在WebView2 Runtime
+//     let hklm = RegKey::predef(windows_registry::enums::HKEY::HKEY_LOCAL_MACHINE);
+//     let webview2_key = hklm
+//         .open_subkey_with_flags(
+//             r"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+//             SecurityAccessFlags::READ,
+//         )
+//         .or_else(|_| {
+//             hklm.open_subkey_with_flags(
+//                 r"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+//                 SecurityAccessFlags::READ,
+//             )
+//         });
 
-    match webview2_key {
-        Ok(_) => Ok(()),
-        Err(_) => Err("未检测到 WebView2 Runtime，请先安装 WebView2 Runtime：https://developer.microsoft.com/microsoft-edge/webview2/".to_string()),
-    }
-}
+//     match webview2_key {
+//         Ok(_) => Ok(()),
+//         Err(_) => Err("未检测到 WebView2 Runtime，请先安装 WebView2 Runtime：https://developer.microsoft.com/microsoft-edge/webview2/".to_string()),
+//     }
+// }
 
 pub fn run() {
-    #[cfg(target_os = "windows")]
-    if let Err(err) = check_webview2_installation() {
-        error!("{}", err);
-        std::process::exit(1);
-    }
+    // #[cfg(target_os = "windows")]
+    // if let Err(err) = check_webview2_installation() {
+    //     error!("{}", err);
+    //     std::process::exit(1);
+    // }
 
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
