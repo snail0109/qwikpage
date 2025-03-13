@@ -67,17 +67,17 @@ export default function Category({ list }: { list: IProject[] }) {
                 {
                     key: "vue",
                     icon: <CodeIcon />,
-                    label: "VUE",
+                    label: "Vue",
                 },
                 {
-                    key: "fishx",
+                    key: "rn",
                     icon: <CodeIcon />,
-                    label: "FishX",
+                    label: "React Native",
                 },
                 {
-                    key: "fish",
+                    key: "app",
                     icon: <CodeIcon />,
-                    label: "Fish",
+                    label: "App",
                 },
             ],
         },
@@ -93,7 +93,7 @@ export default function Category({ list }: { list: IProject[] }) {
         if (_key === "config") {
             return handleOpenProject(id);
         }
-        if (["fishx", "vue", "fish"].includes(_key)) {
+        if (["rn", "vue", "app"].includes(_key)) {
             return handleExportProjectCode(id, _key).then(res => {
                 message.success("导出成功，请到本地查看");
             }).catch((error) => {

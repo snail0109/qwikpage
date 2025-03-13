@@ -43,13 +43,6 @@ impl GeneratorConfig {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum ExportType {
-    /// Fishx框架
-    Fishx,
-    
-    /// Fish框架
-    Fish,
-    
-    /// Vue框架
     Vue,
 }
 
@@ -57,17 +50,13 @@ impl ExportType {
     /// 获取模板URL
     pub fn get_template_url(&self) -> String {
         match self {
-            ExportType::Fishx => String::from("https://fish.iwhalecloud.com/qwikpage-template/fishx.zip"),
-            ExportType::Vue => String::from("https://fish.iwhalecloud.com/qwikpage-template/vue.zip"),
-            ExportType::Fish => String::from("https://fish.iwhalecloud.com/qwikpage-template/vue.zip"),
+            ExportType::Vue => String::from("vue.zip"),
         }
     }
 
      /// 转换为字符串
      pub fn to_string(&self) -> String {
         match self {
-            ExportType::Fishx => String::from("fishx"),
-            ExportType::Fish => String::from("fish"),
             ExportType::Vue => String::from("vue"),
         }
     }

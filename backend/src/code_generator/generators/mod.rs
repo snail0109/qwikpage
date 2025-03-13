@@ -1,6 +1,6 @@
-pub mod fishx;
+pub mod vue;
 
-use fishx::FishxGenerator;
+use vue::VueGenerator;
 
 use crate::code_generator::config::GeneratorConfig;
 use crate::error::Result;
@@ -47,15 +47,13 @@ pub trait CodeGenerator {
 
 #[derive(Debug)]
 pub enum Generator {
-    Fishx(FishxGenerator),
-    // Vue(VueGenerator),
+    Vue(VueGenerator),
 }
 
 impl Generator {
     pub async fn export_code(&self, config: &GeneratorConfig, page_list: Vec<Page>) -> Result<()> {
         match self {
-            Generator::Fishx(g) => g.export_code(config, page_list).await,
-            // Generator::Vue(g) => g.export_code(config, page_list).await,
+            Generator::Vue(g) => g.export_code(config, page_list).await,
         }
     }
 
@@ -66,29 +64,25 @@ impl Generator {
         page: &Page,
     ) -> Result<()> {
         match self {
-            Generator::Fishx(g) => g.export_page(index, config, page).await,
-            // Generator::Vue(g) => g.export_page(index, config, page).await,
+            Generator::Vue(g) => g.export_page(index, config, page).await,
         }
     }
 
     pub async fn export_resources(&self, config: &GeneratorConfig) -> Result<()> {
         match self {
-            Generator::Fishx(g) => g.export_resources(config).await,
-            // Generator::Vue(g) => g.export_resources(config).await,
+            Generator::Vue(g) => g.export_resources(config).await,
         }
     }
 
     pub async fn download_template(&self, config: &GeneratorConfig) -> Result<()> {
         match self {
-            Generator::Fishx(g) => g.download_template(config).await,
-            // Generator::Vue(g) => g.download_template(config).await,
+            Generator::Vue(g) => g.download_template(config).await,
         }
     }
 
     pub fn name(&self) -> &'static str {
         match self {
-            Generator::Fishx(g) => g.name(),
-            // Generator::Vue(g) => g.name(),
+            Generator::Vue(g) => g.name(),
         }
     }
 }

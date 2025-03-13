@@ -7,7 +7,7 @@ use std::path::PathBuf;
 
 use config::{ExportType, GeneratorConfig};
 use crate::{error::{CmdError, Result}, models::project::Project};
-use generators::{fishx::FishxGenerator, Generator};
+use generators::{vue::VueGenerator, Generator};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
@@ -58,17 +58,15 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     // 根据导出类型选择对应的生成器
     let generator = match params.export_type {
-        ExportType::Fishx => Generator::Fishx(FishxGenerator),
-        ExportType::Fish => todo!(),
-        ExportType::Vue => todo!(),
+        ExportType::Vue => Generator::Vue(VueGenerator),
     };
 
     // 下载模板
     info!("开始下载模板...");
-    generator.download_template(&config).await.map_err(|e| {
-        error!("下载模板失败: {}", e);
-        CmdError::DownloadError(e.to_string())
-    })?;
+    // generator.download_template(&config).await.map_err(|e| {
+    //     error!("下载模板失败: {}", e);
+    //     CmdError::DownloadError(e.to_string())
+    // })?;
     info!("模板下载成功");
 
     // 导出代码
