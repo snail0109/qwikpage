@@ -26,7 +26,7 @@ use tauri_plugin_log::{Target, TargetKind};
 // use {
 //     tauri::Manager,
 //     webview2_com::Error as Webview2Error,
-//     windows_registry::{RegKey, SecurityAccessFlags},
+//     winreg
 // };
 
 const DEFAULT_WINDOW_WIDTH: f64 = 1100.0;
@@ -41,21 +41,22 @@ pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
 // #[cfg(target_os = "windows")]
 // fn check_webview2_installation() -> Result<(), String> {
 //     // 检查注册表中是否存在WebView2 Runtime
-//     let hklm = RegKey::predef(windows_registry::enums::HKEY::HKEY_LOCAL_MACHINE);
+//     let hklm = winreg::RegKey::predef(winreg::enums::HKEY::HKEY_LOCAL_MACHINE);
 //     let webview2_key = hklm
-//         .open_subkey_with_flags(
+//         .open_subkey(
 //             r"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
-//             SecurityAccessFlags::READ,
 //         )
 //         .or_else(|_| {
-//             hklm.open_subkey_with_flags(
+//             hklm.open_subkey(
 //                 r"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
-//                 SecurityAccessFlags::READ,
 //             )
 //         });
 
 //     match webview2_key {
-//         Ok(_) => Ok(()),
+//         Ok(_) => {
+//             info!("WebView2 Runtime 已安装。")
+//             Ok(())
+//         },
 //         Err(_) => Err("未检测到 WebView2 Runtime，请先安装 WebView2 Runtime：https://developer.microsoft.com/microsoft-edge/webview2/".to_string()),
 //     }
 // }
