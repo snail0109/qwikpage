@@ -15,7 +15,7 @@ dayjs.locale("zh-cn");
 import "./App.less";
 import { useEffect, useState } from "react";
 import usePreferencesStore from "./stores/preferencesStore";
-import UpdaterDialog from "./components/UpdaterDialog";
+// import UpdaterDialog from "./components/UpdaterDialog";
 
 function App() {
     const [loading, setLoading] = useState(true)
@@ -74,7 +74,7 @@ function App() {
                 <AntdGlobal />
                 <RouterProvider router={router} />
             </AntdApp>
-            <UpdaterDialog />
+            {/* <UpdaterDialog /> */}
         </ConfigProvider>
     );
 }
