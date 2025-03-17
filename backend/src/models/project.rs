@@ -214,7 +214,7 @@ impl Project {
         }
     }
 
-    pub async fn delete(project_id: String, group_id: String) -> Result<bool, Error> {
+    pub async fn delete(project_id: String, group_id: String, logo_url: String) -> Result<bool, Error> {
         let root_dir = &Config::global().preferences().get_project_path();
         let project_dir = root_dir.join(&project_id);
         tokio::fs::remove_dir_all(project_dir).await?;
@@ -227,8 +227,7 @@ impl Project {
                 e
             ));
         }
-        // 删除 resource 全部资源
-        ResourceConfig::delete_resource_dir(&project_id).await?;
+        ResourceConfig::delete_project_logo(logo_url).await?;
         Ok(true)
     }
 

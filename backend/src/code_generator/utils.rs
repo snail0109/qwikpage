@@ -3,8 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::storage::get_app_root_resource_dir;
-use crate::models::page::PageContent;
+use crate::models::{config::Config, page::PageContent};
 use futures::future::BoxFuture;
 use log::info;
 use reqwest;
@@ -129,7 +128,9 @@ pub async fn export_resources(
     public_dir_name: &str,
 ) -> Result<()> {
     // 获取项目资源目录
-    let prj_res_dir = get_app_root_resource_dir().join(project_id);
+    let config_path = Config::global().preferences().get_project_path();
+    let resource_dir = config_path.join(&project_id).join("resources");
+    let prj_res_dir = resource_dir.join(project_id);
 
     if !prj_res_dir.exists() {
         info!("资源目录不存在: {:?}", prj_res_dir);
@@ -179,7 +180,7 @@ pub async fn export_resources(
 /// 处理页面数据，替换资源路径
 pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
     info!("process_page_data...");
-    let resource_path = get_app_root_resource_dir().join(project_id);
+    let resource_path =  Config::global().preferences().get_project_path().join(project_id);
     let resource_path_str = resource_path.to_str().unwrap_or("");
 
     // 如果 page_data 为空，返回一个空的PageContent

@@ -16,7 +16,7 @@
           "assetProtocol": {
               "enable": true,
               "scope": {
-                  "allow": ["$APPDATA/resources/**"]
+                  "allow": ["**"]
               }
           }
       }

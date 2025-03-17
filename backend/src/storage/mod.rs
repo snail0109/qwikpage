@@ -19,16 +19,6 @@ pub fn get_config_path() -> PathBuf {
     config_path
 }
 
-// 返回应用资源目录
-pub fn get_app_root_resource_dir() -> PathBuf {
-    let config_path = get_config_path();
-    let resources_path = config_path.join("resources");
-    if !resources_path.exists() {
-        info!("create resources dir: {:?}", resources_path);
-        create_dir_all(&resources_path).expect("failed to create resources dir");
-    }
-    resources_path
-}
 
 // 返回全局数据存储目录
 pub fn get_app_data_path() -> PathBuf {

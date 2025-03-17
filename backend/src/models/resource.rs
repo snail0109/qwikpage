@@ -1,14 +1,16 @@
 use anyhow::{Context, Error};
+use chrono::Utc;
 use log::info;
 use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{format_system_size, format_system_time};
-use crate::storage::get_app_root_resource_dir;
 use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};
 use tokio::fs::{create_dir_all, read_dir, remove_dir_all, rename};
+
+use super::config::Config;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
@@ -93,11 +95,10 @@ pub struct DeleteResource {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AddTempResourceParams {
+pub struct UploadResourceParams {
     // 原始文件本地路径
     pub file_path: String,
     pub old_file_path: Option<String>,
-
 }
 
 pub struct ResourceConfig {}
@@ -106,7 +107,7 @@ impl ResourceConfig {
     // 查询接口，根据项目 ID、资源类型、资源分组、关键字查询资源
     pub async fn load(params: ResourceQueryParams) -> Result<Vec<ResourceGroupInfo>, Error> {
         // 资源分组根路径
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         // 查看资源目录下是否存在默认分组没有则创建
         check_default_group_dir(&res_root_dir).await?;
 
@@ -169,8 +170,9 @@ impl ResourceConfig {
         Ok(resource_groups)
     }
 
+    // 创建本地一个资源分组
     pub async fn add_resource_group(params: OperResourceGroupParams) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(sanitize(&params.group_name));
         if !group_dir.exists() {
             info!("创建资源分组目录: {:?}", group_dir);
@@ -184,8 +186,9 @@ impl ResourceConfig {
         Ok(true)
     }
 
+    // 更新本地一个资源分组
     pub async fn update_resource_group(params: OperResourceGroupParams) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let old_group_dir = res_root_dir.join(&params.group_name);
         let new_group_dir = res_root_dir.join(
             params
@@ -199,8 +202,9 @@ impl ResourceConfig {
         Ok(true)
     }
 
+    // 删除本地一个资源分组
     pub async fn delete_resource_group(params: OperResourceGroupParams) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
         remove_dir_all(group_dir)
             .await
@@ -210,7 +214,7 @@ impl ResourceConfig {
 
     // 将本地一个资源复制到本地指定分组
     pub async fn import_resources(params: UploadParams) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
         if !group_dir.exists() {
             info!("创建资源分组目录: {:?}", group_dir);
@@ -249,7 +253,7 @@ impl ResourceConfig {
 
     // 修改资源名称
     pub async fn rename_resource(params: RenameResource) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
         let old_resource_path = group_dir.join(&params.resource_name);
         let new_resource_path = group_dir.join(&params.new_resource_name);
@@ -261,7 +265,7 @@ impl ResourceConfig {
 
     // 删除资源
     pub async fn delete_resource(params: DeleteResource) -> Result<bool, Error> {
-        let res_root_dir = get_res_root_dir(&params.project_id, &params.resource_type).await?;
+        let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
         let resource_path = group_dir.join(&params.resource_name);
         tokio::fs::remove_file(resource_path)
@@ -270,26 +274,16 @@ impl ResourceConfig {
         Ok(true)
     }
 
-    // 删除项目删除全部资源
-    pub async fn delete_resource_dir(project_id: &str) -> Result<bool, Error> {
-        let prj_res_dir = get_app_root_resource_dir().join(project_id);
-        // 如果 prj_res_dir 存在则删除
-        if prj_res_dir.exists() {
-            tokio::fs::remove_dir_all(prj_res_dir)
-                .await
-                .map_err(|e| Error::new(e).context("Failed to remove file"))?;
-        }
-        Ok(true)
-    }
-
-    // 添加项目资源
-    pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<PathBuf, Error> {
+    // 添加项目临时logo资源
+    pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, Error> {
         // 构建项目资源目录路径
-        let prj_res_dir = get_app_root_resource_dir()
-            .join("project_logo");
+        let root_dir = get_project_root_path().join("project_logo");
+        // temp_res_dir 拼接当前时间戳
+        let timestamp = Utc::now().timestamp();
+        let temp_res_dir = root_dir.join(timestamp.to_string());
 
         // 创建目录（如果不存在），使用create_dir_all自动处理已存在的情况
-        tokio::fs::create_dir_all(&prj_res_dir)
+        tokio::fs::create_dir_all(&temp_res_dir)
             .await
             .with_context(|| "无法创建项目logo目录")?;
 
@@ -308,7 +302,7 @@ impl ResourceConfig {
             return Err(Error::msg("文件名包含非法路径字符"));
         }
         // 构建目标文件路径
-        let new_file_path: PathBuf = prj_res_dir.join(file_name);
+        let new_file_path: PathBuf = temp_res_dir.join(file_name);
         info!("创建资源分组目录jjjj: {:?}", new_file_path);
 
         // 执行文件复制操作，添加详细错误上下文
@@ -316,44 +310,71 @@ impl ResourceConfig {
             .await
             .with_context(|| "文件复制失败")?;
 
-        // old_file_path 有值，则删除改路径的文件
+        // old_file_path 有值，则删除该路径的文件和上一级目录
         if let Some(old_path) = &params.old_file_path {
-            if Path::new(old_path).exists() {
-            tokio::fs::remove_file(old_path)
-                .await
-                .with_context(|| format!("无法删除旧文件: {}", old_path))?;
+            let file_path = Path::new(old_path);
+            if let Some(parent_dir) = file_path.parent() {
+                // 删除目录
+                tokio::fs::remove_dir_all(parent_dir)
+                    .await
+                    .with_context(|| "删除目录失败")?;
             }
         }
 
         Ok(new_file_path)
     }
+
+    // 获取项目资源根目录
+    pub async fn get_res_root_path(project_id: &String) -> Result<PathBuf, Error> {
+        let root_dir = get_project_root_path();
+        let prj_res_dir =
+            create_directory_if_not_exists(root_dir.join(project_id).join("resources")).await?;
+        Ok(prj_res_dir)
+    }
+
+    // 删除项目logo
+    pub async fn delete_project_logo(path: String) -> Result<(), Error> {
+        let file_path = PathBuf::from(path);
+        if let Some(parent_dir) = file_path.parent() {
+            // 删除目录
+            tokio::fs::remove_dir_all(parent_dir)
+                .await
+                .with_context(|| "删除目录失败")?;
+        }
+        Ok(())
+    }
 }
 
 // 资源分组根路径
-async fn get_res_root_dir(
+async fn get_res_type_root_dir(
     project_id: &String,
     resource_type: &ResourceType,
 ) -> Result<PathBuf, Error> {
-    // 项目资源路径
-    let prj_res_dir = get_app_root_resource_dir().join(project_id);
-    if !prj_res_dir.exists() {
-        info!("创建项目资源目录: {:?}", prj_res_dir);
-        tokio::fs::create_dir_all(&prj_res_dir)
-            .await
-            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
-    }
-
-    // 资源类型根路径
-    let res_root_dir = prj_res_dir.join(resource_type.as_str());
-    if !res_root_dir.exists() {
-        info!("create resource type dir: {:?}", res_root_dir);
-        tokio::fs::create_dir_all(&res_root_dir)
-            .await
-            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
-    }
+    let root_dir = get_project_root_path();
+    let prj_res_dir =
+        create_directory_if_not_exists(root_dir.join(project_id).join("resources")).await?;
+    let res_root_dir =
+        create_directory_if_not_exists(prj_res_dir.join(resource_type.as_str())).await?;
     Ok(res_root_dir)
 }
 
+// 获取项目根路径
+fn get_project_root_path() -> PathBuf {
+    Config::global().preferences().get_project_path()
+}
+
+// 创建目录
+async fn create_directory_if_not_exists(path: PathBuf) -> Result<PathBuf, Error> {
+    if !path.exists() {
+        info!("创建目录: {:?}", path);
+        tokio::fs::create_dir_all(&path)
+            .await
+            .with_context(|| format!("Failed to create directory: {:?}", path))?;
+    }
+    Ok(path)
+}
+
+// 检查默认分组目录是否存在
 async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error> {
     // 判断根目录下是否有目录，没有则创建默认目录
     let mut dir_count = 0;

@@ -18,7 +18,7 @@ export const projectService =  {
   },
 
   // 删除项目
-  delProject(params: { id: string; groupId?: string }) {
+  delProject(params: { id: string; groupId?: string, logoUrl: string }) {
     return cmd_invoke("delete_project", params)
   },
 

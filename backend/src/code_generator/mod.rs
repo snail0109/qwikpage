@@ -6,7 +6,7 @@ mod utils;
 use std::path::PathBuf;
 
 use config::{ExportType, GeneratorConfig};
-use crate::{error::{CmdError, Result}, models::project::Project};
+use crate::{error::{CmdError, Result}, models::{config::Config, project::Project}};
 use generators::{vue::VueGenerator, Generator};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
@@ -47,7 +47,8 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     // 创建生成器配置
     let template_url = params.export_type.get_template_url();
-    let resource_dir = crate::storage::get_app_root_resource_dir().join(&params.project_id);
+    let config_path = Config::global().preferences().get_project_path();
+    let resource_dir =config_path.join(&params.project_id).join("resources");
 
     let config = GeneratorConfig::new(
         params.project_id.clone(),

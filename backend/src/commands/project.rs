@@ -2,7 +2,7 @@ use crate::commands::cmd_response::CmdResponse;
 use crate::models::project::{
     get_project_list_inner, Project, ProjectAddParams, ProjectList, add_project_inner, ProjectUpdateParams
 };
-use crate::models::resource::{AddTempResourceParams, ResourceConfig};
+use crate::models::resource::{ResourceConfig, UploadResourceParams};
 use anyhow::Result;
 use log::info;
 use std::path::PathBuf;
@@ -45,15 +45,15 @@ pub fn update_project(params: ProjectUpdateParams) -> CmdResponse<bool> {
 
 // 删除项目
 #[command]
-pub async fn delete_project(id: String, group_id: String) -> CmdResponse<bool> {
+pub async fn delete_project(id: String, group_id: String, logo_url: String) -> CmdResponse<bool> {
     info!("Project::delete_project start, id: {}", id.clone());
-    let res = Project::delete(id, group_id).await;
+    let res = Project::delete(id, group_id, logo_url).await;
     CmdResponse::from(res)
 }
 
 // 修改项目logo
 #[command]
-pub async fn upload_project_resource(params: AddTempResourceParams) -> Result<PathBuf, String> {
+pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, String> {
     info!("Project::upload_project_resource, params: {:#?}", params);
     let res = ResourceConfig::upload_project_resource(params);
     res.await.map_err(| op | op.to_string())

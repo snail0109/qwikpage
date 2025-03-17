@@ -13,6 +13,7 @@ import { projectService } from "@/services";
 import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
 import UD from "@/assets/image/UD.png";
+import project from "@/pages/home/project";
 
 const MenuModeOptions = [
     [{
@@ -101,7 +102,7 @@ const Config: React.FC = memo(() => {
         setDelLoading(true);
         try {
             if (id) {
-                await projectService.delProject({ id, groupId });
+                await projectService.delProject({ id, groupId, logoUrl });
                 message.success("删除成功");
                 navigate("/projects");
             }
@@ -147,6 +148,8 @@ const Config: React.FC = memo(() => {
         invoke("upload_project_resource", {
             params: {
                 file_path: filePath,
+                project_id: id,
+                old_file_path: logoUrl
             },
         })
             .then((res) => {

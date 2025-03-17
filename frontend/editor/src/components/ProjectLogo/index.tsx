@@ -8,7 +8,7 @@ interface ProjectLogoProps {
 }
 
 const ProjectLogo = ({ disabled = false, logoUrl, handleUpload }: ProjectLogoProps) => {
-    const src = logoUrl.includes("com.qwikpage.desktop/resources/project_logo") ? convertFileSrc(logoUrl) : logoUrl;
+    const src = logoUrl === "/imgs/qwikpage-logo.svg" ?  logoUrl : convertFileSrc(logoUrl);
 
     return (
         <div className={`${styles.imageContainer} ${disabled ? styles.disabled : ''}`}>
