@@ -105,7 +105,7 @@ export default function Home() {
     const path = data[0]?.path;
     if (path) {
       const paths = path.split("/");
-      const resource_path = paths.slice(0, paths.length - 1).join("/");
+      const resource_path = paths.slice(0, paths.length - 2).join("/");
       invoke("open_target_folder", { path: resource_path });
     }
   }
@@ -260,6 +260,8 @@ export default function Home() {
         projectName={project_name}
         submit={refresh}
         refresh={refresh}
+        needOpenDir
+        openDir={handleOpenDir}
       />
       <Divider />
       <ConfigProvider theme={{
@@ -289,12 +291,6 @@ export default function Home() {
               onClick={handleAddResGroup}
             >
               创建分组
-            </Button>
-            <Button
-              className={styles.createGroupBtn}
-              onClick={handleOpenDir}
-            >
-              打开目录
             </Button>
             <Tooltip title="刷新">
               <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>

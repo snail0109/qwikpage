@@ -7,7 +7,7 @@ import styles from './index.module.less';
 const SearchBar = (props: any) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { form, from, projectName, submit, refresh, onCreate, onCreateGroup, className = '', searchPlaceholder = '', noNeedCreate = false, noNeedFresh = false } = props;
+  const { form, from, projectName, submit, refresh, onCreate, onCreateGroup, openDir, className = '', searchPlaceholder = '', noNeedCreate = false, noNeedFresh = false, needOpenDir = false } = props;
 
   return (
     <div className={`${styles.searchBar} ${className}`}>
@@ -26,13 +26,13 @@ const SearchBar = (props: any) => {
           <Form.Item name="keyword" style={{ width: 200, marginInlineEnd: '8px' }} >
             <Input placeholder={searchPlaceholder || `请输入${from === '分组' ? '项目' : from}名称`} onPressEnter={submit} />
           </Form.Item>
-          <Form.Item className={pathname === '/resources' ? styles.lastBtn : ''}>
+          <Form.Item>
             <Button type="primary" className={styles.searchBtn} onClick={submit} size="middle" autoInsertSpace={false}>
               搜索
             </Button>
           </Form.Item>
         </Form>
-        {pathname === '/project/pages' && <div className={styles.divider}></div>}
+        {['/project/pages', '/resources'].includes(pathname) && <div className={styles.divider}></div>}
         <Space>
           {
             !noNeedCreate && (
@@ -46,6 +46,13 @@ const SearchBar = (props: any) => {
               <Tooltip title="刷新">
                 <Button icon={<ReloadOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
               </Tooltip>
+            )
+          }
+           {
+            needOpenDir && (
+              <Button onClick={openDir}>
+               打开目录
+              </Button>
             )
           }
         </Space>
