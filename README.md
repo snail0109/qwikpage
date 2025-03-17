@@ -20,10 +20,6 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 在安装过程中，选中“使用 C++ 的桌面开发”选项。
 ![](https://v2.tauri.app/_astro/visual-studio-build-tools-installer.TFOm5FVI_RDwYY.webp)
 
-Windows
-```bash
-winget install --id Rustlang.Rustup
-```
 
 2. webview2
 WebView 2 已安装在 Windows 10（从版本 1803 开始）和更高版本的 Windows 上。如果你正在这些版本之一上进行开发，则可以跳过此步骤，并直接转到安装 Rust。
@@ -33,9 +29,8 @@ Tauri 使用 Microsoft Edge WebView2 在 Windows 上呈现内容。
 通过访问 [下载 WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download) 安装 WebView2。下载并安装“常青独立安装程序（Evergreen Bootstrapper）”。
 
 3. 安装 Rust
-前往 https://www.rust-lang.org/zh-CN/tools/install 下载 rustup。
-或者，你可以在 PowerShell 中使用 winget 安装 rustup：
-`winget install --id Rustlang.Rustup`
+[64位下载执行](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)  
+[32位下载执行](https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe)
 
 
 ### 安装 node 
