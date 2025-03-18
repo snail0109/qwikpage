@@ -1,19 +1,13 @@
 mod code_generator;
-mod commands;
-mod constans;
+mod services;
 mod error;
 mod models;
-mod service;
-mod setup;
 mod types;
 mod utils;
-mod storage;
 
 use crate::{
-    commands::{code, preferences, group, page, project, resource},
-    service::configure_rocket,
-    utils::is_port_in_use,
-    storage::get_config_path,
+    services::{code_service, group_service, page_service, preference_service, project_service, resource_service, preview_service, sys_service},
+    utils::{check_port_occupied, dirs::get_config_path, setup},
 };
 use log::{error, info};
 use once_cell::sync::OnceCell;
@@ -69,8 +63,10 @@ pub fn run() {
     // }
 
     tauri::Builder::default()
+        // 单实例插件确保 Tauri 应用程序在同一时间只运行单个实例
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
         .plugin(
+            // 日志插件
             tauri_plugin_log::Builder::new()
                 .targets([
                     Target::new(TargetKind::Stdout),
@@ -90,7 +86,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             info!("============== Start App ==============");
-            // Global AppHandle
+            // 全局 AppHandle 实例
             APP.get_or_init(|| app.handle().clone());
             let mut win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
                 .title("")
@@ -120,14 +116,14 @@ pub fn run() {
             info!("Init App Config Store");
             setup::init(app)?;
 
+            // 初始化 rocket 服务，用于项目页面预览
             let handle = app.handle().clone();
-            // mount the rocket instance
             let port = 8789;
-            if is_port_in_use(port) {
+            if check_port_occupied(port) {
                 error!("Port {} is already in use", port);
             } else {
                 tauri::async_runtime::spawn(async move {
-                    let rocket = configure_rocket(handle);
+                    let rocket = preview_service::configure_rocket(handle);
                     let _ = rocket.launch().await;
                 });
             }
@@ -135,47 +131,48 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             // 分组
-            group::add_group,
-            group::edit_group,
-            group::delete_group,
-            group::load_groups,
-            group::load_groups_with_projects,
+            group_service::add_group,
+            group_service::edit_group,
+            group_service::delete_group,
+            group_service::load_groups,
+            group_service::load_groups_with_projects,
             // 项目
-            project::get_project_list,
-            project::add_project,
-            project::get_project_detail,
-            project::update_project,
-            project::delete_project,
-            project::upload_project_resource,
-            // reource
-            resource::load_resource,
-            resource::add_resource_group,
-            resource::delete_resource_group,
-            resource::update_resource_group,
-            resource::import_resource,
-            resource::rename_resource,
-            resource::delete_resource,
-            resource::parse_font_metadata,
+            project_service::get_project_list,
+            project_service::add_project,
+            project_service::get_project_detail,
+            project_service::update_project,
+            project_service::delete_project,
+            project_service::upload_project_resource,
+            // 资源管理
+            resource_service::load_resource,
+            resource_service::add_resource_group,
+            resource_service::delete_resource_group,
+            resource_service::update_resource_group,
+            resource_service::import_resource,
+            resource_service::rename_resource,
+            resource_service::delete_resource,
+            resource_service::parse_font_metadata,
             // 页面
-            page::get_page_list,
-            page::get_page_detail_with_id,
-            page::get_page_detail_with_path,
-            page::add_page,
-            page::update_page,
-            page::delete_page,
-            page::copy_page,
+            page_service::get_page_list,
+            page_service::get_page_detail_with_id,
+            page_service::get_page_detail_with_path,
+            page_service::add_page,
+            page_service::update_page,
+            page_service::delete_page,
+            page_service::copy_page,
             // 出码
-            code::export_json,
-            code::export_project,
-            // 系统配置
-            preferences::get_system_fonts,
-            preferences::open_target_folder,
-            preferences::get_preferences,
-            preferences::set_preferences,
-            preferences::restore_preferences,
-            preferences::open_preferences,
-            preferences::restart_app,
-            preferences::restart_application,
+            code_service::export_json,
+            code_service::export_project,
+            // 配置服务
+            preference_service::get_preferences,
+            preference_service::set_preferences,
+            preference_service::restore_preferences,
+            // 系统服务
+            sys_service::open_target_folder,
+            sys_service::get_system_fonts,
+            sys_service::open_preferences,
+            sys_service::restart_app,
+            sys_service::restart_application,
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");

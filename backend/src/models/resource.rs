@@ -4,7 +4,8 @@ use log::info;
 use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{format_system_size, format_system_time};
+use crate::utils::file::format_file_size;
+use crate::utils::datetime::format_system_time;
 use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};
@@ -149,7 +150,7 @@ impl ResourceConfig {
                         last_modified_time: format_system_time(
                             dir_entry.path().metadata().unwrap().modified().unwrap(),
                         ),
-                        file_size: Some(format_system_size(
+                        file_size: Some(format_file_size(
                             dir_entry.path().metadata().unwrap().len(),
                         )),
                     });

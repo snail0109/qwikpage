@@ -7,8 +7,8 @@ use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
 use crate::models::project::Project;
-use crate::storage::get_config_path;
-use crate::utils::get_current_time;
+use crate::utils::datetime::get_current_time;
+use crate::utils::dirs::get_config_path;
 
 use super::project::ProjectSummary;
 

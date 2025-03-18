@@ -1,10 +1,10 @@
 use thiserror::Error;
 use std::io;
 
-pub type Result<T> = std::result::Result<T, CmdError>;
+pub type Result<T> = std::result::Result<T, CommonError>;
 
 #[derive(Error, Debug)]
-pub enum CmdError {
+pub enum CommonError {
     // 出码
     #[error("下载模板失败: {0} 请关闭代理",)]
     DownloadError(String),
@@ -14,7 +14,6 @@ pub enum CmdError {
 
     #[error("项目没有页面")]
     NoPages,
-
 
     #[error("IO错误: {0}")]
     Io(#[from] io::Error),
@@ -41,14 +40,14 @@ pub enum CmdError {
     Other(String),
 }
 
-impl From<String> for CmdError {
+impl From<String> for CommonError {
     fn from(error: String) -> Self {
-        CmdError::Other(error)
+        CommonError::Other(error)
     }
 }
 
-impl From<&str> for CmdError {
+impl From<&str> for CommonError {
     fn from(error: &str) -> Self {
-        CmdError::Other(error.to_string())
+        CommonError::Other(error.to_string())
     }
 } 

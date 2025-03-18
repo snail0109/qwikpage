@@ -6,7 +6,7 @@ mod utils;
 use std::path::PathBuf;
 
 use config::{ExportType, GeneratorConfig};
-use crate::{error::{CmdError, Result}, models::{config::Config, project::Project}};
+use crate::{error::{CommonError, Result}, models::{config::Config, project::Project}};
 use generators::{vue::VueGenerator, Generator};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
@@ -35,7 +35,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     let page_len = page_list.len();
     if page_len == 0 {
         info!("项目没有页面，导出结束");
-        return Err(CmdError::NoPages);
+        return Err(CommonError::NoPages);
     }
 
     // 创建代码存放目录
@@ -66,7 +66,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     info!("开始下载模板...");
     // generator.download_template(&config).await.map_err(|e| {
     //     error!("下载模板失败: {}", e);
-    //     CmdError::DownloadError(e.to_string())
+    //     CommonError::DownloadError(e.to_string())
     // })?;
     info!("模板下载成功");
 
@@ -76,13 +76,13 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         .await
         .map_err(|e| {
             error!("导出代码失败: {}", e);
-            CmdError::ExportError(e.to_string())
+            CommonError::ExportError(e.to_string())
         })?;
 
     // 导出资源
     generator.export_resources(&config).await.map_err(|e| {
         error!("导出资源文件失败: {}", e);
-        CmdError::ExportError(e.to_string())
+        CommonError::ExportError(e.to_string())
     })?;
 
     // 打开文件目录
@@ -90,7 +90,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         .open_path(project_export_path.to_string_lossy().to_string(), None::<&str>)
         .map_err(|e| {
             error!("打开文件目录失败: {}", e);
-            CmdError::Other(e.to_string())
+            CommonError::Other(e.to_string())
         })?;
 
     info!("======代码导出完成========");

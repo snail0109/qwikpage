@@ -1,4 +1,4 @@
-use crate::commands::cmd_response::CmdResponse;
+use crate::services::cmd_response::CmdResponse;
 use crate::models::project::{
     get_project_list_inner, Project, ProjectAddParams, ProjectList, add_project_inner, ProjectUpdateParams
 };
