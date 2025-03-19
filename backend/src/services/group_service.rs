@@ -5,6 +5,7 @@ use crate::models::{
     config::Config,
     group::{GroupConfig, GroupList},
 };
+use log;
 
 // 查询所有分组信息
 #[command]
@@ -17,7 +18,7 @@ pub fn load_groups() -> CmdResponse<GroupConfig> {
 #[command]
 pub fn load_groups_with_projects(keyword: Option<String>) -> CmdResponse<GroupList> {
     let config = Config::global();
-    println!("project_path: {}", config.preferences().project_path);
+    log::debug!("project_path: {}", config.preferences().project_path);
     match GroupConfig::load() {
         Ok(config) => {
             let res = config.get_project_details(keyword);

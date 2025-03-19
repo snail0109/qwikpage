@@ -325,14 +325,6 @@ impl ResourceConfig {
         Ok(new_file_path)
     }
 
-    // 获取项目资源根目录
-    pub async fn get_res_root_path(project_id: &String) -> Result<PathBuf, Error> {
-        let root_dir = get_project_root_path();
-        let prj_res_dir =
-            create_directory_if_not_exists(root_dir.join(project_id).join("resources")).await?;
-        Ok(prj_res_dir)
-    }
-
     // 删除项目logo
     pub async fn delete_project_logo(path: String) -> Result<(), Error> {
         let file_path = PathBuf::from(path);

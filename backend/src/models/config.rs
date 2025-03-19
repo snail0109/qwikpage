@@ -30,11 +30,5 @@ impl Config {
         let mut prefs = self.preferences.write().unwrap();
         updater(&mut prefs);
     }
-
-    pub fn reload(&self) {
-        let new_prefs = Preferences::load();
-        let mut prefs = self.preferences.write().unwrap();
-        *prefs = new_prefs;
-    }
     
 }

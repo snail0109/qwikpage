@@ -1,13 +1,10 @@
 mod config;
-mod generators;
-mod templates;
 mod utils;
 
 use std::path::PathBuf;
 
-use config::{ExportType, GeneratorConfig};
-use crate::{error::{CommonError, Result}, models::{config::Config, project::Project}};
-use generators::{vue::VueGenerator, Generator};
+use config::ExportType;
+use crate::{error::{CommonError, Result}, models::project::Project};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
@@ -46,21 +43,21 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     async_fs::create_dir_all(&project_export_path).await?;
 
     // 创建生成器配置
-    let template_url = params.export_type.get_template_url();
-    let config_path = Config::global().preferences().get_project_path();
-    let resource_dir =config_path.join(&params.project_id).join("resources");
+    // let template_url = params.export_type.get_template_url();
+    // let config_path = Config::global().preferences().get_project_path();
+    // let resource_dir =config_path.join(&params.project_id).join("resources");
 
-    let config = GeneratorConfig::new(
-        params.project_id.clone(),
-        project_export_path.clone(),
-        template_url,
-        resource_dir,
-    );
+    // let config = GeneratorConfig::new(
+    //     params.project_id.clone(),
+    //     project_export_path.clone(),
+    //     template_url,
+    //     resource_dir,
+    // );
 
     // 根据导出类型选择对应的生成器
-    let generator = match params.export_type {
-        ExportType::Vue => Generator::Vue(VueGenerator),
-    };
+    // let generator = match params.export_type {
+    //     ExportType::Vue => Generator::Vue(VueGenerator),
+    // };
 
     // 下载模板
     info!("开始下载模板...");
@@ -71,19 +68,19 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     info!("模板下载成功");
 
     // 导出代码
-    generator
-        .export_code(&config, page_list)
-        .await
-        .map_err(|e| {
-            error!("导出代码失败: {}", e);
-            CommonError::ExportError(e.to_string())
-        })?;
+    // generator
+    //     .export_code(&config, page_list)
+    //     .await
+    //     .map_err(|e| {
+    //         error!("导出代码失败: {}", e);
+    //         CommonError::ExportError(e.to_string())
+    //     })?;
 
     // 导出资源
-    generator.export_resources(&config).await.map_err(|e| {
-        error!("导出资源文件失败: {}", e);
-        CommonError::ExportError(e.to_string())
-    })?;
+    // generator.export_resources(&config).await.map_err(|e| {
+    //     error!("导出资源文件失败: {}", e);
+    //     CommonError::ExportError(e.to_string())
+    // })?;
 
     // 打开文件目录
     app.opener()

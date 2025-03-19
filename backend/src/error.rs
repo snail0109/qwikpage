@@ -9,8 +9,8 @@ pub enum CommonError {
     #[error("下载模板失败: {0} 请关闭代理",)]
     DownloadError(String),
 
-    #[error("导出错误: {0}")]
-    ExportError(String),
+    // #[error("导出错误: {0}")]
+    // ExportError(String),
 
     #[error("项目没有页面")]
     NoPages,
@@ -23,18 +23,6 @@ pub enum CommonError {
 
     #[error("HTTP请求错误: {0}")]
     HttpError(#[from] reqwest::Error),
-
-    #[error("模板处理错误: {0}")]
-    TemplateError(String),
-
-    #[error("组件生成错误: {0}")]
-    ComponentError(String),
-
-    #[error("配置错误: {0}")]
-    ConfigError(String),
-
-    #[error("资源错误: {0}")]
-    ResourceError(String),
 
     #[error("其他错误: {0}")]
     Other(String),

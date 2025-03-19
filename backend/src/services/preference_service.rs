@@ -26,7 +26,9 @@ pub fn set_preferences(preferences: Preferences) -> Result<(), String> {
 pub fn restore_preferences() -> Result<(), String> {
     let config = Config::global();
     let mut new_prefs = config.preferences().clone();
-    new_prefs.set_preferences(Preferences::default());
+    new_prefs.set_preferences(Preferences::default()).map_err(|e|
+        format!("Failed to restore preferences: {}", e)
+    )?;
     log::info!("Preferences updated successfully");
     Ok(())
 }

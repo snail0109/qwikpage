@@ -253,7 +253,7 @@ impl Page {
             page.page_data = page_data;
         }
         page.updated_at = get_current_time();
-        page.save(page_file);
+        page.save(page_file).map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(true)
     }
@@ -276,7 +276,7 @@ impl Page {
             Some(source_page.page_data),
             params.project_id.clone(),
         );
-        page.save(new_page_file);
+        page.save(new_page_file).map_err(|e| anyhow::anyhow!(e.to_string()))?;
         Ok(new_page_id)
     }
 

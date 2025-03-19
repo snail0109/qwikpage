@@ -1,20 +1,23 @@
 mod code_generator;
-mod services;
 mod error;
 mod models;
+mod services;
 mod types;
 mod utils;
 
 use crate::{
-    services::{code_service, group_service, page_service, preference_service, project_service, resource_service, preview_service, sys_service},
+    services::{
+        code_service, group_service, page_service, preference_service, preview_service,
+        project_service, resource_service, sys_service,
+    },
     utils::{check_port_occupied, dirs::get_config_path, setup},
 };
-use log::{error, info};
+use log;
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
-use tauri_plugin_log::{Target, TargetKind};
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 // #[cfg(target_os = "windows")]
 // use {
@@ -76,7 +79,14 @@ pub fn run() {
                     }),
                     Target::new(TargetKind::Webview),
                 ])
-                .level(log::LevelFilter::Debug)
+                .level(if is_dev() {
+                    log::LevelFilter::Trace
+                } else {
+                    log::LevelFilter::Info
+                })
+                .with_colors(ColoredLevelConfig::default())
+                .max_file_size(50000)
+                // .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 .build(),
         )
         .plugin(tauri_plugin_os::init())
@@ -85,7 +95,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
-            info!("============== Start App ==============");
+            log::trace!("Start QwikPage Application");
             // 全局 AppHandle 实例
             APP.get_or_init(|| app.handle().clone());
             let mut win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
@@ -113,14 +123,15 @@ pub fn run() {
             win_builder.build().unwrap();
 
             // Init Config
-            info!("Init App Config Store");
+            log::trace!("Init App Config Store");
             setup::init(app)?;
 
+            log::trace!("Init Preview Service");
             // 初始化 rocket 服务，用于项目页面预览
             let handle = app.handle().clone();
             let port = 8789;
             if check_port_occupied(port) {
-                error!("Port {} is already in use", port);
+                log::error!("Port {} is already in use", port);
             } else {
                 tauri::async_runtime::spawn(async move {
                     let rocket = preview_service::configure_rocket(handle);
@@ -176,4 +187,15 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
+}
+
+fn is_dev() -> bool {
+    #[cfg(dev)]
+    {
+        return true;
+    }
+    #[cfg(not(dev))]
+    {
+        return false;
+    }
 }

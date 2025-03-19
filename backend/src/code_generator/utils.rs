@@ -13,6 +13,7 @@ use tokio::fs as async_fs;
 use crate::error::{CommonError, Result};
 
 // 将 JSON 值转换为 JavaScript 表示的字符串
+#[allow(unused)]
 pub fn value_to_js(v: &Value) -> String {
     match v {
         Value::Null => "null".to_string(),
@@ -34,6 +35,7 @@ pub fn value_to_js(v: &Value) -> String {
 }
 
 // 转义字符串中的特殊字符
+#[allow(unused)]
 pub fn escape_string(s: &str) -> String {
     s.replace('\\', "\\\\")
         .replace('"', "\\\"")
@@ -43,6 +45,7 @@ pub fn escape_string(s: &str) -> String {
 }
 
 /// 创建目录（如果不存在）
+#[allow(unused)]
 pub async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
     if !path.exists() {
         async_fs::create_dir_all(path)
@@ -53,6 +56,7 @@ pub async fn create_dir_if_not_exists(path: &Path) -> Result<()> {
 }
 
 /// 写入文件
+#[allow(unused)]
 pub async fn write_file(path: PathBuf, content: &str) -> Result<()> {
     async_fs::write(&path, content)
         .await
@@ -60,6 +64,7 @@ pub async fn write_file(path: PathBuf, content: &str) -> Result<()> {
 }
 
 /// 读取文件（如果存在）
+#[allow(unused)]
 pub async fn read_file_if_exists(path: &Path) -> Result<String> {
     match async_fs::read_to_string(path).await {
         Ok(c) => Ok(c),
@@ -69,6 +74,7 @@ pub async fn read_file_if_exists(path: &Path) -> Result<String> {
 }
 
 /// 更新配置文件
+#[allow(unused)]
 pub async fn update_config_file(path: PathBuf, marker: &str, content: &str) -> Result<()> {
     let original = read_file_if_exists(&path).await?;
     let updated = original.replace(marker, &format!("{}\n", content));
@@ -76,6 +82,7 @@ pub async fn update_config_file(path: PathBuf, marker: &str, content: &str) -> R
 }
 
 /// 递归复制目录
+#[allow(unused)]
 pub fn copy_directory_recursive(
     source_dir: &PathBuf,
     target_dir: &PathBuf,
@@ -122,6 +129,7 @@ pub fn copy_directory_recursive(
 }
 
 /// 导出资源文件
+#[allow(unused)]
 pub async fn export_resources(
     project_id: &str,
     code_dir: &PathBuf,
@@ -178,6 +186,7 @@ pub async fn export_resources(
 }
 
 /// 处理页面数据，替换资源路径
+#[allow(unused)]
 pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
     info!("process_page_data...");
     let resource_path =  Config::global().preferences().get_project_path().join(project_id);
@@ -201,6 +210,7 @@ pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageConten
 }
 
 /// 替换模板中的变量
+#[allow(unused)]
 pub fn replace_template(template: &str, replacements: &HashMap<&str, impl AsRef<str>>) -> String {
     let mut result = template.to_string();
     for (key, value) in replacements {
@@ -210,6 +220,7 @@ pub fn replace_template(template: &str, replacements: &HashMap<&str, impl AsRef<
 }
 
 /// 下载并解压模板文件
+#[allow(unused)]
 pub async fn download_template(template_url: &str, output_dir: &PathBuf) -> Result<()> {
     // 下载代码模板
     let template_path = output_dir.join("template.zip");
@@ -248,6 +259,7 @@ pub async fn download_template(template_url: &str, output_dir: &PathBuf) -> Resu
 }
 
 /// 解压文件
+#[allow(unused)]
 fn extract_archive(
     archive: &mut zip::ZipArchive<std::fs::File>,
     output_dir: &PathBuf,
