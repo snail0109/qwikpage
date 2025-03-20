@@ -37,6 +37,7 @@ pub async fn restart_app(app: AppHandle){
   app.restart();
 }
 
+// 重启应用
 #[command]
 pub fn restart_application<R: Runtime>(app_handle: AppHandle<R>) {
   let env = app_handle.env();

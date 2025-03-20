@@ -47,6 +47,7 @@ pub fn format_file_size(size: u64) -> String {
 }
 
 
+// 写入 JSON 文件
 pub fn write_json_file<T: Serialize>(path: &PathBuf, data: &T) -> Result<(), Error> {
     let json_str = serde_json::to_string_pretty(data)?;
     let path_str = path.as_os_str().to_string_lossy().to_string();
@@ -54,7 +55,7 @@ pub fn write_json_file<T: Serialize>(path: &PathBuf, data: &T) -> Result<(), Err
         .with_context(|| format!("failed to save file \"{path_str}\""))
 }
 
-// 
+// 读取 JSON 文件
 pub fn read_json_file<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
     let contents = fs::read_to_string(path)?;
     let value = serde_json::from_str(&contents)?;
