@@ -182,7 +182,6 @@ pub fn run() {
             sys_service::open_target_folder,
             sys_service::get_system_fonts,
             sys_service::open_preferences,
-            sys_service::restart_app,
             sys_service::restart_application,
         ])
         .run(tauri::generate_context!())

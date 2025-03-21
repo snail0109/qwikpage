@@ -5,7 +5,7 @@ use std::path::Path;
 use std::{fs, io};
 
 use crate::utils::datetime::get_current_time;
-use crate::utils::dirs::{get_default_build_path, PAGE_DIR};
+use crate::utils::dirs::{get_default_build_path};
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 
@@ -234,7 +234,7 @@ impl Project {
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
         let root_dir = &Config::global().preferences().get_project_path();
-        let page_dir = root_dir.join(&project_id).join(PAGE_DIR);
+        let page_dir = root_dir.join(&project_id).join("pages");
         // 目录不存在则返回 0
         if !page_dir.exists() {
             return 0;

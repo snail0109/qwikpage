@@ -15,6 +15,7 @@ use tauri::{AppHandle, Manager};
 
 #[catch(404)]
 pub async fn not_found(req: &Request<'_>) -> Option<NamedFile> {
+    log::info!("404: {:?}", req.uri());
     let handle = req.guard::<&State<AppHandle>>().await.unwrap();
     let resource_dir = handle
         .path()
@@ -26,6 +27,7 @@ pub async fn not_found(req: &Request<'_>) -> Option<NamedFile> {
 
 #[catch(500)]
 pub async fn internal_error(req: &Request<'_>) -> Option<NamedFile> {
+    log::error!("Internal server error");
     let handle = req.guard::<&State<AppHandle>>().await.unwrap();
     let resource_dir = handle
         .path()
@@ -36,6 +38,7 @@ pub async fn internal_error(req: &Request<'_>) -> Option<NamedFile> {
 }
 
 pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Build> {
+    log::info!("configure_rocket");
     let resource_dir = handle
         .path()
         .resource_dir()
@@ -68,6 +71,7 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
 // 获取项目详情
 #[get("/project/detail/<id>")]
 pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
+    log::debug!("get_project_detail: id: {}", id);
     match Project::load(id) {
         Ok(project) => Ok(Json(project)),
         Err(_) => Err(Status::InternalServerError),
@@ -78,6 +82,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 // 获取页面详情
 #[get("/page/detail/id/<project_id>/<id>")]
 pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
+    log::debug!("get_page_detail: project_id: {}, id: {}", project_id, id);
     match Page::get_page_detail_with_id(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
@@ -87,6 +92,7 @@ pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Stat
 // 获取页面详情
 #[get("/page/detail/<project_id>/<path>")]
 pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Json<Page>, Status> {
+    log::debug!("get_page_detail_with_path: project_id: {}, path: {}", project_id, path);
     match Page::get_page_detail_with_path(project_id, path) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),

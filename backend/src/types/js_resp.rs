@@ -2,7 +2,7 @@ use serde::Serialize;
 use std::fmt::Debug;
 
 #[derive(Serialize)]
-pub struct CmdResponse<D>
+pub struct JSResp<D>
 where
     D: Serialize,
 {
@@ -11,19 +11,19 @@ where
 	success: bool,
 }
 
-impl<D, E> From<Result<D, E>> for CmdResponse<D>
+impl<D, E> From<Result<D, E>> for JSResp<D>
 where
     D: Serialize,
     E: Debug,
 {
     fn from(res: Result<D, E>) -> Self {
         match res {
-            Ok(data) => CmdResponse {
+            Ok(data) => JSResp {
                 message: None,
                 data: Some(data),
 				success: true
             },
-            Err(err) => CmdResponse {
+            Err(err) => JSResp {
                 message: Some(format!("{:?}", err)),
                 data: None,
 				success: false

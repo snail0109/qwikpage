@@ -1,6 +1,5 @@
 use crate::models::response::ErrorResponse;
 use crate::utils::datetime::get_current_time;
-use crate::utils::dirs::PAGE_DIR;
 use crate::utils::file::is_valid_file;
 use crate::utils::{paginate};
 use anyhow::Error;
@@ -123,7 +122,7 @@ impl Page {
 
     pub fn get_page_dir(project_id: &String) -> PathBuf {
         let root_dir = &Config::global().preferences().get_project_path();
-        let page_dir: PathBuf = root_dir.join(project_id).join(PAGE_DIR);
+        let page_dir: PathBuf = root_dir.join(project_id).join("pages");
         page_dir
     }
 

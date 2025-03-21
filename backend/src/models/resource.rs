@@ -5,7 +5,7 @@ use sanitize_filename::sanitize;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::file::format_file_size;
-use crate::utils::datetime::format_system_time;
+use crate::utils::datetime::format_resource_system_time;
 use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};
@@ -147,7 +147,7 @@ impl ResourceConfig {
                             .to_string_lossy()
                             .to_string(),
                         // 返回目录操作时间
-                        last_modified_time: format_system_time(
+                        last_modified_time: format_resource_system_time(
                             dir_entry.path().metadata().unwrap().modified().unwrap(),
                         ),
                         file_size: Some(format_file_size(
@@ -159,7 +159,7 @@ impl ResourceConfig {
                 resource_groups.push(ResourceGroupInfo {
                     name: entry.file_name().to_string_lossy().to_string(),
                     path: entry.path().to_string_lossy().to_string(),
-                    last_modified_time: format_system_time(
+                    last_modified_time: format_resource_system_time(
                         entry.path().metadata().unwrap().modified().unwrap(),
                     ),
                     resources,
@@ -278,7 +278,7 @@ impl ResourceConfig {
     // 添加项目临时logo资源
     pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, Error> {
         // 构建项目资源目录路径
-        let root_dir = get_project_root_path().join("project_logo");
+        let root_dir = Config::global().preferences().get_project_path().join("project_logo");
         // temp_res_dir 拼接当前时间戳
         let timestamp = Utc::now().timestamp();
         let temp_res_dir = root_dir.join(timestamp.to_string());
@@ -343,7 +343,7 @@ async fn get_res_type_root_dir(
     project_id: &String,
     resource_type: &ResourceType,
 ) -> Result<PathBuf, Error> {
-    let root_dir = get_project_root_path();
+    let root_dir = Config::global().preferences().get_project_path();
     let prj_res_dir =
         create_directory_if_not_exists(root_dir.join(project_id).join("resources")).await?;
     let res_root_dir =
@@ -351,10 +351,6 @@ async fn get_res_type_root_dir(
     Ok(res_root_dir)
 }
 
-// 获取项目根路径
-fn get_project_root_path() -> PathBuf {
-    Config::global().preferences().get_project_path()
-}
 
 // 创建目录
 async fn create_directory_if_not_exists(path: PathBuf) -> Result<PathBuf, Error> {

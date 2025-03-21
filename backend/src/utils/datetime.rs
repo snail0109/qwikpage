@@ -10,8 +10,8 @@ pub fn get_current_time() -> String {
     Local::now().format(DATE_FORMAT).to_string()
 }
 
-// 格式化时间
-pub fn format_system_time(system_time: SystemTime) -> String {
+// 格式化本地文件修改和操作时间，用于资源管理前端界面显示
+pub fn format_resource_system_time(system_time: SystemTime) -> String {
     let datetime: DateTime<Local> = system_time.into();
     datetime.format(RESOURCE_DATE_FORMAT).to_string()
 }
