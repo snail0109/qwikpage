@@ -1,30 +1,19 @@
-use std::path::PathBuf;
-
 use anyhow::Error;
 use log::{error, info};
-use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
-use crate::utils::{
-    dirs::{app_preferences_path, get_default_code_path},
-    file::{read_json_file, write_json_file},
+use crate::{
+    types::preferences::Preferences,
+    utils::{
+        dirs::{app_preferences_path, get_default_code_path},
+        file::{read_json_file, write_json_file},
+    },
 };
 
 use super::config::Config;
 
 const DEFAULT_FONT_SIZE: u32 = 12;
 const DEFAULT_FONT_BOLD: &str = "normal";
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct Preferences {
-    pub theme: String,        // 主题
-    pub language: String,     // 语言
-    pub font_size: u32,       // 字体大小
-    pub font_bold: String,    // 是否粗体
-    pub font_family: String,  // 字体
-    pub check_update: bool,   // 自动更新
-    pub project_path: String, // DSL代码目录
-}
 
 impl Default for Preferences {
     fn default() -> Self {

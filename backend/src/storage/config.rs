@@ -1,8 +1,6 @@
 use std::sync::{RwLock, RwLockReadGuard};
-
 use once_cell::sync::OnceCell;
-
-use super::preferences::Preferences;
+use crate::types::preferences::Preferences;
 
 pub struct Config {
     preferences: RwLock<Preferences>,

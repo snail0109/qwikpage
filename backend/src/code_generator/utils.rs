@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::storage::{config::Config, page::PageContent};
+use crate::{storage::config::Config, types::page::PageContent};
 use futures::future::BoxFuture;
 use log::info;
 use reqwest;
@@ -101,11 +101,7 @@ pub fn copy_directory_recursive(
             .await
             .map_err(|e| CommonError::Io(e))?;
 
-        while let Some(entry) = entries
-            .next_entry()
-            .await
-            .map_err(|e| CommonError::Io(e))?
-        {
+        while let Some(entry) = entries.next_entry().await.map_err(|e| CommonError::Io(e))? {
             let source_path = entry.path();
             let file_name = entry
                 .file_name()
@@ -159,11 +155,7 @@ pub async fn export_resources(
         .map_err(|e| CommonError::Io(e))?;
 
     // 复制目录内容
-    while let Some(entry) = entries
-        .next_entry()
-        .await
-        .map_err(|e| CommonError::Io(e))?
-    {
+    while let Some(entry) = entries.next_entry().await.map_err(|e| CommonError::Io(e))? {
         let source_path = entry.path();
         let file_name = entry
             .file_name()
@@ -189,7 +181,10 @@ pub async fn export_resources(
 #[allow(unused)]
 pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
     info!("process_page_data...");
-    let resource_path =  Config::global().preferences().get_project_path().join(project_id);
+    let resource_path = Config::global()
+        .preferences()
+        .get_project_path()
+        .join(project_id);
     let resource_path_str = resource_path.to_str().unwrap_or("");
 
     // 如果 page_data 为空，返回一个空的PageContent

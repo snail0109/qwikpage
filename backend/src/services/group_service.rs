@@ -1,6 +1,6 @@
 use tauri::command;
 
-use crate::{storage::group::{GroupConfig, GroupList}, types::js_resp::JSResp};
+use crate::types::{group::{GroupConfig, GroupList}, js_resp::JSResp};
 use log;
 
 // 查询所有分组信息

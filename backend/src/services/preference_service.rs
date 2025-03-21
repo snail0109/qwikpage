@@ -1,4 +1,4 @@
-use crate::storage::{config::Config, preferences::Preferences};
+use crate::{storage::config::Config, types::preferences::Preferences};
 use log;
 use tauri::command;
 

@@ -1,103 +1,16 @@
 use crate::storage::response::ErrorResponse;
+use crate::types::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::utils::datetime::get_current_time;
 use crate::utils::file::is_valid_file;
-use crate::utils::{paginate};
+use crate::utils::paginate;
 use anyhow::Error;
 use log::{error, info, warn};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::collections::HashMap;
 use std::fs;
 use std::io::{self, ErrorKind};
 use std::path::PathBuf;
 use uuid::Uuid;
 
-use crate::types::interceptor::Interceptor;
-
 use super::config::Config;
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Element {
-    pub id: String,
-    #[serde(rename = "parentId")]
-    pub parent_id: Option<String>,
-    #[serde(rename = "type")]
-    pub type_name: String,
-    pub name: String,
-    pub elements: Vec<Element>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct ElementConfig {
-    pub id: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct ElementObj {
-    pub config: Value,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct PageContent {
-    pub elements: Vec<Element>,
-    #[serde(rename = "elementsMap")]
-    pub elements_map: HashMap<String, ElementObj>,
-    pub apis: HashMap<Uuid, Value>,
-    pub interceptor: Option<Interceptor>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Page {
-    pub id: String,
-    pub name: String,           // 页面名称
-    pub path: Option<String>,   // 页面路由
-    pub remark: Option<String>, // 页面描述
-    pub page_data: String,
-    pub created_at: String,
-    pub updated_at: String,
-    pub project_id: String, // 保留冗余，方便查询
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct PageList {
-    pub list: Vec<Page>,
-    pub total: usize,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct PageAddParams {
-    name: String,
-    path: Option<String>,
-    remark: Option<String>,
-    #[serde(rename = "pageData")]
-    page_data: Option<String>,
-    #[serde(rename = "projectId")]
-    project_id: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct PageUpdateParams {
-    id: String,
-    name: Option<String>,
-    path: Option<String>,
-    remark: Option<String>,
-    #[serde(rename = "pageData")]
-    page_data: Option<String>,
-    #[serde(rename = "projectId")]
-    project_id: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct PageCopyParams {
-    id: String,
-    name: String,
-    path: Option<String>,
-    remark: Option<String>,
-    #[serde(rename = "projectId")]
-    project_id: String,
-}
 
 impl Page {
     pub fn new(
@@ -227,7 +140,8 @@ impl Page {
             params.project_id,
         );
         let page_file = page_dir.join(format!("{}.json", page_id.clone()));
-        page.save(page_file).map_err(|e| format!("保存页面失败: {}", e))?;
+        page.save(page_file)
+            .map_err(|e| format!("保存页面失败: {}", e))?;
         Ok(page)
     }
 
@@ -252,7 +166,8 @@ impl Page {
             page.page_data = page_data;
         }
         page.updated_at = get_current_time();
-        page.save(page_file).map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        page.save(page_file)
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(true)
     }
@@ -275,7 +190,8 @@ impl Page {
             Some(source_page.page_data),
             params.project_id.clone(),
         );
-        page.save(new_page_file).map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        page.save(new_page_file)
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         Ok(new_page_id)
     }
 
@@ -291,8 +207,10 @@ impl Page {
         Ok(page)
     }
 
-
-    pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Page, ErrorResponse> {
+    pub fn get_page_detail_with_path(
+        project_id: String,
+        path: String,
+    ) -> Result<Page, ErrorResponse> {
         info!(
             "Page::get_page_detail_with_path start, project_id: {:?}, path: {}",
             project_id, path
@@ -322,5 +240,4 @@ impl Page {
             effective_path
         )))
     }
-    
 }

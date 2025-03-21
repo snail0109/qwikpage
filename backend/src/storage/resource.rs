@@ -2,105 +2,19 @@ use anyhow::{Context, Error};
 use chrono::Utc;
 use log::info;
 use sanitize_filename::sanitize;
-use serde::{Deserialize, Serialize};
 
-use crate::utils::file::format_file_size;
+use crate::types::resource::{
+    DeleteResource, OperResourceGroupParams, RenameResource, ResourceGroupInfo, ResourceInfo,
+    ResourceType, UploadParams, UploadResourceParams,
+};
 use crate::utils::datetime::format_resource_system_time;
+use crate::{types::resource::ResourceQueryParams, utils::file::format_file_size};
 use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};
 use tokio::fs::{create_dir_all, read_dir, remove_dir_all, rename};
 
 use super::config::Config;
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "snake_case")]
-pub enum ResourceType {
-    Img,
-    Font,
-    Js,
-    Attachment,
-    Other,
-}
-
-impl ResourceType {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            ResourceType::Img => "img",
-            ResourceType::Font => "font",
-            ResourceType::Js => "js",
-            ResourceType::Attachment => "attachment",
-            ResourceType::Other => "other",
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ResourceQueryParams {
-    pub project_id: String,
-    pub resource_type: ResourceType,
-    pub keyword: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct OperResourceGroupParams {
-    pub project_id: String,
-    pub resource_type: ResourceType,
-    pub group_name: String,
-    pub new_group_name: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct UploadParams {
-    pub project_id: String,
-    pub resource_type: ResourceType,
-    pub group_name: String,
-    pub file_list: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ResourceInfo {
-    pub name: String,
-    pub path: String,
-    pub file_type: String,
-    pub last_modified_time: String,
-    pub file_size: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ResourceGroupInfo {
-    pub name: String,
-    pub path: String,
-    pub last_modified_time: String,
-    pub resources: Vec<ResourceInfo>,
-    // 默认分组
-    pub default_group: bool,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RenameResource {
-    pub project_id: String,
-    pub resource_type: ResourceType,
-    pub group_name: String,
-    pub resource_name: String,
-    pub new_resource_name: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-
-pub struct DeleteResource {
-    pub project_id: String,
-    pub resource_type: ResourceType,
-    pub group_name: String,
-    pub resource_name: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct UploadResourceParams {
-    // 原始文件本地路径
-    pub file_path: String,
-    pub old_file_path: Option<String>,
-}
 
 pub struct ResourceConfig {}
 
@@ -278,7 +192,10 @@ impl ResourceConfig {
     // 添加项目临时logo资源
     pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, Error> {
         // 构建项目资源目录路径
-        let root_dir = Config::global().preferences().get_project_path().join("project_logo");
+        let root_dir = Config::global()
+            .preferences()
+            .get_project_path()
+            .join("project_logo");
         // temp_res_dir 拼接当前时间戳
         let timestamp = Utc::now().timestamp();
         let temp_res_dir = root_dir.join(timestamp.to_string());
@@ -354,7 +271,6 @@ async fn get_res_type_root_dir(
         create_directory_if_not_exists(prj_res_dir.join(resource_type.as_str())).await?;
     Ok(res_root_dir)
 }
-
 
 // 创建目录
 async fn create_directory_if_not_exists(path: PathBuf) -> Result<PathBuf, Error> {

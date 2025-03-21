@@ -1,44 +1,14 @@
 use anyhow::Error;
 use log::info;
-use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
 use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
-use crate::storage::project::Project;
+use crate::types::group::{Group, GroupConfig, GroupDetail, GroupList};
+use crate::types::project::Project;
 use crate::utils::datetime::get_current_time;
 use crate::utils::dirs::get_config_path;
-
-use super::project::ProjectSummary;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Group {
-    pub id: String,
-    pub name: String,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub projects: Option<Vec<String>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GroupConfig {
-    pub groups: Vec<Group>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GroupDetail {
-    pub id: String,
-    pub name: String,
-    pub created_at: String,
-    pub updated_at: String,
-    pub projects: Option<Vec<ProjectSummary>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GroupList {
-    pub groups: Vec<GroupDetail>,
-}
 
 fn default_group() -> Group {
     Group {

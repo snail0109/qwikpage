@@ -1,138 +1,20 @@
 use anyhow::Error;
 use log::{error, info};
-use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::{fs, io};
 
+use crate::types::group::GroupConfig;
+use crate::types::project::{MenuMode, MenuThemeColor, Project, ProjectAddParams, ProjectLayout, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::datetime::get_current_time;
-use crate::utils::dirs::{get_default_build_path};
+use crate::utils::dirs::get_default_build_path;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 
 use super::config::Config;
-use super::group::GroupConfig;
 use super::resource::ResourceConfig;
-
-// 系统布局
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum ProjectLayout {
-    LeftRight,
-    TopBottom,
-}
-
-impl ProjectLayout {
-    pub fn to_value(&self) -> u32 {
-        match self {
-            ProjectLayout::LeftRight => 1,
-            ProjectLayout::TopBottom => 2,
-        }
-    }
-}
-
-// 菜单模式
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum MenuMode {
-    // 垂直水平内嵌
-    Vertical,
-    Horizontal,
-    Inline,
-}
-
-impl MenuMode {
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            MenuMode::Vertical => "vertical",
-            MenuMode::Horizontal => "horizontal",
-            MenuMode::Inline => "inline",
-        }
-    }
-}
-
-// 菜单主题
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum MenuThemeColor {
-    Dark,
-    Light,
-}
-
-impl MenuThemeColor {
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            MenuThemeColor::Dark => "dark",
-            MenuThemeColor::Light => "light",
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct Project {
-    pub id: String,                         // 项目唯一标识
-    pub group_id: String,                   // 项目分组唯一标识
-    pub name: String,                       // 项目名称
-    pub remark: Option<String>,             // 项目备注（可选）
-    pub logo: String,                       // 项目 logo 的 URL（可选）
-    pub theme_color: String,                // 项目主题色
-    pub layout: u32,                        // 系统布局 1 2
-    pub menu_mode: String,                  // 菜单模式
-    pub menu_theme_color: String,           // 菜单主题
-    pub breadcrumb: bool,                   // 是否显示面包屑导航
-    pub tag: bool,                          // 是否显示标签页
-    pub footer: bool,                       // 是否显示页脚
-    pub system_theme_color: Option<String>, // 系统主题颜色
-    pub created_at: String,
-    pub updated_at: String,
-    pub code_export_path: String,   // 代码导出路径
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ProjectUpdateParams {
-    pub id: String,
-    pub name: String,                       // 项目名称
-    pub remark: Option<String>,                     // 项目备注（可选）
-    pub layout: u32,                        // 系统布局 1 2
-    pub theme_color: String,                // 项目主题
-    pub menu_mode: String,                  // 菜单模式
-    pub menu_theme_color: String,           // 菜单主题
-    pub breadcrumb: bool,                   // 是否显示面包屑导航
-    pub tag: bool,                          // 是否显示标签页
-    pub footer: bool,                       // 是否显示页脚
-    pub system_theme_color: Option<String>, // 系统主题
-    pub logo: Option<String>, // 系统主题
-    pub code_export_path: String,   // 代码导出路径
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct ProjectSummary {
-    pub id: String,
-    pub name: String,
-    pub remark: Option<String>,
-    pub theme_color: String,
-    pub count: usize,
-    pub updated_at: String,
-    pub logo: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct ProjectList {
-    pub list: Vec<ProjectSummary>,
-    pub total: usize,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ProjectAddParams {
-    pub group_id: String,
-    pub name: String,
-    pub remark: Option<String>,
-    pub logo: String,
-    pub theme_color: String,
-}
 
 // 项目配置文件
 pub const PROJECT_CONFIG_FILE: &str = "project.json";
-
 
 impl Project {
     pub fn new(
@@ -178,9 +60,7 @@ impl Project {
 
     pub fn load(project_id: String) -> io::Result<Self> {
         let root_dir = &Config::global().preferences().get_project_path();
-        let project_file = root_dir
-            .join(project_id)
-            .join(PROJECT_CONFIG_FILE);
+        let project_file = root_dir.join(project_id).join(PROJECT_CONFIG_FILE);
         match fs::read_to_string(project_file) {
             Ok(data) => {
                 let project: Project = serde_json::from_str(&data).unwrap();
@@ -215,7 +95,11 @@ impl Project {
         }
     }
 
-    pub async fn delete(project_id: String, group_id: String, logo_url: String) -> Result<bool, Error> {
+    pub async fn delete(
+        project_id: String,
+        group_id: String,
+        logo_url: String,
+    ) -> Result<bool, Error> {
         let root_dir = &Config::global().preferences().get_project_path();
         let project_dir = root_dir.join(&project_id);
         tokio::fs::remove_dir_all(project_dir).await?;
@@ -255,12 +139,11 @@ impl Project {
         count
     }
 
-
     pub fn get_project_list_inner(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
         info!("Project::get_project_list start, keyword: {:?}", keyword);
         let root_dir = &Config::global().preferences().get_project_path();
         let mut project_list = Vec::new();
-    
+
         if let Ok(entries) = fs::read_dir(&root_dir) {
             for entry in entries {
                 if let Ok(entry) = entry {
@@ -276,8 +159,7 @@ impl Project {
                         if let Some(project) = load_project(&project_path) {
                             // 如果keyword传入了值，只返回匹配的项目
                             if let Some(keyword) = &keyword {
-                                if !project.name.contains(keyword)
-                                {
+                                if !project.name.contains(keyword) {
                                     continue;
                                 }
                             }
@@ -298,9 +180,7 @@ impl Project {
         }
         Ok(project_list)
     }
-    
 }
-
 
 // 加载项目详情信息
 fn load_project(project_path: &Path) -> Option<Project> {
@@ -323,7 +203,6 @@ fn load_project(project_path: &Path) -> Option<Project> {
         None
     }
 }
-
 
 pub fn get_project_list_inner(
     page_num: usize,
@@ -352,8 +231,7 @@ pub fn get_project_list_inner(
                     if let Some(project) = load_project(&project_path) {
                         // 如果keyword传入了值，只返回匹配的项目
                         if let Some(keyword) = &keyword {
-                            if !project.name.contains(keyword)
-                            {
+                            if !project.name.contains(keyword) {
                                 continue;
                             }
                         }

@@ -3,15 +3,13 @@ mod utils;
 
 use std::path::PathBuf;
 
+use crate::{error::{CommonError, Result}, types::{page::Page, project::Project}};
 use config::ExportType;
-use crate::{error::{CommonError, Result}, storage::project::Project};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
-
-use crate::storage::page::Page;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
@@ -23,7 +21,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     info!("======开始导出代码========");
 
     info!("查询项目 {:?} 页面信息", &params.project_id);
-    let project = Project::load(params.project_id.clone()).map_err(| e| {
+    let project = Project::load(params.project_id.clone()).map_err(|e| {
         error!("查询项目 {:?} 项目信息失败: {:?}", &params.project_id, e);
         e
     })?;
@@ -84,7 +82,10 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     // 打开文件目录
     app.opener()
-        .open_path(project_export_path.to_string_lossy().to_string(), None::<&str>)
+        .open_path(
+            project_export_path.to_string_lossy().to_string(),
+            None::<&str>,
+        )
         .map_err(|e| {
             error!("打开文件目录失败: {}", e);
             CommonError::Other(e.to_string())

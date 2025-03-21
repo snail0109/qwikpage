@@ -1,4 +1,3 @@
-use crate::storage::{page::Page, project::Project};
 use anyhow::Result;
 use rocket::Config;
 use rocket::{
@@ -12,6 +11,9 @@ use rocket::{
     Request, State,
 };
 use tauri::{AppHandle, Manager};
+
+use crate::types::page::Page;
+use crate::types::project::Project;
 
 #[catch(404)]
 pub async fn not_found(req: &Request<'_>) -> Option<NamedFile> {

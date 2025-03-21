@@ -1,6 +1,6 @@
-use crate::storage::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::storage::response::ErrorResponse;
 use crate::types::js_resp::JSResp;
+use crate::types::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use anyhow::Result;
 use tauri::command;
 

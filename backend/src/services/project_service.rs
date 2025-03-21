@@ -1,13 +1,12 @@
-use crate::storage::project::{
-    get_project_list_inner, Project, ProjectAddParams, ProjectList, add_project_inner, ProjectUpdateParams
-};
-use crate::storage::resource::{ResourceConfig, UploadResourceParams};
+use crate::storage::project::{add_project_inner, get_project_list_inner};
+use crate::storage::resource::ResourceConfig;
 use crate::types::js_resp::JSResp;
+use crate::types::project::{Project, ProjectAddParams, ProjectList, ProjectUpdateParams};
+use crate::types::resource::UploadResourceParams;
 use anyhow::Result;
 use log;
 use std::path::PathBuf;
 use tauri::command;
-
 
 // 获取项目列表
 #[command]
@@ -56,5 +55,5 @@ pub async fn delete_project(id: String, group_id: String, logo_url: String) -> J
 pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, String> {
     log::debug!("Project::upload_project_resource, params: {:#?}", params);
     let res = ResourceConfig::upload_project_resource(params);
-    res.await.map_err(| op | op.to_string())
+    res.await.map_err(|op| op.to_string())
 }
