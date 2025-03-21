@@ -1,5 +1,5 @@
-use crate::models::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
-use crate::models::response::ErrorResponse;
+use crate::storage::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
+use crate::storage::response::ErrorResponse;
 use crate::types::js_resp::JSResp;
 use anyhow::Result;
 use tauri::command;

@@ -2,7 +2,7 @@ use log;
 use tauri::command;
 
 use crate::{
-    models::resource::{
+    storage::resource::{
         DeleteResource, OperResourceGroupParams, RenameResource, ResourceConfig, ResourceGroupInfo,
         ResourceQueryParams, UploadParams,
     },

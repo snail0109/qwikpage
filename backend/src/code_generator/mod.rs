@@ -4,14 +4,14 @@ mod utils;
 use std::path::PathBuf;
 
 use config::ExportType;
-use crate::{error::{CommonError, Result}, models::project::Project};
+use crate::{error::{CommonError, Result}, storage::project::Project};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
 
-use crate::models::page::Page;
+use crate::storage::page::Page;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {

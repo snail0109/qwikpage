@@ -1,4 +1,4 @@
-use crate::models::{page::Page, project::Project};
+use crate::storage::{page::Page, project::Project};
 use anyhow::Result;
 use rocket::Config;
 use rocket::{

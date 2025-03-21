@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::models::{config::Config, page::PageContent};
+use crate::storage::{config::Config, page::PageContent};
 use futures::future::BoxFuture;
 use log::info;
 use reqwest;

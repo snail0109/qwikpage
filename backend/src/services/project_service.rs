@@ -1,7 +1,7 @@
-use crate::models::project::{
+use crate::storage::project::{
     get_project_list_inner, Project, ProjectAddParams, ProjectList, add_project_inner, ProjectUpdateParams
 };
-use crate::models::resource::{ResourceConfig, UploadResourceParams};
+use crate::storage::resource::{ResourceConfig, UploadResourceParams};
 use crate::types::js_resp::JSResp;
 use anyhow::Result;
 use log;

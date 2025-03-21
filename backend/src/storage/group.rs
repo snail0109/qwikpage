@@ -6,7 +6,7 @@ use std::fs;
 use std::io::{self, ErrorKind};
 use uuid::Uuid;
 
-use crate::models::project::Project;
+use crate::storage::project::Project;
 use crate::utils::datetime::get_current_time;
 use crate::utils::dirs::get_config_path;
 
