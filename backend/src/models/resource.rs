@@ -328,6 +328,10 @@ impl ResourceConfig {
     // 删除项目logo
     pub async fn delete_project_logo(path: String) -> Result<(), Error> {
         let file_path = PathBuf::from(path);
+        // 判断 file_path 是否存在
+        if !file_path.exists() {
+            return Ok(());
+        }
         if let Some(parent_dir) = file_path.parent() {
             // 删除目录
             tokio::fs::remove_dir_all(parent_dir)
