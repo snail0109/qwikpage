@@ -1,4 +1,4 @@
-use crate::storage::project::{add_project_inner, get_project_list_inner};
+use crate::storage::project::{add_project_inner, paginated_query_project_list};
 use crate::storage::resource::ResourceConfig;
 use crate::types::js_resp::JSResp;
 use crate::types::project::{Project, ProjectAddParams, ProjectList, ProjectUpdateParams};
@@ -8,6 +8,7 @@ use log;
 use std::path::PathBuf;
 use tauri::command;
 
+// TODO: 修改方法名
 // 获取项目列表
 #[command]
 pub fn get_project_list(
@@ -15,7 +16,7 @@ pub fn get_project_list(
     page_size: usize,
     keyword: Option<String>,
 ) -> Result<ProjectList, String> {
-    get_project_list_inner(page_num, page_size, keyword)
+    paginated_query_project_list(page_num, page_size, keyword)
 }
 
 // 获取项目详情

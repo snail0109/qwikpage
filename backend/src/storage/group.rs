@@ -24,6 +24,7 @@ impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
         let path = get_config_path().join("group.json");
+        log::info!("load group config from {}", path.display());
         if !path.exists() {
             let mut def_group = default_group();
             def_group.created_at = Some(get_current_time());
@@ -62,6 +63,7 @@ impl GroupConfig {
     /// 添加一个新分组
     pub fn add_group(&mut self, name: String) -> Result<String, Error> {
         let id = Uuid::new_v4().to_string();
+        log::info!("add group: {}", name);
         let group = Group {
             id: id.clone(),
             name,
@@ -77,6 +79,7 @@ impl GroupConfig {
 
     /// 删除一个分组
     pub fn delete_group(&mut self, id: &str) -> Result<bool, Error> {
+        log::info!("delete group: {}", id);
         // 默认分组，不允许删除
         let original_len = self.groups.len();
         self.groups.retain(|group| group.id != id);
@@ -86,6 +89,7 @@ impl GroupConfig {
 
     /// 更新一个分组
     pub fn update_group(&mut self, id: &str, name: Option<String>) -> Result<bool, Error> {
+        log::info!("update group: {}", id);
         if let Some(group) = self.groups.iter_mut().find(|group| group.id == id) {
             if let Some(new_name) = name {
                 group.name = new_name;
@@ -100,7 +104,7 @@ impl GroupConfig {
 
     // 查询所有分组并遍历分组下的项目
     pub fn get_project_details(&self, keyword: Option<String>) -> Result<GroupList, Error> {
-        let projects = Project::get_project_list_inner(keyword).unwrap();
+        let projects = Project::get_project_list_by_option(keyword).unwrap();
         // 收集所有已被分配的项目ID
         let mut assigned_project_ids = HashSet::new();
 
@@ -137,6 +141,7 @@ impl GroupConfig {
             .collect();
 
         if !unassigned_projects.is_empty() {
+            log::info!("Found {} unassigned projects", unassigned_projects.len());
             // 遍历 group_list  如果 id wei -1，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
             for group in &mut group_list {
                 if group.id == "-1".to_string() {
@@ -155,6 +160,7 @@ impl GroupConfig {
     }
 
     pub fn add_group_project(&mut self, id: String, project_id: String) -> Result<bool, Error> {
+        log::info!("Adding project {} to group {}", project_id, id);
         // 查找目标分组
         let group = match self.groups.iter_mut().find(|group| group.id == id) {
             Some(group) => group,
@@ -176,10 +182,7 @@ impl GroupConfig {
         group_id: String,
         project_id: String,
     ) -> Result<(), Error> {
-        // group_id 如果是 -1 则是默认分组，不允许删除
-        // if group_id == "-1" {
-        //     return Err(anyhow::anyhow!("默认分组，不允许删除"));
-        // }
+        log::info!("Removing project {} from group {}", project_id, group_id);
         if let Some(group) = self.groups.iter_mut().find(|g| g.id == group_id) {
             if let Some(projects) = &mut group.projects {
                 if projects.contains(&project_id) {

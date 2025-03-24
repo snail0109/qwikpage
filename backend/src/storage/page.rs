@@ -4,7 +4,7 @@ use crate::utils::datetime::get_current_time;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 use anyhow::Error;
-use log::{error, info, warn};
+use log;
 use std::fs;
 use std::io::{self, ErrorKind};
 use std::path::PathBuf;
@@ -45,6 +45,7 @@ impl Page {
         project_id: String,
         keyword: Option<String>,
     ) -> Result<PageList, String> {
+        log::info!("获取页面列表: page_num={}, page_size={}, project_id={}", page_num, page_size, project_id);
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
@@ -79,8 +80,9 @@ impl Page {
     }
 
     pub fn load(page_file: &PathBuf) -> io::Result<Self> {
+        log::info!("加载页面文件: {}", page_file.display());
         if !page_file.exists() {
-            warn!("页面文件不存在");
+            log::warn!("页面文件不存在");
             return Err(io::Error::new(ErrorKind::NotFound, "页面文件不存在"));
         }
         match fs::read_to_string(page_file) {
@@ -95,6 +97,7 @@ impl Page {
     pub fn delete(id: String, project_id: String) -> Result<bool, String> {
         let page_dir = Self::get_page_dir(&project_id);
         let page_file = page_dir.join(format!("{}.json", id));
+        log::info!("删除页面: {:#?}", page_file.clone());
         fs::remove_file(page_file).map_err(|e| format!("删除页面失败: {}", e))?;
         Ok(true)
     }
@@ -104,7 +107,7 @@ impl Page {
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
-            warn!("页面文件不存在");
+            log::warn!("页面文件不存在");
             return Ok(pages_list);
         }
         let entries = fs::read_dir(page_dir).unwrap();
@@ -181,7 +184,7 @@ impl Page {
         let source_page = Page::load(&page_file).unwrap();
         let new_page_id = Uuid::new_v4().to_string();
         let new_page_file = page_dir.join(format!("{}.json", &new_page_id));
-        info!("new_page_file: {}", new_page_file.to_str().unwrap());
+        log::info!("复制生成的新文件路径: {}", new_page_file.to_str().unwrap());
         let page = Page::new(
             new_page_id.clone(),
             params.name,
@@ -196,10 +199,10 @@ impl Page {
     }
 
     pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
-        info!("Page::get_page_detail start, id: {}", id);
+        log::info!("get_page_detail_with_id, id: {}", id);
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
-            error!("页面目录不存在");
+            log::error!("页面目录不存在");
             return Err(ErrorResponse::not_found("页面目录不存在".to_string()));
         }
         let page_file = page_dir.join(format!("{}.json", id));
@@ -211,8 +214,8 @@ impl Page {
         project_id: String,
         path: String,
     ) -> Result<Page, ErrorResponse> {
-        info!(
-            "Page::get_page_detail_with_path start, project_id: {:?}, path: {}",
+        log::info!(
+            "get_page_detail_with_path, project_id: {:?}, path: {}",
             project_id, path
         );
         // 如果 path 是 "*", 则将其处理为 "/"
@@ -223,14 +226,14 @@ impl Page {
         };
         let pages_list: PageList =
             Self::list(1, 20, project_id, Some("".to_string())).map_err(|e| {
-                error!("Failed to list pages: {}", e);
+                log::error!("Failed to list pages: {}", e);
                 ErrorResponse::not_found(format!("无法获取页面列表: {}", e))
             })?;
         // 查找与给定 path 匹配的页面
         for page in pages_list.list {
             if page.path.as_ref() == Some(&effective_path) {
                 // 进行匹配
-                info!("Page::getMartten, path: {}", effective_path);
+                log::info!("Page::getMartten, path: {}", effective_path);
                 return Ok(page);
             }
         }

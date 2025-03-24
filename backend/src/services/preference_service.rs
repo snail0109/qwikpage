@@ -5,15 +5,17 @@ use tauri::command;
 // 加载系统配置
 #[command]
 pub fn get_preferences() -> Result<Preferences, String> {
-    log::debug!("get_preferences");
+    log::debug!("Preferences::get_preferences");
     let config = Config::global();
-    Ok(config.preferences().clone())
+    let pref: Preferences = config.preferences().clone();
+    log::debug!("Preferences.project_path: {}", pref.project_path);
+    Ok(pref)
 }
 
 // 更新系统配置
 #[command]
 pub fn set_preferences(preferences: Preferences) -> Result<(), String> {
-    log::debug!("set_preferences");
+    log::debug!("Preferences::set_preferences");
     let config = Config::global();
     let mut new_prefs = config.preferences().clone();
     let _ = new_prefs.set_preferences(preferences);
@@ -24,7 +26,7 @@ pub fn set_preferences(preferences: Preferences) -> Result<(), String> {
 // 重置系统配置
 #[command]
 pub fn restore_preferences() -> Result<(), String> {
-    log::debug!("restore_preferences");
+    log::debug!("Preferences::restore_preferences");
     let config = Config::global();
     let mut new_prefs = config.preferences().clone();
     new_prefs

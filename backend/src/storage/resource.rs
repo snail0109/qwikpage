@@ -90,13 +90,13 @@ impl ResourceConfig {
         let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(sanitize(&params.group_name));
         if !group_dir.exists() {
-            info!("创建资源分组目录: {:?}", group_dir);
+            info!("Create resource group directory: {:?}", group_dir);
             create_dir_all(&group_dir)
                 .await
                 .map_err(|e| Error::new(e).context("Failed to create directory"))?;
         } else {
-            error!("资源分组已存在: {:?}", group_dir);
-            return Err(anyhow::anyhow!("资源分组已存在"));
+            error!("The resource group already exists.: {:?}", group_dir);
+            return Err(anyhow::anyhow!("The resource group already exists."));
         }
         Ok(true)
     }
@@ -132,7 +132,7 @@ impl ResourceConfig {
         let res_root_dir = get_res_type_root_dir(&params.project_id, &params.resource_type).await?;
         let group_dir = res_root_dir.join(&params.group_name);
         if !group_dir.exists() {
-            info!("创建资源分组目录: {:?}", group_dir);
+            info!("Create resource group directory: {:?}", group_dir);
             create_dir_all(&group_dir)
                 .await
                 .map_err(|e| Error::new(e).context("Failed to create directory"))?;
@@ -203,30 +203,30 @@ impl ResourceConfig {
         // 创建目录（如果不存在），使用create_dir_all自动处理已存在的情况
         tokio::fs::create_dir_all(&temp_res_dir)
             .await
-            .with_context(|| "无法创建项目logo目录")?;
+            .with_context(|| "Unable to create project logo directory")?;
 
         // 安全处理文件名，防止路径遍历攻击
         let file_path = Path::new(&params.file_path);
         let file_name = file_path
             .file_name()
-            .ok_or_else(|| Error::msg("无效的文件路径"))?;
+            .ok_or_else(|| Error::msg("Invalid file path"))?;
 
         // 验证文件名不包含路径分隔符
         let file_name_str = file_name
             .to_str()
-            .ok_or_else(|| Error::msg("文件名包含无效字符"))?;
+            .ok_or_else(|| Error::msg("File name contains invalid characters"))?;
 
         if file_name_str.contains(|c| c == '/' || c == '\\') {
-            return Err(Error::msg("文件名包含非法路径字符"));
+            return Err(Error::msg("The file name contains illegal path characters."));
         }
         // 构建目标文件路径
         let new_file_path: PathBuf = temp_res_dir.join(file_name);
-        info!("创建资源分组目录jjjj: {:?}", new_file_path);
+        info!("Create resource group directory: {:?}", new_file_path);
 
         // 执行文件复制操作，添加详细错误上下文
         tokio::fs::copy(file_path, new_file_path.clone())
             .await
-            .with_context(|| "文件复制失败")?;
+            .with_context(|| "File copy failed")?;
 
         // old_file_path 有值，则删除该路径的文件和上一级目录
         if let Some(old_path) = &params.old_file_path {
@@ -235,7 +235,7 @@ impl ResourceConfig {
                 // 删除目录
                 tokio::fs::remove_dir_all(parent_dir)
                     .await
-                    .with_context(|| "删除目录失败")?;
+                    .with_context(|| "Failed to delete directory")?;
             }
         }
 
@@ -253,7 +253,7 @@ impl ResourceConfig {
             // 删除目录
             tokio::fs::remove_dir_all(parent_dir)
                 .await
-                .with_context(|| "删除目录失败")?;
+                .with_context(|| "Failed to delete directory")?;
         }
         Ok(())
     }
@@ -275,7 +275,7 @@ async fn get_res_type_root_dir(
 // 创建目录
 async fn create_directory_if_not_exists(path: PathBuf) -> Result<PathBuf, Error> {
     if !path.exists() {
-        info!("创建目录: {:?}", path);
+        info!("create directory: {:?}", path);
         tokio::fs::create_dir_all(&path)
             .await
             .with_context(|| format!("Failed to create directory: {:?}", path))?;
@@ -296,7 +296,7 @@ async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error> {
     if dir_count == 0 {
         // 默认分组下面再建一个 main 文件夹, 用于查询的时候识别出是否是默认分组
         let def_group = res_root_dir.join("默认分组").join("main");
-        info!("创建默认分组目录: {:?}", def_group);
+        info!("Create default group directory: {:?}", def_group);
         tokio::fs::create_dir_all(&def_group)
             .await
             .map_err(|e| Error::new(e).context("Failed to create directory"))?;

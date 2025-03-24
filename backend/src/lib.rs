@@ -1,7 +1,7 @@
 mod code_generator;
 mod error;
-mod storage;
 mod services;
+mod storage;
 mod types;
 mod utils;
 
@@ -12,12 +12,12 @@ use crate::{
     },
     utils::{check_port_occupied, dirs::get_config_path, setup},
 };
-use log;
+use log::{self, Level};
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
 use tauri::{WebviewUrl, WebviewWindowBuilder};
-use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
+use tauri_plugin_log::{Target, TargetKind};
 
 // #[cfg(target_os = "windows")]
 // use {
@@ -64,7 +64,6 @@ pub fn run() {
     //     error!("{}", err);
     //     std::process::exit(1);
     // }
-
     tauri::Builder::default()
         // 单实例插件确保 Tauri 应用程序在同一时间只运行单个实例
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
@@ -84,7 +83,35 @@ pub fn run() {
                 } else {
                     log::LevelFilter::Info
                 })
-                .with_colors(ColoredLevelConfig::default())
+                .format(move |out, message, record| {
+                
+                    // 定义颜色（ANSI 转义码）
+                    let level_color = match record.level() {
+                        Level::Error => "\x1b[31m", // 红色
+                        Level::Warn => "\x1b[33m",  // 黄色
+                        Level::Info => "\x1b[34m",  // 蓝色
+                        Level::Debug => "\x1b[32m", // 绿色
+                        Level::Trace => "\x1b[36m", // 青色
+                        };
+                        let target_color = "\x1b[35m"; // 紫色
+                        let message_color = match record.level() {
+                            Level::Error => "\x1b[31m",
+                            Level::Warn => "\x1b[33m",
+                            _ => "\x1b[0m", // 默认无颜色
+                        };
+                        out.finish(format_args!(
+                            "{level_color}[{level}]{reset} {target_color}[{target}]{reset} > {message_color}{message}\x1b[0m",
+                            level = record.level(),
+                            target = record.target(),
+                            message = message,
+                            level_color = level_color,
+                            target_color = target_color,
+                            message_color = message_color,
+                            reset = "\x1b[0m"
+                        ))
+                        
+                           
+                })
                 .max_file_size(50000)
                 // .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 .build(),

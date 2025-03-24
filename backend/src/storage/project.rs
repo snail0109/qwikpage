@@ -1,5 +1,5 @@
 use anyhow::Error;
-use log::{error, info};
+use log;
 use std::path::Path;
 use std::{fs, io};
 
@@ -61,6 +61,7 @@ impl Project {
     pub fn load(project_id: String) -> io::Result<Self> {
         let root_dir = &Config::global().preferences().get_project_path();
         let project_file = root_dir.join(project_id).join(PROJECT_CONFIG_FILE);
+        log::info!("load project config file: {:#?}", project_file);
         match fs::read_to_string(project_file) {
             Ok(data) => {
                 let project: Project = serde_json::from_str(&data).unwrap();
@@ -89,7 +90,7 @@ impl Project {
         match self.save() {
             Ok(_) => Ok(true),
             Err(e) => {
-                error!("Failed to save project: {}", e);
+                log::error!("Failed to save project: {}", e);
                 Err(anyhow::anyhow!("Failed to save project: {}", e))
             }
         }
@@ -102,11 +103,12 @@ impl Project {
     ) -> Result<bool, Error> {
         let root_dir = &Config::global().preferences().get_project_path();
         let project_dir = root_dir.join(&project_id);
+        log::info!("delete project: {:#?}", project_dir);
         tokio::fs::remove_dir_all(project_dir).await?;
         let mut config = GroupConfig::load()?;
         if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
             // 处理错误，例如记录日志或返回错误
-            error!("Failed to remove project from group: {}", e);
+            log::error!("Failed to remove project from group: {}", e);
             return Err(anyhow::anyhow!(
                 "Failed to remove project from group: {}",
                 e
@@ -117,6 +119,7 @@ impl Project {
     }
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
+        log::info!("count_pages_in_project: {}", project_id);
         let root_dir = &Config::global().preferences().get_project_path();
         let page_dir = root_dir.join(&project_id).join("pages");
         // 目录不存在则返回 0
@@ -129,7 +132,7 @@ impl Project {
             let entry = entry.unwrap();
             let path = entry.path();
             if is_valid_file(&path) {
-                info!("entry path: {}", path.to_str().unwrap());
+                log::info!("entry path: {}", path.to_str().unwrap());
                 if path.extension().unwrap() != "json" {
                     continue;
                 }
@@ -139,8 +142,8 @@ impl Project {
         count
     }
 
-    pub fn get_project_list_inner(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
-        info!("Project::get_project_list start, keyword: {:?}", keyword);
+    pub fn get_project_list_by_option(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
+        log::info!("get_project_list_by_option, keyword: {:?}", keyword);
         let root_dir = &Config::global().preferences().get_project_path();
         let mut project_list = Vec::new();
 
@@ -190,12 +193,12 @@ fn load_project(project_path: &Path) -> Option<Project> {
             Ok(json) => match serde_json::from_str(&json) {
                 Ok(project) => Some(project),
                 Err(e) => {
-                    error!("Failed to deserialize project file: {}", e);
+                    log::error!("Failed to deserialize project file: {}", e);
                     None
                 }
             },
             Err(e) => {
-                error!("Failed to read project file: {}", e);
+                log::error!("Failed to read project file: {}", e);
                 None
             }
         }
@@ -204,13 +207,13 @@ fn load_project(project_path: &Path) -> Option<Project> {
     }
 }
 
-pub fn get_project_list_inner(
+pub fn paginated_query_project_list(
     page_num: usize,
     page_size: usize,
     keyword: Option<String>,
 ) -> Result<ProjectList, String> {
-    info!(
-        "Project::get_project_list start, page_num: {}, page_size: {}, keyword: {:?}",
+    log::info!(
+        "paginated_query_project_list, page_num: {}, page_size: {}, keyword: {:?}",
         page_num, page_size, keyword
     );
     let root_dir = &Config::global().preferences().get_project_path();
@@ -258,7 +261,7 @@ pub fn get_project_list_inner(
 pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
     let project_id = uuid::Uuid::new_v4().to_string();
     let group_id = params.group_id.clone();
-    info!("add project: {}", &project_id);
+    log::info!("add project: {}", &project_id);
     let root_dir = &Config::global().preferences().get_project_path();
     let project_dir_path = root_dir.join(project_id.clone());
     if !project_dir_path.exists() {
@@ -276,17 +279,17 @@ pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
 
     // group_id 为 None 时，添加到默认分组
     let mut config = GroupConfig::load().map_err(|e| {
-        error!("Failed to load group configuration: {}", e);
-        anyhow::anyhow!("加载分组配置失败: {}", e)
+        log::error!("Failed to load group configuration: {}", e);
+        anyhow::anyhow!("Failed to load group configuration: {}", e)
     })?;
     config
         .add_group_project(group_id.clone(), project_id.clone())
         .map_err(|e| {
-            error!(
+            log::error!(
                 "Failed to add project {} to group {}: {}",
                 project_id, group_id, e
             );
-            anyhow::anyhow!("添加项目 {} 到分组 {} 失败: {}", project_id, group_id, e)
+            anyhow::anyhow!("Failed to  add project {} to group {}: {}", project_id, group_id, e)
         })?;
     Ok(project)
 }
