@@ -41,6 +41,7 @@ export default function Category({ list }: { list: IProject[] }) {
     useEffect(() => {
         // 监听自定义事件
         const unlisten = listen('generate-code-step', (event) => {
+          // @ts-ignore
           const { step, message } = event.payload;
           console.log(`步骤：${step}，信息：${message}`);
           // 更新状态或 UI，例如显示进度条、提示信息等
