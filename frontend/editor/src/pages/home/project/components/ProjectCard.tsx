@@ -17,6 +17,8 @@ import CodeIcon from "@/assets/icons/CodeIcon.svg?react";
 import MoreIcon from "@/assets/icons/MoreIcon.svg?react";
 import BrowseIcon from "@/assets/icons/BrowseIcon.svg?react";
 import FolderIcon from "@/assets/icons/FolderIcon.svg?react";
+import { useEffect } from "react";
+import { listen } from "@tauri-apps/api/event";
 
 const { Paragraph } = Typography;
 
@@ -34,6 +36,22 @@ const themeColorToImageMap: { [key: string]: string } = {
 
 export default function Category({ list }: { list: IProject[] }) {
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        // 监听自定义事件
+        const unlisten = listen('generate-code-step', (event) => {
+          const { step, message } = event.payload;
+          console.log(`步骤：${step}，信息：${message}`);
+          // 更新状态或 UI，例如显示进度条、提示信息等
+        });
+    
+        // 组件卸载时移除监听
+        return () => {
+          unlisten.then(f => f());
+        };
+      }, []);
+      
     // 单击打开项目配置
     const handleOpenProject = (id: string) => {
         navigate(`/project/${id}/config`);
