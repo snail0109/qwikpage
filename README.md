@@ -55,30 +55,23 @@ pnpm install # 安装依赖
 pnpm dev  # 启动项目
 ```
 
-
-### 打包
-Mac
+### 本地打包
+Mac  
 ```bash
 pnpm install # 安装依赖
-export TAURI_SIGNING_PRIVATE_KEY="<your private key>"
-export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your password>"
-pnpm build
+pnpm run build:mac
 ```
 
-Windows  
-Run this in PowerShell:
+Windows   
 ```bash  
 pnpm install # 安装依赖
-$env:TAURI_SIGNING_PRIVATE_KEY="<your private key>"
-<# optionally also add a password #>
-$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your password>"
-pnpm tauri build
+pnpm run build:windows # 生成 .exe 文件
 ```
 
 ### 生成秘钥
 `pnpm tauri signer generate -w ./keys/myapp.key`
 
-### 脚本打包
+### 设置秘钥打包
 ```bash
 export TAURI_SIGNING_PRIVATE_KEY=
 export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=
