@@ -49,27 +49,38 @@ npm -v
 ### 安装 pnpm
 `npm i pnpm -g`
 
-## 安装依赖
+### 开发
 ```bash
-cargo build  // 如果遇到网络问题，需要开启命令行代理
-pnpm install
+pnpm install # 安装依赖
+pnpm dev  # 启动项目
 ```
 
-## 启动
 
+### 打包
+Mac
 ```bash
-pnpm tauri dev // 不执行cargo build，启动会自动下载依赖
-
+pnpm install # 安装依赖
+export TAURI_SIGNING_PRIVATE_KEY="<your private key>"
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your password>"
+pnpm build
 ```
 
-## 打包
+Windows  
+Run this in PowerShell:
+```bash  
+pnpm install # 安装依赖
+$env:TAURI_SIGNING_PRIVATE_KEY="<your private key>"
+<# optionally also add a password #>
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your password>"
+pnpm tauri build
+```
+
+### 生成秘钥
+`pnpm tauri signer generate -w ./keys/myapp.key`
+
+### 脚本打包
 ```bash
 export TAURI_SIGNING_PRIVATE_KEY=
 export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=
 ./scripts/release.sh --channel nightly --version "0.0.2"
 ```
-
-```bash
-pnpm tauri build
-```
-
