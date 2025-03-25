@@ -1,0 +1,94 @@
+.searchBar {
+  position: absolute;
+  top: -36px;
+  right: 30px;
+  width: 380px;
+  z-index: 100;
+  background-color: var(--background-color, #fff);
+  // border: 1px solid var(--border-color, #d9d9d9);
+  border-radius: 4px;
+  // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+}
+
+.searchRow,
+.replaceRow,
+.optionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 8px;
+}
+
+.searchInput,
+.replaceInput {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.buttonGroup {
+  white-space: nowrap;
+}
+
+.optionsRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+} 
+
+/* 匹配项计数样式 */
+.matchCount {
+  display: flex;
+  align-items: center;
+  width: 48px;
+  margin-right: 8px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* 高亮匹配项样式 - 需要在全局样式中定义 */
+:global {
+  .search-match {
+    background-color: rgba(255, 240, 70, 0.4);
+    border: 1px solid rgba(200, 190, 60, 0.8);
+  }
+  
+  .search-match-current {
+    background-color: rgba(255, 190, 50, 0.7);
+    border: 1px solid rgba(200, 150, 40, 0.9);
+  }
+}
+
+.searchOptions {
+  display: flex;
+  gap: 2px;
+  :global {
+    .ant-space-item {
+      line-height: 100%;
+    }
+  }
+}
+
+.optionButton {
+  padding: 0 4px;
+  height: 22px;
+  color: rgba(0, 0, 0, 0.45);
+  
+  &:hover {
+    color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+}
+
+.optionActive {
+  padding: 0 4px;
+  height: 22px;
+  color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.1);
+  
+  &:hover {
+    color: #40a9ff;
+    background-color: rgba(24, 144, 255, 0.2);
+  }
+}

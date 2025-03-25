@@ -49,7 +49,7 @@ function UpdaterDialog() {
             let downloaded = 0;
             setStatus("DownloadAndInstall");
             try {
-                await update.downloadAndInstall((event) => {
+                await update.downloadAndInstall((event: any) => {
                     switch (event.event) {
                         case "Started":
                             setContentLength(event.data.contentLength!);
@@ -85,7 +85,7 @@ function UpdaterDialog() {
             return;
         }
         setStatus("DownloadAndInstall");
-        await updaterInstancece.downloadAndInstall((event) => {
+        await updaterInstancece.downloadAndInstall((event: any) => {
             switch (event.event) {
                 case "Started":
                     setContentLength(event.data.contentLength!);

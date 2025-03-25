@@ -12,7 +12,7 @@ export default function VsEditor({ height, language, value, onChange }: any) {
   const editorRef = useRef<any>(null);
   useEffect(() => {
     monaco?.languages.registerCompletionItemProvider('javascript', {
-      provideCompletionItems: function (model, position) {
+      provideCompletionItems: function (model: any, position: any) {
         const word = model.getWordUntilPosition(position);
         const range = {
           startLineNumber: position.lineNumber,
@@ -57,7 +57,7 @@ export default function VsEditor({ height, language, value, onChange }: any) {
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
   loader.config({
     paths: {
-      vs: `https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/dev/vs`,
+      vs: window.location.origin + '/monaco-editor/0.52.2/min/vs',
     },
   });
   return (
