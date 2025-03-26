@@ -63,7 +63,7 @@ const SettingForm = function () {
                     </Form.Item>
                 </Space>
             </Form.Item>
-            <Row>
+            <Row gutter={80}>
                 <Col span={12}>
                     <Form.Item label="数据格式" name="contentType">
                         <Radio.Group buttonStyle="solid">
