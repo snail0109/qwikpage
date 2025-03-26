@@ -111,7 +111,7 @@ function UpdaterDialog() {
     }, [updaterInstancece]);
 
     const restart_app = () => {
-        invoke("restart_app");
+        invoke("restart_application");
     };
 
     const onClose = () => {
