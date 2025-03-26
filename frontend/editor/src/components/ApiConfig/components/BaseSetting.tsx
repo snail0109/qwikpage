@@ -95,24 +95,25 @@ const SettingForm = function () {
             </Row>
 
 
-            <Form.Item label="发送参数"  wrapperCol= { {span: 24 }}>
+            <Form.Item label="发送参数" wrapperCol={{ span: 24 }}>
                 <Form.List name="params">
                     {(fields, { add, remove }) => (
                         <div style={{ maxHeight: 180, overflowY: "auto" }}>
                             {fields.map(({ name }, index) => (
                                 <div
-                                    style={{ marginBottom: fields.length === index + 1 ? 0 : 10, alignItems: "center", display: "flex", gap: 10, paddingRight: index === 0 ? 22 : 0 }}
+                                    style={{ marginBottom: fields.length === index + 1 ? 0 : 10, alignItems: "center", display: "flex", gap: 10, paddingRight: index === 0 ? 38 : 0 }}
                                     key={`header-${index}`}
                                 >
-                                    <Form.Item name={[name, "key"]} noStyle wrapperCol= { {span: 10 }}>
+                                    <Form.Item name={[name, "key"]} noStyle >
                                         <Input placeholder="请输入参数名" />
                                     </Form.Item>
-                                    <Form.Item name={[name, "value"]} noStyle wrapperCol= { {span: 10 }}>
+                                    <Form.Item name={[name, "value"]} noStyle>
                                         <VariableBind placeholder="请输入参数值" />
                                     </Form.Item>
-                                    <PlusOutlined onClick={() => add({ key: "", value: "" })} />
+                                    <PlusOutlined className={styles.variableIcon} onClick={() => add({ key: "", value: "" })} />
                                     {index > 0 && (
                                         <MinusCircleOutlined
+                                            className={styles.variableIcon}
                                             onClick={() => {
                                                 remove(name);
                                             }}
