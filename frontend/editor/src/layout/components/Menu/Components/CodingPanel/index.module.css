@@ -1,0 +1,8 @@
+.dslEditor {
+  margin-left: -10px;
+  width: 100%;
+  position: relative;
+}
+.dslEditor :global .monaco-editor .find-widget {
+  display: none !important;
+}

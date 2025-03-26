@@ -1,9 +1,11 @@
-import { Row } from "antd";
+import { Button, Row } from "antd";
 import Editor, { loader } from "@monaco-editor/react";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import SearchBar from "./SearchBar";
+import SearchIcon from "@/assets/icons/search.svg?react";
+
 /**
  * 代码面板
  */
@@ -14,6 +16,7 @@ const CodingPanel = () => {
     const [exportLoading, setExportLoading] = useState(false);
     const [initialSearchText, setInitialSearchText] = useState('');
     const [editorReady, setEditorReady] = useState(false);
+    const [searchVisible, setSearchVisible] = useState(false);
     const { theme, page, savePageInfo } = usePageStore((state) => ({
         theme: state.theme,
         page: state.page,
@@ -38,6 +41,7 @@ const CodingPanel = () => {
 
         // 添加自定义快捷键
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF, () => {
+            setSearchVisible(true);
             // 获取当前选中的文本作为搜索初始值
             const selection = editor.getSelection();
             let selectedText = '';
@@ -78,11 +82,14 @@ const CodingPanel = () => {
                 }}
                 onMount={handleEditorDidMount}
             />
+            {/* 搜索按钮 */}
+            {!searchVisible && <Button className={styles.searchButton} type="text" icon={<SearchIcon />} onClick={() => setSearchVisible(true)} />}
             {editorReady && (
                 <SearchBar
                     editor={editorRef.current}
-                    visible={true}
+                    visible={searchVisible}
                     initialSearchText={initialSearchText}
+                    onClose={() => setSearchVisible(false)}
                 />
             )}
         </Row>

@@ -8,6 +8,7 @@ import {
     DownOutlined,
     CaretDownOutlined,
     CaretUpOutlined,
+    CloseOutlined,
 } from "@ant-design/icons";
 import styles from "./searchbar.module.less";
 
@@ -15,10 +16,11 @@ interface SearchBarProps {
     editor: any;
     visible: boolean;
     initialSearchText?: string;
+    onClose: () => void;
 }
 
 // 搜索栏组件
-const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchText = '' }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchText = '', onClose }) => {
     const [searchText, setSearchText] = useState(initialSearchText);
     const [replaceText, setReplaceText] = useState("");
     const [showReplace, setShowReplace] = useState(false);
@@ -359,6 +361,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchTex
             clearDecorations();
             // 清理搜索框
             setSearchText('');
+            onClose();
         }
     };
 
@@ -482,6 +485,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchTex
                         <Button
                             icon={<DownOutlined />}
                             onClick={findNext}
+                            type="text"
+                            size="small"
+                        />
+                    </Tooltip>
+                    {/* 关闭按钮 */}
+                    <Tooltip title="关闭">
+                        <Button
+                            icon={<CloseOutlined />}
+                            onClick={onClose}
                             type="text"
                             size="small"
                         />
