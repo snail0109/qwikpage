@@ -4,9 +4,7 @@ on:
   release:
     types: [published]
   schedule:
-    - cron: '20 7 * * *' # 北京时间 15:20
-    - cron: '30 8 * * *' # UTC 8:30 (北京时间 16:30)
-    - cron: '0 9 * * *' # UTC 9:00 (北京时间 17:00)
+    - cron: '0 9 1-5 * *' # UTC 9:00 (北京时间 17:00)，仅工作日
 
 jobs:
   prepare:
