@@ -4150,7 +4150,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "qwikepage"
+name = "qwikpage"
 version = "0.0.0"
 dependencies = [
  "anyhow",
