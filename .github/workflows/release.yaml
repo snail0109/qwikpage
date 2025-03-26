@@ -4,6 +4,7 @@ on:
   release:
     types: [published]
   schedule:
+    - cron: '20 7 * * *' # 北京时间 15:20
     - cron: '0 9 * * *' # UTC 9:00 (北京时间 17:00)
 
 jobs:
