@@ -107,7 +107,7 @@ jobs:
           fi
 
           echo "RELEASE_NAME=QwikPage v${{ env.VERSION }}" >> $GITHUB_ENV
-          echo "TAG_NAME=app-v${{ env.VERSION }}" >> $GITHUB_ENV
+          echo "TAG_NAME=v${{ env.VERSION }}" >> $GITHUB_ENV
         shell: bash
 
       - uses: tauri-apps/tauri-action@v0
