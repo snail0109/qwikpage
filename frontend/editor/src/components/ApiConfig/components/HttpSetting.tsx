@@ -9,7 +9,7 @@ const SettingForm = function () {
       <Form.Item label="请求头">
         <Form.List name="headers">
           {(fields, { add, remove }) => (
-            <>
+            <div style={{ maxHeight: 180, overflowY: "auto" }}>
               {fields.map(({ name }, index) => (
                 <div style={{ marginBottom: fields.length === index + 1 ? 0 : 10, display: "flex", gap: 10, paddingRight: index === 0 ? 22 : 0 }} key={`header-${index}`}>
                   <Form.Item name={[name, 'key']} noStyle>
@@ -28,7 +28,7 @@ const SettingForm = function () {
                   )}
                 </div>
               ))}
-            </>
+            </div>
           )}
         </Form.List>
       </Form.Item>

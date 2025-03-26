@@ -98,7 +98,7 @@ const SettingForm = function () {
             <Form.Item label="发送参数"  wrapperCol= { {span: 24 }}>
                 <Form.List name="params">
                     {(fields, { add, remove }) => (
-                        <>
+                        <div style={{ maxHeight: 180, overflowY: "auto" }}>
                             {fields.map(({ name }, index) => (
                                 <div
                                     style={{ marginBottom: fields.length === index + 1 ? 0 : 10, alignItems: "center", display: "flex", gap: 10, paddingRight: index === 0 ? 22 : 0 }}
@@ -120,7 +120,7 @@ const SettingForm = function () {
                                     )}
                                 </div>
                             ))}
-                        </>
+                        </div>
                     )}
                 </Form.List>
             </Form.Item>
