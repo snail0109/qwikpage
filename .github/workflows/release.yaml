@@ -5,6 +5,7 @@ on:
     types: [published]
   schedule:
     - cron: '20 7 * * *' # 北京时间 15:20
+    - cron: '0 8 * * *' # UTC 8:00 (北京时间 16:00)
     - cron: '0 9 * * *' # UTC 9:00 (北京时间 17:00)
 
 jobs:
@@ -66,11 +67,18 @@ jobs:
           echo "Generated version: ${FINAL_VERSION}"
           
           # 更新 tauri.conf.json 中的版本号
-          if [ "${{ runner.os }}" = "Windows" ]; then
+          if [ "$RUNNER_OS" = "Windows" ]; then
             powershell -Command "(Get-Content backend/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$env:FINAL_VERSION\"' | Set-Content backend/tauri.conf.json"
           else
-            sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
+            # 针对 macOS 修复 sed 命令
+            if [ "$RUNNER_OS" = "macOS" ]; then
+              sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
+            else
+              # Linux 版本
+              sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
+            fi
           fi
+        shell: bash
 
       - name: Generate release name
         id: release_name
@@ -84,6 +92,9 @@ jobs:
             echo "TAG_NAME=app-v__VERSION__" >> $GITHUB_ENV
             echo "PRERELEASE=false" >> $GITHUB_ENV
           fi
+          echo "RELEASE_NAME: ${env.RELEASE_NAME}"
+          echo "TAG_NAME: ${env.TAG_NAME}"
+          echo "PRERELEASE: ${env.PRERELEASE}"
         shell: bash
 
       - uses: tauri-apps/tauri-action@v0
