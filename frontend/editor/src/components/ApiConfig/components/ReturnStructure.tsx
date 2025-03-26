@@ -3,7 +3,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 const ReturnStructure = function () {
     return (
         <>
-            <Alert message="用来定义接口返回结构，推荐结构：{`{ code: 0, data: {}, msg: '' }`}" type="info" showIcon />
+            <Alert message="用来定义接口返回结构，推荐结构：{`{ code: 0, data: {}, msg: '' }`}" type="info" showIcon  style={{marginBottom: 15}}/>
             <Row gutter={80}>
                 <Col span={12}>
                     <Form.Item
