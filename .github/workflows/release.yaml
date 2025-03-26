@@ -5,7 +5,7 @@ on:
     types: [published]
   schedule:
     - cron: '20 7 * * *' # 北京时间 15:20
-    - cron: '0 8 * * *' # UTC 8:00 (北京时间 16:00)
+    - cron: '30 8 * * *' # UTC 8:30 (北京时间 16:30)
     - cron: '0 9 * * *' # UTC 9:00 (北京时间 17:00)
 
 jobs:
@@ -56,42 +56,40 @@ jobs:
         run: pnpm install --no-frozen-lockfile # change this to npm, pnpm or bun depending on which one you use.
 
       - name: Process version for scheduled builds
-        if: github.event_name == 'schedule'
         id: version
         run: |
           # 提取基础版本号,添加时间戳
-          BASE_VERSION=$(grep -o '"version": "[^"]*"' backend/tauri.conf.json | cut -d'"' -f4 | sed -E 's/-alpha\.[0-9]+//')
-          timestamp=$(date +%Y%m%d%H%M%S)
-          FINAL_VERSION="${BASE_VERSION}-alpha.${timestamp}"
-          echo "VERSION=${FINAL_VERSION}" >> $GITHUB_ENV
-          echo "Generated version: ${FINAL_VERSION}"
-          
-          # 更新 tauri.conf.json 中的版本号
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            powershell -Command "(Get-Content backend/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$env:FINAL_VERSION\"' | Set-Content backend/tauri.conf.json"
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            # 定时触发，从tauri.conf.json内读取，生成alpha版本
+            base_version=$(jq -r '.version' backend/tauri.conf.json)
+            clean_version=$(echo "$base_version" | sed 's/-alpha\.[0-9]\{1,\}$//')
+            timestamp=$(date +%Y%m%d%H%M%S)
+            FINAL_VERSION="${clean_version}-alpha.${timestamp}"
+            echo "Generated version: ${FINAL_VERSION}"
           else
-            # 针对 macOS 修复 sed 命令
-            if [ "$RUNNER_OS" = "macOS" ]; then
-              sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
-            else
-              # Linux 版本
-              sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
-            fi
+            # 非定时触发，从tag中读取
+            FINAL_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -e 's/v//g')
+            echo "Tag version: ${FINAL_VERSION}"
           fi
+          echo "VERSION=${FINAL_VERSION}" >> $GITHUB_ENV
+
+          # 更新 tauri.conf.json 中的版本号
+          jq ".version = \"${FINAL_VERSION}\"" backend/tauri.conf.json > backend/tmp.json
+          mv backend/tmp.json backend/tauri.conf.json
         shell: bash
 
       - name: Generate release name
         id: release_name
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "RELEASE_NAME=QwikPage v${{ env.VERSION }}" >> $GITHUB_ENV
-            echo "TAG_NAME=app-v${{ env.VERSION }}" >> $GITHUB_ENV
             echo "PRERELEASE=true" >> $GITHUB_ENV
           else
-            echo "RELEASE_NAME=QwikPage v__VERSION__" >> $GITHUB_ENV
-            echo "TAG_NAME=app-v__VERSION__" >> $GITHUB_ENV
             echo "PRERELEASE=false" >> $GITHUB_ENV
           fi
+
+          echo "RELEASE_NAME=QwikPage v${{ env.VERSION }}" >> $GITHUB_ENV
+          echo "TAG_NAME=app-v${{ env.VERSION }}" >> $GITHUB_ENV
+
           echo "RELEASE_NAME: ${env.RELEASE_NAME}"
           echo "TAG_NAME: ${env.TAG_NAME}"
           echo "PRERELEASE: ${env.PRERELEASE}"
@@ -103,7 +101,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: ${{ env.TAG_NAME }} # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          tagName: ${{ env.TAG_NAME }}
           releaseName: ${{ env.RELEASE_NAME }}
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
