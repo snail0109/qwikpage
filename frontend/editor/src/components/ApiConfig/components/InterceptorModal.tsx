@@ -66,7 +66,7 @@ function response(response){
   }
   return (
     <Modal width={'800px'} okText="确认" cancelText="取消" title="高级设置" open={open} onOk={handleOk} onCancel={handleCancel}>
-      <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 19 }} style={{ maxWidth: 800 }} autoComplete="off">
+      <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
         <HttpSetting />
       </Form>
     </Modal>

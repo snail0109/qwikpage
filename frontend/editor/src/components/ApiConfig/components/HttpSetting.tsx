@@ -1,4 +1,4 @@
-import { Form, Input, Space, InputNumber } from 'antd';
+import { Form, Input, Space, InputNumber, Col, Row } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import VsEditor from '@/components/VsEditor';
 import VariableBind from '@/components/VariableBind/VariableBind';
@@ -11,7 +11,7 @@ const SettingForm = function () {
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ name }, index) => (
-                <Space align="center" style={{ marginBottom: fields.length === index + 1 ? 0 : 10 }} key={`header-${index}`}>
+                <div style={{ marginBottom: fields.length === index + 1 ? 0 : 10, display: "flex", gap: 10, paddingRight: index === 0 ? 22 : 0 }} key={`header-${index}`}>
                   <Form.Item name={[name, 'key']} noStyle>
                     <Input placeholder="请输入Key" />
                   </Form.Item>
@@ -26,18 +26,25 @@ const SettingForm = function () {
                       }}
                     />
                   )}
-                </Space>
+                </div>
               ))}
             </>
           )}
         </Form.List>
       </Form.Item>
-      <Form.Item label="超时时间" name="timeout">
-        <InputNumber addonAfter="秒" />
-      </Form.Item>
-      <Form.Item label="超时提示" name="timeoutErrorMessage">
-        <Input placeholder="请输入超时提示" />
-      </Form.Item>
+      <Row gutter={80}>
+        <Col span={12}>
+          <Form.Item label="超时时间" name="timeout">
+            <InputNumber style={{ width: '100%' }} addonAfter="秒" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="超时提示" name="timeoutErrorMessage">
+            <Input placeholder="请输入超时提示" />
+          </Form.Item>
+        </Col>
+      </Row>
+
       <Form.Item label="请求适配" name="requestInterceptor">
         <VsEditor />
       </Form.Item>

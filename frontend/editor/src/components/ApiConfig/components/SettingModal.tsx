@@ -122,7 +122,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   return (
     <Modal
       wrapClassName={styles.apiSettingModal}
-      width={"450px"}
+      width={"800px"}
       title="接口配置"
       open={open}
       onCancel={handleCancel}
@@ -135,7 +135,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
           },
         }}
       >
-        <Form form={form} layout="vertical" style={{ maxWidth: 450 }} autoComplete="off">
+        <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
           <Tabs defaultActiveKey="1" items={items} size="small" />
         </Form>
       </ConfigProvider>
