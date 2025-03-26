@@ -6,6 +6,12 @@ on:
   schedule:
     - cron: '0 9 1-5 * *' # UTC 9:00 (北京时间 17:00)，仅工作日
     - cron: '30 9 1-5 * *'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '要编译的分支'
+        required: true
+        default: 'dev'  # 默认分支
 
 jobs:
   prepare:
@@ -41,6 +47,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # 定时任务使用P4分支，手动触发使用用户选择的分支，其他情况使用默认分支
+          ref: ${{ github.event_name == 'schedule' && 'dev' || github.event.inputs.branch || github.ref }}
 
       - name: setup node
         uses: actions/setup-node@v4
