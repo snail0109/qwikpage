@@ -2,6 +2,7 @@ import { isNotEmpty } from '@/packages/utils/util';
 import { usePageStore } from '@/stores/pageStore';
 import Editor, { loader, useMonaco } from '@monaco-editor/react';
 import { useEffect, useRef } from 'react';
+import styles from '@/styles/editor.module.less';
 /**
  * 封装vscode编辑器
  */
@@ -63,6 +64,7 @@ export default function VsEditor({ height, language, value, onChange }: any) {
   return (
     <Editor
       height={height || '150px'}
+      className={styles.apiEditor}
       language={language || 'javascript'}
       theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
       value={isNotEmpty(value) ? (typeof value === 'string' ? value : JSON.stringify(value, null, 2)) : ''}
