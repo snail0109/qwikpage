@@ -2,6 +2,7 @@ import { Form, Input, Space, InputNumber, Col, Row } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import VsEditor from '@/components/VsEditor';
 import VariableBind from '@/components/VariableBind/VariableBind';
+import styles from '../index.module.less';
 
 const SettingForm = function () {
   return (
@@ -11,16 +12,17 @@ const SettingForm = function () {
           {(fields, { add, remove }) => (
             <div style={{ maxHeight: 180, overflowY: "auto" }}>
               {fields.map(({ name }, index) => (
-                <div style={{ marginBottom: fields.length === index + 1 ? 0 : 10, display: "flex", gap: 10, paddingRight: index === 0 ? 22 : 0 }} key={`header-${index}`}>
+                <div style={{ marginBottom: fields.length === index + 1 ? 0 : 10, display: "flex", gap: 10, paddingRight: index === 0 ? 38 : 0 }} key={`header-${index}`}>
                   <Form.Item name={[name, 'key']} noStyle>
                     <Input placeholder="请输入Key" />
                   </Form.Item>
                   <Form.Item name={[name, 'value']} noStyle>
                     <VariableBind placeholder="请输入Value" />
                   </Form.Item>
-                  <PlusOutlined onClick={() => add({ key: '', value: '' })} />
+                  <PlusOutlined className={styles.variableIcon} onClick={() => add({ key: '', value: '' })} />
                   {index > 0 && (
                     <MinusCircleOutlined
+                      className={styles.variableIcon}
                       onClick={() => {
                         remove(name);
                       }}
