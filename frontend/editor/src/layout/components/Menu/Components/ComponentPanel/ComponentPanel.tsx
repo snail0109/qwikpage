@@ -29,7 +29,7 @@ const ComponentPanel = () => {
                 .filter((sub) => !sub.hidden)
                 .map((subItem) => {
                   return (
-                    <Col span={8} key={subItem.type}>
+                    <Col span={12} key={subItem.type}>
                       <DragMenuItem {...subItem} />
                     </Col>
                   );

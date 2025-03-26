@@ -88,8 +88,10 @@ const DragMenuItem = (props: IDragTarget) => {
 
   return (
     <div className={styles.itemContainer} ref={drag} onClick={() => handleClick(props)} style={{ cursor: 'pointer' }}>
-      <div className={styles.iconContainer}>{typeof props.icon === 'string' ? <img src={props.icon} alt={props.name} /> : props.icon}</div>
-      <div className={styles.itemName}>{props.name}</div>
+      <div className={styles.iconContainer}>
+        {typeof props.icon === 'string' ? <img src={props.icon} alt={props.name} /> : props.icon}
+        <div className={styles.itemName}>{props.name}</div>
+      </div>
     </div>
   );
 };

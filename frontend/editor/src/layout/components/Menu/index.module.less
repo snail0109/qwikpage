@@ -81,26 +81,24 @@
   align-items: center;
   user-select: none;
   cursor: move;
-  border-radius: 8px;
-  padding: 4px 2px;
-  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 5px 8px;
+  border: 1px solid #f0f0f1;
   transition: all 0.3s;
+  min-width: 100px;
 
+  
   &:hover {
-    // border: 1px dashed #9d5cff;
-    transform: scale(1.06);
+    background-color: #F4F4F4;
+    // 取消hover放大效果
+    // transform: scale(1.06);
   }
 
   .iconContainer {
     display: flex;
+    gap: 10px;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background-color: #fff;
-    border: 1px solid #f0f0f1;
-    margin-bottom: 8px;
     -webkit-box-pack: center;
     -webkit-box-align: center;
     transition: all 0.3s;
@@ -114,11 +112,10 @@
   .itemName {
     display: flex;
     -webkit-box-pack: center;
-    justify-content: center;
-    margin-top: 8px;
     -webkit-box-align: center;
     align-items: center;
     font-size: 12px;
+    min-width: 55px;
   }
 }
 
