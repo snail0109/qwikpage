@@ -1,54 +1,14 @@
 const IconModal = (props: any) => {
-  const { width = '40px', height = '40px' } = props;
+  const { width = '20px', height = '20px' } = props;
   return (
-    <svg width={width} height={height} viewBox="0 0 72 58" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient x1="28.7451135%" y1="56.4266912%" x2="9.64709739%" y2="28.3385965%" id="linearGradient-1">
-          <stop stopColor="#FFFFFF" offset="0%"></stop>
-          <stop stopColor="#F6F8FF" offset="100%"></stop>
-        </linearGradient>
-        <linearGradient x1="100%" y1="49.5550018%" x2="11.5997239%" y2="50%" id="linearGradient-2">
-          <stop stopColor="#FAFBFF" offset="0%"></stop>
-          <stop stopColor="#EAECFF" offset="100%"></stop>
-        </linearGradient>
-      </defs>
-      <g id="页面-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <g id="组件" transform="translate(-898.000000, -120.000000)">
-          <g id="编组-35" transform="translate(790.000000, 113.000000)">
-            <g id="编组-34" transform="translate(99.000000, 0.000000)">
-              <g id="编组-17" transform="translate(9.000000, 7.000000)">
-                <path
-                  d="M6,7 L66,7 C67.1045695,7 68,7.8954305 68,9 L68,48 C68,49.1045695 67.1045695,50 66,50 L6,50 C4.8954305,50 4,49.1045695 4,48 L4,9 C4,7.8954305 4.8954305,7 6,7 Z"
-                  id="矩形"
-                  stroke="#A5B1FF"
-                  strokeWidth="0.5"
-                  fill="url(#linearGradient-1)"
-                ></path>
-                <polygon id="矩形" fill="#D6DCFF" points="9 12 21 12 21 17 9 17"></polygon>
-                <polygon id="矩形备份-8" fill="url(#linearGradient-2)" points="9 27 62 27 62 32 9 32"></polygon>
-                <polygon id="矩形备份-14" fill="url(#linearGradient-2)" points="9 37 45.0941392 37 62 37 62 42 9 42"></polygon>
-                <g id="编组-38" transform="translate(57.000000, 10.000000)">
-                  <circle id="椭圆形" fill="#D6DCFF" cx="4" cy="4" r="4"></circle>
-                  <g
-                    id="编组-33"
-                    transform="translate(2.666667, 2.666667)"
-                    stroke="#FFFFFF"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="0.5"
-                  >
-                    <line x1="0" y1="0" x2="2.66666667" y2="2.66666667" id="路径-12"></line>
-                    <line
-                      x1="0"
-                      y1="0"
-                      x2="2.66666667"
-                      y2="2.66666667"
-                      id="路径-12"
-                      transform="translate(1.333333, 1.333333) scale(-1, 1) translate(-1.333333, -1.333333) "
-                    ></line>
-                  </g>
-                </g>
-              </g>
+    <svg width={width} height={height} viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" >
+      <g id="一期-主要界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="首页-组件图片" transform="translate(-696, -532)">
+          <g id="复选" transform="translate(696, 532)">
+            <g id="编组-12" transform="translate(0, 0.4905)">
+              <path d="M6.00162491,0.807990938 L7.74310218,3.00952148 L17,3.00952148 C17.6903559,3.00952148 18.3153559,3.28934352 18.767767,3.74175453 C19.220178,4.19416555 19.5,4.81916555 19.5,5.50952148 L19.5,16.5095215 C19.5,17.1998774 19.220178,17.8248774 18.767767,18.2772884 C18.3153559,18.7296995 17.6903559,19.0095215 17,19.0095215 L3,19.0095215 C2.30964406,19.0095215 1.68464406,18.7296995 1.23223305,18.2772884 C0.779822031,17.8248774 0.5,17.1998774 0.5,16.5095215 L0.5,5.50952148 C0.5,4.81916555 0.779822031,4.19416555 1.23223305,3.74175453 C1.68464406,3.28934352 2.30964406,3.00952148 3,3.00952148 L4.27449753,3.00952148 L6.00162491,0.807990938 Z" id="矩形" stroke="#777E8C"></path>
+              <rect id="矩形" fill="#216EF7" x="6" y="8.50952148" width="8" height="1"></rect>
+              <rect id="矩形备份-4" fill="#216EF7" x="6" y="12.5095215" width="8" height="1"></rect>
             </g>
           </g>
         </g>

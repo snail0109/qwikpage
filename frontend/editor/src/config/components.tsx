@@ -49,6 +49,8 @@ import IconButton from './icons/IconButton';
 // import IconTag from './icons/IconTag';
 // import IconDropdwon from './icons/IconDropdown';
 import IconFont from './icons/IconFont';
+import IconModal from './icons/IconModal';
+import IconDrawer from './icons/IconDrawer';
 /**
  * 组件配置列表
  */
@@ -415,12 +417,12 @@ const components = [
     title: '反馈组件',
     data: [
       {
-        icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*Z9vzQZAdJDQAAAAAAAAAAAAADrJ8AQ/original',
+        icon: <IconModal />,
         name: '弹框',
         type: 'Modal',
       },
       {
-        icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*BD2JSKm8I-kAAAAAAAAAAAAADrJ8AQ/original',
+        icon: <IconDrawer />,
         name: '抽屉',
         type: 'Drawer',
       },
