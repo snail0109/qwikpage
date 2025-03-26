@@ -147,7 +147,7 @@ const EditLayout = () => {
                             style={{
                                 overflow: 'visible',
                                 position: 'relative',
-                                paddingRight: menuCollapsed ? 0 : 10,
+                                paddingRight: menuCollapsed || isFullscreen ? 0 : 10,
                             }}
                         >
                             <React.Suspense fallback={<SpinLoading />} >

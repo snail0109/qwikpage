@@ -60,9 +60,9 @@ const CodingPanel = () => {
     }, [page]);
 
     return (
-        <Row style={{ marginRight: 1, position: 'relative' }}>
+        <Row style={{ margin: '10px -8px 0 10px', position: 'relative' }}>
             <Editor
-                height="calc(100vh - 36px)"
+                height="calc(100vh - 79px)"
                 language="json"
                 className={styles.dslEditor}
                 theme={theme === "dark" ? "vs-dark" : "vs-light"}
@@ -72,7 +72,7 @@ const CodingPanel = () => {
                         enabled: false,
                     },
                     find: {
-                        addExtraSpaceOnTop: false, // 搜索时不要添加额外的空格
+                        addExtraSpaceOnTop: true, // 搜索时不要添加额外的空格
                         seedSearchStringFromSelection: 'never', // 搜索时不要从选中的文本开始
                         autoFindInSelection: 'never', // 搜索时不要在选中的文本中自动查找
                     },
