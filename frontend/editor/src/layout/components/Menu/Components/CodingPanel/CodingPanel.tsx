@@ -4,7 +4,6 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import SearchBar from "./SearchBar";
-
 /**
  * 代码面板
  */

@@ -16,7 +16,7 @@ import "./App.less";
 import { useEffect, useState } from "react";
 import usePreferencesStore from "./stores/preferencesStore";
 import UpdaterDialog from "./components/UpdaterDialog";
-
+import "@/styles/global.less";
 function App() {
     const [loading, setLoading] = useState(true)
     const { get_preferences, fontFamily, fontSize } = usePreferencesStore();

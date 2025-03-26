@@ -30,7 +30,8 @@ const EditLayout = () => {
     const [previousMenuCollapsed, setPreviousMenuCollapsed] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     // 添加当前选中的标签状态
-    const { setCurrentTab } = usePageStore(state => ({
+    const { currentTab, setCurrentTab } = usePageStore(state => ({
+        currentTab: state.currentTab,
         setCurrentTab: state.setCurrentTab
     }));
     // 拖拽后左侧宽度
@@ -125,7 +126,7 @@ const EditLayout = () => {
                     theme={{
                         token: {
                             borderRadiusLG: 4,
-                          },
+                        },
                         components: {
                             Splitter: {
                                 colorFill: "#e8e9eb",
@@ -147,7 +148,7 @@ const EditLayout = () => {
                             style={{
                                 overflow: 'visible',
                                 position: 'relative',
-                                paddingRight: menuCollapsed || isFullscreen ? 0 : 10,
+                                paddingRight: menuCollapsed || currentTab === PanelKey.CodingPanel ? 0 : 10,
                             }}
                         >
                             <React.Suspense fallback={<SpinLoading />} >
