@@ -3,6 +3,8 @@ name: "release"
 on:
   release:
     types: [published]
+  schedule:
+    - cron: '0 9 * * *' # UTC 9:00 (北京时间 17:00)
 
 jobs:
   publish-tauri:
@@ -51,15 +53,47 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install --no-frozen-lockfile # change this to npm, pnpm or bun depending on which one you use.
 
+      - name: Process version for scheduled builds
+        if: github.event_name == 'schedule'
+        id: version
+        run: |
+          # 提取基础版本号,添加时间戳
+          BASE_VERSION=$(grep -o '"version": "[^"]*"' backend/tauri.conf.json | cut -d'"' -f4 | sed -E 's/-alpha\.[0-9]+//')
+          timestamp=$(date +%Y%m%d%H%M%S)
+          FINAL_VERSION="${BASE_VERSION}-alpha.${timestamp}"
+          echo "VERSION=${FINAL_VERSION}" >> $GITHUB_ENV
+          echo "Generated version: ${FINAL_VERSION}"
+          
+          # 更新 tauri.conf.json 中的版本号
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            powershell -Command "(Get-Content backend/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$env:FINAL_VERSION\"' | Set-Content backend/tauri.conf.json"
+          else
+            sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${FINAL_VERSION}\"/" backend/tauri.conf.json
+          fi
+
+      - name: Generate release name
+        id: release_name
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "RELEASE_NAME=QwikPage v${{ env.VERSION }}" >> $GITHUB_ENV
+            echo "TAG_NAME=app-v${{ env.VERSION }}" >> $GITHUB_ENV
+            echo "PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "RELEASE_NAME=QwikPage v__VERSION__" >> $GITHUB_ENV
+            echo "TAG_NAME=app-v__VERSION__" >> $GITHUB_ENV
+            echo "PRERELEASE=false" >> $GITHUB_ENV
+          fi
+        shell: bash
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: "QwikPage v__VERSION__"
+          tagName: ${{ env.TAG_NAME }} # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: ${{ env.RELEASE_NAME }}
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
-          prerelease: false
+          prerelease: ${{ env.PRERELEASE }}
           args: ${{ matrix.args }}

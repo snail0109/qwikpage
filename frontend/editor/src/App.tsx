@@ -15,11 +15,11 @@ dayjs.locale("zh-cn");
 import "./App.less";
 import { useEffect, useState } from "react";
 import usePreferencesStore from "./stores/preferencesStore";
-// import UpdaterDialog from "./components/UpdaterDialog";
+import UpdaterDialog from "./components/UpdaterDialog";
 
 function App() {
     const [loading, setLoading] = useState(true)
-    const { get_preferences, fontFamily, fontSize}  = usePreferencesStore();
+    const { get_preferences, fontFamily, fontSize } = usePreferencesStore();
 
     useEffect(() => {
         get_preferences().then(() => {
@@ -74,7 +74,7 @@ function App() {
                 <AntdGlobal />
                 <RouterProvider router={router} />
             </AntdApp>
-            {/* <UpdaterDialog /> */}
+            {import.meta.env.MODE !== 'development' && <UpdaterDialog />}
         </ConfigProvider>
     );
 }
