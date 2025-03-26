@@ -66,6 +66,10 @@ function App() {
                         darkItemBg: "#000",
                         darkItemHoverColor: "#216EF7",
                     },
+                    Form: {
+                        itemMarginBottom: 15,
+                        verticalLabelPadding: 0
+                    }
                 },
                 // algorithm: marsTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
             }}
