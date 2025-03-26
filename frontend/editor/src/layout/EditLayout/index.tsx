@@ -14,7 +14,7 @@ const Menu = lazy(() => import("../components/Menu"));
 const ConfigPanel = lazy(() => import("../components/ConfigPanel/ConfigPanel"));
 
 // 左侧菜单宽度
-const DEFAULT_LEFT_SIZE = 290;
+const DEFAULT_LEFT_SIZE = 310;
 // 配置面板宽度
 const DEFAULT_CONFIG_SIZE = 250;
 // 菜单固定宽度
