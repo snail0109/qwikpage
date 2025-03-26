@@ -123,6 +123,9 @@ const EditLayout = () => {
                 <Notice />
                 <ConfigProvider
                     theme={{
+                        token: {
+                            borderRadiusLG: 4,
+                          },
                         components: {
                             Splitter: {
                                 colorFill: "#e8e9eb",
