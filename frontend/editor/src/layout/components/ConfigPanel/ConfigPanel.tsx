@@ -3,7 +3,8 @@ import { ConfigProvider, Flex, Form, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import { usePageStore } from '@/stores/pageStore';
-import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import { CheckOutlined, CopyOutlined, Html5TwoTone } from '@ant-design/icons';
+import ConfigSvg from '@/assets/icons/config.svg?react';
 import { message } from '@/utils/AntdGlobal';
 import { defaultsDeep } from 'lodash-es';
 import copy from 'copy-to-clipboard';
@@ -138,15 +139,15 @@ const ConfigPanel = memo(() => {
       label: `属性`,
       children: (
         <Form form={form} style={{ padding: "0px 10px 20px" }} {...formLayout} layout="vertical" onValuesChange={run}>
-          {/* <div className={styles.widget}>
-            {selectedElement?.id ? <span className={styles.text}>组件ID：{selectedElement?.id}</span> : null}
-            {selectedElement?.id && isCopy ? (
+          <div className={styles.widget}>
+            {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
+            {/* {selectedElement?.id && isCopy ? (
               <CheckOutlined className={styles.ml5} />
             ) : (
               selectedElement?.id && <CopyOutlined onClick={handleCopy} className={styles.ml5} />
-            )}
+            )} */}
           </div>
-          <Flex justify="space-between" gap={20} className={styles.widget}>
+          {/* <Flex justify="space-between" gap={20} className={styles.widget}>
             <span>宽度: {clientSize.width.toFixed(0)} </span>
             <span>高度: {clientSize.height.toFixed(0)}</span>
           </Flex> */}

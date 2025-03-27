@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="属性" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="首页-组件属性讨论版" transform="translate(-811, -1266)">
+            <g id="编组-17" transform="translate(811, 1266)">
+                <rect id="矩形" x="0" y="0" width="14" height="14"></rect>
+                <path d="M4.85422899,3.81017134 C4.85422899,2.81044131 5.6646703,2 6.66440033,2 L11.1898287,2 C12.1895587,2 13,2.81044131 13,3.81017134 L13,8.33559967 C13,9.3353297 12.1895587,10.145771 11.1898287,10.145771 L8.56660491,10.145771" id="路径" stroke="#22A2FF" fill="#DBEDFF"></path>
+                <path d="M4.84653212,5.70473568 L8.67393097,12.3592603 L0.880106138,12.3592603 L4.84653212,5.70473568 Z" id="三角形" stroke="#22A2FF" fill="#DBEDFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
