@@ -1,5 +1,5 @@
 import { Form, Input, Space, InputNumber, Col, Row } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusOutlined,  PlusOutlined } from '@ant-design/icons';
 import VsEditor from '@/components/VsEditor';
 import VariableBind from '@/components/VariableBind/VariableBind';
 import styles from '../index.module.less';
@@ -21,7 +21,7 @@ const SettingForm = function () {
                   </Form.Item>
                   <PlusOutlined className={styles.variableIcon} onClick={() => add({ key: '', value: '' })} />
                   {index > 0 && (
-                    <MinusCircleOutlined
+                    <MinusOutlined
                       className={styles.variableIcon}
                       onClick={() => {
                         remove(name);
