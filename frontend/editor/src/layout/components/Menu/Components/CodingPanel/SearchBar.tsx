@@ -349,6 +349,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchTex
         }
     };
 
+    // 关闭三件套
+    const handleClose = () => {
+        clearDecorations();
+        // 清理搜索框
+        setSearchText('');
+        onClose();
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -358,10 +366,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchTex
                 findNext();
             }
         } else if (e.key === "Escape") {
-            clearDecorations();
-            // 清理搜索框
-            setSearchText('');
-            onClose();
+            handleClose();
         }
     };
 
@@ -493,7 +498,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor, visible, initialSearchTex
                     <Tooltip title="关闭">
                         <Button
                             icon={<CloseOutlined />}
-                            onClick={onClose}
+                            onClick={handleClose}
                             type="text"
                             size="small"
                         />
