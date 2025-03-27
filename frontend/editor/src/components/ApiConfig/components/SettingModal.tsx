@@ -1,9 +1,10 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useRef } from "react";
 import { Form, Modal, Tabs, ConfigProvider, Button } from "antd";
 import type { TabsProps } from "antd";
 import BaseSetting from "./BaseSetting";
 import ReturnStructure from "./ReturnStructure";
 import ReturnTips from "./ReturnTips";
+import ApiTestModal from "./ApiTestModal";
 import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
@@ -20,6 +21,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   }));
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
+  const apiTestModalRef = useRef<{ showModal: (data?: any) => void }>();
 
   // 初始化接口配置数据
   const initValue = {
@@ -102,9 +104,18 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     form.resetFields();
   }
 
+  // 做网络请求测试，拿到数据，填写到之后的弹出框中
+  const handleApiTest = () => {
+    // 获取当前页面的接口配置数据
+    const apiConfig = form.getFieldsValue();
+    debugger;
+
+    apiTestModalRef.current?.showModal();
+  }
+
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button color="primary" variant="outlined" onClick={handleCancel}>
+        <Button color="primary" variant="outlined" onClick={handleApiTest}>
           测试
         </Button>
         <div>
@@ -120,6 +131,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   
 
   return (
+    <>
     <Modal
       wrapClassName={styles.apiSettingModal}
       width={"800px"}
@@ -140,6 +152,9 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
         </Form>
       </ConfigProvider>
     </Modal>
+    {/* 接口设置 */}
+    <ApiTestModal ref={apiTestModalRef}></ApiTestModal>
+    </>
   );
 };
 

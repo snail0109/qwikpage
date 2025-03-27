@@ -1,19 +1,32 @@
 .attrBox {
-  height: 100vh;
+  // height: 100vh;
   border-left: 1px solid var(--mars-theme-border-color);
   overflow: auto;
+  .attrsForm {
+    padding: 0 10px 10px;
+    :global {
+      .ant-form-item-horizontal {
+        .ant-form-item-control-input-content {
+          display: flex;
+          justify-content: end;
+        }
+      }
+    }
+    
+  }
 }
 .widget {
   position: relative;
-  top: -8px;
+  top: -5px;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
-  width: 90%;
-  margin-inline: auto;
   text-align: center;
-  color: #5b5b5c;
-  line-height: 30px;
+  color: #333333;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 5px;
+  margin-bottom: 3px;
 }
 .text {
   white-space: nowrap; /* 防止文本换行 */

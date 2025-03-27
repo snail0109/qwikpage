@@ -3,7 +3,8 @@ import { ConfigProvider, Flex, Form, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import { usePageStore } from '@/stores/pageStore';
-import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import { CheckOutlined, CopyOutlined, Html5TwoTone } from '@ant-design/icons';
+import ConfigSvg from '@/assets/icons/config.svg?react';
 import { message } from '@/utils/AntdGlobal';
 import { defaultsDeep } from 'lodash-es';
 import copy from 'copy-to-clipboard';
@@ -128,8 +129,8 @@ const ConfigPanel = memo(() => {
   };
 
   const formLayout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 15 },
+    // labelCol: { span: 8 },
+    // wrapperCol: { span: 15 },
   };
 
   const items: TabsProps['items'] = [
@@ -137,19 +138,10 @@ const ConfigPanel = memo(() => {
       key: 'props',
       label: `属性`,
       children: (
-        <Form form={form} style={{ paddingBottom: 20 }} {...formLayout} layout="horizontal" labelAlign="right" onValuesChange={run}>
+        <Form form={form} className={styles.attrsForm} {...formLayout} layout="vertical" onValuesChange={run}>
           <div className={styles.widget}>
-            {selectedElement?.id ? <span className={styles.text}>组件ID：{selectedElement?.id}</span> : null}
-            {selectedElement?.id && isCopy ? (
-              <CheckOutlined className={styles.ml5} />
-            ) : (
-              selectedElement?.id && <CopyOutlined onClick={handleCopy} className={styles.ml5} />
-            )}
+            {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
           </div>
-          <Flex justify="space-between" gap={20} className={styles.widget}>
-            <span>宽度: {clientSize.width.toFixed(0)} </span>
-            <span>高度: {clientSize.height.toFixed(0)}</span>
-          </Flex>
           <Suspense fallback={<SpinLoading />}>
             <SetterRender attrs={ComponentConfig?.attrs || []} form={form} />
           </Suspense>
@@ -194,6 +186,7 @@ const ConfigPanel = memo(() => {
         components: {
           Tabs: {
             titleFontSize: 14,
+            horizontalMargin: '0 0 10px 0'
           },
           Form: {
             itemMarginBottom: 15,

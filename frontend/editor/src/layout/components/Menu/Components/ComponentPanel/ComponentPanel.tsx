@@ -130,6 +130,7 @@ const ComponentPanel = () => {
   return (
     <Tabs
       size={'small'}
+      centered
       className={styles.componentPanel}
       defaultActiveKey={tabs[0].key}
       tabPosition={'top'}

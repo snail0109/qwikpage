@@ -120,7 +120,7 @@ const EditLayout = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             {/* 编辑器 */}
-            <div className={styles.editor} style={{ height: "100vh" }} >
+            <div className={styles.editor} style={{ height: "calc(100vh - 32px)" }} >
                 <Notice />
                 <ConfigProvider
                     theme={{

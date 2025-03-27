@@ -43,7 +43,7 @@
       &:hover {
         background-color: #f6f6f6;
         border-radius: 4px
-      }   
+      }
     }
 
     .ant-tree .ant-tree-treenode-selected {
@@ -54,6 +54,7 @@
     .ant-tree .ant-tree-node-content-wrapper:hover {
       background-color: unset;
     }
+
     .ant-tree .ant-tree-node-selected {
       // background-color: #9d5cff;
       // color: #fff;
@@ -71,6 +72,19 @@
     .ant-tree .ant-tree-switcher {
       margin-inline-end: unset;
     }
+
+    // 目录图标对齐
+    .ant-tree .ant-tree-switcher {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper .ant-tree-iconEle {
+      display: inline-flex;
+      align-items: center;
+    }
+
   }
 }
 
@@ -87,7 +101,7 @@
   transition: all 0.3s;
   min-width: 100px;
 
-  
+
   &:hover {
     background-color: #F4F4F4;
     // 取消hover放大效果
@@ -122,7 +136,8 @@
 .menuContainer {
   position: relative;
   height: 100%;
-  width: 100%; /* 确保容器占满Splitter.Panel的宽度 */
+  width: 100%;
+  /* 确保容器占满Splitter.Panel的宽度 */
 }
 
 .collapseButtonContainer {
@@ -142,8 +157,9 @@
   height: 21px;
   border-radius: 3px;
   transition: all 0.3s;
-  color: transparent;  /* 默认文字颜色 */
-  
+  color: transparent;
+  /* 默认文字颜色 */
+
   &:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #1677ff;
@@ -173,12 +189,14 @@
   .leftTool {
     :global {
       .ant-tabs-nav {
-        width: 50px !important; /* 强制覆盖宽度 */
+        width: 50px !important;
+        /* 强制覆盖宽度 */
         min-width: 50px !important;
       }
-      
+
       .ant-tabs-content-holder {
-        display: none !important; /* 完全隐藏内容区域 */
+        display: none !important;
+        /* 完全隐藏内容区域 */
       }
     }
   }
