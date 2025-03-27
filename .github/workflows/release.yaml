@@ -23,7 +23,7 @@ jobs:
         id: get_build_time
         shell: bash
         run: |
-          BuildTime=$(date +%Y%m%d%H%M%S)
+          BuildTime=$(TZ='Asia/Shanghai' date +%Y%m%d%H%M%S)
           echo "build_time=$BuildTime" >> "$GITHUB_OUTPUT"
 
           echo "Build Time: ${BuildTime}"
