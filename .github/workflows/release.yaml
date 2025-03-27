@@ -84,7 +84,7 @@ jobs:
           if [ "${{ github.event_name }}" == "schedule" ]; then
             # 定时触发，从tauri.conf.json内读取，添加时间戳,生成alpha版本
             base_version=$(jq -r '.version' backend/tauri.conf.json)
-            clean_version=$(echo "$base_version" | sed 's/-alpha\.[0-9]\{1,\}$//')
+            clean_version=$(echo "$base_version" | sed 's/-alpha[^-]*$//')
             build_time="${{ needs.prepare.outputs.build_time }}"
             FINAL_VERSION="${clean_version}-alpha.${build_time}"
             echo "Generated version: ${FINAL_VERSION}"
