@@ -138,7 +138,7 @@ const ConfigPanel = memo(() => {
       label: `属性`,
       children: (
         <Form form={form} style={{ padding: "0px 10px 20px" }} {...formLayout} layout="vertical" onValuesChange={run}>
-          <div className={styles.widget}>
+          {/* <div className={styles.widget}>
             {selectedElement?.id ? <span className={styles.text}>组件ID：{selectedElement?.id}</span> : null}
             {selectedElement?.id && isCopy ? (
               <CheckOutlined className={styles.ml5} />
@@ -149,7 +149,7 @@ const ConfigPanel = memo(() => {
           <Flex justify="space-between" gap={20} className={styles.widget}>
             <span>宽度: {clientSize.width.toFixed(0)} </span>
             <span>高度: {clientSize.height.toFixed(0)}</span>
-          </Flex>
+          </Flex> */}
           <Suspense fallback={<SpinLoading />}>
             <SetterRender attrs={ComponentConfig?.attrs || []} form={form} />
           </Suspense>
@@ -194,6 +194,7 @@ const ConfigPanel = memo(() => {
         components: {
           Tabs: {
             titleFontSize: 14,
+            horizontalMargin: '0 0 10px 0'
           },
           Form: {
             itemMarginBottom: 15,

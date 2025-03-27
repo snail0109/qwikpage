@@ -6,11 +6,7 @@ import RulesSetting from '../../components/RulesSetting';
 export default {
   // 组件属性配置JSON
   attrs: [
-    {
-      type: 'Title',
-      label: '标签配置',
-      key: 'formItem',
-    },
+    
     {
       type: 'Input',
       label: '标题',
