@@ -128,8 +128,8 @@ const ConfigPanel = memo(() => {
   };
 
   const formLayout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 15 },
+    // labelCol: { span: 8 },
+    // wrapperCol: { span: 15 },
   };
 
   const items: TabsProps['items'] = [
@@ -137,7 +137,7 @@ const ConfigPanel = memo(() => {
       key: 'props',
       label: `属性`,
       children: (
-        <Form form={form} style={{ paddingBottom: 20 }} {...formLayout} layout="horizontal" labelAlign="right" onValuesChange={run}>
+        <Form form={form} style={{ padding: "0px 10px 20px" }} {...formLayout} layout="vertical" onValuesChange={run}>
           <div className={styles.widget}>
             {selectedElement?.id ? <span className={styles.text}>组件ID：{selectedElement?.id}</span> : null}
             {selectedElement?.id && isCopy ? (
