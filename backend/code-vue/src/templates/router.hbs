@@ -1,0 +1,19 @@
+import { createRouter, createWebHistory } from 'vue-router';
+{{#each routes}}
+import {{this.name}} from '{{this.component_path}}';
+{{/each}}
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {{#each routes}}
+    { 
+      path: '{{this.path}}', 
+      name: '{{this.name}}', 
+      component: {{this.name}} 
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ]
+})
+
+export default router;
