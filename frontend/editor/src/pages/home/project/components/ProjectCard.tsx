@@ -140,7 +140,7 @@ export default function Category({ list }: { list: IProject[] }) {
             <div className={projectCardStyle.projectGrid}>
                 {list.map((project) => {
                     const backgroundImage = themeColorToImageMap[project.themeColor];
-                    const src = project.logo.includes("com.qwikpage.desktop/resources/project_logo")
+                    const src = project.logo.includes("/project_logo")
                         ? convertFileSrc(project.logo)
                         : project.logo;
                     return (
