@@ -1,69 +1,13 @@
-[package]
-name = "qwikpage"
-version = "0.0.0"
-description = "Qwikpage Desktop Application"
-authors = ["you"]
+[workspace]
+members = ["tauri", "code-core", "code-vue"]
+resolver = "2"
+
+[workspace.package]
 edition = "2021"
-publish = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[lib]
-# The `_lib` suffix may seem redundant but it is necessary
-# to make the lib name unique and wouldn't conflict with the bin name.
-# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
-[build-dependencies]
-tauri-build = { version = "2", features = [] }
-
-[dependencies]
-tauri = { version = "2", features = ["protocol-asset"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-log = "0.4.21"
-dunce = "1.0.4"                                                                            # for cross platform path normalization
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
 anyhow = "1.0"
-convert_case = "0.6.0"
-once_cell = "1.19.0"
-dirs = "5.0.1"
-chrono = { version = "0.4.38", features = ["serde"] }
-open = "5.0.1"
-rocket = { version = "0.5.1", features = ["json"] }
-async-trait = "0.1.85"
-dark-light = "1.1.1"
-
-
-# Algorithms
-uuid = { version = "1.11.0", features = ["v4"] }
-
-# tauri-plugin
-tauri-plugin-os = "2"
-tauri-plugin-opener = "2"
-tauri-plugin-log = { version = "2", features = ["colored"] }
-tauri-plugin-dialog = "2"
-tauri-plugin-updater = "2"
-tauri-plugin-process = "2"
-# tauri-plugin-fs = { version = "2.0.0", features = ["watch"] }
-tauri-plugin-single-instance = "2"
-zip = "2.2.2"
-reqwest = { version = "0.12", features = ["blocking"] }
-tokio = { version = "1.43.0", features = ["sync"] }
-futures = "0.3"
-sanitize-filename = "0.6.0"
-font-kit = "0.14.2"
-thiserror = "2"
-tauri-plugin-store = "2"
-
-[target.'cfg(windows)'.dependencies]
-deelevate = "0.2.0"
-winreg = { version = "0.55", features = ["transactions"] }
-windows-registry = "0.5"
-windows-sys = { version = "0.59", features = [
-  "Win32_System_LibraryLoader",
-  "Win32_System_SystemInformation",
-] }
-windows-core = "0.60.1"
-webview2-com = "0.36"
-
+uuid = { version = "1.16.0", features = ["v4", "serde"] }
