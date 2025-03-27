@@ -5,6 +5,9 @@ import { useShallow } from "zustand/react/shallow";
 import style from "./index.module.less";
 import { cloneDeep } from "lodash-es";
 import { getElement } from "@/utils/util";
+import FolderDirIcon from "@/assets/icons/FolderDirIcon.svg?react";
+import FolderOpenDirIcon from "@/assets/icons/FolderOpenDirIcon.svg?react";
+import IconFile from "@/assets/icons/IconFile.svg?react";
 /**
  * 大纲
  */
@@ -94,10 +97,27 @@ const OutlinePanel = memo(() => {
     setSelectedKeys([]);
   };
 
+  // 自定义展开/折叠图标
+  const customSwitcherIcon = (props: any) => {
+    // expanded 属性表示节点是否展开
+    if (props.expanded) {
+      return <FolderOpenDirIcon width={14} height={14} />;
+    }
+    return <FolderDirIcon width={14} height={14} />;
+  };
+
+  // 自定义节点节点图标
+  const customIcon = () => {
+    return <IconFile />;
+  };
+
   return (
     <div className={style.outlinePanel}>
       <Tree
-        showLine={{ showLeafIcon: true }}
+        // showLine={{ showLeafIcon: customLeafIcon }}
+        showIcon
+        icon={customIcon}
+        switcherIcon={customSwitcherIcon}
         defaultExpandAll
         draggable={{ icon: false }}
         fieldNames={{ title: "type", key: "id", children: "elements" }}
