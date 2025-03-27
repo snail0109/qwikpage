@@ -32,30 +32,21 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
         if (item.type == 'Title') {
-          if (item.popover) {
-            return (
-              <Popover title={item.popover?.title} content={item.popover.content} placement={item.popover.placement || 'left'} key={key}>
-                <h2 className={styles.title}>
-                  <span style={{ marginRight: 10 }}>{item.label}</span>
-                  <QuestionCircleOutlined />
-                </h2>
-              </Popover>
-            );
-          }
-          return (
-            <h2 className={styles.title} key={key}>
-              <span style={{ marginRight: 10 }}>{item.label}</span>
-              {/* 标题增加提示信息 */}
-              {item.tooltip ? <Tooltip title={item.tooltip}>{<QuestionCircleOutlined />}</Tooltip> : null}
+          return null;
+          // return (
+          //   <h2 className={styles.title} key={key}>
+          //     <span style={{ marginRight: 10 }}>{item.label}</span>
+          //     {/* 标题增加提示信息 */}
+          //     {item.tooltip ? <Tooltip title={item.tooltip}>{<QuestionCircleOutlined />}</Tooltip> : null}
 
-              {/* 标题增加跳转链接 */}
-              {item.link ? (
-                <a href={item.link.url} target="_blank" style={{ fontSize: 12 }}>
-                  {item.link.label}
-                </a>
-              ) : null}
-            </h2>
-          );
+          //     {/* 标题增加跳转链接 */}
+          //     {item.link ? (
+          //       <a href={item.link.url} target="_blank" style={{ fontSize: 12 }}>
+          //         {item.link.label}
+          //       </a>
+          //     ) : null}
+          //   </h2>
+          // );
         } else if (item.type == 'Input') {
           FormControl = <Input {...item.props} />;
         } else if (item.type === 'InputPx') {
@@ -114,13 +105,6 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
           </Form.Item>
         );
       })}
-      {/* 公共属性 */}
-      <h2 className={styles.title} key="visibleTitle">
-        <span style={{ marginRight: 10 }}>组件显隐</span>
-      </h2>
-      <Form.Item key="showOrHide" name="showOrHide" label="显示条件">
-        <VariableBindInput />
-      </Form.Item>
     </>
   );
 });
