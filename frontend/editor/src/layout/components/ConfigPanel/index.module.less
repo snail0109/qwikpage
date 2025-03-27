@@ -1,7 +1,19 @@
 .attrBox {
-  height: 100vh;
+  // height: 100vh;
   border-left: 1px solid var(--mars-theme-border-color);
   overflow: auto;
+  .attrsForm {
+    padding: 0 10px 10px;
+    :global {
+      .ant-form-item-horizontal {
+        .ant-form-item-control-input-content {
+          display: flex;
+          justify-content: end;
+        }
+      }
+    }
+    
+  }
 }
 .widget {
   position: relative;

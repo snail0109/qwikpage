@@ -138,19 +138,10 @@ const ConfigPanel = memo(() => {
       key: 'props',
       label: `属性`,
       children: (
-        <Form form={form} style={{ padding: "0px 10px 20px" }} {...formLayout} layout="vertical" onValuesChange={run}>
+        <Form form={form} className={styles.attrsForm} {...formLayout} layout="vertical" onValuesChange={run}>
           <div className={styles.widget}>
             {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
-            {/* {selectedElement?.id && isCopy ? (
-              <CheckOutlined className={styles.ml5} />
-            ) : (
-              selectedElement?.id && <CopyOutlined onClick={handleCopy} className={styles.ml5} />
-            )} */}
           </div>
-          {/* <Flex justify="space-between" gap={20} className={styles.widget}>
-            <span>宽度: {clientSize.width.toFixed(0)} </span>
-            <span>高度: {clientSize.height.toFixed(0)}</span>
-          </Flex> */}
           <Suspense fallback={<SpinLoading />}>
             <SetterRender attrs={ComponentConfig?.attrs || []} form={form} />
           </Suspense>

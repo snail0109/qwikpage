@@ -57,8 +57,8 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
           FormControl = <InputSelect {...item.props} />;
         } else if (item.type == 'Switch') {
           return (
-            <Form.Item key={key} name={item.name} label={item.label} tooltip={item.tooltip} valuePropName="checked">
-              <Switch />
+            <Form.Item layout='horizontal' colon={false} key={key} name={item.name} label={item.label} tooltip={item.tooltip} valuePropName="checked">
+              <Switch size='small'/>
             </Form.Item>
           );
         } else if (item.type == 'Select') {
