@@ -1,6 +1,6 @@
 pub mod ffi;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 use uuid::Uuid;
 
 use serde::{Serialize, Deserialize};
@@ -67,7 +67,7 @@ impl<T: Serialize> From<Result<T, GeneratorError>> for FfiResult<T> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GeneratorOptions {
     pub project_name: String,
-    pub output_dir: String,
+    pub output_dir: PathBuf,
     pub version: String,
     pub package_manager: String, // npm/yarn/pnpm
     pub page_list: Vec<PageConfig>,

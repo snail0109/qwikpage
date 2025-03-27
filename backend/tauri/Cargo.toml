@@ -19,6 +19,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+libloading = "0.7"
 code-core = { path = "../code-core" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
@@ -65,5 +66,4 @@ windows-sys = { version = "0.59", features = [
 ] }
 windows-core = "0.60.1"
 webview2-com = "0.36"
-
 

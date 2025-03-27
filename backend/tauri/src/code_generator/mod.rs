@@ -1,23 +1,23 @@
-mod config;
 mod utils;
-
-use std::path::PathBuf;
 
 use crate::{
     error::{CommonError, Result},
     types::{page::Page, project::Project},
 };
-use config::ExportType;
+use code_core::{FfiResult, GeneratedArtifact, GeneratorOptions};
+use libloading::{Library, Symbol};
 use log;
 use serde::{Deserialize, Serialize};
+use std::ffi::{c_char, CStr, CString};
+use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
-    pub project_id: String,      // 项目 ID
-    pub export_type: ExportType, // 导出类型
+    pub project_id: String,  // 项目 ID
+    pub export_type: String, // 导出类型
 }
 
 #[derive(Serialize, Clone)]
@@ -29,17 +29,34 @@ struct StepPayload {
 pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()> {
     log::info!("======开始导出代码========");
 
-    let window = app.get_webview_window("main").unwrap();
+    // 获取插件包目录
+    let resource_dir = app
+        .path()
+        .resource_dir()
+        .expect("Failed to get resource directory");
+    let mut lib_path: PathBuf;
+    #[cfg(target_os = "macos")]
+    {
+        lib_path = resource_dir
+            .join("plugins")
+            .join(format!("lib{}.dylib", params.export_type));
+    }
 
-    window
-        .emit(
-            "generate-code-step",
-            StepPayload {
-                step: "init".into(),
-                message: "初始化中...".into(),
-            },
-        )
-        .unwrap();
+    #[cfg(target_os = "windows")]
+    {
+        lib_path = resource_dir
+            .join("plugins")
+            .join(format!("lib{}.dylib", params.export_type));
+    }
+
+    //    lib_path 没有值直接返回
+    if !lib_path.exists() {
+        return Err(CommonError::Other("不支持该类型插件".to_string()));
+    }
+
+    let lib = unsafe { Library::new(lib_path).map_err(|e| CommonError::Other(e.to_string()))? };
+
+    let window = app.get_webview_window("main").unwrap();
 
     log::info!("查询项目 {:?} 页面信息", &params.project_id);
     let project = Project::load(params.project_id.clone()).map_err(|e| {
@@ -54,63 +71,37 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         return Err(CommonError::NoPages);
     }
 
-    // 创建代码存放目录
-    // 步骤2：处理数据
-    window
-        .emit(
-            "generate-code-step",
-            StepPayload {
-                step: "processing".into(),
-                message: "创建项目框架代码...".into(),
-            },
-        )
-        .unwrap();
-
     let code_export_path = project.code_export_path;
     let project_export_path = PathBuf::from(code_export_path).join(&params.project_id);
 
     log::info!("创建项目代码目录: {:?}", project_export_path);
     async_fs::create_dir_all(&project_export_path).await?;
 
-    // 创建生成器配置
-    // let template_url = params.export_type.get_template_url();
-    // let config_path = Config::global().preferences().get_project_path();
-    // let resource_dir =config_path.join(&params.project_id).join("resources");
+    // 按需调整
+    let options = GeneratorOptions {
+        project_name: project.name,
+        output_dir: project_export_path.clone(),
+        version: "1.0.0".into(),
+        package_manager: "npm".into(),
+        page_list: vec![],
+    };
 
-    // let config = GeneratorConfig::new(
-    //     params.project_id.clone(),
-    //     project_export_path.clone(),
-    //     template_url,
-    //     resource_dir,
-    // );
+    unsafe {
+        // 如果是mac file name 是  "lib"+params.export_type.to_string() + ".dylib", 如果是windows 则是 params.export_type.to_string() + ".dll"
 
-    // 根据导出类型选择对应的生成器
-    // let generator = match params.export_type {
-    //     ExportType::Vue => Generator::Vue(VueGenerator),
-    // };
+        let generate: Symbol<unsafe extern "C" fn(*const c_char) -> *mut c_char> =
+            lib.get(b"generate_project").map_err(|e| e.to_string())?;
+        let options_json =
+            CString::new(serde_json::to_string(&options)?).map_err(|e| e.to_string())?;
+        let result_ptr = generate(options_json.as_ptr());
+        let result_str = CStr::from_ptr(result_ptr)
+            .to_str()
+            .map_err(|e| e.to_string())?;
+        let result: FfiResult<Vec<GeneratedArtifact>> = serde_json::from_str(result_str)?;
+        handle_generation_result(result);
+    }
 
-    // 下载模板
-    log::info!("开始下载模板...");
-    // generator.download_template(&config).await.map_err(|e| {
-    //     error!("下载模板失败: {}", e);
-    //     CommonError::DownloadError(e.to_string())
-    // })?;
-    log::info!("模板下载成功");
-
-    // 导出代码
-    // generator
-    //     .export_code(&config, page_list)
-    //     .await
-    //     .map_err(|e| {
-    //         error!("导出代码失败: {}", e);
-    //         CommonError::ExportError(e.to_string())
-    //     })?;
-
-    // 导出资源
-    // generator.export_resources(&config).await.map_err(|e| {
-    //     error!("导出资源文件失败: {}", e);
-    //     CommonError::ExportError(e.to_string())
-    // })?;
+    // TODO 导出资源
 
     // 步骤3：完成
     window
@@ -135,5 +126,23 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         })?;
 
     log::info!("======代码导出完成========");
+    Ok(())
+}
+
+fn handle_generation_result(result: FfiResult<Vec<GeneratedArtifact>>) -> anyhow::Result<()> {
+    if result.success {
+        println!("Successfully generated:");
+        for artifact in result.data.unwrap() {
+            println!(
+                "✓ {} ({} bytes)",
+                artifact.file_path,
+                artifact.content.len()
+            );
+        }
+        println!("\nRun your project:");
+        println!("cd dist-vue && npm install && npm run dev");
+    } else {
+        anyhow::bail!("Generation failed: {}", result.error.unwrap());
+    }
     Ok(())
 }

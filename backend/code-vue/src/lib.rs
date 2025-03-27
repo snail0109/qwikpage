@@ -33,7 +33,7 @@ impl TemplateData {
 struct VueGenerator {
     pages: Vec<String>,
     page_list: Vec<PageConfig>,
-    output_dir: String,
+    output_dir: PathBuf,
     page_route_list: Vec<RouteInfo>,
     reg: Handlebars<'static>,
 }
@@ -58,7 +58,7 @@ impl VueGenerator {
 
 impl CodeGenerator for VueGenerator {
     fn init_project(&self, options: &GeneratorOptions) -> Result<Vec<GeneratedArtifact>, Error> {
-        let output_dir = Path::new(&options.output_dir);
+        let output_dir = &options.output_dir;
         let mut artifacts = vec![];
 
         // 创建基础目录结构
@@ -139,7 +139,7 @@ impl CodeGenerator for VueGenerator {
 }
 
 #[no_mangle]
-pub extern "C" fn generate_vue_project(options_json: *const c_char) -> *mut c_char {
+pub extern "C" fn generate_project(options_json: *const c_char) -> *mut c_char {
     let options = unsafe { parse_options(options_json) };
     let generator = VueGenerator::new(&options);
 
