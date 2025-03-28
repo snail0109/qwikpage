@@ -44,18 +44,18 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         return Err(CommonError::Other("获取插件包目录失败".to_string()));
     }
 
-
     let lib_path: PathBuf;
     #[cfg(target_os = "macos")]
     {
+        let arch = std::env::consts::ARCH; // 获取当前架构
         lib_path = plugins_dir
+            .join(arch)
             .join(format!("libcode_{}.dylib", params.export_type));
     }
 
     #[cfg(target_os = "windows")]
     {
-        lib_path = plugins_dir
-            .join(format!("code_{}.dll", params.export_type));
+        lib_path = plugins_dir.join(format!("code_{}.dll", params.export_type));
     }
 
     //    lib_path 没有值直接返回
