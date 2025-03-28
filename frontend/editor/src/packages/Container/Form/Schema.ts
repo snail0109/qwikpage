@@ -5,57 +5,29 @@
 export default {
   // 组件属性配置JSON
   attrs: [
-    {
-      type: 'Title',
-      label: '基础配置',
-      key: 'basic',
-    },
-    {
-      type: 'Input',
-      label: '字段',
-      name: 'name',
-      props: {
-        placeholder: '表单字段（默认可空）',
-      },
-    },
-    {
-      type: 'Switch',
-      label: '显示冒号',
-      name: 'colon',
-    },
-    {
-      type: 'Select',
-      label: '标签对齐',
-      name: 'labelAlign',
-      props: {
-        options: [
-          { label: '左对齐', value: 'left' },
-          { label: '右对齐', value: 'right' },
-        ],
-      },
-    },
-    {
-      type: 'Switch',
-      label: '禁用',
-      name: ['disabled'],
-    },
-    {
-      type: 'Select',
-      label: '表单尺寸',
-      name: 'size',
-      props: {
-        options: [
-          { label: '小号', value: 'small' },
-          { label: '中号', value: 'middle' },
-          { label: '大号', value: 'large' },
-        ],
-      },
-    },
-    {
-      type: 'Title',
-      label: '布局',
-      key: 'FormLayout',
-    },
+    // {
+    //   type: 'Title',
+    //   label: '基础配置',
+    //   key: 'basic',
+    // },
+    // {
+    //   type: 'Input',
+    //   label: '字段',
+    //   name: 'name',
+    //   props: {
+    //     placeholder: '表单字段（默认可空）',
+    //   },
+    // },
+    // {
+    //   type: 'Switch',
+    //   label: '显示冒号',
+    //   name: 'colon',
+    // },
+    // {
+    //   type: 'Title',
+    //   label: '布局',
+    //   key: 'FormLayout',
+    // },
     {
       type: 'Select',
       label: '表单布局',
@@ -69,59 +41,88 @@ export default {
       },
     },
     {
-      type: 'InputNumber',
-      label: '标签布局',
-      name: ['labelCol', 'span'],
+      type: 'Select',
+      label: '表单尺寸',
+      name: 'size',
       props: {
-        placeholder: '栅栏数',
+        options: [
+          { label: '小号', value: 'small' },
+          { label: '中号', value: 'middle' },
+          { label: '大号', value: 'large' },
+        ],
+        defaultValue: 'middle',
       },
-    },
-    {
-      type: 'InputNumber',
-      label: '标签偏移',
-      name: ['labelCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件占列',
-      name: ['wrapperCol', 'span'],
-      props: {
-        placeholder: '栅栏数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件偏移',
-      name: ['wrapperCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'Title',
-      label: '其他配置',
-      key: 'OtherConfig',
-    },
-    {
-      type: 'Switch',
-      label: '报错聚焦',
-      name: 'scrollToFirstError',
     },
     {
       type: 'Select',
-      label: '表单形态',
-      name: 'variant',
+      label: '标签对齐方式',
+      name: 'labelAlign',
       props: {
         options: [
-          { value: 'outlined', label: '外边框' },
-          { value: 'borderless', label: '无边框' },
-          { value: 'filled', label: '填充' },
+          { label: '左对齐', value: 'left' },
+          { label: '右对齐', value: 'right' },
         ],
       },
     },
+    {
+      type: 'Switch',
+      label: '禁用',
+      name: ['disabled'],
+    },
+    // {
+    //   type: 'InputNumber',
+    //   label: '标签布局',
+    //   name: ['labelCol', 'span'],
+    //   props: {
+    //     placeholder: '栅栏数',
+    //   },
+    // },
+    // {
+    //   type: 'InputNumber',
+    //   label: '标签偏移',
+    //   name: ['labelCol', 'offset'],
+    //   props: {
+    //     placeholder: '偏移数',
+    //   },
+    // },
+    // {
+    //   type: 'InputNumber',
+    //   label: '控件占列',
+    //   name: ['wrapperCol', 'span'],
+    //   props: {
+    //     placeholder: '栅栏数',
+    //   },
+    // },
+    // {
+    //   type: 'InputNumber',
+    //   label: '控件偏移',
+    //   name: ['wrapperCol', 'offset'],
+    //   props: {
+    //     placeholder: '偏移数',
+    //   },
+    // },
+    // {
+    //   type: 'Title',
+    //   label: '其他配置',
+    //   key: 'OtherConfig',
+    // },
+    // {
+    //   type: 'Switch',
+    //   label: '报错聚焦',
+    //   name: 'scrollToFirstError',
+    // },
+    // {
+    //   type: 'Select',
+    //   label: '表单形态',
+    //   name: 'variant',
+    //   props: {
+    //     options: [
+    //       { value: 'outlined', label: '外边框' },
+    //       { value: 'borderless', label: '无边框' },
+    //       { value: 'filled', label: '填充' },
+    //     ],
+    //   },
+    // },
   ],
   config: {
     props: {
