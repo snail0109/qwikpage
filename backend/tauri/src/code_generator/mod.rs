@@ -45,7 +45,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     {
         lib_path = resource_dir
             .join("plugins")
-            .join(format!("lib{}.dylib", params.export_type));
+            .join(format!("lib{}.dll", params.export_type));
     }
 
     //    lib_path 没有值直接返回
