@@ -55,7 +55,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     #[cfg(target_os = "windows")]
     {
         lib_path = plugins_dir
-            .join(format!("lib{}.dll", params.export_type));
+            .join(format!("code_{}.dll", params.export_type));
     }
 
     //    lib_path 没有值直接返回
