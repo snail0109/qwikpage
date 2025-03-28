@@ -9,8 +9,8 @@
       layout="{{config.props.layout}}"
       {{#if config.props.size}}size="{{config.props.size}}"{{/if}}
       label-align="{{config.props.labelAlign}}"
-      {{#if config.props.labelCol}}:label-col="{{config.props.labelCol}}"{{/if}}
-      {{#if config.props.wrapperCol}}:wrapper-col="{{config.props.wrapperCol}}"{{/if}}
+      {{#if config.props.labelCol}}:label-col="{{objToProps config.props.labelCol}}"{{/if}}
+      {{#if config.props.wrapperCol}}:wrapper-col="{{objToProps config.props.wrapperCol}}"{{/if}}
       style="{{style config.style}}"
       @finish.prevent="handleFormSubmit"
     >
@@ -21,17 +21,20 @@
         ref="{{config.props.formItem.name}}"
         name="{{config.props.formItem.name}}"
         {{#if config.props.wrapperCol}}
-        :wrapper-col="{{config.props.wrapperCol}}" 
+        :wrapper-col="{{objToProps config.props.wrapperCol}}" 
         {{/if}}
         {{/if}}
       >
         {{#if (eq c.type "Input")}}
         {{> qwikpageinput id=c.id config=c.config }}
         {{/if}}
+        {{#if (eq c.type "CheckBox")}}
+        {{> qwikpagecheckbox id=c.id config=c.config methods=t.methods events=t.events }}
+        {{/if}}
         {{#if (eq c.type "Button")}}
         {{> qwikpagebutton id=c.id config=c.config methods=c.methods events=c.events }}
         {{/if}}
-       </a-form-item>
+      </a-form-item>
       {{/each}}
     </a-form>
     {{/if}}
@@ -87,7 +90,8 @@
       return {
         formData,
         formRef,
-        handleEvent
+        handleEvent,
+        handleFormSubmit,
       }
     }
   }

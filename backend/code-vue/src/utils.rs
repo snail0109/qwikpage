@@ -5,6 +5,7 @@ use anyhow::Error;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
 use code_core::types::route::RouteInfo;
 use handlebars::Handlebars;
+use serde_json::{Value};
 use std::fs::{self, File};
 use std::io::Write;
 
@@ -121,6 +122,8 @@ pub fn register_partial(handlebars: &mut Handlebars) {
 // 注册自定义 helper
 pub fn register_helpers(handlebars: &mut Handlebars) {
     handlebars.register_helper("style", Box::new(style_helper));
+    handlebars.register_helper("json", Box::new(json_helper));
+    handlebars.register_helper("objToProps", Box::new(obj_to_props_helper));
 }
 
 pub fn style_helper(
@@ -161,5 +164,48 @@ pub fn style_helper(
         .join("; ");
 
     out.write(&format!("{}", css))?;
+    Ok(())
+}
+
+
+pub fn json_helper(
+    h: &handlebars::Helper,
+    _: &handlebars::Handlebars,
+    _: &handlebars::Context,
+    _: &mut handlebars::RenderContext,
+    out: &mut dyn handlebars::Output,
+) -> handlebars::HelperResult {
+    let param = h.param(0).unwrap();
+    let json_str = serde_json::to_string(param.value()).unwrap_or_default();
+    out.write(&json_str)?;
+    Ok(())
+}
+
+pub fn obj_to_props_helper(
+    h: &handlebars::Helper,
+    _: &handlebars::Handlebars,
+    _: &handlebars::Context,
+    _: &mut handlebars::RenderContext,
+    out: &mut dyn handlebars::Output,
+) -> handlebars::HelperResult {
+    let param = h.param(0).unwrap();
+    
+    if let Value::Object(obj) = param.value() {
+        // 创建一个不带引号的对象字符串表示
+        let props: Vec<String> = obj.iter()
+            .map(|(k, v)| {
+                let value_str = match v {
+                    Value::String(s) => format!("\"{}\"", s),
+                    _ => v.to_string(),
+                };
+                format!("{}: {}", k, value_str)
+            })
+            .collect();
+        
+        out.write(&format!("{{{}}}", props.join(", ")))?;
+    } else {
+        out.write("{}")?;
+    }
+    
     Ok(())
 }

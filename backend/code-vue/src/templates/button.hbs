@@ -2,8 +2,14 @@
   v-bind="$attrs"
   id="{{id}}"
   name="{{config.props.name}}"
+  type="{{config.props.type}}"
+  size="{{config.props.size}}"
   {{#if config.props.disabled}}:disabled="{{config.props.disabled}}"{{/if}} 
   {{#if config.style}}style="{{style config.style}}"{{/if}}
 >
-  {{config.props.text}}
+  {{#if config.props.text.value}}
+  {{config.props.text.value}}
+  {{else}}
+   {{config.props.text}}
+  {{/if}}
 </a-button>

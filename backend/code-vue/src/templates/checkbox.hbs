@@ -1,8 +1,12 @@
-<a-checkbox
+<a-checkbox-group
   type="{{config.props.type}}"
   size="{{config.props.size}}"
   {{#if config.props.disabled}}:disabled="{{config.props.disabled}}"{{/if}} 
   {{#if config.style }}style="{{style config.style}}"{{/if}}
 >
-  {{config.props.text}}
-</a-checkbox>
+  {{#if (eq config.api.sourceType "json")}}
+  {{#each config.api.source}}
+  <a-checkbox value="{{this.value}}" name="{{this.value}}">{{this.label}}</a-checkbox>
+  {{/each}}
+  {{/if}} 
+</a-checkbox-group>
