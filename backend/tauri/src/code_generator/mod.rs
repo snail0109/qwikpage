@@ -1,9 +1,14 @@
 mod utils;
 
 use crate::{
-    error::{CommonError, Result}, storage::page::PageConfig, types::project::Project
+    error::{CommonError, Result},
+    storage::page::PageConfig,
+    types::project::Project,
 };
-use code_core::types::{ffi::FfiResult, generator::{GeneratedArtifact, GeneratorOptions}};
+use code_core::types::{
+    ffi::FfiResult,
+    generator::{GeneratedArtifact, GeneratorOptions},
+};
 use libloading::{Library, Symbol};
 use log;
 use serde::{Deserialize, Serialize};
@@ -29,22 +34,27 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     log::info!("======开始导出代码========");
 
     // 获取插件包目录
-    let resource_dir = app
-        .path()
-        .resource_dir()
-        .expect("Failed to get resource directory");
+    let resource_dir = app.path().resource_dir().map_err(|e| {
+        log::error!("获取资源目录失败: {}", e);
+        CommonError::Other(e.to_string())
+    })?;
+    let plugins_dir = resource_dir.join("plugins");
+    if !plugins_dir.exists() {
+        log::error!("获取插件包目录失败");
+        return Err(CommonError::Other("获取插件包目录失败".to_string()));
+    }
+
+
     let lib_path: PathBuf;
     #[cfg(target_os = "macos")]
     {
-        lib_path = resource_dir
-            .join("plugins")
+        lib_path = plugins_dir
             .join(format!("libcode_{}.dylib", params.export_type));
     }
 
     #[cfg(target_os = "windows")]
     {
-        lib_path = resource_dir
-            .join("plugins")
+        lib_path = plugins_dir
             .join(format!("lib{}.dll", params.export_type));
     }
 
