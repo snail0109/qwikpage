@@ -9,12 +9,15 @@
   {{#if config.style }}style="{{style config.style}}"{{/if}}
 >
   {{#each elements as |c|}}
+  {{#if (eq c.type "Form")}}
+  {{> qwikpageform id=c.id elements=c.elements config=c.config methods=c.methods events=c.events }}
+  {{/if}}
   {{#if (eq c.type "Input")}}
   {{> qwikpageinput id=c.id config=c.config }}
   {{/if}}
 
   {{#if (eq c.type "CheckBox")}}
-  {{> qwikpagecheckbox id=c.id config=c.config methods=t.methods events=t.events }}
+  {{> qwikpagecheckbox id=c.id config=c.config methods=c.methods events=c.events }}
   {{/if}}
   
   {{#if (eq c.type "Button")}}

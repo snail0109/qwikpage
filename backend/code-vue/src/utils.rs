@@ -109,6 +109,8 @@ pub fn register_partial(handlebars: &mut Handlebars) {
     handlebars.register_template_string("views", include_str!("templates/views.hbs"))
         .unwrap();
     // 注册组件代码片段
+    handlebars.register_partial("qwikpageform", include_str!("templates/form.hbs"))
+        .unwrap();
     handlebars.register_partial("qwikpageinput", include_str!("templates/input.hbs"))
         .unwrap();
     handlebars.register_partial("qwikpagebutton", include_str!("templates/button.hbs"))
