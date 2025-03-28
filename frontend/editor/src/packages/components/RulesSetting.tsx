@@ -2,6 +2,7 @@ import { memo } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Dropdown, Form, Input, InputNumber, Switch, Button } from "antd";
 import type { FormInstance, MenuProps } from "antd";
+import styles from './index.module.less';
 /**
  * 给表单添加统一的校验规则
  */
@@ -67,23 +68,16 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
           <>
             {fields.map(({ key, name }) => (
               <Form.Item noStyle key={"rules" + key}>
-                <div
-                  style={{
-                    position: "relative",
-                    backgroundColor: "#f5f5f5",
-                    paddingBlock: 10,
-                    marginBottom: 10,
-                  }}
-                >
+                <div className={styles.rulerItemWrap}>
                   {/* 必填规则 */}
                   {form.getFieldValue(["formItem", "rules", name, "required"]) && (
                     <Form.Item
-                      labelCol={{ span: labelSpan || 8 }}
-                      wrapperCol={{ span: 10 }}
+                      layout="horizontal"
+                      // labelCol={{ span: labelSpan || 8 }}
                       name={[name, "required"]}
                       label="必填规则"
                     >
-                      <Switch />
+                      <Switch size="small" />
                     </Form.Item>
                   )}
                   {/* 长度规则 */}
@@ -91,19 +85,17 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
                     <>
                       <Form.Item
                         labelCol={{ span: labelSpan || 8 }}
-                        wrapperCol={{ span: 14 }}
                         name={[name, "min"]}
                         label="最小长度"
                       >
-                        <InputNumber placeholder="最小长度" />
+                        <InputNumber placeholder="最小长度" style={{ width: "100%" }} />
                       </Form.Item>
                       <Form.Item
                         labelCol={{ span: labelSpan || 8 }}
-                        wrapperCol={{ span: 14 }}
                         name={[name, "max"]}
                         label="最大长度"
                       >
-                        <InputNumber placeholder="最大长度" />
+                        <InputNumber placeholder="最大长度" style={{ width: "100%" }} />
                       </Form.Item>
                     </>
                   )}
@@ -111,7 +103,6 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
                   {form.getFieldValue(["formItem", "rules", name, "key"]) && (
                     <Form.Item
                       labelCol={{ span: labelSpan || 8 }}
-                      wrapperCol={{ span: 14 }}
                       name={[name, "pattern"]}
                       label="校验规则"
                     >
@@ -120,15 +111,14 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
                   )}
                   <Form.Item
                     labelCol={{ span: labelSpan || 8 }}
-                    wrapperCol={{ span: 14 }}
                     name={[name, "message"]}
                     label="错误提示"
                   >
-                    <Input placeholder="错误提示" style={{ width: "100%" }} />
+                    <Input placeholder="错误提示" />
                   </Form.Item>
                   <DeleteOutlined
                     onClick={() => remove(name)}
-                    style={{ position: "absolute", top: 10, right: 8, color: "red" }}
+                    className={styles.deleteRulerBtn}
                   />
                 </div>
               </Form.Item>
@@ -223,13 +213,13 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
               }}
             >
               <Button
-                color="primary"
+                className={styles.addRulerBtn}
+                color="default"
                 variant="dashed"
                 block
                 onClick={(e) => e.preventDefault()}
-                icon={<PlusOutlined />}
               >
-                添加规则
+                请添加规则
               </Button>
             </Dropdown>
           </>

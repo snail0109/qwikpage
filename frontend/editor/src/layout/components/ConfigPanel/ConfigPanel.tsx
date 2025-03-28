@@ -189,11 +189,16 @@ const ConfigPanel = memo(() => {
             horizontalMargin: '0 0 10px 0'
           },
           Form: {
-            itemMarginBottom: 15,
+            labelColor: '#333333',
+            verticalLabelPadding: '0 0 2px 0',
+            itemMarginBottom: 8,
           },
           InputNumber: {
             paddingInline: 8,
           },
+          Input: {
+            paddingInline: 5,
+          }
         },
       }}
     >

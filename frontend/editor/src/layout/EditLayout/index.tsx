@@ -121,7 +121,8 @@ const EditLayout = () => {
         <DndProvider backend={HTML5Backend}>
             {/* 编辑器 */}
             <div className={styles.editor} style={{ height: "calc(100vh - 32px)" }} >
-                <Notice />
+                {/* 使用说明 */}
+                {/* <Notice /> */}
                 <ConfigProvider
                     theme={{
                         token: {
