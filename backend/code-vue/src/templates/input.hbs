@@ -1,8 +1,22 @@
-<a-input
-  v-bind="$attrs"
-  id="{{id}}"
-  {{#if config.props.formItem.name}}v-model="formData.{{config.props.formItem.name}}"{{/if}}
-  placeholder="{{config.props.formWrap.placeholder}}"
-  :clearable="{{config.props.formWrap.allowClear}}"
-  {{#if config.style}}style="{{style config.style}}"{{/if}}
-/>
+<a-form-item
+  {{#if config.props.formItem.name}}
+  label="{{config.props.formItem.label}}"
+  ref="{{config.props.formItem.name}}"
+  name="{{config.props.formItem.name}}"
+  {{/if}}
+  {{#if config.props.labelCol}}
+  :label-col="{{objToProps config.props.labelCol}}" 
+  {{/if}}
+  {{#if config.props.wrapperCol}}
+  :wrapper-col="{{objToProps config.props.wrapperCol}}" 
+  {{/if}}
+>
+  <a-input
+    v-bind="$attrs"
+    id="{{id}}"
+    {{#if config.props.formItem.name}}v-model="formData.{{config.props.formItem.name}}"{{/if}}
+    placeholder="{{config.props.formWrap.placeholder}}"
+    :clearable="{{config.props.formWrap.allowClear}}"
+    {{#if config.style}}style="{{style config.style}}"{{/if}}
+  />
+</a-form-item>

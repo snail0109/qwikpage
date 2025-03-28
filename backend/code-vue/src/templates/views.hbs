@@ -15,26 +15,15 @@
       @finish.prevent="handleFormSubmit"
     >
       {{#each t.elements as |c|}}
-      <a-form-item
-        {{#if config.props.formItem}}
-        label="{{config.props.formItem.label}}"
-        ref="{{config.props.formItem.name}}"
-        name="{{config.props.formItem.name}}"
-        {{#if config.props.wrapperCol}}
-        :wrapper-col="{{objToProps config.props.wrapperCol}}" 
-        {{/if}}
-        {{/if}}
-      >
-        {{#if (eq c.type "Input")}}
-        {{> qwikpageinput id=c.id config=c.config }}
-        {{/if}}
-        {{#if (eq c.type "CheckBox")}}
-        {{> qwikpagecheckbox id=c.id config=c.config methods=t.methods events=t.events }}
-        {{/if}}
-        {{#if (eq c.type "Button")}}
-        {{> qwikpagebutton id=c.id config=c.config methods=c.methods events=c.events }}
-        {{/if}}
-      </a-form-item>
+      {{#if (eq c.type "Input")}}
+      {{> qwikpageinput id=c.id config=c.config }}
+      {{/if}}
+      {{#if (eq c.type "CheckBox")}}
+      {{> qwikpagecheckbox id=c.id config=c.config methods=t.methods events=t.events }}
+      {{/if}}
+      {{#if (eq c.type "Button")}}
+      {{> qwikpagebutton id=c.id config=c.config methods=c.methods events=c.events }}
+      {{/if}}
       {{/each}}
     </a-form>
     {{/if}}

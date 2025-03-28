@@ -1,12 +1,26 @@
-<a-checkbox-group
-  type="{{config.props.type}}"
-  size="{{config.props.size}}"
-  {{#if config.props.disabled}}:disabled="{{config.props.disabled}}"{{/if}} 
-  {{#if config.style }}style="{{style config.style}}"{{/if}}
+<a-form-item
+  {{#if config.props.formItem.name}}
+  label="{{config.props.formItem.label}}"
+  ref="{{config.props.formItem.name}}"
+  name="{{config.props.formItem.name}}"
+  {{/if}}
+  {{#if config.props.labelCol}}
+  :label-col="{{objToProps config.props.labelCol}}" 
+  {{/if}}
+  {{#if config.props.wrapperCol}}
+  :wrapper-col="{{objToProps config.props.wrapperCol}}" 
+  {{/if}}
 >
-  {{#if (eq config.api.sourceType "json")}}
-  {{#each config.api.source}}
-  <a-checkbox value="{{this.value}}" name="{{this.value}}">{{this.label}}</a-checkbox>
-  {{/each}}
-  {{/if}} 
-</a-checkbox-group>
+  <a-checkbox-group
+    type="{{config.props.type}}"
+    size="{{config.props.size}}"
+    {{#if config.props.disabled}}:disabled="{{config.props.disabled}}"{{/if}} 
+    {{#if config.style }}style="{{style config.style}}"{{/if}}
+  >
+    {{#if (eq config.api.sourceType "json")}}
+    {{#each config.api.source}}
+    <a-checkbox value="{{this.value}}" name="{{this.value}}">{{this.label}}</a-checkbox>
+    {{/each}}
+    {{/if}} 
+  </a-checkbox-group>
+</a-form-item>

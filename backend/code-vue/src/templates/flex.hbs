@@ -10,11 +10,15 @@
 >
   {{#each elements as |c|}}
   {{#if (eq c.type "Input")}}
-  {{> qwikpageinput config=c.config }}
+  {{> qwikpageinput id=c.id config=c.config }}
   {{/if}}
 
+  {{#if (eq c.type "CheckBox")}}
+  {{> qwikpagecheckbox id=c.id config=c.config methods=t.methods events=t.events }}
+  {{/if}}
+  
   {{#if (eq c.type "Button")}}
-  {{> qwikpagebutton config=c.config }}
+  {{> qwikpagebutton id=c.id config=c.config methods=c.methods events=c.events }}
   {{/if}}
   {{/each}}
 </a-flex>

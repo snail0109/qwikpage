@@ -99,7 +99,9 @@ pub const APP_VUE: &str = r#"
 </script>
 
 <template>
-  <router-view></router-view>
+  <div id="root">
+    <router-view></router-view>
+  </div>
 </template>
 
 <style scoped>
@@ -107,6 +109,11 @@ pub const APP_VUE: &str = r#"
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+#root {
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  padding: 20px;
 }
 </style>
 "#;
