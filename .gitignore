@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 frontend/**/*/node_modules
 backend/target
+target
+gen
