@@ -79,7 +79,7 @@ export function SystemSetting(props: ISystemSettingProps) {
         });
     }
 
-    // 修改数据存放目录
+    // 修改默认项目目录
     const handleOpenDir = async () => {
         const defaultDir = form.getFieldValue("dataDir");
         const dirPath = await oepnDataDir({
@@ -145,9 +145,9 @@ export function SystemSetting(props: ISystemSettingProps) {
                         options={(systemFontFamilys || []).map((font) => ({ label: font, value: font }))}
                     />
                 </Form.Item>
-                <Form.Item label="数据存放目录" name="dataDir">
+                <Form.Item label="默认项目" name="dataDir">
                     <Input
-                        placeholder={"数据存放目录"}
+                        placeholder={"默认项目"}
                         addonAfter={<EllipsisOutlined onClick={handleOpenDir} />}
                         {...props}
                     />
