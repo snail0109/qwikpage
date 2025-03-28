@@ -25,6 +25,7 @@ interface IAttrs {
  */
 const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
   if (attrs.length === 0) return <></>;
+  console.log(attrs)
   // 根据type枚举
   return (
     <>
@@ -73,7 +74,7 @@ const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
             </Form.Item>
           );
         } else if (item.type == 'Select') {
-          FormControl = <Select {...item.props} suffixIcon={<CaretDownOutlined />} />;
+          FormControl = <Select {...item.props} />;
         } else if (item.type == 'Radio') {
           FormControl = <Radio.Group {...item.props} suffixIcon={<CaretDownOutlined />} />;
         } else if (item.type == 'InputNumber') {
