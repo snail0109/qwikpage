@@ -12,6 +12,7 @@ use crate::{
     },
     utils::{check_port_occupied, dirs::get_config_path, setup},
 };
+use chrono::Local;
 use log::{self, Level};
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
@@ -84,33 +85,7 @@ pub fn run() {
                     log::LevelFilter::Info
                 })
                 .format(move |out, message, record| {
-                
-                    // 定义颜色（ANSI 转义码）
-                    let level_color = match record.level() {
-                        Level::Error => "\x1b[31m", // 红色
-                        Level::Warn => "\x1b[33m",  // 黄色
-                        Level::Info => "\x1b[34m",  // 蓝色
-                        Level::Debug => "\x1b[32m", // 绿色
-                        Level::Trace => "\x1b[36m", // 青色
-                        };
-                        let target_color = "\x1b[35m"; // 紫色
-                        let message_color = match record.level() {
-                            Level::Error => "\x1b[31m",
-                            Level::Warn => "\x1b[33m",
-                            _ => "\x1b[0m", // 默认无颜色
-                        };
-                        out.finish(format_args!(
-                            "{level_color}[{level}]{reset} {target_color}[{target}]{reset} > {message_color}{message}\x1b[0m",
-                            level = record.level(),
-                            target = record.target(),
-                            message = message,
-                            level_color = level_color,
-                            target_color = target_color,
-                            message_color = message_color,
-                            reset = "\x1b[0m"
-                        ))
-                        
-                           
+                    custom_log_out(out, message, record);
                 })
                 .max_file_size(50000)
                 // .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
@@ -213,6 +188,25 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
+}
+
+fn custom_log_out(out: tauri_plugin_log::fern::FormatCallback<'_>, message: &std::fmt::Arguments<'_>, record: &log::Record<'_>) {
+    // 自定义日志级别映射
+    let level_short = match record.level() {
+        Level::Error => "E",  // Error -> E
+        Level::Warn => "W",   // Warn -> W
+        Level::Info => "I",   // Info -> I
+        Level::Debug => "D",  // Debug -> D
+        Level::Trace => "T",  // Trace -> T
+    };
+    out.finish(format_args!(
+        "{} ({:#?}:{:#?}) [{}] > {}",
+        Local::now().format("%H:%M:%S").to_string(),
+        record.target(),
+        record.line().unwrap_or(0),
+        level_short,
+        message
+    ))
 }
 
 fn is_dev() -> bool {
