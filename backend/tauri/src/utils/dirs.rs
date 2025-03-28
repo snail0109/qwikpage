@@ -1,11 +1,12 @@
 use dirs;
-use log::info;
+use log::{error, info};
+use std::{fs, path::PathBuf};
 use tauri::{AppHandle, Runtime};
-use std::{
-    fs,
-    path::PathBuf,
-};
 use tauri_plugin_opener::OpenerExt;
+
+use crate::types::preferences::Preferences;
+
+use super::file::write_json_file;
 
 // 应用配置文件夹
 const APP_IDENTIFIER: &str = "com.qwikpage.desktop";
@@ -26,6 +27,18 @@ pub fn get_config_path() -> PathBuf {
 // 返回应用配置文件路径
 pub fn app_preferences_path() -> PathBuf {
     get_config_path().join(APP_SETTING_FILE_NAME)
+}
+
+pub fn init_preference() {
+    let path = app_preferences_path();
+    if !path.exists() {
+        let res = write_json_file(&path, &Preferences::default());
+        if res.is_err() {
+            error!("failed to init preference file, error: {:?}", res);
+        } else {
+            info!("init preference file success");
+        }
+    }
 }
 
 // 返回DSL数据存储默认目录
