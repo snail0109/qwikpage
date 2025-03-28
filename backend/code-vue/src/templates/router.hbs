@@ -7,6 +7,13 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {{#each routes}}
+    {{#if (eq @index 0)}}
+    { 
+      path: '/', 
+      name: 'HomeDefault', 
+      component: {{this.name}} 
+    }{{#unless @last}},{{/unless}}
+    {{/if}}
     { 
       path: '{{this.path}}', 
       name: '{{this.name}}', 
