@@ -143,7 +143,7 @@ const ConfigPanel = memo(() => {
             {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
           </div>
           <Suspense fallback={<SpinLoading />}>
-            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} />
+            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} name={selectedElement?.type} />
           </Suspense>
         </Form>
       ),
