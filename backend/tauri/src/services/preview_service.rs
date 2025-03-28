@@ -1,5 +1,5 @@
 use anyhow::Result;
-use code_core::Page;
+use code_core::types::page::Page;
 use rocket::Config;
 use rocket::{
     catch, catchers,

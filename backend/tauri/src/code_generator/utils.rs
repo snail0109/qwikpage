@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::{storage::config::Config, types::page::PageContent};
+use crate::storage::config::Config;
 use futures::future::BoxFuture;
 use log::info;
 use reqwest;
@@ -11,6 +11,7 @@ use serde_json::Value;
 use tokio::fs as async_fs;
 
 use crate::error::{CommonError, Result};
+use code_core::types::page::PageContent;
 
 // 将 JSON 值转换为 JavaScript 表示的字符串
 #[allow(unused)]

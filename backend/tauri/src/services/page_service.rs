@@ -3,7 +3,7 @@ use crate::storage::response::ErrorResponse;
 use crate::types::js_resp::JSResp;
 use crate::types::page::{PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use anyhow::Result;
-use code_core::Page;
+use code_core::types::page::Page;
 use tauri::command;
 
 // FIXME:  JSResp

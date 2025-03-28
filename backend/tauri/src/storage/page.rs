@@ -4,7 +4,7 @@ use crate::utils::datetime::get_current_time;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 use anyhow::Error;
-use code_core::Page;
+use code_core::types::page::Page;
 use log;
 use std::fs;
 use std::io::{self, ErrorKind};

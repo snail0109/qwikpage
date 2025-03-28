@@ -1,4 +1,4 @@
-use code_core::Page;
+use code_core::types::page::Page;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]

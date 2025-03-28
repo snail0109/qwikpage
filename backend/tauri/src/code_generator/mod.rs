@@ -3,7 +3,7 @@ mod utils;
 use crate::{
     error::{CommonError, Result}, storage::page::PageConfig, types::project::Project
 };
-use code_core::{FfiResult, GeneratedArtifact, GeneratorOptions};
+use code_core::types::{ffi::FfiResult, generator::{GeneratedArtifact, GeneratorOptions}};
 use libloading::{Library, Symbol};
 use log;
 use serde::{Deserialize, Serialize};
@@ -33,7 +33,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         .path()
         .resource_dir()
         .expect("Failed to get resource directory");
-    let mut lib_path: PathBuf;
+    let lib_path: PathBuf;
     #[cfg(target_os = "macos")]
     {
         lib_path = resource_dir
