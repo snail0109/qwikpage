@@ -10,11 +10,6 @@ export default {
       key: 'basic',
     },
     {
-      type: 'Variable',
-      label: '按钮名称',
-      name: ['text'],
-    },
-    {
       type: 'Select',
       label: '按钮类型',
       name: ['type'],

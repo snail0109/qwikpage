@@ -17,16 +17,27 @@ const formLayoutFull = {
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
+  name?: string;
 }
 /**
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
-const SetterRender = memo(({ attrs, form }: IAttrs) => {
+const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
   if (attrs.length === 0) return <></>;
   // 根据type枚举
   return (
     <>
+      {/* ---组件共有属性--- */}
+      {/* 组件名称 */}
+      {name && <Form.Item name="name" label="组件名称">
+        <Input defaultValue={name} />
+      </Form.Item>}
+      {/* 是否显示 */}
+      {name && <Form.Item layout='horizontal' colon={false} name="show" label="是否显示" valuePropName="checked">
+        <Switch size='small' defaultChecked />
+      </Form.Item>}
+      {/* ---组件属性--- */}
       {attrs.map((item: SchemaType, index) => {
         if (!item) return;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
@@ -58,7 +69,7 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
         } else if (item.type == 'Switch') {
           return (
             <Form.Item layout='horizontal' colon={false} key={key} name={item.name} label={item.label} tooltip={item.tooltip} valuePropName="checked">
-              <Switch size='small'/>
+              <Switch size='small' />
             </Form.Item>
           );
         } else if (item.type == 'Select') {
