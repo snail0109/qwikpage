@@ -36,6 +36,17 @@ export default {
       },
     },
     {
+      type: 'RadioGroupBtn',
+      label: '类型',
+      name: ['visibilityToggle'],
+      props: {
+        options: [
+          { label: '文本', value: 'text' },
+          { label: '密码', value: 'password' },
+        ],
+      },
+    },
+    {
       type: 'Switch',
       label: '无样式',
       name: ['formItem', 'noStyle'],

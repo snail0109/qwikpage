@@ -80,6 +80,8 @@ const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
           FormControl = <InputNumber {...item.props} style={{ width: '100%' }} />;
         } else if (item.type == 'RadioGroup') {
           FormControl = <Radio.Group {...item.props} />;
+        } else if (item.type == 'RadioGroupBtn') {
+          FormControl = <Radio.Group {...item.props} optionType="button" block />;
         } else if (item.type == 'ColorPicker') {
           FormControl = <MColorPicker {...item.props} format="hex" />;
         } else if (item.type == 'Slider') {

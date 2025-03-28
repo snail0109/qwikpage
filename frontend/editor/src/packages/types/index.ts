@@ -278,6 +278,7 @@ export enum FormType {
   Upload = 'Upload',
   Radio = 'Radio',
   RadioGroup = 'RadioGroup',
+  RadioGroupBtn = 'RadioGroupBtn',
   MonacoEditor = 'MonacoEditor',
   DatePicker = 'DatePicker',
   function = 'function',
