@@ -133,11 +133,11 @@ const components = [
       //   name: '栅格布局',
       //   type: 'Row',
       // },
-      {
-        icon: <IconColumn />,
-        name: '栅格布局',
-        type: 'Grid',
-      },
+      // {
+      //   icon: <IconColumn />,
+      //   name: '栅格布局',
+      //   type: 'Grid',
+      // },
     ],
   },
   {
@@ -149,26 +149,26 @@ const components = [
         name: '按钮',
         type: 'Button',
       },
-      {
-        icon: <IconFont />,
-        name: '图标',
-        type: 'Icon',
-      },
-      {
-        icon: <IconText />,
-        name: '文本',
-        type: 'Text',
-      },
-      {
-        icon: <IconLink />,
-        name: '超链接',
-        type: 'Link',
-      },
-      {
-        icon: <IconImage />,
-        name: '图片',
-        type: 'Image',
-      },
+      // {
+      //   icon: <IconFont />,
+      //   name: '图标',
+      //   type: 'Icon',
+      // },
+      // {
+      //   icon: <IconText />,
+      //   name: '文本',
+      //   type: 'Text',
+      // },
+      // {
+      //   icon: <IconLink />,
+      //   name: '超链接',
+      //   type: 'Link',
+      // },
+      // {
+      //   icon: <IconImage />,
+      //   name: '图片',
+      //   type: 'Image',
+      // },
       // {
       //   icon: <IconTitle />,
       //   name: '标题',
@@ -211,11 +211,11 @@ const components = [
         name: '文本框',
         type: 'Input',
       },
-      {
-        icon: <IconFormItem />,
-        name: '表单项',
-        type: 'FormItem',
-      },
+      // {
+      //   icon: <IconFormItem />,
+      //   name: '表单项',
+      //   type: 'FormItem',
+      // },
       // {
       //   icon: <IconFormInputNumber />,
       //   name: '数字框',
@@ -226,11 +226,11 @@ const components = [
       //   name: '密码框',
       //   type: 'InputPassword',
       // },
-      {
-        icon: <IconFormSelect />,
-        name: '下拉框',
-        type: 'Select',
-      },
+      // {
+      //   icon: <IconFormSelect />,
+      //   name: '下拉框',
+      //   type: 'Select',
+      // },
       // {
       //   icon: <IconFormDate />,
       //   name: '日期',
@@ -241,21 +241,21 @@ const components = [
       //   name: '日期范围',
       //   type: 'DatePickerRange',
       // },
-      {
-        icon: <IconFormCheckbox />,
-        name: '多选框',
-        type: 'CheckBox',
-      },
-      {
-        icon: <IconFormRadio />,
-        name: '单选框',
-        type: 'Radio',
-      },
-      {
-        icon: <IconFormSwitch />,
-        name: '开关',
-        type: 'Switch',
-      },
+      // {
+      //   icon: <IconFormCheckbox />,
+      //   name: '多选框',
+      //   type: 'CheckBox',
+      // },
+      // {
+      //   icon: <IconFormRadio />,
+      //   name: '单选框',
+      //   type: 'Radio',
+      // },
+      // {
+      //   icon: <IconFormSwitch />,
+      //   name: '开关',
+      //   type: 'Switch',
+      // },
       // {
       //   icon: <IconFormTextArea />,
       //   name: '多行文本框',
@@ -412,20 +412,20 @@ const components = [
   //     // },
   //   ],
   // },
-  {
-    type: 'FeedBack',
-    title: '反馈组件',
-    data: [
-      {
-        icon: <IconModal />,
-        name: '弹框',
-        type: 'Modal',
-      },
-      {
-        icon: <IconDrawer />,
-        name: '抽屉',
-        type: 'Drawer',
-      },
+  // {
+  //   type: 'FeedBack',
+  //   title: '反馈组件',
+  //   data: [
+      // {
+      //   icon: <IconModal />,
+      //   name: '弹框',
+      //   type: 'Modal',
+      // },
+      // {
+      //   icon: <IconDrawer />,
+      //   name: '抽屉',
+      //   type: 'Drawer',
+      // },
       // {
       //   icon: 'https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*-e2IRroDJyEAAAAAAAAAAAAADrJ8AQ/original',
       //   name: '结果页',
@@ -436,8 +436,8 @@ const components = [
       //   name: '空状态',
       //   type: 'Empty',
       // },
-    ],
-  },
+  //   ],
+  // },
   // {
   //   type: 'Other',
   //   title: '其它',
