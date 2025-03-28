@@ -8,7 +8,7 @@ use uuid::Uuid;
 use crate::types::group::{Group, GroupConfig, GroupDetail, GroupList};
 use crate::types::project::Project;
 use crate::utils::datetime::get_current_time;
-use crate::utils::dirs::get_config_path;
+use crate::utils::dirs::projects_group_path;
 
 fn default_group() -> Group {
     Group {
@@ -23,7 +23,7 @@ fn default_group() -> Group {
 impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
-        let path = get_config_path().join("group.json");
+        let path = projects_group_path();
         log::info!("load group config from {}", path.display());
         if !path.exists() {
             let mut def_group = default_group();
@@ -55,7 +55,7 @@ impl GroupConfig {
 
     /// 将配置保存到文件
     pub fn save(&self) -> io::Result<()> {
-        let path = get_config_path().join("group.json");
+        let path = projects_group_path();
         let json = serde_json::to_string_pretty(self).unwrap();
         fs::write(path, json)
     }

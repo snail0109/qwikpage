@@ -29,6 +29,11 @@ pub fn app_preferences_path() -> PathBuf {
     get_config_path().join(APP_SETTING_FILE_NAME)
 }
 
+// 返回项目分组配置
+pub fn projects_group_path() -> PathBuf {
+    get_config_path().join("projects.json")
+}
+
 pub fn init_preference() {
     let path = app_preferences_path();
     if !path.exists() {
