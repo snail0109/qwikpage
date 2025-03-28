@@ -12,6 +12,7 @@ use serde_json::Map;
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
 use std::process::Command;
+use std::thread;
 use utils::{
     gen_router, generate_package_json, init_dirs, init_files, register_helpers,
     register_partial, write_file,
@@ -121,7 +122,7 @@ impl CodeGenerator for VueGenerator {
         let file_path = output_dir.join("src/views").join(file_name);
         write_file(file_path.clone(), &output)?;
         // 格式化文件
-        format_vue_file(&file_path)?;
+        format_vue_file(file_path.clone());
 
         Ok(GeneratedArtifact {
             file_path: file_path.to_string_lossy().to_string(),
@@ -130,32 +131,30 @@ impl CodeGenerator for VueGenerator {
     }
 }
 
-    fn format_vue_file(file_path: &PathBuf) -> Result<(), Error> {
-        // 检查 Prettier 是否可用
-        let prettier_check = Command::new("npx")
+fn format_vue_file(file_path: PathBuf) {
+    // 创建一个新线程来处理格式化
+    thread::spawn(move || {
+        // 使用标准库的 Command
+        let prettier_check = std::process::Command::new("npx")
             .args(&["--no-install", "prettier", "--version"])
             .output();
         
         if prettier_check.is_err() || !prettier_check.unwrap().status.success() {
-            // Prettier 不可用，可以记录警告并跳过格式化
             eprintln!("Warning: Prettier not available, skipping code formatting");
-            return Ok(());
+            return;
         }
         
-        // 使用 Prettier 格式化
-        let output = Command::new("npx")
+        let output = std::process::Command::new("npx")
             .args(&["prettier", "--write", file_path.to_str().unwrap()])
-            .output()?;
-        
-        if !output.status.success() {
-            return Err(Error::msg(format!(
-                "Failed to format file: {}",
-                String::from_utf8_lossy(&output.stderr)
-            )));
+            .output();
+            
+        if let Err(e) = output {
+            eprintln!("Error formatting Vue file: {}", e);
+        } else if !output.unwrap().status.success() {
+            eprintln!("Prettier formatting failed");
         }
-        
-        Ok(())
-    }
+    });
+}
 
 #[no_mangle]
 pub extern "C" fn generate_project(options_json: *const c_char) -> *mut c_char {
