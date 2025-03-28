@@ -6,7 +6,7 @@ use code_core::ffi::result_to_cstring;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
 use code_core::types::page::Page;
 use code_core::types::route::RouteInfo;
-use code_core::{CodeGenerator, TemplateData};
+use code_core::{pinyin_name, CodeGenerator, TemplateData};
 use handlebars::{to_json, Handlebars};
 use serde_json::Map;
 use std::ffi::{c_char, CStr};
@@ -87,7 +87,10 @@ impl CodeGenerator for VueGenerator {
         route_list: &mut Vec<RouteInfo>,
     ) -> Result<GeneratedArtifact, Error> {
         let output_dir = PathBuf::from(self.output_dir.clone());
-        let name = config.name.clone();
+        let mut name = pinyin_name(config.name.clone().as_str());
+        if name.is_empty() {
+            name = config.name.clone();
+        }
         let component = name[..1].to_uppercase() + &name[1..];
 
         // 准备路由数据

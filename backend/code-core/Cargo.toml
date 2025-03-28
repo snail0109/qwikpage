@@ -8,6 +8,7 @@ publish = false
 crate-type = ["rlib"]
 
 [dependencies]
+pinyin = "0.10"
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror.workspace = true

@@ -9,7 +9,7 @@ use types::{
     page::{Element, ElementObj, MergedElement, Page, PageContent},
     route::RouteInfo,
 };
-
+use pinyin::ToPinyin;
 use anyhow::Error;
 
 pub trait CodeGenerator: Send + Sync {
@@ -73,4 +73,23 @@ pub fn merge_element(
     }
     println!("merged_elements: {:?}", merged_elements.len());
     merged_elements
+}
+
+
+
+pub fn pinyin_name(hans: &str) -> String {
+    // 收集所有拼音并连接
+    let mut result = String::new();
+
+    for pinyin in hans.to_pinyin() {
+        if let Some(pinyin) = pinyin {
+            result.push_str(&pinyin.plain());
+        }
+    }
+
+    // 移除末尾可能的空格
+    if result.ends_with(' ') {
+        result.pop();
+    }
+    result
 }
