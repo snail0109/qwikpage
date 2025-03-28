@@ -7,6 +7,11 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {{#each routes}}
+    { 
+      path: '{{this.path}}', 
+      name: '{{this.name}}', 
+      component: {{this.name}} 
+    },
     {{#if (eq @index 0)}}
     { 
       path: '/', 
@@ -14,11 +19,6 @@ const router = createRouter({
       component: {{this.name}} 
     }{{#unless @last}},{{/unless}}
     {{/if}}
-    { 
-      path: '{{this.path}}', 
-      name: '{{this.name}}', 
-      component: {{this.name}} 
-    }{{#unless @last}},{{/unless}}
     {{/each}}
   ]
 })
