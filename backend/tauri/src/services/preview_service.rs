@@ -1,4 +1,5 @@
 use anyhow::Result;
+use code_core::Page;
 use rocket::Config;
 use rocket::{
     catch, catchers,
@@ -12,7 +13,7 @@ use rocket::{
 };
 use tauri::{AppHandle, Manager};
 
-use crate::types::page::Page;
+use crate::storage::page::PageConfig;
 use crate::types::project::Project;
 
 #[catch(404)]
@@ -85,7 +86,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 #[get("/page/detail/id/<project_id>/<id>")]
 pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
     log::debug!("Preview::get_page_detail: project_id: {}, id: {}", project_id, id);
-    match Page::get_page_detail_with_id(id, project_id) {
+    match PageConfig::get_page_detail_with_id(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }
@@ -95,7 +96,7 @@ pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Stat
 #[get("/page/detail/<project_id>/<path>")]
 pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Json<Page>, Status> {
     log::debug!("Preview::get_page_detail_with_path: project_id: {}, path: {}", project_id, path);
-    match Page::get_page_detail_with_path(project_id, path) {
+    match PageConfig::get_page_detail_with_path(project_id, path) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
     }

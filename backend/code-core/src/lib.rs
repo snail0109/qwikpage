@@ -74,7 +74,7 @@ pub struct GeneratorOptions {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-
+#[serde(rename_all = "camelCase")]
 pub struct Page {
     pub id: String,
     pub name: String,           // 页面名称

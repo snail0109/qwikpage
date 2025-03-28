@@ -1,9 +1,10 @@
 use crate::storage::response::ErrorResponse;
-use crate::types::page::{Page, PageAddParams, PageCopyParams, PageList, PageUpdateParams};
+use crate::types::page::{PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::utils::datetime::get_current_time;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 use anyhow::Error;
+use code_core::Page;
 use log;
 use std::fs;
 use std::io::{self, ErrorKind};
@@ -12,7 +13,9 @@ use uuid::Uuid;
 
 use super::config::Config;
 
-impl Page {
+pub struct PageConfig {}
+
+impl PageConfig {
     pub fn new(
         id: String,
         name: String,
@@ -20,7 +23,7 @@ impl Page {
         remark: Option<String>,
         page_data: Option<String>,
         project_id: String,
-    ) -> Self {
+    ) -> Page {
         Page {
             id,
             name,
@@ -45,7 +48,12 @@ impl Page {
         project_id: String,
         keyword: Option<String>,
     ) -> Result<PageList, String> {
-        log::info!("获取页面列表: page_num={}, page_size={}, project_id={}", page_num, page_size, project_id);
+        log::info!(
+            "获取页面列表: page_num={}, page_size={}, project_id={}",
+            page_num,
+            page_size,
+            project_id
+        );
         let mut pages_list = vec![];
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
@@ -58,6 +66,7 @@ impl Page {
             let path = entry.path();
             if is_valid_file(&path) {
                 let json = fs::read_to_string(&path).unwrap();
+                println!("page_data   page_data  json: {}", json);
                 let page: Page = serde_json::from_str(&json).unwrap();
                 if let Some(keyword) = &keyword {
                     if !page.name.contains(keyword) {
@@ -73,13 +82,13 @@ impl Page {
         Ok(PageList { total, list })
     }
 
-    pub fn save(&self, page_file: PathBuf) -> Result<(), String> {
-        let json = serde_json::to_string_pretty(&self).unwrap();
+    pub fn save(page_content: Page, page_file: PathBuf) -> Result<(), String> {
+        let json = serde_json::to_string_pretty(&page_content).unwrap();
         fs::write(page_file, json).unwrap();
         Ok(())
     }
 
-    pub fn load(page_file: &PathBuf) -> io::Result<Self> {
+    pub fn load(page_file: &PathBuf) -> io::Result<Page> {
         log::info!("加载页面文件: {}", page_file.display());
         if !page_file.exists() {
             log::warn!("页面文件不存在");
@@ -134,7 +143,7 @@ impl Page {
             fs::create_dir_all(&page_dir).map_err(|e| format!("创建目录失败: {}", e))?;
         }
         let page_id = Uuid::new_v4().to_string();
-        let page = Page::new(
+        let page = PageConfig::new(
             page_id.clone(),
             params.name,
             params.path,
@@ -143,7 +152,7 @@ impl Page {
             params.project_id,
         );
         let page_file = page_dir.join(format!("{}.json", page_id.clone()));
-        page.save(page_file)
+        PageConfig::save(page.clone(), page_file)
             .map_err(|e| format!("保存页面失败: {}", e))?;
         Ok(page)
     }
@@ -155,7 +164,7 @@ impl Page {
             fs::create_dir_all(&page_dir)?;
         }
         let page_file = page_dir.join(format!("{}.json", params.id));
-        let mut page = Page::load(&page_file)?;
+        let mut page = PageConfig::load(&page_file)?;
         if let Some(name) = params.name {
             page.name = name;
         }
@@ -169,7 +178,7 @@ impl Page {
             page.page_data = page_data;
         }
         page.updated_at = get_current_time();
-        page.save(page_file)
+        PageConfig::save(page, page_file)
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(true)
@@ -181,11 +190,11 @@ impl Page {
             fs::create_dir_all(&page_dir)?;
         }
         let page_file = page_dir.join(format!("{}.json", params.id));
-        let source_page = Page::load(&page_file).unwrap();
+        let source_page = PageConfig::load(&page_file).unwrap();
         let new_page_id = Uuid::new_v4().to_string();
         let new_page_file = page_dir.join(format!("{}.json", &new_page_id));
         log::info!("复制生成的新文件路径: {}", new_page_file.to_str().unwrap());
-        let page = Page::new(
+        let page = PageConfig::new(
             new_page_id.clone(),
             params.name,
             params.path,
@@ -193,7 +202,7 @@ impl Page {
             Some(source_page.page_data),
             params.project_id.clone(),
         );
-        page.save(new_page_file)
+        PageConfig::save(page, new_page_file)
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         Ok(new_page_id)
     }
@@ -216,7 +225,8 @@ impl Page {
     ) -> Result<Page, ErrorResponse> {
         log::info!(
             "get_page_detail_with_path, project_id: {:?}, path: {}",
-            project_id, path
+            project_id,
+            path
         );
         // 如果 path 是 "*", 则将其处理为 "/"
         let effective_path = if path == "*" {
@@ -233,7 +243,7 @@ impl Page {
         for page in pages_list.list {
             if page.path.as_ref() == Some(&effective_path) {
                 // 进行匹配
-                log::info!("Page::getMartten, path: {}", effective_path);
+                log::info!("PageConfig::getMartten, path: {}", effective_path);
                 return Ok(page);
             }
         }

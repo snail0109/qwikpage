@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use code_core::Page;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::Uuid;
@@ -37,18 +38,6 @@ pub struct PageContent {
     pub interceptor: Option<Interceptor>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Page {
-    pub id: String,
-    pub name: String,           // 页面名称
-    pub path: Option<String>,   // 页面路由
-    pub remark: Option<String>, // 页面描述
-    pub page_data: String,
-    pub created_at: String,
-    pub updated_at: String,
-    pub project_id: String, // 保留冗余，方便查询
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

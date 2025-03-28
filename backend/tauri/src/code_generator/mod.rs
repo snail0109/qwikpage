@@ -1,8 +1,7 @@
 mod utils;
 
 use crate::{
-    error::{CommonError, Result},
-    types::{page::Page, project::Project},
+    error::{CommonError, Result}, storage::page::PageConfig, types::project::Project
 };
 use code_core::{FfiResult, GeneratedArtifact, GeneratorOptions};
 use libloading::{Library, Symbol};
@@ -64,7 +63,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         log::error!("查询项目 {:?} 项目信息失败: {:?}", &params.project_id, e);
         e
     })?;
-    let page_list = Page::list_with_options(params.project_id.clone())?;
+    let page_list = PageConfig::list_with_options(params.project_id.clone())?;
 
     let page_len = page_list.len();
     if page_len == 0 {
