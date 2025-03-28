@@ -3,54 +3,37 @@ mod utils;
 
 use anyhow::Error;
 use code_core::ffi::result_to_cstring;
-use code_core::{
-    CodeGenerator, GeneratedArtifact, GeneratorError, GeneratorOptions, MergedElement, Page, PageContent, RouteInfo
-};
+use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
+use code_core::types::page::Page;
+use code_core::types::route::RouteInfo;
+use code_core::{CodeGenerator, TemplateData};
 use handlebars::{to_json, Handlebars};
-use serde::{Deserialize, Serialize};
 use serde_json::Map;
-use std::collections::HashMap;
 use std::ffi::{c_char, CStr};
-use std::path::{Path, PathBuf};
-use utils::{gen_router, generate_package_json, init_dirs, init_files, merge_element, register_helpers, register_partial, write_file};
+use std::path::PathBuf;
+use utils::{
+    gen_router, generate_package_json, init_dirs, init_files, register_helpers,
+    register_partial, write_file,
+};
 
-
-// 模板数据结构体
-#[derive(Serialize, Deserialize, Debug)]
-pub struct TemplateData {
-    pub components: Vec<MergedElement>,
-}
-
-impl TemplateData {
-    pub fn from_json(json_str: &str) -> Result<Self, Error> {
-        let data: PageContent = serde_json::from_str(json_str)?;
-        let components = merge_element(&data.elements, &data.elements_map);
-        println!("components {:?}", components);
-        Ok(TemplateData { components })
-    }
-}
 
 struct VueGenerator {
-    pages: Vec<String>,
     page_list: Vec<Page>,
     output_dir: PathBuf,
-    page_route_list: Vec<RouteInfo>,
     reg: Handlebars<'static>,
 }
 
 impl VueGenerator {
     fn new(options: &GeneratorOptions) -> Self {
         let mut reg = Handlebars::new();
-      
+
         register_partial(&mut reg);
 
         register_helpers(&mut reg);
 
         Self {
-            pages: vec![],
             page_list: options.page_list.clone(),
             output_dir: options.output_dir.clone(),
-            page_route_list: vec![],
             reg,
         }
     }
@@ -153,4 +136,3 @@ unsafe fn parse_options(options_json: *const c_char) -> GeneratorOptions {
     let options_str = CStr::from_ptr(options_json).to_str().unwrap();
     serde_json::from_str(options_str).unwrap()
 }
-

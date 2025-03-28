@@ -12,7 +12,6 @@ use crate::{
     },
     utils::{check_port_occupied, dirs::get_config_path, setup},
 };
-use code_core::hello;
 use log::{self, Level};
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
@@ -65,7 +64,6 @@ pub fn run() {
     //     error!("{}", err);
     //     std::process::exit(1);
     // }
-    hello();
     tauri::Builder::default()
         // 单实例插件确保 Tauri 应用程序在同一时间只运行单个实例
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))

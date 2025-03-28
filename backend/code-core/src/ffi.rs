@@ -1,7 +1,9 @@
 use std::ffi::CString;
 use std::os::raw::c_char;
 
-use super::{CodeGenerator, FfiResult};
+use crate::types::ffi::FfiResult;
+
+use super::CodeGenerator;
 
 #[repr(C)]
 pub struct GeneratorHandle(*mut dyn CodeGenerator);

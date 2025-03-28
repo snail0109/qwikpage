@@ -1,169 +1,76 @@
 pub mod ffi;
+pub mod types;
 
-use std::{collections::HashMap, path::PathBuf};
-use uuid::Uuid;
+use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
-use serde_json::Value;
-use thiserror::Error;
+use serde::{Deserialize, Serialize};
+use types::{
+    generator::{GeneratedArtifact, GeneratorError, GeneratorOptions},
+    page::{Element, ElementObj, MergedElement, Page, PageContent},
+    route::RouteInfo,
+};
+
 use anyhow::Error;
-
-#[derive(Serialize, Deserialize)]
-pub struct GeneratedArtifact {
-    pub file_path: String,
-    pub content: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RouteInfo {
-    pub path: Option<String>,
-    pub name: String,
-    pub component_path: String,
-}
-
-
-#[derive(Debug, Error)]
-pub enum GeneratorError {
-    #[error("IO error: {0}")]
-    Io(String),
-    #[error("Template error: {0}")]
-    Template(String),
-    #[error("Validation error: {0}")]
-    Validation(String),
-}
 
 pub trait CodeGenerator: Send + Sync {
     fn init_project(&self, options: &GeneratorOptions) -> Result<Vec<GeneratedArtifact>, Error>;
     fn generate_code(&self) -> Result<Vec<GeneratedArtifact>, Error>;
-    fn generate_page(&self, config: &Page, route_list: &mut Vec<RouteInfo>) -> Result<GeneratedArtifact, Error>;
+    fn generate_page(
+        &self,
+        config: &Page,
+        route_list: &mut Vec<RouteInfo>,
+    ) -> Result<GeneratedArtifact, Error>;
 }
 
-// FFI兼容的类型转换
-#[derive(Serialize, Deserialize)]
-pub struct FfiResult<T> {
-    pub success: bool,
-    pub data: Option<T>,
-    pub error: Option<String>,
+
+
+// 模板数据结构体
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TemplateData {
+    pub components: Vec<MergedElement>,
 }
 
-impl<T: Serialize> From<Result<T, GeneratorError>> for FfiResult<T> {
-    fn from(result: Result<T, GeneratorError>) -> Self {
-        match result {
-            Ok(data) => FfiResult {
-                success: true,
-                data: Some(data),
-                error: None,
-            },
-            Err(e) => FfiResult {
-                success: false,
-                data: None,
-                error: Some(e.to_string()),
-            },
-        }
+impl TemplateData {
+    pub fn from_json(json_str: &str) -> Result<Self, Error> {
+        let data: PageContent = serde_json::from_str(json_str)?;
+        let components = merge_element(&data.elements, &data.elements_map);
+        println!("components {:?}", components);
+        Ok(TemplateData { components })
     }
 }
 
+pub fn merge_element(
+    elements: &Vec<Element>,
+    elements_map: &HashMap<String, ElementObj>,
+) -> Vec<MergedElement> {
+    let mut merged_elements = Vec::new();
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct GeneratorOptions {
-    pub project_name: String,
-    pub output_dir: PathBuf,
-    pub version: String,
-    pub package_manager: String, // npm/yarn/pnpm
-    pub page_list: Vec<Page>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Page {
-    pub id: String,
-    pub name: String,           // 页面名称
-    pub path: Option<String>,   // 页面路由 TODO: 去掉Option
-    pub remark: Option<String>, // 页面描述
-    pub page_data: String,
-    pub created_at: String,
-    pub updated_at: String,
-    pub project_id: String, // 保留冗余，方便查询
-}
-
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Element {
-    pub id: String,
-    #[serde(rename = "parentId")]
-    pub parent_id: Option<String>,
-    #[serde(rename = "type")]
-    pub type_name: String, // 组件类型
-    pub name: String,
-    pub elements: Vec<Element>,
-}
-
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct ElementObj {
-    pub config: Value,
-    pub events: Vec<Event>, 
-    pub methods: Vec<Method>, 
-
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Header {
-    pub key: String,
-    pub value: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Interceptor {
-    pub headers: Vec<Header>,
-    pub timeout: u32,
-    #[serde(rename = "timeoutErrorMessage")]
-    pub timeout_error_message: String,
-}
-
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct PageContent {
-    pub elements: Vec<Element>,
-    #[serde(rename = "elementsMap")]
-    pub elements_map: HashMap<String, ElementObj>,
-    pub apis: HashMap<Uuid, Value>,
-    pub interceptor: Option<Interceptor>,
-}
-
-
-
-// 事件
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Event {
-   pub value: String,
-   pub name: String,
-}
-
-// methods
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Method {
-   pub name: String,
-   pub title: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct MergedElement {
-    pub id: String,
-    #[serde(rename = "parentId")]
-    pub parent_id: Option<String>,
-    #[serde(rename = "type")]
-    pub type_name: String, // 组件类型
-    pub name: String,
-    pub elements: Vec<MergedElement>,
-    pub config: Value,
-    pub events: Vec<Event>, 
-    pub methods: Vec<Method>, 
-}
-
-
-pub fn hello() {
-    println!("hello core")
+    // 遍历 elements，尝试从 elements_map 中找到对应的元素进行合并
+    for element in elements {
+        if let Some(element_obj) = elements_map.get(&element.id) {
+            // 合并逻辑（这里只是简单的例子，具体合并规则可以根据需要修改）
+            let child_elements = &element.elements;
+            let mut merged_child_elements = Vec::new();
+            // child_elements 不为空时，继续递归合并
+            if !child_elements.is_empty() {
+                merged_child_elements = merge_element(&child_elements, elements_map);
+            }
+            let merged = MergedElement {
+                id: element.id.clone(),
+                parent_id: element.parent_id.clone(),
+                type_name: element.type_name.clone(),
+                name: element.name.clone(),
+                elements: merged_child_elements,
+                config: element_obj.config.clone(),
+                events: element_obj.events.clone(),
+                methods: element_obj.methods.clone(),
+            };
+            merged_elements.push(merged);
+        } else {
+            // 处理没有找到匹配项的情况（如果需要）
+            eprintln!("Warning: No matching element found for id: {}", element.id);
+        }
+    }
+    println!("merged_elements: {:?}", merged_elements.len());
+    merged_elements
 }
