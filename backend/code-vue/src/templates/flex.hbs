@@ -1,5 +1,13 @@
-<div type="{{config.props.type}}" size="{{config.props.size}}" {{#if config.style }} style="{{style config.style}}"
-  {{/if}}>
+<a-flex
+  v-bind="$attrs"
+  id="{{id}}"
+  :vertical="{{config.props.vertical}}"
+  wrap="{{config.props.wrap}}"
+  justify="{{config.props.justify}}"
+  align="{{config.props.align}}"
+  :gap="{{config.props.gap}}"
+  {{#if config.style }}style="{{style config.style}}"{{/if}}
+>
   {{#each elements as |c|}}
   {{#if (eq c.type "Input")}}
   {{> qwikpageinput config=c.config }}
@@ -9,4 +17,4 @@
   {{> qwikpagebutton config=c.config }}
   {{/if}}
   {{/each}}
-</div>
+</a-flex>

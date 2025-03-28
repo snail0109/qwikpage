@@ -2,33 +2,54 @@
   {{#each components as |t|}}
     {{#if (eq t.type "Form")}}
       <!-- 表单容器特殊处理 -->
-    <el-form ref="formRef" :model="formData" label-position="{{config.props.labelAlign}}"
-      label-width="{{config.props.labelCol.span}}px" style="{{style config.style}}" @submit.prevent="handleFormSubmit"
-      @reset.prevent="handleFormReset">
+    <a-form
+      ref="formRef"
+      :model="formData"
+      id="{{id}}"
+      layout="{{config.props.layout}}"
+      {{#if config.props.size}}size="{{config.props.size}}"{{/if}}
+      label-align="{{config.props.labelAlign}}"
+      {{#if config.props.labelCol}}:label-col="{{config.props.labelCol}}"{{/if}}
+      {{#if config.props.wrapperCol}}:wrapper-col="{{config.props.wrapperCol}}"{{/if}}
+      style="{{style config.style}}"
+      @finish.prevent="handleFormSubmit"
+    >
       {{#each t.elements as |c|}}
-      <el-form-item label="{{config.props.formItem.label}}" prop="{{config.props.formItem.name}}">
-        {{#if (eq c.type "Input")}}
-        {{> qwikpageinput config=c.config }}
+      <a-form-item
+        {{#if config.props.formItem}}
+        label="{{config.props.formItem.label}}"
+        ref="{{config.props.formItem.name}}"
+        name="{{config.props.formItem.name}}"
+        {{#if config.props.wrapperCol}}
+        :wrapper-col="{{config.props.wrapperCol}}" 
         {{/if}}
-       </el-form-item>
+        {{/if}}
+      >
+        {{#if (eq c.type "Input")}}
+        {{> qwikpageinput id=c.id config=c.config }}
+        {{/if}}
+        {{#if (eq c.type "Button")}}
+        {{> qwikpagebutton id=c.id config=c.config methods=c.methods events=c.events }}
+        {{/if}}
+       </a-form-item>
       {{/each}}
-    </el-form>
+    </a-form>
     {{/if}}
     {{#if (eq t.type "Flex")}}
     <!-- Flex -->
-    {{> qwikpageflex elements=t.elements config=t.config methods=t.methods events=t.events }}
+    {{> qwikpageflex id=t.id elements=t.elements config=t.config methods=t.methods events=t.events }}
     {{/if}}
     {{#if (eq t.type "Input")}}
     <!-- 输入框组件 -->
-    {{> qwikpageinput config=t.config }}
+    {{> qwikpageinput id=t.id config=t.config }}
     {{/if}}
     {{#if (eq t.type "Button")}}
     <!-- 按钮组件 -->
-    {{> qwikpagebutton config=t.config methods=t.methods events=t.events }}
+    {{> qwikpagebutton id=t.id config=t.config methods=t.methods events=t.events }}
     {{/if}}
     {{#if (eq t.type "CheckBox")}}
     <!-- CheckBox -->
-    {{> qwikpagecheckbox config=t.config methods=t.methods events=t.events }}
+    {{> qwikpagecheckbox id=t.id config=t.config methods=t.methods events=t.events }}
     {{/if}}
   {{/each}}
 </template>
@@ -57,6 +78,10 @@
             }
           })
         }
+      }
+
+      const handleFormSubmit = (values) => {
+        console.log('Form Submit Success:', values);
       }
 
       return {

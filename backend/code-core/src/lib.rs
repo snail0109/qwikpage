@@ -16,7 +16,7 @@ pub struct GeneratedArtifact {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RouteInfo {
-    pub path: String,
+    pub path: Option<String>,
     pub name: String,
     pub component_path: String,
 }
@@ -35,7 +35,7 @@ pub enum GeneratorError {
 pub trait CodeGenerator: Send + Sync {
     fn init_project(&self, options: &GeneratorOptions) -> Result<Vec<GeneratedArtifact>, Error>;
     fn generate_code(&self) -> Result<Vec<GeneratedArtifact>, Error>;
-    fn generate_page(&self, config: &PageConfig, route_list: &mut Vec<RouteInfo>) -> Result<GeneratedArtifact, Error>;
+    fn generate_page(&self, config: &Page, route_list: &mut Vec<RouteInfo>) -> Result<GeneratedArtifact, Error>;
 }
 
 // FFI兼容的类型转换
@@ -70,15 +70,20 @@ pub struct GeneratorOptions {
     pub output_dir: PathBuf,
     pub version: String,
     pub package_manager: String, // npm/yarn/pnpm
-    pub page_list: Vec<PageConfig>,
+    pub page_list: Vec<Page>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct PageConfig {
+
+pub struct Page {
     pub id: String,
-    pub name: String,
+    pub name: String,           // 页面名称
+    pub path: Option<String>,   // 页面路由 TODO: 去掉Option
+    pub remark: Option<String>, // 页面描述
     pub page_data: String,
-    pub path: String,
+    pub created_at: String,
+    pub updated_at: String,
+    pub project_id: String, // 保留冗余，方便查询
 }
 
 

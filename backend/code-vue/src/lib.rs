@@ -4,7 +4,7 @@ mod utils;
 use anyhow::Error;
 use code_core::ffi::result_to_cstring;
 use code_core::{
-    CodeGenerator, GeneratedArtifact, GeneratorError, GeneratorOptions, MergedElement, PageConfig, PageContent, RouteInfo
+    CodeGenerator, GeneratedArtifact, GeneratorError, GeneratorOptions, MergedElement, Page, PageContent, RouteInfo
 };
 use handlebars::{to_json, Handlebars};
 use serde::{Deserialize, Serialize};
@@ -32,7 +32,7 @@ impl TemplateData {
 
 struct VueGenerator {
     pages: Vec<String>,
-    page_list: Vec<PageConfig>,
+    page_list: Vec<Page>,
     output_dir: PathBuf,
     page_route_list: Vec<RouteInfo>,
     reg: Handlebars<'static>,
@@ -98,7 +98,7 @@ impl CodeGenerator for VueGenerator {
 
     fn generate_page(
         &self,
-        config: &PageConfig,
+        config: &Page,
         route_list: &mut Vec<RouteInfo>,
     ) -> Result<GeneratedArtifact, Error> {
         let output_dir = PathBuf::from(self.output_dir.clone());
@@ -109,7 +109,7 @@ impl CodeGenerator for VueGenerator {
         route_list.push(RouteInfo {
             path: config.path.clone(),
             name: component.clone(),
-            component_path: format!("./views/{}.vue", component),
+            component_path: format!("@/views/{}.vue", component),
         });
 
         // 处理页面数据

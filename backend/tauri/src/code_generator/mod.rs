@@ -39,7 +39,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     {
         lib_path = resource_dir
             .join("plugins")
-            .join(format!("lib{}.dylib", params.export_type));
+            .join(format!("libcode_{}.dylib", params.export_type));
     }
 
     #[cfg(target_os = "windows")]
@@ -51,6 +51,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
 
     //    lib_path 没有值直接返回
     if !lib_path.exists() {
+        log::info!("lib_path, {:?}", lib_path);
         return Err(CommonError::Other("不支持该类型插件".to_string()));
     }
 
@@ -83,7 +84,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
         output_dir: project_export_path.clone(),
         version: "1.0.0".into(),
         package_manager: "npm".into(),
-        page_list: vec![],
+        page_list: page_list,
     };
 
     unsafe {

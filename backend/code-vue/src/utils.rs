@@ -80,7 +80,7 @@ pub fn generate_package_json(
             "build": "vite build"
         },
         "dependencies": {
-            "element-plus": "^2.9.4",
+            "ant-design-vue": "^4.2.6",
             "vue": "^3.5.13",
             "vue-router": "^4.5.0"
         },

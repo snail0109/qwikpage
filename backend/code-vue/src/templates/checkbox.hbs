@@ -1,4 +1,8 @@
-<el-checkbox type="{{config.props.type}}" size="{{config.props.size}}" :disabled="{{config.props.disabled}}" {{#if
-  config.style }} style="{{style config.style}}" {{/if}}>
+<a-checkbox
+  type="{{config.props.type}}"
+  size="{{config.props.size}}"
+  {{#if config.props.disabled}}:disabled="{{config.props.disabled}}"{{/if}} 
+  {{#if config.style }}style="{{style config.style}}"{{/if}}
+>
   {{config.props.text}}
-</el-checkbox>
+</a-checkbox>
