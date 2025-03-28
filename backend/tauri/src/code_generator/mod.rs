@@ -40,7 +40,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<()>
     })?;
     let plugins_dir = resource_dir.join("plugins");
     if !plugins_dir.exists() {
-        log::error!("获取插件包目录失败");
+        log::error!("获取插件包目录失败, {:#?}", plugins_dir.clone());
         return Err(CommonError::Other("获取插件包目录失败".to_string()));
     }
 
