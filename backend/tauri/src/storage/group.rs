@@ -148,10 +148,12 @@ impl GroupConfig {
             // 遍历 group_list  如果 group.is_default 为 true，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
             for group in &mut group_list {
                 if let Some(is_def) = group.is_default {
-                    if let Some(projects) = &mut group.projects {
-                        projects.extend(unassigned_projects.iter().cloned());
-                    } else {
-                        group.projects = Some(unassigned_projects.clone());
+                    if is_def {
+                        if let Some(projects) = &mut group.projects {
+                            projects.extend(unassigned_projects.iter().cloned());
+                        } else {
+                            group.projects = Some(unassigned_projects.clone());
+                        }
                     }
                 }
             }
