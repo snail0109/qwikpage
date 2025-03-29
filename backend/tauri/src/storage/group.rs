@@ -12,11 +12,12 @@ use crate::utils::dirs::projects_group_path;
 
 fn default_group() -> Group {
     Group {
-        id: "-1".to_string(),
+        id: Uuid::new_v4().to_string(),
         name: "默认分组".to_string(),
         projects: None,
         created_at: None,
         updated_at: None,
+        is_default: Some(true)
     }
 }
 
@@ -70,6 +71,7 @@ impl GroupConfig {
             projects: None,
             created_at: Some(get_current_time()),
             updated_at: Some(get_current_time()),
+            is_default: Some(false)
         };
         self.groups.push(group);
         info!("group added: {:?}", self.groups);
@@ -130,6 +132,7 @@ impl GroupConfig {
                 created_at: group.created_at.clone().unwrap_or_default(),
                 updated_at: group.updated_at.clone().unwrap_or_default(),
                 projects: Some(projects_in_group),
+                is_default: group.is_default
             });
         }
 
@@ -142,9 +145,9 @@ impl GroupConfig {
 
         if !unassigned_projects.is_empty() {
             log::info!("Found {} unassigned projects", unassigned_projects.len());
-            // 遍历 group_list  如果 id wei -1，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
+            // 遍历 group_list  如果 group.is_default 为 true，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
             for group in &mut group_list {
-                if group.id == "-1".to_string() {
+                if let Some(is_def) = group.is_default {
                     if let Some(projects) = &mut group.projects {
                         projects.extend(unassigned_projects.iter().cloned());
                     } else {

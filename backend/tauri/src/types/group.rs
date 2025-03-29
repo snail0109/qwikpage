@@ -9,6 +9,7 @@ pub struct Group {
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub projects: Option<Vec<String>>,
+    pub is_default: Option<bool>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -23,6 +24,7 @@ pub struct GroupDetail {
     pub created_at: String,
     pub updated_at: String,
     pub projects: Option<Vec<ProjectSummary>>,
+    pub is_default: Option<bool>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

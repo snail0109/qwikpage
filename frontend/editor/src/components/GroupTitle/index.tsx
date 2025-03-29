@@ -8,6 +8,7 @@ interface ProjectGroupProps {
     groupItem: {
         id: string;
         name: string;
+        is_default: boolean;
     };
     createText?: string;
     onCreate: (groupId: string) => void;
@@ -87,7 +88,7 @@ const GroupTitle = ({ groupItem, createText = "新增项目", onCreate, onDelete
                                         event.stopPropagation();
                                     }}
                                 />
-                                {groupItem.id === "-1" ? null : (
+                                {(groupItem.id === "-1" || groupItem.is_default) ? null : (
                                     <>
                                         <Divider type="vertical" />
                                         <DeleteOutlined

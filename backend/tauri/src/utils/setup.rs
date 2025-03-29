@@ -25,5 +25,38 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         fs::rename(path, new_path).unwrap();
     }
 
+    // 读取 projects_group_path文件内容, 如果存在 groups 字段，并且 groups的值不是空数据
+    // 如果 id 是 -1 则新增 is_default: true , 并且修改id为Uuid，如果id不是-1 新增is_default字段设置 false
+    let projects_path = projects_group_path();
+    log::debug!("修改默认项目分组数据，{:#?}", projects_path);
+    if projects_path.exists() {
+        let content = fs::read_to_string(&projects_path)?;
+        if let Ok(mut json) = serde_json::from_str::<serde_json::Value>(&content) {
+            if let Some(groups) = json.get_mut("groups") {
+                if let Some(groups_array) = groups.as_array() {
+                    if !groups_array.is_empty() {
+                        for group in groups.as_array_mut().unwrap() {
+                            if let Some(id) = group.get("id") {
+                                if id.as_str() == Some("-1") {
+                                    log::debug!("修改默认项目分组id");
+                                    group["is_default"] = serde_json::Value::Bool(true);
+                                    group["id"] =
+                                        serde_json::Value::String(uuid::Uuid::new_v4().to_string());
+                                } else {
+                                    if !group.get("is_default").is_some() {
+                                        log::debug!("补充分组数据缺少的is_default字段");
+                                        group["is_default"] = serde_json::Value::Bool(false);
+                                    }
+                                }
+                            }
+                        }
+                        let new_content = serde_json::to_string_pretty(&json)?;
+                        fs::write(&projects_path, new_content)?;
+                    }
+                }
+            }
+        }
+    }
+
     Ok(())
 }
