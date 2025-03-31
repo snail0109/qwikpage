@@ -2,6 +2,8 @@ import { FunctionOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { useRef } from 'react';
 import VariableSelect from './VariableSelect';
+import FunctionIcon from "@/assets/icons/FunctionIcon.svg?react";
+import styles from './variable.module.less';
 
 interface Value {
   type: 'static' | 'variable';
@@ -35,16 +37,18 @@ const VariableBind: React.FC<Props> = ({ value, onChange, ...props }: any) => {
   return (
     <>
       <Input
+        className={styles.variableInput}
         readOnly={val?.type === 'variable' && val.value}
         allowClear
         value={val?.value}
         onChange={valueChange}
-        addonAfter={
-          <FunctionOutlined
+        suffix={
+          <FunctionIcon
             onClick={() => {
               selectRef.current?.open(val?.value);
             }}
             style={{ color: value?.type === 'variable' ? '#216EF7' : '' }}
+            className={styles.variableIcon}
           />
         }
         placeholder="请选择变量"
