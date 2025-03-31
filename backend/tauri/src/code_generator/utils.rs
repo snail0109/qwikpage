@@ -82,6 +82,34 @@ pub async fn update_config_file(path: PathBuf, marker: &str, content: &str) -> R
     write_file(path, &updated).await
 }
 
+/// 清空目录
+#[allow(unused)]
+async fn empty_directory(dir_path: &PathBuf) -> std::io::Result<()> {
+    if !dir_path.exists() {
+        // 如果目录不存在，创建它
+        async_fs::create_dir_all(dir_path).await?;
+        return Ok(());
+    }
+
+    // 读取目录内容
+    let mut entries = async_fs::read_dir(dir_path).await?;
+    
+    // 删除目录内的所有内容
+    while let Some(entry) = entries.next_entry().await? {
+        let path = entry.path();
+        
+        if path.is_dir() {
+            // 递归删除子目录
+            async_fs::remove_dir_all(&path).await?;
+        } else {
+            // 删除文件
+            async_fs::remove_file(&path).await?;
+        }
+    }
+    
+    Ok(())
+}
+
 /// 递归复制目录
 #[allow(unused)]
 pub fn copy_directory_recursive(
@@ -125,6 +153,26 @@ pub fn copy_directory_recursive(
     })
 }
 
+/// 清空出码目录
+#[allow(unused)]
+pub async fn clear_code_dir(code_dir: &PathBuf) -> Result<()> {
+    // 清空 public 目录
+    let public_dir = code_dir.join("public");
+    log::info!("清空 public 目录: {:?}", public_dir);
+    empty_directory(&public_dir).await.map_err(|e| {
+        log::error!("清空 public 目录失败, {}", e.to_string());
+        format!("清空 public 目录失败, {}", e.to_string())
+    })?;
+
+    // 清空 src/views 目录
+    let views_dir = code_dir.join("src").join("views");
+    log::info!("清空 src/views 目录: {:?}", views_dir);
+    empty_directory(&views_dir).await.map_err(|e| {
+        log::error!("清空 src/views 目录失败, {}", e.to_string());
+        format!("清空 src/views 目录失败, {}", e.to_string())
+    })?;
+    Ok(())
+}
 /// 导出资源文件
 #[allow(unused)]
 pub async fn export_resources(
@@ -135,8 +183,6 @@ pub async fn export_resources(
     // 获取项目资源目录
     let config_path = Config::global().preferences().get_project_path();
     let prj_res_dir = config_path.join(&project_id).join("resources");
-
-    log::info!("config_path: {:?}, {:?}", config_path, prj_res_dir);
 
     if !prj_res_dir.exists() {
         info!("资源目录不存在: {:?}", prj_res_dir);

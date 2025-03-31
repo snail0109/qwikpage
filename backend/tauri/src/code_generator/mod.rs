@@ -13,8 +13,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
-use crate::code_generator::utils::export_resources;
-use std::thread;
+use crate::code_generator::utils::{export_resources, clear_code_dir};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
@@ -96,6 +95,12 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
             format!("创建代码导出根目录失败, {}", e.to_string())
         })?;
 
+    // 清空目录
+    if let Err(e) = clear_code_dir(&project_export_path).await {
+        log::error!("{}", e);
+        return Err(e.to_string());
+    }
+
     // 按需调整
     let options = GeneratorOptions {
         project_name: project.name,
@@ -119,7 +124,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
         handle_generation_result(result)?;
     }
 
-    // TODO 导出资源
+    // 导出资源
     if let Err(e) = export_resource(&params.project_id, &project_export_path).await {
         log::error!("{}", e);
         return Err(e);
