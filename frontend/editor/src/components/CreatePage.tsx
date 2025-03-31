@@ -170,14 +170,12 @@ const CreatePage = (props: IModalProp) => {
                     name="path"
                     rules={[
                         { required: true, message: "请输入页面路由" },
-                        () => ({
-                            validator(_, value) {
-                                if (!value || value.startsWith("/")) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('页面路径需要以 "/" 开头'));
-                            },
-                        }),
+                        { pattern: /^\//, message: '页面路径需要以 "/" 开头' },
+                        // 检查斜杠后不能为空
+                        { pattern: /^\/(?!$)/, message: '斜杠后不能为空' },
+                        // 原有的字符限制
+                        { pattern: /^\/[a-zA-Z0-9\-_]*$/, message: '路径只能包含字母、数字、连字符、下划线' },
+                        { max: 50, message: '路径长度不能超过50个字符' }
                     ]}
                 >
                     <Input placeholder="请输入页面路径，例如: /dashboard" />
