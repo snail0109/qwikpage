@@ -50,6 +50,7 @@ function App() {
                     colorLink: "#216EF7",
                     colorInfo: "#216EF7",
                     controlHeight: 28,
+                    borderRadius: 4,
                 },
                 components: {
                     Button: {
