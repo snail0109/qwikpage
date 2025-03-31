@@ -18,14 +18,14 @@ import usePreferencesStore from "./stores/preferencesStore";
 import UpdaterDialog from "./components/UpdaterDialog";
 import "@/styles/global.less";
 function App() {
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
     const { get_preferences, fontFamily, fontSize } = usePreferencesStore();
 
     useEffect(() => {
         get_preferences().then(() => {
             setLoading(false);
         });
-    }, [])
+    }, []);
     useEffect(() => {
         if (fontFamily !== null) {
             document.documentElement.style.fontFamily = `"${fontFamily === "default" ? "sans-serif" : fontFamily}"`;
@@ -57,6 +57,8 @@ function App() {
                         defaultBorderColor: "#D0DAE8",
                         fontWeight: 300,
                         defaultShadow: "none",
+                        primaryShadow: "none",
+                        dangerShadow: "none",
                         boxShadow: "none",
                     },
                     Input: {
@@ -69,8 +71,8 @@ function App() {
                     },
                     Form: {
                         itemMarginBottom: 15,
-                        verticalLabelPadding: 0
-                    }
+                        verticalLabelPadding: 0,
+                    },
                 },
                 // algorithm: marsTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
             }}
@@ -79,7 +81,7 @@ function App() {
                 <AntdGlobal />
                 <RouterProvider router={router} />
             </AntdApp>
-            {import.meta.env.MODE !== 'development' && <UpdaterDialog />}
+            {import.meta.env.MODE !== "development" && <UpdaterDialog />}
         </ConfigProvider>
     );
 }
