@@ -41,6 +41,7 @@ const ConfigPanel = memo(() => {
     height: 0,
   });
   const [ComponentConfig, setComponentConfig] = useState<any>(null);
+  const [isFormItem, setFormItem] = useState<boolean>(false);
 
   useDebounceEffect;
   /**
@@ -58,6 +59,7 @@ const ConfigPanel = memo(() => {
           import(remoteConfigUrl).then((res = {}) => {
             setComponentConfig(res.default);
             form.setFieldsValue(elementsMap[selectedElement.id]?.config.props || {});
+            setFormItem(elementsMap[selectedElement.id]?.inForm || false);
           });
         } else {
           // 生成组件
@@ -66,6 +68,7 @@ const ConfigPanel = memo(() => {
             setComponentConfig(item);
             // defaults是为了继承页面中新增的配置项
             form.setFieldsValue(elementsMap[selectedElement.id]?.config.props);
+            setFormItem(elementsMap[selectedElement.id]?.inForm || false);
           });
         }
         form.setFieldValue('id', selectedElement.id);
@@ -143,7 +146,7 @@ const ConfigPanel = memo(() => {
             {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
           </div>
           <Suspense fallback={<SpinLoading />}>
-            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} name={selectedElement?.type} />
+            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} name={selectedElement?.type} isFormItem={isFormItem}/>
           </Suspense>
         </Form>
       ),

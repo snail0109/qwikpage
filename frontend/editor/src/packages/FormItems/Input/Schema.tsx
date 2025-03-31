@@ -11,6 +11,22 @@ export default {
       label: '标签配置',
       key: 'formItem',
     },
+     {
+      type: 'Input',
+      label: '标题',
+      name: ['formItem', 'label'],
+      props: {
+        placeholder: '请输入文本标题',
+      },
+    },
+    {
+      type: 'Input',
+      label: '字段',
+      name: ['formItem', 'name'],
+      props: {
+        placeholder: '请输入提交字段',
+      },
+    },
     {
       type: 'RadioGroupBtn',
       label: '类型',
@@ -85,22 +101,6 @@ export default {
       label: '禁用',
       name: ['formWrap', 'disabled'],
     },
-    // {
-    //   type: 'Input',
-    //   label: '标题',
-    //   name: ['formItem', 'label'],
-    //   props: {
-    //     placeholder: '请输入文本标题',
-    //   },
-    // },
-    // {
-    //   type: 'Input',
-    //   label: '字段',
-    //   name: ['formItem', 'name'],
-    //   props: {
-    //     placeholder: '请输入提交字段',
-    //   },
-    // },
     // {
     //   type: 'Switch',
     //   label: '无样式',

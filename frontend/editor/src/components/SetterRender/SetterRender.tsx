@@ -17,13 +17,14 @@ const formLayoutFull = {
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
+  isFormItem: boolean;
   name?: string;
 }
 /**
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
-const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
+const SetterRender = memo(({ attrs, form, name, isFormItem }: IAttrs) => {
   if (attrs.length === 0) return <></>;
   console.log(attrs)
   // 根据type枚举
@@ -38,11 +39,24 @@ const SetterRender = memo(({ attrs, form, name }: IAttrs) => {
       {name && <Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
         <Switch size='small' defaultChecked />
       </Form.Item>}
+
       {/* ---组件属性--- */}
       {attrs.map((item: SchemaType, index) => {
         if (!item) return;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
+
+        // 检查是否是表单项的标题或字段配置
+        const isFormItemLabelOrName = Array.isArray(item.name) &&
+          item.name.length > 0 &&
+          item.name[0] === 'formItem' &&
+          (item.name[1] === 'label' || item.name[1] === 'name');
+
+        // 如果是表单项的标题或字段配置，但isFormItem为false，则跳过渲染
+        if (isFormItemLabelOrName && !isFormItem) {
+          return null;
+        }
+
         if (item.type == 'Title') {
           return null;
           // return (
