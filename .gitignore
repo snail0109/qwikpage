@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+*.dll
+!backend/tauri/plugins*.dll
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
