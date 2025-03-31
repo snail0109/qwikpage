@@ -241,11 +241,11 @@ const components = [
       //   name: '日期范围',
       //   type: 'DatePickerRange',
       // },
-      // {
-      //   icon: <IconFormCheckbox />,
-      //   name: '多选框',
-      //   type: 'CheckBox',
-      // },
+      {
+        icon: <IconFormCheckbox />,
+        name: '多选框',
+        type: 'CheckBox',
+      },
       // {
       //   icon: <IconFormRadio />,
       //   name: '单选框',
