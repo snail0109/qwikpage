@@ -32,9 +32,9 @@ const SetterRender = memo(({ attrs, form, name, isFormItem }: IAttrs) => {
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {name && <Form.Item name="name" label="组件名称">
+      {/* {name && <Form.Item name="name" label="组件名称">
         <Input defaultValue={name} />
-      </Form.Item>}
+      </Form.Item>} */}
       {/* 是否显示 */}
       {name && <Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
         <Switch size='small' defaultChecked />
