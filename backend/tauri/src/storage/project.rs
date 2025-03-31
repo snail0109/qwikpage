@@ -1,5 +1,6 @@
 use anyhow::Error;
 use log;
+use std::io::ErrorKind;
 use std::path::Path;
 use std::{fs, io};
 
@@ -58,16 +59,24 @@ impl Project {
         Ok(true)
     }
 
-    pub fn load(project_id: String) -> io::Result<Self> {
+    pub fn load(project_id: String) -> Result<Self, String> {
         let root_dir = &Config::global().preferences().get_project_path();
         let project_file = root_dir.join(project_id).join(PROJECT_CONFIG_FILE);
         log::info!("load project config file: {:#?}", project_file);
-        match fs::read_to_string(project_file) {
+        match fs::read_to_string(&project_file) {
             Ok(data) => {
                 let project: Project = serde_json::from_str(&data).unwrap();
                 Ok(project)
             }
-            Err(e) => Err(e),
+            Err(e) => {
+                match e.kind() {
+                    ErrorKind::NotFound => {
+                        log::error!("项目配置文件不存在: {:?}", project_file);
+                        Err(format!("项目配置文件不存在: {:?}", project_file))
+                    }
+                    _ => Err(e.to_string())
+                }
+            }
         }
     }
 
