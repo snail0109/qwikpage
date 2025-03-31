@@ -42,6 +42,7 @@ const ConfigPanel = memo(() => {
   });
   const [ComponentConfig, setComponentConfig] = useState<any>(null);
   const [isFormItem, setFormItem] = useState<boolean>(false);
+  const [formItemId, setFormItemId] = useState<string>();
 
   useDebounceEffect;
   /**
@@ -60,6 +61,7 @@ const ConfigPanel = memo(() => {
             setComponentConfig(res.default);
             form.setFieldsValue(elementsMap[selectedElement.id]?.config.props || {});
             setFormItem(elementsMap[selectedElement.id]?.inForm || false);
+            setFormItemId(elementsMap[selectedElement.id]?.config.props.formItem.name);
           });
         } else {
           // 生成组件
@@ -69,6 +71,7 @@ const ConfigPanel = memo(() => {
             // defaults是为了继承页面中新增的配置项
             form.setFieldsValue(elementsMap[selectedElement.id]?.config.props);
             setFormItem(elementsMap[selectedElement.id]?.inForm || false);
+            setFormItemId(elementsMap[selectedElement.id]?.config.props.formItem.name);
           });
         }
         form.setFieldValue('id', selectedElement.id);
@@ -146,7 +149,7 @@ const ConfigPanel = memo(() => {
             {selectedElement?.type ? <><ConfigSvg style={{ fontSize: 16 }} /> <span className={styles.text}>{selectedElement?.type}</span></> : null}
           </div>
           <Suspense fallback={<SpinLoading />}>
-            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} name={selectedElement?.type} isFormItem={isFormItem}/>
+            <SetterRender attrs={ComponentConfig?.attrs || []} form={form} elementId={selectedElement?.id} isFormItem={isFormItem} formItemId={formItemId} />
           </Suspense>
         </Form>
       ),

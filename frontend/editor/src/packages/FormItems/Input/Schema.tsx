@@ -19,14 +19,14 @@ export default {
         placeholder: '请输入文本标题',
       },
     },
-    {
-      type: 'Input',
-      label: '字段',
-      name: ['formItem', 'name'],
-      props: {
-        placeholder: '请输入提交字段',
-      },
-    },
+    // {
+    //   type: 'Input',
+    //   label: '组件名称',
+    //   name: ['formItem', 'name'],
+    //   props: {
+    //     placeholder: '请输入提交字段',
+    //   },
+    // },
     {
       type: 'RadioGroupBtn',
       label: '类型',

@@ -18,13 +18,14 @@ interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
   isFormItem: boolean;
-  name?: string;
+  elementId?: string;
+  formItemId?: string;
 }
 /**
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
-const SetterRender = memo(({ attrs, form, name, isFormItem }: IAttrs) => {
+const SetterRender = memo(({ attrs, form, isFormItem, elementId, formItemId }: IAttrs) => {
   if (attrs.length === 0) return <></>;
   console.log(attrs)
   // 根据type枚举
@@ -32,11 +33,14 @@ const SetterRender = memo(({ attrs, form, name, isFormItem }: IAttrs) => {
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {/* {name && <Form.Item name="name" label="组件名称">
-        <Input defaultValue={name} />
-      </Form.Item>} */}
+      {!isFormItem && elementId && <Form.Item name="name" label="组件名称">
+        <Input defaultValue={elementId} />
+      </Form.Item>}
+      {isFormItem && formItemId && <Form.Item name="name" label="组件名称">
+        <Input defaultValue={formItemId} />
+      </Form.Item>}
       {/* 是否显示 */}
-      {name && <Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
+      {<Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
         <Switch size='small' defaultChecked />
       </Form.Item>}
 

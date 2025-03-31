@@ -123,6 +123,7 @@ export function SystemSetting(props: ISystemSettingProps) {
                 <Button color="primary" variant="outlined" onClick={onRestore}>
                     重置为默认
                 </Button>
+                <span style={{paddingLeft: 8}}>重启程序生效</span>
             </div>
 
             <div>
@@ -137,7 +138,7 @@ export function SystemSetting(props: ISystemSettingProps) {
     );
 
     return (
-        <Modal title="系统设置" open={visible} onCancel={handleCancel} width={500} footer={customFooter}>
+        <Modal title="系统设置" open={visible} onCancel={handleCancel} width={600} footer={customFooter}>
             <Form form={form} layout="vertical" autoComplete="off">
                 <Form.Item label="字体" name="fontfamily">
                     <Select
