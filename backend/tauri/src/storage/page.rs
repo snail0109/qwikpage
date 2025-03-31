@@ -3,7 +3,7 @@ use crate::types::page::{PageAddParams, PageCopyParams, PageList, PageUpdatePara
 use crate::utils::datetime::get_current_time;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
-use anyhow::Error;
+use anyhow;
 use code_core::types::page::Page;
 use log;
 use std::fs;
@@ -136,8 +136,39 @@ impl PageConfig {
         Ok(pages_list)
     }
 
+    // 检查页面名称和路径是否重复
+    fn check_duplicate(project_id: &str, name: &str, path: Option<&String>, exclude_id: Option<&str>) -> Result<(), String> {
+        let pages = Self::list_with_options(project_id.to_string())?;
+        for page in pages {
+            // 如果是更新操作，跳过当前页面
+            if let Some(exclude_id) = exclude_id {
+                if page.id == exclude_id {
+                    continue;
+                }
+            }
+            
+            // 检查名称是否重复
+            if page.name == name {
+                return Err(format!("页面名称 '{}' 已存在", name));
+            }
+            
+            // 检查路径是否重复
+            if let Some(path) = path {
+                if let Some(page_path) = page.path {
+                    if page_path == *path {
+                        return Err(format!("页面路径 '{}' 已存在", path));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     // 新增页面
     pub fn add_page(params: PageAddParams) -> Result<Page, String> {
+        // 检查重复
+        Self::check_duplicate(&params.project_id, &params.name, params.path.as_ref(), None)?;
+
         let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir).map_err(|e| format!("创建目录失败: {}", e))?;
@@ -158,7 +189,13 @@ impl PageConfig {
     }
 
     // 更新页面
-    pub fn update(params: PageUpdateParams) -> Result<bool, Error> {
+    pub fn update(params: PageUpdateParams) -> Result<bool, anyhow::Error> {
+        // 检查重复
+        if let Some(name) = &params.name {
+            Self::check_duplicate(&params.project_id, name, params.path.as_ref(), Some(&params.id))
+                .map_err(|e| anyhow::anyhow!(e))?;
+        }
+
         let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
@@ -184,7 +221,7 @@ impl PageConfig {
         Ok(true)
     }
 
-    pub fn copy(params: PageCopyParams) -> Result<String, Error> {
+    pub fn copy(params: PageCopyParams) -> Result<String, anyhow::Error> {
         let page_dir = Self::get_page_dir(&params.project_id);
         if !page_dir.exists() {
             fs::create_dir_all(&page_dir)?;
