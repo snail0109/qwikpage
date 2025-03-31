@@ -15,6 +15,7 @@ export interface IModalProp {
     createRef: MutableRefObject<{ open: (action: "create" | "edit" | "copy", record?: IPage) => void } | undefined>;
     update?: (status?: string) => void;
     copy?: (record: IProject) => void;
+    onSuccess?: () => void;
 }
 
 const CreatePage = (props: IModalProp) => {
@@ -111,6 +112,7 @@ const CreatePage = (props: IModalProp) => {
                 form.resetFields();
                 setVisible(false);
                 setLoading(false);
+                props.onSuccess?.();
             } catch (error) {
                 setLoading(false);
             }

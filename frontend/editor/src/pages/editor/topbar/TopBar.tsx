@@ -3,7 +3,6 @@ import { Select, Switch, Button, Space, Tooltip } from 'antd';
 import { EyeOutlined, SaveOutlined, SettingOutlined, LeftOutlined } from '@ant-design/icons';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { usePageStore } from '@/stores/pageStore';
-import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import { pageService } from '@/services';
 import storage from '@/utils/storage';
 import styles from './index.module.less';
@@ -17,7 +16,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   const [loading, setLoading] = useState(false);
   const [openAutoSave, setOpenAutoSave] = useState(false);
 
-  const createRef = useRef<CreatePageRef>();
   const timer = useRef<any>(null);
 
   const { mode, id, name, path, remark, projectId, pageData, isEdit, setMode, updateEditState, savePageInfo } = usePageStore(
@@ -42,16 +40,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
     updateCanvas(val);
   };
 
-  // 修改页面
-  const handleEditPage = () => {
-    createRef.current?.open('edit', {
-      id,
-      name,
-      path,
-      remark,
-      projectId,
-    });
-  };
+
 
   // 每隔5s自动保存页面信息
   useEffect(() => {
@@ -122,9 +111,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
               />
             }
           />
-          <Button type="text" icon={<SettingOutlined />} onClick={handleEditPage}>
-            设置
-          </Button>
           <Button type="text" icon={<SaveOutlined />} onClick={savePageData} loading={loading}>
             保存
           </Button>
@@ -140,8 +126,6 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
           </Space>
         </Space>
       </div>
-      {/* 修改页面 */}
-      <CreatePage createRef={createRef} />
     </>
   );
 });

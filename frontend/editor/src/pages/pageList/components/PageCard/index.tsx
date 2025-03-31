@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Image, Card } from 'antd';
 import PageIcon from '@/components/icons/PageIcon';
+import EditIcon from '@/assets/icons/EditIcon.svg?react';
 import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import CopyIcon from '@/assets/icons/Copy.svg?react';
 import PreviewIcon from '@/assets/icons/Eye.svg?react';
@@ -11,6 +12,7 @@ import dayjs from 'dayjs';
 import { message, Modal } from '@/utils/AntdGlobal';
 import { pageService } from '@/services';
 import { IPage } from '@/types';
+import CreatePage, { CreatePageRef } from '@/components/CreatePage';
 import styles from '@/styles/card.module.less';
 import pageCardStyle from './index.module.less';
 
@@ -19,6 +21,19 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
     const [showPreview, setShowPreview] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
     const navigate = useNavigate();
+    const createRef = useRef<CreatePageRef>();
+
+
+    // 修改页面
+    const handleEditPage = (params: IPage) => {
+        createRef.current?.open('edit', {
+            id: params.id,
+            name: params.name,
+            path: params.path,
+            remark: params.remark,
+            projectId: params.projectId,
+        });
+    };
 
     // 页面操作
     const handleAction = async (type: string, params: IPage) => {
@@ -73,6 +88,9 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
                                 <Tooltip title="复制">
                                     <CopyIcon className={pageCardStyle.actionIcon} onClick={() => handleAction('copy', item)} />
                                 </Tooltip>,
+                                <Tooltip title="修改">
+                                    <EditIcon className={pageCardStyle.actionIcon} style={{ fontSize: 13, marginTop: 3 }} onClick={() => handleEditPage(item)} />
+                                </Tooltip>,
                                 <Tooltip title="删除">
                                     <DeleteIcon className={pageCardStyle.actionIcon} style={{ fontSize: 17 }} onClick={() => handleAction('delete', item)} />
                                 </Tooltip>,
@@ -105,6 +123,8 @@ const PageCard = ({ list, copy, refresh }: { list: IPage[]; copy: (item: IPage) 
                     },
                 }}
             />
+            {/* 修改页面 */}
+            <CreatePage createRef={createRef} onSuccess={() => refresh()} />
         </>
     );
 };

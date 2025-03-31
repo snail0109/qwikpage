@@ -11,6 +11,7 @@ import PageCard from './components/PageCard/index';
 import { IPage } from '@/types';
 import styles from './index.module.less';
 import pageStyle from '@/styles/page.module.less';
+// import { HotKeys } from 'react-hotkeys';
 
 /**
  * 项目所属页面列表
