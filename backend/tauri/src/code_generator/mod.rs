@@ -13,6 +13,8 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_opener::OpenerExt;
 use tokio::fs as async_fs;
+use crate::code_generator::utils::export_resources;
+use std::thread;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExportCodeParams {
@@ -118,6 +120,10 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     }
 
     // TODO 导出资源
+    if let Err(e) = export_resource(&params.project_id, &project_export_path).await {
+        log::error!("{}", e);
+        return Err(e);
+    }
 
     // 步骤3：完成
     window
@@ -161,4 +167,11 @@ fn handle_generation_result(result: FfiResult<Vec<GeneratedArtifact>>) -> Result
         return Err(format!("Generation failed: {:#?}", result.error));
     }
     Ok(())
+}
+
+async fn export_resource(project_id: &str, code_dir: &PathBuf) -> Result<(), String> {
+    // 使用基础生成器的资源导出功能
+    export_resources(&project_id, &code_dir, "public").await.map_err(|e| {
+        return format!("导出静态资源失败: {}", e);
+    })
 }

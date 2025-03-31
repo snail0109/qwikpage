@@ -134,8 +134,9 @@ pub async fn export_resources(
 ) -> Result<()> {
     // 获取项目资源目录
     let config_path = Config::global().preferences().get_project_path();
-    let resource_dir = config_path.join(&project_id).join("resources");
-    let prj_res_dir = resource_dir.join(project_id);
+    let prj_res_dir = config_path.join(&project_id).join("resources");
+
+    log::info!("config_path: {:?}, {:?}", config_path, prj_res_dir);
 
     if !prj_res_dir.exists() {
         info!("资源目录不存在: {:?}", prj_res_dir);
@@ -150,23 +151,53 @@ pub async fn export_resources(
         .await
         .map_err(|e| CommonError::Io(e))?;
 
-    // 读取资源目录内容
-    let mut entries = async_fs::read_dir(&prj_res_dir)
+    // 复制资源，应用特殊规则
+    copy_resources_with_rules(&prj_res_dir, &public_dir, None).await?;
+
+    Ok(())
+}
+
+/// 辅助函数，用于递归复制资源并应用特殊规则
+async fn copy_resources_with_rules(
+    source_dir: &PathBuf, 
+    target_dir: &PathBuf,
+    parent_dir_name: Option<&str>
+) -> Result<()> {
+    // 读取源目录内容
+    let mut entries = async_fs::read_dir(&source_dir)
         .await
         .map_err(|e| CommonError::Io(e))?;
 
-    // 复制目录内容
     while let Some(entry) = entries.next_entry().await.map_err(|e| CommonError::Io(e))? {
         let source_path = entry.path();
         let file_name = entry
             .file_name()
             .into_string()
             .map_err(|_| CommonError::Other(format!("无效的文件名: {:?}", source_path)))?;
-        let target_path = public_dir.join(file_name);
+        
+        // 应用规则1：将"默认分组"重命名为"defaultGroup"
+        let target_file_name = if file_name == "默认分组" {
+            "defaultGroup".to_string()
+        } else {
+            file_name.clone()
+        };
+        
+        // 应用规则2：如果是"默认分组"下的"main"目录，则跳过
+        if parent_dir_name == Some("默认分组") && file_name == "main" {
+            log::info!("跳过'默认分组'下的'main'目录: {:?}", source_path);
+            continue;
+        }
+        
+        let target_path = target_dir.join(&target_file_name);
 
         if source_path.is_dir() {
-            // 如果是目录，递归复制
-            copy_directory_recursive(&source_path, &target_path).await?;
+            // 为子目录创建目标目录
+            async_fs::create_dir_all(&target_path)
+                .await
+                .map_err(|e| CommonError::Io(e))?;
+            
+            // 使用 Box::pin 处理递归异步调用
+            Box::pin(copy_resources_with_rules(&source_path, &target_path, Some(&file_name))).await?;
         } else {
             // 如果是文件，直接复制
             async_fs::copy(&source_path, &target_path)
@@ -177,7 +208,6 @@ pub async fn export_resources(
 
     Ok(())
 }
-
 /// 处理页面数据，替换资源路径
 #[allow(unused)]
 pub fn process_page_data(page_data: &str, project_id: &str) -> Result<PageContent> {
