@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -11,7 +11,8 @@ import PageCard from './components/PageCard/index';
 import { IPage } from '@/types';
 import styles from './index.module.less';
 import pageStyle from '@/styles/page.module.less';
-// import { HotKeys } from 'react-hotkeys';
+import { HotKeys } from 'react-hotkeys';
+import { keyMap } from '@/constants/hotKeys';
 
 /**
  * 项目所属页面列表
@@ -21,6 +22,7 @@ export default function Index() {
     const createPageRef = useRef<CreatePageRef>();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
+    const navigate = useNavigate();
     const projectId = searchParams.get('projectId') || undefined;
     const projectName = searchParams.get('projectName') || undefined;
 
@@ -59,37 +61,48 @@ export default function Index() {
         createPageRef.current?.open('copy', item);
     };
 
+    const handlers = {
+        'ESC': (e: KeyboardEvent | undefined) => {
+            e?.preventDefault();
+            e?.stopPropagation();
+            console.log('esc');
+            navigate('/projects');
+        }
+    }
+
     return (
         <>
-            <Layout.Content className={pageStyle.pageList} style={{ height: 'calc(100vh - 30px)' }}>
-                <SearchBar showGroup={false} form={form} from="页面" projectName={projectName} submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
-                <div className={pageStyle.pagesContent}>
-                    <Spin spinning={loading} size="large" tip="加载中...">
-                        {tableProps.dataSource.length > 0 ? (
-                            <PageCard list={tableProps.dataSource} copy={handleCopy} refresh={search.submit} />
-                        ) : (
-                            <Empty style={{ marginTop: 100 }}>
-                                <Button type="dashed" icon={<PlusOutlined />} onClick={handleCreate}>
-                                    创建页面
-                                </Button>
-                            </Empty>
-                        )}
-                    </Spin>
-                </div>
-                {/* 分页器 */}
-                {tableProps.dataSource.length > 0 ? (
-                    <Pagination
-                        {...tableProps.pagination}
-                        onChange={(current, pageSize) => tableProps.onChange({ current, pageSize })}
-                        showSizeChanger
-                        showTotal={(total) => `总共 ${total} 条`}
-                        align="end"
-                    />
-                ) : null}
+            <HotKeys keyMap={keyMap} handlers={handlers} >
+                <Layout.Content className={pageStyle.pageList} style={{ height: 'calc(100vh - 30px)' }}>
+                    <SearchBar showGroup={false} form={form} from="页面" projectName={projectName} submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
+                    <div className={pageStyle.pagesContent}>
+                        <Spin spinning={loading} size="large" tip="加载中...">
+                            {tableProps.dataSource.length > 0 ? (
+                                <PageCard list={tableProps.dataSource} copy={handleCopy} refresh={search.submit} />
+                            ) : (
+                                <Empty style={{ marginTop: 100 }}>
+                                    <Button type="dashed" icon={<PlusOutlined />} onClick={handleCreate}>
+                                        创建页面
+                                    </Button>
+                                </Empty>
+                            )}
+                        </Spin>
+                    </div>
+                    {/* 分页器 */}
+                    {tableProps.dataSource.length > 0 ? (
+                        <Pagination
+                            {...tableProps.pagination}
+                            onChange={(current, pageSize) => tableProps.onChange({ current, pageSize })}
+                            showSizeChanger
+                            showTotal={(total) => `总共 ${total} 条`}
+                            align="end"
+                        />
+                    ) : null}
 
-                {/* 新建页面 */}
-                <CreatePage createRef={createPageRef} update={search.submit} />
-            </Layout.Content>
+                    {/* 新建页面 */}
+                    <CreatePage createRef={createPageRef} update={search.submit} />
+                </Layout.Content>
+            </HotKeys>
         </>
     );
 }

@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { ConfigProvider, Splitter } from "antd";
@@ -9,6 +9,9 @@ import SpinLoading from "@/components/SpinLoading";
 import Notice from "../components/Notice";
 import styles from "./index.module.less";
 import { PanelKey } from "@/constants/panelKeys";
+import { HotKeys } from 'react-hotkeys';
+import { keyMap } from '@/constants/hotKeys';
+
 
 const Menu = lazy(() => import("../components/Menu"));
 const ConfigPanel = lazy(() => import("../components/ConfigPanel/ConfigPanel"));
@@ -116,66 +119,78 @@ const EditLayout = () => {
             setSizes([DEFAULT_LEFT_SIZE, window.innerWidth - (DEFAULT_LEFT_SIZE + DEFAULT_CONFIG_SIZE), DEFAULT_CONFIG_SIZE]);
         }
     }, [mode]);
+
+    const handlers = {
+        'ESC': (e: KeyboardEvent | undefined) => {
+            e?.preventDefault();
+            e?.stopPropagation();
+            console.log('esc');
+            history.back();
+        }
+    }
     // 模式切换，会导致子组件重新渲染
     return (
-        <DndProvider backend={HTML5Backend}>
-            {/* 编辑器 */}
-            <div className={styles.editor} style={{ height: "calc(100vh - 32px)" }} >
-                {/* 使用说明 */}
-                {/* <Notice /> */}
-                <ConfigProvider
-                    theme={{
-                        token: {
-                            borderRadiusLG: 4,
-                        },
-                        components: {
-                            Splitter: {
-                                colorFill: "#e8e9eb",
-                                controlItemBgActive: "#1677ff",
-                                controlItemBgActiveHover: "#1677ff",
-                                splitBarSize: 1,
-                                controlItemBgHover:'#D9D9D9',
+        <HotKeys keyMap={keyMap} handlers={handlers} >
+
+            <DndProvider backend={HTML5Backend}>
+                {/* 编辑器 */}
+                <div className={styles.editor} style={{ height: "calc(100vh - 32px)" }} >
+                    {/* 使用说明 */}
+                    {/* <Notice /> */}
+                    <ConfigProvider
+                        theme={{
+                            token: {
+                                borderRadiusLG: 4,
                             },
-                        },
-                    }}
-                >
-                    <Splitter
-                        onResize={handleResize}
-                        style={{ gap: menuCollapsed ? 0 : undefined }}
+                            components: {
+                                Splitter: {
+                                    colorFill: "#e8e9eb",
+                                    controlItemBgActive: "#1677ff",
+                                    controlItemBgActiveHover: "#1677ff",
+                                    splitBarSize: 1,
+                                    controlItemBgHover: '#D9D9D9',
+                                },
+                            },
+                        }}
                     >
-                        {/* 菜单及其tab */}
-                        <Splitter.Panel
-                            size={menuCollapsed ? MENU_SIZE : sizes[0]}
-                            min={menuCollapsed ? MENU_SIZE : DEFAULT_LEFT_SIZE}
-                            resizable={!menuCollapsed}
-                            style={{
-                                overflow: 'visible',
-                                position: 'relative',
-                                paddingRight: menuCollapsed || currentTab === PanelKey.CodingPanel ? 0 : 10,
-                            }}
+                        <Splitter
+                            onResize={handleResize}
+                            style={{ gap: menuCollapsed ? 0 : undefined }}
                         >
-                            <React.Suspense fallback={<SpinLoading />} >
-                                <Menu
-                                    onTabChange={onTabChange}
-                                    onCollapse={onMenuCollapse}
-                                    collapsed={menuCollapsed}
-                                />
-                            </React.Suspense>
-                        </Splitter.Panel>
-                        {/* 编辑器 */}
-                        <Splitter.Panel size={sizes[1]}>
-                            <Outlet />
-                        </Splitter.Panel>
-                        {/* 配置面板 */}
-                        <Splitter.Panel collapsible size={sizes[2]} min={DEFAULT_CONFIG_SIZE}>
-                            <React.Suspense fallback={<SpinLoading />}>
-                                <ConfigPanel />
-                            </React.Suspense>
-                        </Splitter.Panel>
-                    </Splitter>
-                </ConfigProvider>
-            </div>
-        </DndProvider>
+                            {/* 菜单及其tab */}
+                            <Splitter.Panel
+                                size={menuCollapsed ? MENU_SIZE : sizes[0]}
+                                min={menuCollapsed ? MENU_SIZE : DEFAULT_LEFT_SIZE}
+                                resizable={!menuCollapsed}
+                                style={{
+                                    overflow: 'visible',
+                                    position: 'relative',
+                                    paddingRight: menuCollapsed || currentTab === PanelKey.CodingPanel ? 0 : 10,
+                                }}
+                            >
+                                <React.Suspense fallback={<SpinLoading />} >
+                                    <Menu
+                                        onTabChange={onTabChange}
+                                        onCollapse={onMenuCollapse}
+                                        collapsed={menuCollapsed}
+                                    />
+                                </React.Suspense>
+                            </Splitter.Panel>
+                            {/* 编辑器 */}
+                            <Splitter.Panel size={sizes[1]}>
+                                <Outlet />
+                            </Splitter.Panel>
+                            {/* 配置面板 */}
+                            <Splitter.Panel collapsible size={sizes[2]} min={DEFAULT_CONFIG_SIZE}>
+                                <React.Suspense fallback={<SpinLoading />}>
+                                    <ConfigPanel />
+                                </React.Suspense>
+                            </Splitter.Panel>
+                        </Splitter>
+                    </ConfigProvider>
+                </div>
+            </DndProvider>
+        </HotKeys>
     );
 };
 
