@@ -170,41 +170,54 @@ fi
 
 pub const START_WIN_CONFIG: &str = r#"
 @echo off
+echo ===================================
+echo Vue Template Project Startup Script
+echo ===================================
 
-REM 检查 Node.js 版本，要求最低版本为 18
-echo 检查 Node.js 版本
-for /f "tokens=2 delims=v" %%i in ('node -v') do set node_version=%%i
-for /f "tokens=1 delims=." %%i in ("%node_version%") do set major_version=%%i
-
-if %major_version% lss 18 (
-    echo Node.js 版本必须 >= 18，当前版本为 v%node_version%
+:: Check if Node.js is installed
+where node >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo Error: Node.js not detected. Please install Node.js first.
+    pause
     exit /b 1
 )
-REM 检查 npm 是否安装
-echo 检查 npm
-where npm >nul 2>nul
-if %errorlevel% neq 0 (
-    echo npm 未安装，请安装 npm
+
+:: Check if package.json exists
+if not exist package.json (
+    echo Error: package.json not found in current directory.
+    echo Please make sure to run this script in the Vue Template project root directory.
+    pause
     exit /b 1
-) else (
-    echo 安装依赖
-    npm install
-    if %errorlevel% neq 0 (
-        echo npm install 失败
+)
+
+:: Check if node_modules exists, install dependencies if not
+if not exist node_modules\ (
+    echo node_modules folder not detected, installing dependencies...
+    echo.
+    call npm install
+    
+    if %ERRORLEVEL% neq 0 (
+        echo.
+        echo Dependency installation failed. Please check your network connection or package.json file.
+        pause
         exit /b 1
-    ) else (
-        echo npm install 成功
     )
-)
-REM 启动项目
-echo 启动项目
-npm run dev
-if %errorlevel% neq 0 (
-    echo 项目启动失败
-    exit /b 1
+    
+    echo.
+    echo Dependencies installed successfully!
 ) else (
-    echo 项目启动成功
+    echo node_modules folder detected, skipping installation step.
 )
+
+echo.
+echo Starting Vue Template development server...
+echo Press Ctrl+C to stop the server.
+echo.
+
+:: Start Vue Template development server
+call npm run dev
+
+pause
 
 "#;
 
