@@ -9,6 +9,9 @@
   {{#if config.style }}style="{{style config.style}}"{{/if}}
 >
   {{#each elements as |c|}}
+  {{#if (eq c.type "Flex")}}
+  {{> qwikpageflex id=c.id elements=c.elements config=c.config methods=c.methods events=c.events }}
+  {{/if}}
   {{#if (eq c.type "Form")}}
   {{> qwikpageform id=c.id elements=c.elements config=c.config methods=c.methods events=c.events }}
   {{/if}}

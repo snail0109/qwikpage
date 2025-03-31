@@ -12,12 +12,12 @@ const router = createRouter({
       name: '{{this.name}}', 
       component: {{this.name}} 
     },
-    {{#if (eq @index 0)}}
+    {{#if @last}}
     { 
       path: '/', 
       name: 'HomeDefault', 
       component: {{this.name}} 
-    }{{#unless @last}},{{/unless}}
+    },
     {{/if}}
     {{/each}}
   ]
