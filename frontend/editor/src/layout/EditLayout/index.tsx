@@ -133,6 +133,8 @@ const EditLayout = () => {
                                 colorFill: "#e8e9eb",
                                 controlItemBgActive: "#1677ff",
                                 controlItemBgActiveHover: "#1677ff",
+                                splitBarSize: 1,
+                                controlItemBgHover:'#D9D9D9',
                             },
                         },
                     }}

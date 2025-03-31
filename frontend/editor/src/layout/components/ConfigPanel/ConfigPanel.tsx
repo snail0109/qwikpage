@@ -192,7 +192,8 @@ const ConfigPanel = memo(() => {
         components: {
           Tabs: {
             titleFontSize: 14,
-            horizontalMargin: '0 0 10px 0'
+            horizontalMargin: '0 0 10px 0',
+            horizontalItemPadding: '5px 0'
           },
           Form: {
             labelColor: '#333333',

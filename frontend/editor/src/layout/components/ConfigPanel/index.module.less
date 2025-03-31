@@ -1,7 +1,13 @@
 .attrBox {
   // height: 100vh;
-  border-left: 1px solid var(--mars-theme-border-color);
   overflow: auto;
+
+  :global {
+    .ant-tabs-nav::before {
+      border-bottom: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+    }
+  }
+
   .attrsForm {
     padding: 0 10px 10px;
     :global {
