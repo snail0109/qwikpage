@@ -8,7 +8,7 @@
     "dev": "pnpm tauri dev",
     "build": "pnpm tauri build",
     "build:mac": "pnpm tauri build -d -c \"{ \\\"bundle\\\": { \\\"createUpdaterArtifacts\\\": false } } \"",
-    "build:windows": "pnpm tauri build --no-bundle",
+    "build:windows": "pnpm tauri build -d --no-bundle",
     "start:editor": "pnpm --filter editor start",
     "build:editor": "rimraf -rf dist/editor && pnpm --filter editor build",
     "start:admin": "pnpm --filter admin start",

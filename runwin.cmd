@@ -5,4 +5,4 @@ cargo clean
 cd ..
 pnpm run build:windows
 
-.\backend\target\release\qwikpage.exe
+.\backend\target\debug\qwikpage.exe
