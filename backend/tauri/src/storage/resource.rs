@@ -185,7 +185,7 @@ impl ResourceConfig {
         let resource_path = group_dir.join(&params.resource_name);
         tokio::fs::remove_file(resource_path)
             .await
-            .map_err(|e| Error::new(e).context("Failed to remove file"))?;
+            .map_err(|e| Error::new(e).context("删除资源失败"))?;
         Ok(true)
     }
 
@@ -196,6 +196,7 @@ impl ResourceConfig {
             .preferences()
             .get_project_path()
             .join("project_logo");
+        log::info!("项目资源目录路径: {:?}", root_dir);
         // temp_res_dir 拼接当前时间戳
         let timestamp = Utc::now().timestamp();
         let temp_res_dir = root_dir.join(timestamp.to_string());
@@ -203,30 +204,30 @@ impl ResourceConfig {
         // 创建目录（如果不存在），使用create_dir_all自动处理已存在的情况
         tokio::fs::create_dir_all(&temp_res_dir)
             .await
-            .with_context(|| "Unable to create project logo directory")?;
+            .with_context(|| "创建临时资源目录失败")?;
 
         // 安全处理文件名，防止路径遍历攻击
         let file_path = Path::new(&params.file_path);
         let file_name = file_path
             .file_name()
-            .ok_or_else(|| Error::msg("Invalid file path"))?;
+            .ok_or_else(|| Error::msg("无效的文件路径"))?;
 
         // 验证文件名不包含路径分隔符
         let file_name_str = file_name
             .to_str()
-            .ok_or_else(|| Error::msg("File name contains invalid characters"))?;
+            .ok_or_else(|| Error::msg("文件名包含无效字符"))?;
 
         if file_name_str.contains(|c| c == '/' || c == '\\') {
-            return Err(Error::msg("The file name contains illegal path characters."));
+            return Err(Error::msg("文件名包含非法路径字符."));
         }
         // 构建目标文件路径
         let new_file_path: PathBuf = temp_res_dir.join(file_name);
-        info!("Create resource group directory: {:?}", new_file_path);
+        info!("创建资源组目录: {:?}", new_file_path);
 
         // 执行文件复制操作，添加详细错误上下文
         tokio::fs::copy(file_path, new_file_path.clone())
             .await
-            .with_context(|| "File copy failed")?;
+            .with_context(|| "文件复制失败")?;
 
         // old_file_path 有值，则删除该路径的文件和上一级目录
         if let Some(old_path) = &params.old_file_path {
@@ -235,7 +236,7 @@ impl ResourceConfig {
                 // 删除目录
                 tokio::fs::remove_dir_all(parent_dir)
                     .await
-                    .with_context(|| "Failed to delete directory")?;
+                    .with_context(|| "删除目录失败")?;
             }
         }
 
@@ -253,7 +254,7 @@ impl ResourceConfig {
             // 删除目录
             tokio::fs::remove_dir_all(parent_dir)
                 .await
-                .with_context(|| "Failed to delete directory")?;
+                .with_context(|| "删除目录失败")?;
         }
         Ok(())
     }
@@ -278,7 +279,7 @@ async fn create_directory_if_not_exists(path: PathBuf) -> Result<PathBuf, Error>
         info!("create directory: {:?}", path);
         tokio::fs::create_dir_all(&path)
             .await
-            .with_context(|| format!("Failed to create directory: {:?}", path))?;
+            .with_context(|| format!("创建目录失败: {:?}", path))?;
     }
     Ok(path)
 }
@@ -296,10 +297,10 @@ async fn check_default_group_dir(res_root_dir: &PathBuf) -> Result<(), Error> {
     if dir_count == 0 {
         // 默认分组下面再建一个 main 文件夹, 用于查询的时候识别出是否是默认分组
         let def_group = res_root_dir.join("默认分组").join("main");
-        info!("Create default group directory: {:?}", def_group);
+        info!("创建默认分组目录: {:?}", def_group);
         tokio::fs::create_dir_all(&def_group)
             .await
-            .map_err(|e| Error::new(e).context("Failed to create directory"))?;
+            .map_err(|e| Error::new(e).context("创建目录失败"))?;
     }
     Ok(())
 }

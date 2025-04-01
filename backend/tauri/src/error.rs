@@ -5,9 +5,6 @@ pub type Result<T> = std::result::Result<T, CommonError>;
 
 #[derive(Error, Debug)]
 pub enum CommonError {
-    // 出码
-    #[error("下载模板失败: {0} 请关闭代理",)]
-    DownloadError(String),
 
     #[error("IO错误: {0}")]
     Io(#[from] io::Error),

@@ -66,7 +66,6 @@ impl PageConfig {
             let path = entry.path();
             if is_valid_file(&path) {
                 let json = fs::read_to_string(&path).unwrap();
-                println!("page_data   page_data  json: {}", json);
                 let page: Page = serde_json::from_str(&json).unwrap();
                 if let Some(keyword) = &keyword {
                     if !page.name.contains(keyword) {
@@ -245,7 +244,6 @@ impl PageConfig {
     }
 
     pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
-        log::info!("get_page_detail_with_id, id: {}", id);
         let page_dir = Self::get_page_dir(&project_id);
         if !page_dir.exists() {
             log::error!("页面目录不存在");
@@ -261,7 +259,7 @@ impl PageConfig {
         path: String,
     ) -> Result<Page, ErrorResponse> {
         log::info!(
-            "get_page_detail_with_path, project_id: {:?}, path: {}",
+            "根据项目ID和页面路由查询页面信息，项目ID({:?}),页面路由({})",
             project_id,
             path
         );
@@ -273,14 +271,12 @@ impl PageConfig {
         };
         let pages_list: PageList =
             Self::list(1, 20, project_id, Some("".to_string())).map_err(|e| {
-                log::error!("Failed to list pages: {}", e);
+                log::error!("无法获取页面列表: {}", e);
                 ErrorResponse::not_found(format!("无法获取页面列表: {}", e))
             })?;
         // 查找与给定 path 匹配的页面
         for page in pages_list.list {
             if page.path.as_ref() == Some(&effective_path) {
-                // 进行匹配
-                log::info!("PageConfig::getMartten, path: {}", effective_path);
                 return Ok(page);
             }
         }

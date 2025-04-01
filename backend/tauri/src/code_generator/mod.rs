@@ -38,6 +38,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
 
     // 获取插件包目录
     let plugins_dir = resource_dir.join("plugins");
+    log::info!("获取应用资源插件包目录: {:#?}", plugins_dir.clone());
     if !plugins_dir.exists() {
         log::error!("获取应用资源插件包目录失败, {:#?}", plugins_dir.clone());
         return Err(format!(
@@ -61,6 +62,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     }
 
     // lib_path 没有值直接返回
+    log::info!("获取应用资源插件: {:#?}", lib_path);
     if !lib_path.exists() {
         log::info!("lib_path, {:?}", lib_path);
         return Err(format!("插件包 {:?} 不存在，请联系应用维护人员获取插件包", lib_path));
@@ -158,18 +160,18 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
 
 fn handle_generation_result(result: FfiResult<Vec<GeneratedArtifact>>) -> Result<(), String> {
     if result.success {
-        println!("Successfully generated:");
+        log::info!("Successfully generated:");
         for artifact in result.data.unwrap() {
-            println!(
+            log::info!(
                 "✓ {} ({} bytes)",
                 artifact.file_path,
                 artifact.content.len()
             );
         }
-        println!("\nRun your project:");
-        println!("cd dist-vue && npm install && npm run dev");
+        log::info!("运行项目");
+        log::info!("npm install && npm run dev");
     } else {
-        return Err(format!("Generation failed: {:#?}", result.error));
+        return Err(format!("出码失败: {:#?}", result.error));
     }
     Ok(())
 }

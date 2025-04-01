@@ -1,6 +1,6 @@
 use tauri::command;
 
-use crate::types::{group::{GroupConfig, GroupList}, js_resp::JSResp};
+use crate::types::{group::{Group, GroupConfig, GroupList}, js_resp::JSResp};
 use log;
 
 // 查询所有分组信息
@@ -29,15 +29,23 @@ pub fn load_groups_with_projects(keyword: Option<String>) -> JSResp<GroupList> {
 
 // 新增分组
 #[command]
-pub fn add_group(group_name: String) -> JSResp<String> {
+pub fn add_group(group_name: String) -> JSResp<Group> {
     log::debug!("TGroupService::add_group(): 分组名称({})", group_name);
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.add_group(group_name);
+            match &res {
+                Ok(group) => {
+                    log::info!("新增分组成功: {:?}", group);
+                }
+                Err(e) => {
+                    log::error!("新增分组失败: {:?}", e);
+                }
+            }
             JSResp::from(res)
         }
         Err(e) => {
-            // 处理加载配置失败的情况，返回一个错误响应
+            log::error!("新增分组失败: {:?}", e);
             JSResp::from(Err(e))
         }
     }
@@ -46,10 +54,18 @@ pub fn add_group(group_name: String) -> JSResp<String> {
 // 修改分组
 #[command]
 pub fn edit_group(id: &str, group_name: String) -> JSResp<bool> {
-    log::debug!("TGroupService::edit_group(): 分组 id({}), 分组名:({})", id, group_name);
+    log::debug!("TGroupService::edit_group(): 修改分组 id({}), 分组名:({})", id, group_name);
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.update_group(id, Some(group_name));
+            match &res {
+                Ok(_) => {
+                    log::info!("修改分组成功");
+                }
+                Err(e) => {
+                    log::error!("修改分组失败: {:?}", e);
+                }
+            }
             JSResp::from(res)
         }
         Err(e) => {
@@ -66,6 +82,14 @@ pub fn delete_group(id: &str) -> JSResp<bool> {
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.delete_group(id);
+            match &res {
+                Ok(_) => {
+                    log::info!("删除分组成功");
+                }
+                Err(e) => {
+                    log::error!("删除分组失败: {:?}", e);
+                }
+            }
             JSResp::from(res)
         }
         Err(e) => {
