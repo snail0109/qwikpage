@@ -39,7 +39,7 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
         <Input defaultValue={formItemId} />
       </Form.Item>}
       {/* 是否显示 */}
-      {<Form.Item layout='horizontal' colon={false} key="visible" name="visible" label="是否显示" valuePropName="checked">
+      {<Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
         <Switch size='small' defaultChecked />
       </Form.Item>}
 

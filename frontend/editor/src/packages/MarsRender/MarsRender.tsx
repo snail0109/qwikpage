@@ -159,7 +159,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
     return eventFunction;
   };
 
-  if (Component && config?.props.visible !== false) {
+  if (Component && config?.props.showOrHide !== false) {
     return (
       <Suspense fallback={<antd.Spin size="default"></antd.Spin>}>
         <Component
@@ -167,7 +167,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
           type={item.type}
           inForm={item.inForm}
           formItemValue={formItemData[item.id]}
-          config={{ ...config, props: { ...omit(config?.props, ['visible']) } }}
+          config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
           elements={item.elements || []}
           // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
           {...createEvents()}
