@@ -22,7 +22,7 @@ pub fn export_json(file_path: String, json_data: Value) -> Result<(), String> {
 
 #[command]
 pub async fn export_project(app: AppHandle, params: ExportCodeParams) -> Result<(), String> {
-    log::debug!("Code::导出项目: {:?}", params);
+    log::debug!("CodeService::export_project: 导出项目: {:?}", params);
     if let Err(e) = export_code(app, params).await {
         // 出现错误时记录日志并返回错误
         log::error!("导出项目失败: {}", e);

@@ -1,5 +1,5 @@
 use anyhow::Error;
-use log::{error, info};
+use log::error;
 use std::path::PathBuf;
 
 use crate::{
@@ -43,14 +43,13 @@ impl Preferences {
     pub fn load() -> Preferences {
         let path = app_preferences_path();
         read_json_file(&path).unwrap_or_else(|e| {
-            error!("Failed to load preferences: {}", e);
+            error!("加载应用配置失败: {}", e);
             Self::default()
         })
     }
 
     pub fn save(&self) -> Result<(), Error> {
         let path = app_preferences_path();
-        info!("Save preferences to: {}", path.display());
         write_json_file(&path, self)
     }
 

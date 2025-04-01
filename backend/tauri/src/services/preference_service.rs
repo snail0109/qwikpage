@@ -7,6 +7,7 @@ use tauri::command;
 pub fn get_preferences() -> Result<Preferences, String> {
     log::debug!("TPreferenceService::get_preferences(): 查询系统配置({:?})", app_preferences_path());
     let pref: Preferences = Config::global().preferences().clone();
+    log::info!("TPreferenceService::get_preferences(): 查询系统配置成功,默认项目({:?})", pref.project_path);
     Ok(pref)
 }
 

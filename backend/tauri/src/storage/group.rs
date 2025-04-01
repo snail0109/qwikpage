@@ -25,7 +25,7 @@ impl GroupConfig {
     /// 从文件加载配置
     pub fn load() -> io::Result<Self> {
         let path = projects_group_path();
-        log::info!("load group config from {}", path.display());
+        log::info!("查询项目分组信息({})", path.display());
         if !path.exists() {
             let mut def_group = default_group();
             def_group.created_at = Some(get_current_time());
@@ -62,9 +62,8 @@ impl GroupConfig {
     }
 
     /// 添加一个新分组
-    pub fn add_group(&mut self, name: String) -> Result<String, Error> {
+    pub fn add_group(&mut self, name: String) -> Result<Group, Error> {
         let id = Uuid::new_v4().to_string();
-        log::info!("add group: {}", name);
         let group = Group {
             id: id.clone(),
             name,
@@ -73,15 +72,13 @@ impl GroupConfig {
             updated_at: Some(get_current_time()),
             is_default: Some(false)
         };
-        self.groups.push(group);
-        info!("group added: {:?}", self.groups);
+        self.groups.push(group.clone());
         self.save()?;
-        Ok(id)
+        Ok(group)
     }
 
     /// 删除一个分组
     pub fn delete_group(&mut self, id: &str) -> Result<bool, Error> {
-        log::info!("delete group: {}", id);
         // 默认分组，不允许删除
         let original_len = self.groups.len();
         self.groups.retain(|group| group.id != id);
@@ -91,7 +88,6 @@ impl GroupConfig {
 
     /// 更新一个分组
     pub fn update_group(&mut self, id: &str, name: Option<String>) -> Result<bool, Error> {
-        log::info!("update group: {}", id);
         if let Some(group) = self.groups.iter_mut().find(|group| group.id == id) {
             if let Some(new_name) = name {
                 group.name = new_name;
@@ -144,7 +140,7 @@ impl GroupConfig {
             .collect();
 
         if !unassigned_projects.is_empty() {
-            log::info!("Found {} unassigned projects", unassigned_projects.len());
+            log::info!("未分组项目({})放置到默认分组", unassigned_projects.len());
             // 遍历 group_list  如果 group.is_default 为 true，则将unassigned_projects 合并到它的 projects 里面，数据做合并不是覆盖
             for group in &mut group_list {
                 if let Some(is_def) = group.is_default {

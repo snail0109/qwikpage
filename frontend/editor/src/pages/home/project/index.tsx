@@ -66,7 +66,6 @@ function Category() {
     const updateGroupName = async (groupId: string, newName: string) => {
         try {
             const res = await cmd_invoke("edit_group", { id: groupId, groupName: newName });
-            console.log("修改成功", res);
             // 刷新当前修改的分组名
             setDataSource((pre) => pre.map((group) => (group.id === groupId ? { ...group, name: newName } : group)));
             return true;

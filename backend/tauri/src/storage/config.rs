@@ -18,7 +18,7 @@ impl Config {
     }
 
     pub fn preferences(&self) -> RwLockReadGuard<'_, Preferences> {
-        self.preferences.read().expect("Failed to read preferences")
+        self.preferences.read().expect("读取配置文件失败")
     }
 
     pub fn update_preferences<F>(&self, updater: F)

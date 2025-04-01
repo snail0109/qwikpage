@@ -70,12 +70,13 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
               <Form.Item noStyle key={"rules" + key}>
                 <div className={styles.rulerItemWrap}>
                   {/* 必填规则 */}
-                  {form.getFieldValue(["formItem", "rules", name, "required"]) && (
+                  {form.getFieldValue(["formItem", "rules", name, "required"]) !== undefined && (
                     <Form.Item
                       layout="horizontal"
-                      // labelCol={{ span: labelSpan || 8 }}
                       name={[name, "required"]}
+                      colon={false}
                       label="必填规则"
+                      valuePropName="checked"
                     >
                       <Switch size="small" />
                     </Form.Item>
@@ -219,7 +220,7 @@ const RulesSetting = memo(({ form, labelSpan }: { form: FormInstance; labelSpan?
                 block
                 onClick={(e) => e.preventDefault()}
               >
-                请添加规则
+                请添加校验规则
               </Button>
             </Dropdown>
           </>
