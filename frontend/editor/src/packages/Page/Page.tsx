@@ -76,8 +76,6 @@ const Page: React.FC = () => {
       }
     }
   }, [selectedElement, elementsMap, setSelectedElement]);
-  
-
 
   const handlers = {
     'ESC': (e: KeyboardEvent | undefined) => {

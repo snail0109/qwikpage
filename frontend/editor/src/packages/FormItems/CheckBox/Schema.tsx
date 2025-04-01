@@ -25,15 +25,15 @@ export default {
       label: '数据源',
       name: ['options'],
     },
-    {
+     {
       type: 'Input',
       label: '文本显示字段',
-      name: ['labelField'],
+      name: ['field', 'label'],
     },
     {
       type: 'Input',
-      label: '字段',
-      name: ['dataValueField'],
+      label: '值字段',
+      name: ['field', 'value'],
     },
     {
       type: 'Variable',
@@ -114,16 +114,6 @@ export default {
     //   type: 'Title',
     //   label: '字段映射',
     //   key: 'fieldMap',
-    // },
-    // {
-    //   type: 'Input',
-    //   label: 'label',
-    //   name: ['field', 'label'],
-    // },
-    // {
-    //   type: 'Input',
-    //   label: 'value',
-    //   name: ['field', 'value'],
     // },
     // {
     //   type: 'Title',
