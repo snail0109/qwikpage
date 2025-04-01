@@ -104,7 +104,6 @@ pub fn run() {
                 .title("")
                 .resizable(true)
                 .fullscreen(false)
-                .disable_drag_drop_handler()
                 .inner_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
                 .min_inner_size(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
 
