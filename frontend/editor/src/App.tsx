@@ -17,18 +17,22 @@ import { useEffect, useState } from "react";
 import usePreferencesStore from "./stores/preferencesStore";
 import UpdaterDialog from "./components/UpdaterDialog";
 import "@/styles/global.less";
-import { attachConsole } from '@tauri-apps/plugin-log';
-
-const detach = await attachConsole();
-// call detach() if you do not want to print logs to the console anymore
+import { attachConsole } from "@tauri-apps/plugin-log";
 
 function App() {
     const [loading, setLoading] = useState(true);
     const { get_preferences, fontFamily, fontSize } = usePreferencesStore();
     useEffect(() => {
-        get_preferences().then(() => {
-            setLoading(false);
-        });
+        const fetchData = async () => {
+            const detach = await attachConsole();
+            // call detach() if you do not want to print logs to the console anymore
+
+            get_preferences().then(() => {
+                setLoading(false);
+            });
+        };
+
+        fetchData();
     }, []);
     useEffect(() => {
         if (fontFamily !== null) {
