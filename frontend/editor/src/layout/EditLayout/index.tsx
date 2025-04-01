@@ -9,7 +9,7 @@ import SpinLoading from "@/components/SpinLoading";
 import Notice from "../components/Notice";
 import styles from "./index.module.less";
 import { PanelKey } from "@/constants/panelKeys";
-import { HotKeys } from 'react-hotkeys';
+import { GlobalHotKeys } from 'react-hotkeys';
 import { keyMap } from '@/constants/hotKeys';
 
 
@@ -130,8 +130,7 @@ const EditLayout = () => {
     }
     // 模式切换，会导致子组件重新渲染
     return (
-        <HotKeys keyMap={keyMap} handlers={handlers} >
-
+        <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
             <DndProvider backend={HTML5Backend}>
                 {/* 编辑器 */}
                 <div className={styles.editor} style={{ height: "calc(100vh - 32px)" }} >
@@ -190,7 +189,7 @@ const EditLayout = () => {
                     </ConfigProvider>
                 </div>
             </DndProvider>
-        </HotKeys>
+        </GlobalHotKeys>
     );
 };
 

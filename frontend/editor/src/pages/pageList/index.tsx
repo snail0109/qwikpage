@@ -11,7 +11,7 @@ import PageCard from "./components/PageCard/index";
 import { IPage } from "@/types";
 import styles from "./index.module.less";
 import pageStyle from "@/styles/page.module.less";
-import { HotKeys } from "react-hotkeys";
+import { GlobalHotKeys } from "react-hotkeys";
 import { keyMap } from "@/constants/hotKeys";
 
 /**
@@ -75,7 +75,7 @@ export default function Index() {
 
     return (
         <>
-            <HotKeys keyMap={keyMap} handlers={handlers}>
+            <GlobalHotKeys keyMap={keyMap} handlers={handlers}>
                 <Layout.Content
                     className={pageStyle.pageList}
                     style={{ height: "calc(100vh - 30px)" }}
@@ -124,7 +124,7 @@ export default function Index() {
                     {/* 新建页面 */}
                     <CreatePage createRef={createPageRef} update={search.submit} />
                 </Layout.Content>
-            </HotKeys>
+            </GlobalHotKeys>
         </>
     );
 }
