@@ -4,6 +4,7 @@ import { ComponentType, ApiType, PageVariable, EventType, ComItemType } from '@/
 import { cloneDeep } from 'lodash-es';
 import { createId, getElement, judgeIfInForm } from '@/utils/util';
 import { merge } from 'lodash-es';
+import storage from '@/utils/storage';
 /**
  * 页面信息存储
  */
@@ -14,6 +15,7 @@ export interface PageState {
   selectedElement: { type: string; id: string } | undefined;
   isUpdateToolbar: boolean; // 更新遮罩
   isEdit: boolean; // 是否编辑了页面
+  canvasWidth: string; // 画布宽度
   page: {
     id: string;
     name: string;
@@ -76,6 +78,7 @@ export interface PageAction {
   removeApi: (name: string) => void;
   setMode: (mode: 'edit' | 'preview') => void;
   setTheme: (theme: 'light' | 'dark') => void;
+  updateCanvasWidth: (width: string) => void; // 更新画布宽度
   addElement: (element: any) => void;
   addChildElements: (element: any) => void;
   editElement: (payload: any) => void;
@@ -103,6 +106,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   theme: 'light',
   selectedElement: undefined,
   isUpdateToolbar: false,
+  canvasWidth: storage.get('canvasWidth') || 'auto',
   page: {
     id: "0",
     name: '',
@@ -205,6 +209,11 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   setMode: (mode: 'edit' | 'preview') => set({ mode }),
   // 切换主题
   setTheme: (theme: 'light' | 'dark') => set({ theme }),
+  // 更新画布宽度
+  updateCanvasWidth: (width: string) => {
+    storage.set('canvasWidth', width);
+    set({ canvasWidth: width });
+  },
   // 添加组件
   addElement: (element: ComponentType) => {
     set(

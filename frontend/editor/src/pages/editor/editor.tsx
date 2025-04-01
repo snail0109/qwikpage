@@ -38,6 +38,8 @@ const Editor = () => {
     removeElements,
     clearPageInfo,
     updateEditState,
+    canvasWidth,
+    updateCanvasWidth,
   } = usePageStore((state) => {
     return {
       page: state.page,
@@ -55,12 +57,13 @@ const Editor = () => {
       clearPageInfo: state.clearPageInfo,
       updateToolbar: state.updateToolbar,
       updateEditState: state.updateEditState,
+      canvasWidth: state.canvasWidth,
+      updateCanvasWidth: state.updateCanvasWidth,
     };
   });
   // 悬浮组件 - 展示悬浮条
   const [hoverTarget, setHoverTarget] = useState<HTMLElement | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [canvasWidth, setCanvasWidth] = useState('auto');
   const { id, projectId } = useParams();
   const navigate = useNavigate();
 
@@ -91,7 +94,7 @@ const Editor = () => {
   useEffect(() => {
     if (!id) return;
     setLoaded(false);
-    setCanvasWidth(storage.get('canvasWidth') || 'auto');
+    updateCanvasWidth(storage.get('canvasWidth') || 'auto');
     pageService
       .getPageDetail({ id, projectId: projectId! })
       .then((res: any) => {
@@ -317,7 +320,7 @@ const Editor = () => {
 
   return (
     <div ref={drop} className={styles.designer} onClick={handleClick}>
-      <TopBar updateCanvas={setCanvasWidth} canvasWidth={canvasWidth} />
+      {/* <TopBar updateCanvas={setCanvasWidth} canvasWidth={canvasWidth} /> */}
       <ConfigProvider
         theme={{
           cssVar: true,
@@ -333,7 +336,7 @@ const Editor = () => {
         <div
           id="designer"
           className={styles['designer-editor']}
-          style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 74px)' }}
+          style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 33px)' }}
         >
           <div
             id="editor"
@@ -341,7 +344,10 @@ const Editor = () => {
             style={
               mode === 'preview'
                 ? { height: '100vh', overflow: 'auto', padding: 0 }
-                : { width: canvasWidth === 'auto' ? editorWidth : canvasWidth }
+                : {
+                  width: canvasWidth === 'auto' ? editorWidth : canvasWidth,
+                  height: '100%'
+                }
             }
             onMouseOver={handleRunOver}
           >

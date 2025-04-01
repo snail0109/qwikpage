@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Layout, Button, message } from "antd";
+import { Layout, Button, message, Space, Select } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
@@ -20,6 +20,9 @@ import problue from "@/assets/image/header/headerT_blue.png";
 import progreen from "@/assets/image/header/headerT_green.png";
 import propurple from "@/assets/image/header/headerT_purple.png";
 import prored from "@/assets/image/header/headerT_red.png";
+import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
+import { EyeOutlined, SaveOutlined, LeftOutlined } from '@ant-design/icons';
+import { openUrl } from '@tauri-apps/plugin-opener';
 
 const appWebview = getCurrentWebviewWindow();
 
@@ -49,6 +52,7 @@ const Header = memo(() => {
     });
     const [saveLoading, setSaveLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const settingRef = useRef<ISystemSettingRef>();
 
@@ -60,7 +64,7 @@ const Header = memo(() => {
         setIsFullscreen(fullscreen);
     };
 
-    const { mode, theme, setMode, setTheme, page, savePageInfo, currentTab } = usePageStore((state) => {
+    const { mode, theme, setMode, setTheme, page, savePageInfo, currentTab, isEdit, updateEditState, canvasWidth, updateCanvasWidth } = usePageStore((state) => {
         return {
             page: state.page,
             mode: state.mode,
@@ -69,6 +73,10 @@ const Header = memo(() => {
             setTheme: state.setTheme,
             savePageInfo: state.savePageInfo,
             currentTab: state.currentTab,
+            isEdit: state.isEdit,
+            updateEditState: state.updateEditState,
+            canvasWidth: state.canvasWidth,
+            updateCanvasWidth: state.updateCanvasWidth,
         };
     });
 
@@ -157,11 +165,7 @@ const Header = memo(() => {
         updateHeaderStyle();
     }, [location.pathname, projectId, macStoplightsVisible, isMac]);
 
-    console.log(location.pathname);
-
     // 判断是否显示DSL相关按钮
-    console.log("Header中的currentTab:", currentTab);
-    console.log("PanelKey.CodingPanel:", PanelKey.CodingPanel);
     const showDSLButtons = currentTab === PanelKey.CodingPanel;
 
     // 保存DSL的处理函数
@@ -246,6 +250,36 @@ const Header = memo(() => {
         }
     };
 
+    // 修改画布尺寸
+    const handleClickCanvas = (val: string) => {
+        // 直接使用pageStore中的updateCanvasWidth方法
+        updateCanvasWidth(val);
+    };
+
+    // 保存页面数据
+    const savePageData = async () => {
+        setLoading(true);
+        try {
+            await pageService.updatePageData({
+                id: page.id,
+                projectId: page.projectId,
+                pageData: JSON.stringify({ ...page.pageData, variableData: {}, formData: {} }),
+            });
+            message.success('页面保存成功');
+            updateEditState(false);
+            setLoading(false);
+        } catch (error) {
+            message.error('页面保存失败');
+            setLoading(false);
+        }
+    };
+
+    // 预览页面
+    const handlePreview = () => {
+        const previewUrl = `${import.meta.env.VITE_PREVIEW_URL}/project/${page.projectId}${page.path}`;
+        openUrl(previewUrl);
+    }
+
     return (
         <>
             <Layout.Header
@@ -256,8 +290,28 @@ const Header = memo(() => {
                 <div className={styles.logo} onClick={goHome} style={{ color: ['/project/pages', '/resources'].includes(location.pathname) ? '#fff' : '#000' }}>
                     <Logo style={{ color: ['/project/pages', '/resources'].includes(location.pathname) ? '#fff' : '#216EF7' }} />
                     <span>QwikPage</span>
+                    {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
+                        <>
+                            <div className={styles.divider}></div>
+                            <div
+                                className={styles.pageName}
+                                onClick={async (e) => {
+                                    e.stopPropagation();
+                                    console.log("点击了页面名称", page.projectId);
+                                    try {
+                                        const projectDetail = await projectService.getProjectDetail(page.projectId);
+                                        navigate(`/project/pages?projectId=${page.projectId}&projectName=${encodeURIComponent(projectDetail.name)}`);
+                                    } catch (error) {
+                                        console.error("获取项目名称失败", error);
+                                        navigate(`/project/pages?projectId=${page.projectId}`);
+                                    }
+                                }}
+                            >
+                                {page.name}
+                            </div>
+                        </>
+                    )}
                 </div>
-                {/* 用户信息&发布&发布记录 */}
                 <div className={styles.user}>
                     {/* 仅在DSL页签时显示按钮 */}
                     {showDSLButtons && (
@@ -284,6 +338,43 @@ const Header = memo(() => {
                                     导出
                                 </Button>
                             </div>
+                            <div className={styles.divider}></div>
+                        </>
+                    )}
+                    {/* 仅在组件页签时显示按钮 */}
+                    {(!currentTab || currentTab === PanelKey.ComponentPanel) && (location.pathname.includes('/editor/')) && (
+                        <>
+                            <Space size={0} style={{ marginRight: -10 }}>
+                                <Select
+                                    variant="borderless"
+                                    options={[
+                                        { label: '1920px', value: '1920px' },
+                                        { label: '1440px', value: '1440px' },
+                                        { label: '1280px', value: '1280px' },
+                                        { label: '1024px', value: '1024px' },
+                                        { label: '960px', value: '960px' },
+                                        { label: '自适应', value: 'auto' },
+                                    ]}
+                                    style={{ width: 85 }}
+                                    value={canvasWidth}
+                                    onChange={handleClickCanvas}
+                                    suffixIcon={
+                                        <ExpandArrowIcon
+                                            width={12}
+                                            height={12}
+                                            style={{
+                                                transform: "rotate(-180deg)",
+                                            }}
+                                        />
+                                    }
+                                />
+                                <Button type="text" icon={<SaveOutlined />} onClick={savePageData} loading={loading} size="small" style={{ color: '#000' }}>
+                                    保存
+                                </Button>
+                                <Button type="text" icon={<EyeOutlined />} onClick={handlePreview} size="small" style={{ color: '#000' }}>
+                                    预览
+                                </Button>
+                            </Space>
                             <div className={styles.divider}></div>
                         </>
                     )}
