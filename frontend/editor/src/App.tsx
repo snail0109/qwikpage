@@ -17,10 +17,14 @@ import { useEffect, useState } from "react";
 import usePreferencesStore from "./stores/preferencesStore";
 import UpdaterDialog from "./components/UpdaterDialog";
 import "@/styles/global.less";
+import { attachConsole } from '@tauri-apps/plugin-log';
+
+const detach = await attachConsole();
+// call detach() if you do not want to print logs to the console anymore
+
 function App() {
     const [loading, setLoading] = useState(true);
     const { get_preferences, fontFamily, fontSize } = usePreferencesStore();
-
     useEffect(() => {
         get_preferences().then(() => {
             setLoading(false);
