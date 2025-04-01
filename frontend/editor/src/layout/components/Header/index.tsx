@@ -100,6 +100,10 @@ const Header = memo(() => {
         return platform.osType === "macos";
     }, [platform]);
 
+    const showSaveBtn = useMemo(() => {
+        return (!currentTab || currentTab === PanelKey.ComponentPanel || currentTab === PanelKey.OutlinePanel) && location.pathname.includes('/editor/');
+    }, [currentTab, location.pathname]);
+
     // 添加窗口事件监听器
     useEffect(() => {
         // 初始检查
@@ -342,7 +346,7 @@ const Header = memo(() => {
                         </>
                     )}
                     {/* 仅在组件页签时显示按钮 */}
-                    {(!currentTab || currentTab === PanelKey.ComponentPanel) && (location.pathname.includes('/editor/')) && (
+                    {showSaveBtn && (
                         <>
                             <Space size={0} style={{ marginRight: -10 }} className={styles.componentBtns}>
                                 <Select

@@ -69,22 +69,22 @@ export default {
       label: '禁用',
       name: ['disabled'],
     },
-    // {
-    //   type: 'InputNumber',
-    //   label: '标签布局',
-    //   name: ['labelCol', 'span'],
-    //   props: {
-    //     placeholder: '栅栏数',
-    //   },
-    // },
-    // {
-    //   type: 'InputNumber',
-    //   label: '标签偏移',
-    //   name: ['labelCol', 'offset'],
-    //   props: {
-    //     placeholder: '偏移数',
-    //   },
-    // },
+    {
+      type: 'InputNumber',
+      label: '标签栅格布局',
+      name: ['labelCol', 'span'],
+      props: {
+        placeholder: '请输入',
+      },
+    },
+    {
+      type: 'InputNumber',
+      label: '控件栅格布局',
+      name: ['wrapperCol', 'span'],
+      props: {
+        placeholder: '请输入',
+      },
+    },
     // {
     //   type: 'InputNumber',
     //   label: '控件占列',
