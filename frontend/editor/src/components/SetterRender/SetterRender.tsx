@@ -32,10 +32,10 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {!formItemId && elementId && <Form.Item name="name" label="组件名称">
+      {!formItemId && elementId && <Form.Item name={['formItem', 'name']} label="组件名称">
         <Input defaultValue={elementId} />
       </Form.Item>}
-      {formItemId && formItemId && <Form.Item name="name" label="组件名称">
+      {formItemId && formItemId && <Form.Item name={['formItem', 'name']} label="组件名称">
         <Input defaultValue={formItemId} />
       </Form.Item>}
       {/* 是否显示 */}
@@ -45,6 +45,7 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
 
       {/* ---组件属性--- */}
       {attrs.map((item: SchemaType, index) => {
+        debugger
         if (!item) return;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
