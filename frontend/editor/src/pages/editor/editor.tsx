@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState, useEffect, memo, useMemo } from 'react';
+import React, { MouseEvent, useState, useEffect, memo, useMemo, useRef } from 'react';
 import { useBlocker, useNavigate, useParams } from 'react-router-dom';
 import { ConfigProvider, theme as AntdTheme, Modal } from 'antd';
 import { useDrop } from 'react-dnd';
@@ -64,6 +64,7 @@ const Editor = () => {
   // 悬浮组件 - 展示悬浮条
   const [hoverTarget, setHoverTarget] = useState<HTMLElement | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const designerRef = useRef<HTMLDivElement>(null);
   const { id, projectId } = useParams();
   const navigate = useNavigate();
 
@@ -318,6 +319,42 @@ const Editor = () => {
     return `${editorWidth}px`;
   }, [canvasWidth]);
 
+  useEffect(() => {
+    // 监听画布宽度 根据宽度调整表单项label的padding
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        console.log('entry', entry.contentRect.width);
+
+        const formItemLabels = document.querySelectorAll('.ant-form-item .ant-form-item-label');
+
+        if (entry.contentRect.width <= 618) {
+          if (formItemLabels.length > 0) {
+            formItemLabels.forEach((item) => {
+              (item as HTMLElement).style.padding = '0 0 8px';
+            });
+          }
+        } else {
+          if (formItemLabels.length > 0) {
+            formItemLabels.forEach((item) => {
+              (item as HTMLElement).style.padding = '0 0 0px';
+            });
+          }
+        }
+      }
+    });
+
+    if (designerRef.current) {
+      resizeObserver.observe(designerRef.current);
+    }
+
+    return () => {
+      if (designerRef.current) {
+        resizeObserver.unobserve(designerRef.current);
+      }
+    };
+  }, [designerRef]);
+
+
   return (
     <div ref={drop} className={styles.designer} onClick={handleClick}>
       {/* <TopBar updateCanvas={setCanvasWidth} canvasWidth={canvasWidth} /> */}
@@ -335,6 +372,7 @@ const Editor = () => {
       >
         <div
           id="designer"
+          ref={designerRef}
           className={styles['designer-editor']}
           style={{ height: mode === 'preview' ? '100vh' : 'calc(100vh - 33px)' }}
         >
