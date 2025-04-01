@@ -51,6 +51,7 @@ function App() {
                     colorInfo: "#216EF7",
                     controlHeight: 28,
                     borderRadius: 4,
+                    fontFamily: fontFamily,
                 },
                 components: {
                     Button: {
