@@ -147,7 +147,7 @@ const ConfigPanel = memo(() => {
               attrs={ComponentConfig?.attrs || []}
               form={form}
               elementId={selectedElement?.id}
-              formItemId={selectedElement?.id ? elementsMap[selectedElement.id]?.config.props.formItem.name : undefined} 
+              formItemId={selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined}
             />
           </Suspense>
         </Form>
