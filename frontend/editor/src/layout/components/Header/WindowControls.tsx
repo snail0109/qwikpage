@@ -28,7 +28,7 @@ export function WindowControls({ className, onlyX }: Props) {
 
     return (
         <Flex justify="end" data-tauri-drag-region>
-            <Button type="text" onClick={() => getCurrentWebviewWindow().minimize()}>
+            <Button type="text" onClick={() => getCurrentWebviewWindow().minimize()} style={{ padding: '0 8px' }}>
                 <MinusOutlined style={{ color: isChangeTheme ? '#fff' : '#000' }} />
             </Button>
             <Button
@@ -38,7 +38,7 @@ export function WindowControls({ className, onlyX }: Props) {
                     await w.toggleMaximize();
                     setMaximized(await w.isMaximized());
                 }}
-                style={{ color: isChangeTheme ? '#fff' : '#000' }}
+                style={{ color: isChangeTheme ? '#fff' : '#000', padding: '0 8px' }}
             >
                 {maximized ? (
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -53,7 +53,7 @@ export function WindowControls({ className, onlyX }: Props) {
                     </svg>
                 )}
             </Button>
-            <Button type="text" onClick={() => getCurrentWebviewWindow().close()}>
+            <Button type="text" onClick={() => getCurrentWebviewWindow().close()} style={{ padding: '0 8px', marginRight: '8px' }}>
                 <CloseOutlined style={{ color: isChangeTheme ? '#fff' : '#000' }} />
             </Button>
         </Flex>

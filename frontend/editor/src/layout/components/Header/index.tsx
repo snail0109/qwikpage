@@ -381,7 +381,7 @@ const Header = memo(() => {
                     {/* 系统设置的按钮图标 */}
                     <SettingOutlined onClick={onOpenSettingClick} />
                     {!isMac && (
-                        <div className={styles.divider} style={{ marginRight: '-15px' }}></div>
+                        <div className={styles.divider} style={{ marginRight: '-7px' }}></div>
                     )}
                     {/* 预览模式 */}
                     {mode === "preview" && (
