@@ -1,18 +1,18 @@
-import { useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Empty, Form, Layout, Pagination, Spin } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { useAntdTable } from 'ahooks';
-import { useMediaQuery } from 'react-responsive';
-import { pageService } from '@/services';
-import CreatePage, { CreatePageRef } from '@/components/CreatePage';
-import SearchBar from '@/components/Searchbar/SearchBar';
-import PageCard from './components/PageCard/index';
-import { IPage } from '@/types';
-import styles from './index.module.less';
-import pageStyle from '@/styles/page.module.less';
-import { HotKeys } from 'react-hotkeys';
-import { keyMap } from '@/constants/hotKeys';
+import { useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Empty, Form, Layout, Pagination, Spin } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useAntdTable } from "ahooks";
+import { useMediaQuery } from "react-responsive";
+import { pageService } from "@/services";
+import CreatePage, { CreatePageRef } from "@/components/CreatePage";
+import SearchBar from "@/components/Searchbar/SearchBar";
+import PageCard from "./components/PageCard/index";
+import { IPage } from "@/types";
+import styles from "./index.module.less";
+import pageStyle from "@/styles/page.module.less";
+import { HotKeys } from "react-hotkeys";
+import { keyMap } from "@/constants/hotKeys";
 
 /**
  * 项目所属页面列表
@@ -23,14 +23,17 @@ export default function Index() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const navigate = useNavigate();
-    const projectId = searchParams.get('projectId') || undefined;
-    const projectName = searchParams.get('projectName') || undefined;
+    const projectId = searchParams.get("projectId") || undefined;
+    const projectName = searchParams.get("projectName") || undefined;
 
     // 判断是否是超大屏
-    const isXLarge = useMediaQuery({ query: '(min-width: 1920px)' });
+    const isXLarge = useMediaQuery({ query: "(min-width: 1920px)" });
 
     // 获取列表数据
-    const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, { keyword }: { keyword: string }) => {
+    const getTableData = (
+        { current, pageSize }: { current: number; pageSize: number },
+        { keyword }: { keyword: string }
+    ) => {
         return pageService
             .getPageList({
                 pageNum: current,
@@ -53,28 +56,47 @@ export default function Index() {
 
     // 新建页面
     const handleCreate = () => {
-        createPageRef.current?.open('create');
+        createPageRef.current?.open("create");
     };
 
     // 复制页面
     const handleCopy = (item: IPage) => {
-        createPageRef.current?.open('copy', item);
+        createPageRef.current?.open("copy", item);
     };
 
     const handlers = {
-        'ESC': (e: KeyboardEvent | undefined) => {
+        ESC: (e: KeyboardEvent | undefined) => {
             e?.preventDefault();
             e?.stopPropagation();
-            console.log('esc');
-            navigate('/projects');
-        }
-    }
+            console.log("esc");
+            navigate("/projects");
+        },
+    };
 
     return (
         <>
-            <HotKeys keyMap={keyMap} handlers={handlers} >
-                <Layout.Content className={pageStyle.pageList} style={{ height: 'calc(100vh - 30px)' }}>
-                    <SearchBar showGroup={false} form={form} from="页面" projectName={projectName} submit={search.submit} refresh={search.submit} onCreate={handleCreate} />
+            <HotKeys keyMap={keyMap} handlers={handlers}>
+                <Layout.Content
+                    className={pageStyle.pageList}
+                    style={{ height: "calc(100vh - 30px)" }}
+                    onDragOver={(e) => {
+                        // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                        e.preventDefault();
+                    }}
+                    onDrop={(e) => {
+                        // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                        e.preventDefault();
+                    }}
+                >
+                    <SearchBar
+                        showGroup={false}
+                        form={form}
+                        from="页面"
+                        projectName={projectName}
+                        submit={search.submit}
+                        refresh={search.submit}
+                        onCreate={handleCreate}
+                    />
                     <div className={pageStyle.pagesContent}>
                         <Spin spinning={loading} size="large" tip="加载中...">
                             {tableProps.dataSource.length > 0 ? (

@@ -260,7 +260,16 @@ export default function Home() {
     };
 
     return (
-        <Layout.Content className={styles.resourceContainer}>
+        <Layout.Content className={styles.resourceContainer}
+        onDragOver={(e) => {
+            // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+            e.preventDefault();
+        }}
+        onDrop={(e) => {
+            // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+            e.preventDefault();
+        }}
+        >
             {/* 搜索工具条 */}
             <SearchBar
                 className={styles.searchBar}

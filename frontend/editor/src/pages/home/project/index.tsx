@@ -87,7 +87,17 @@ function Category() {
     };
 
     return (
-        <Layout.Content className={styles.projectList}>
+        <Layout.Content
+            className={styles.projectList}
+            onDragOver={(e) => {
+                // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                e.preventDefault();
+            }}
+            onDrop={(e) => {
+                // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                e.preventDefault();
+            }}
+        >
             {/* 搜索工具条 */}
             <SearchBar
                 showGroup={false}
@@ -119,16 +129,17 @@ function Category() {
                                         onUpdateGroup={updateGroupName}
                                     />
                                 ),
-                                children: item.projects.length <= 0 ? (
-                                    <EmptyBox
-                                        groupId={item.id}
-                                        title="该分组下暂无项目，请新增项目"
-                                        lastCharsCount={4}
-                                        onCreate={handleCreate}
-                                    />
-                                ) : (
-                                    <ProjectCard list={item.projects} />
-                                ),
+                                children:
+                                    item.projects.length <= 0 ? (
+                                        <EmptyBox
+                                            groupId={item.id}
+                                            title="该分组下暂无项目，请新增项目"
+                                            lastCharsCount={4}
+                                            onCreate={handleCreate}
+                                        />
+                                    ) : (
+                                        <ProjectCard list={item.projects} />
+                                    ),
                             };
                         })}
                         expandIcon={({ isActive }) => (
