@@ -341,12 +341,14 @@ export function newArrayToTree(array: IMenuItem[] = []) {
  * @param elementId - 元素的唯一标识符id
  * @param elementsMap - 元素elementsMap对象。
  */
-export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: ComponentType<any> }) {
+export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: ComponentType<any> }, deepth = 0) {
   const currentElement = elementsMap[elementId];
   if (!currentElement) return false;
-  const { formItem } = currentElement.config.props || {};
-  if (!formItem) {
-    return false;
+  if (deepth === 0) {
+    const { formItem } = currentElement.config.props || {};
+    if (!formItem) {
+      return false;
+    }
   }
   const { parentId } = currentElement;
   if (!parentId) return false;
@@ -356,5 +358,6 @@ export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: C
   if (type === 'Form') {
     return true;
   }
-  return judgeIfInForm(parentId, elementsMap);
+  const deep = deepth + 1;
+  return judgeIfInForm(parentId, elementsMap, deep);
 }
