@@ -344,7 +344,7 @@ const Header = memo(() => {
                     {/* 仅在组件页签时显示按钮 */}
                     {(!currentTab || currentTab === PanelKey.ComponentPanel) && (location.pathname.includes('/editor/')) && (
                         <>
-                            <Space size={0} style={{ marginRight: -10 }}>
+                            <Space size={0} style={{ marginRight: -10 }} className={styles.componentBtns}>
                                 <Select
                                     variant="borderless"
                                     options={[
@@ -368,10 +368,10 @@ const Header = memo(() => {
                                         />
                                     }
                                 />
-                                <Button type="text" icon={<SaveOutlined />} onClick={savePageData} loading={loading} size="small" style={{ color: '#000' }}>
+                                <Button type="text" icon={<SaveOutlined />} onClick={savePageData} loading={loading} size="small">
                                     保存
                                 </Button>
-                                <Button type="text" icon={<EyeOutlined />} onClick={handlePreview} size="small" style={{ color: '#000' }}>
+                                <Button type="text" icon={<EyeOutlined />} onClick={handlePreview} size="small">
                                     预览
                                 </Button>
                             </Space>

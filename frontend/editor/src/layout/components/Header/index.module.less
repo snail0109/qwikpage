@@ -15,7 +15,33 @@
 .pageName {
     font-size: 14px;
     color: #ccc;
-    font-weight: 400;
+    font-weight: 500;
+}
+
+.componentBtns {
+    :global {
+        .ant-select-selection-item {
+            font-size: 13px;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .ant-select .ant-select-selection-wrap:after {
+            width: 4px;
+        }
+
+        .ant-btn-sm {
+            font-size: 12px;
+            font-weight: 500;
+            color: #000000;
+        }
+
+        .ant-btn-icon {
+            font-size: 15px;
+        }
+    }
+
+
 }
 
 .layoutHeader {
@@ -98,12 +124,6 @@
     display: flex;
     align-items: center;
     gap: 15px;
-
-    :global {
-        .ant-select-selection-item {
-            text-align: right;
-        }
-    }
 }
 
 .divider {
