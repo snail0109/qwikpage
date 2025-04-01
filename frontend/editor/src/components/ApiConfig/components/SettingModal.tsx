@@ -108,7 +108,6 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const handleApiTest = () => {
     // 获取当前页面的接口配置数据
     const apiConfig = form.getFieldsValue();
-    debugger;
 
     apiTestModalRef.current?.showModal();
   }

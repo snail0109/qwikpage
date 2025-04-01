@@ -17,7 +17,6 @@ const formLayoutFull = {
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
-  isFormItem: boolean;
   elementId?: string;
   formItemId?: string;
 }
@@ -25,7 +24,7 @@ interface IAttrs {
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
-const SetterRender = memo(({ attrs, form, isFormItem, elementId, formItemId }: IAttrs) => {
+const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
   if (attrs.length === 0) return <></>;
   console.log(attrs)
   // 根据type枚举
@@ -33,10 +32,10 @@ const SetterRender = memo(({ attrs, form, isFormItem, elementId, formItemId }: I
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {!isFormItem && elementId && <Form.Item name="name" label="组件名称">
+      {!formItemId && elementId && <Form.Item name="name" label="组件名称">
         <Input defaultValue={elementId} />
       </Form.Item>}
-      {isFormItem && formItemId && <Form.Item name="name" label="组件名称">
+      {formItemId && formItemId && <Form.Item name="name" label="组件名称">
         <Input defaultValue={formItemId} />
       </Form.Item>}
       {/* 是否显示 */}
@@ -54,10 +53,10 @@ const SetterRender = memo(({ attrs, form, isFormItem, elementId, formItemId }: I
         const isFormItemLabelOrName = Array.isArray(item.name) &&
           item.name.length > 0 &&
           item.name[0] === 'formItem' &&
-          (item.name[1] === 'label' || item.name[1] === 'name');
+          (item.name[1] === 'label' || item.name[1] === 'name' || item.name[1] === 'labelCol' || item.name[1] === 'wrapperCol');
 
-        // 如果是表单项的标题或字段配置，但isFormItem为false，则跳过渲染
-        if (isFormItemLabelOrName && !isFormItem) {
+        // 如果是表单项的标题或字段配置，栅格之类的，则跳过渲染
+        if (isFormItemLabelOrName && !formItemId) {
           return null;
         }
 
