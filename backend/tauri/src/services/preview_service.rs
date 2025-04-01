@@ -41,7 +41,7 @@ pub async fn internal_error(req: &Request<'_>) -> Option<NamedFile> {
 }
 
 pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Build> {
-    log::info!("初始化项目页面预览服务");
+    log::trace!("初始化项目页面预览服务");
     let resource_dir = handle
         .path()
         .resource_dir()
