@@ -2,7 +2,7 @@ use anyhow::Error;
 use log;
 use std::io::ErrorKind;
 use std::path::Path;
-use std::{fs, io};
+use std::fs;
 
 use crate::types::group::GroupConfig;
 use crate::types::project::{MenuMode, MenuThemeColor, Project, ProjectAddParams, ProjectLayout, ProjectList, ProjectSummary, ProjectUpdateParams};

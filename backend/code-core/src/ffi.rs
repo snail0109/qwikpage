@@ -33,6 +33,6 @@ pub unsafe fn free_generator(handle: GeneratorHandle) {
 #[no_mangle]
 pub extern "C" fn common_free_string(s: *mut c_char) {
     if !s.is_null() {
-        unsafe { CString::from_raw(s) };
+        unsafe { let _ = CString::from_raw(s); };
     }
 }
