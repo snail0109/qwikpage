@@ -5,6 +5,8 @@ import { usePageStore } from '@/stores/pageStore';
 import { handleActionFlow } from '@/packages/utils/action';
 import { FormContext } from '@/packages/utils/context';
 import { isNotEmpty, getInitValue } from '@/packages/utils/util';
+import { HotKeys } from 'react-hotkeys';
+import { keyMap } from '@/constants/hotKeys';
 
 /**
  * @param props 组件本身属性
@@ -17,11 +19,13 @@ const Page: React.FC = () => {
   const cache = useRef({ offset: { x: 0, y: 0 }, isDragging: false });
 
   // 页面组件
-  const { config, elements, formItemData, setFormItemData, setSelectedElement } = usePageStore((state) => {
+  const { config, elements, elementsMap, formItemData, setFormItemData, selectedElement, setSelectedElement } = usePageStore((state) => {
     return {
       config: state.page.pageData.config,
       elements: state.page.pageData.elements,
+      elementsMap: state.page.pageData.elementsMap,
       formItemData: state.page.pageData.formItemData,
+      selectedElement: state.selectedElement,
       setFormItemData: state.setFormItemData,
       setSelectedElement: state.setSelectedElement,
     };
@@ -48,6 +52,41 @@ const Page: React.FC = () => {
     };
     setIsDragging(true);
   };
+
+  // 处理ESC键按下事件
+  const handleEscKey = useCallback(() => {
+    if (selectedElement) {
+      console.log('Current selected element:', selectedElement);
+      // 查找父组件
+      const parentId = elementsMap[selectedElement.id]?.parentId;
+      console.log('Found parent ID:', parentId);
+      
+      if (parentId) {
+        // 如果有父组件，直接通过键访问父组件
+        const parentElement = elementsMap[parentId];
+        if (parentElement) {
+          setSelectedElement({ 
+            type: parentElement.type, 
+            id: parentId 
+          });
+        }
+      } else {
+        // 如果没有父组件，则取消选择
+        setSelectedElement(undefined); // 使用 undefined 而不是 null
+      }
+    }
+  }, [selectedElement, elementsMap, setSelectedElement]);
+  
+
+
+  const handlers = {
+    'ESC': (e: KeyboardEvent | undefined) => {
+      e?.preventDefault();
+      e?.stopPropagation();
+      console.log('esc');
+      handleEscKey();
+    }
+  }
 
   React.useEffect(() => {
     const addEventListener = () => {
@@ -97,18 +136,20 @@ const Page: React.FC = () => {
   return (
     // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
     <FormContext.Provider value={{ initValues, getValue }}>
-      <div
-        style={{
-          minHeight: 'calc(100vh - 74px - 40px)',
-          ...config.style,
-          // transform: `translate(${position.x}px, ${position.y}px)`,
-          // cursor: isDragging ? 'move' : 'default',
-        }}
-        id="page"
-      // onMouseDown={handleMouseDown}
-      >
-        {<MarsRender elements={elements || []} />}
-      </div>
+      <HotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
+        <div
+          style={{
+            minHeight: 'calc(100vh - 74px - 40px)',
+            ...config.style,
+            // transform: `translate(${position.x}px, ${position.y}px)`,
+            // cursor: isDragging ? 'move' : 'default',
+          }}
+          id="page"
+        // onMouseDown={handleMouseDown}
+        >
+          {<MarsRender elements={elements || []} />}
+        </div>
+      </HotKeys>
     </FormContext.Provider>
   );
 };
