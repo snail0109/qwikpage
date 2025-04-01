@@ -6,7 +6,7 @@ use log;
 // 查询所有分组信息
 #[command]
 pub fn load_groups() -> JSResp<GroupConfig> {
-    log::debug!("Group::load_groups");
+    log::debug!("TGroupService::load_groups: 查询项目分组");
     let config = GroupConfig::load();
     JSResp::from(config)
 }
@@ -14,7 +14,7 @@ pub fn load_groups() -> JSResp<GroupConfig> {
 // 查询所有分组信息
 #[command]
 pub fn load_groups_with_projects(keyword: Option<String>) -> JSResp<GroupList> {
-    log::debug!("Group::load_groups_with_projects");
+    log::debug!("TGroupService::load_groups_with_projects(): 查询分组项目信息，项目名称({:?})", Some(&keyword));
     match GroupConfig::load() {
         Ok(config) => {
             let res = config.get_project_details(keyword);
@@ -30,7 +30,7 @@ pub fn load_groups_with_projects(keyword: Option<String>) -> JSResp<GroupList> {
 // 新增分组
 #[command]
 pub fn add_group(group_name: String) -> JSResp<String> {
-    log::debug!("Group::add_group group_name: {}", group_name);
+    log::debug!("TGroupService::add_group(): 分组名称({})", group_name);
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.add_group(group_name);
@@ -46,7 +46,7 @@ pub fn add_group(group_name: String) -> JSResp<String> {
 // 修改分组
 #[command]
 pub fn edit_group(id: &str, group_name: String) -> JSResp<bool> {
-    log::debug!("Group::edit_group id: {}, group_name: {}", id, group_name);
+    log::debug!("TGroupService::edit_group(): 分组 id({}), 分组名:({})", id, group_name);
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.update_group(id, Some(group_name));
@@ -62,7 +62,7 @@ pub fn edit_group(id: &str, group_name: String) -> JSResp<bool> {
 // 删除分组
 #[command]
 pub fn delete_group(id: &str) -> JSResp<bool> {
-    log::debug!("Group::delete_group id: {}", id);
+    log::debug!("TGroupService::delete_group(): 删除分组:({})", id);
     match GroupConfig::load() {
         Ok(mut config) => {
             let res = config.delete_group(id);

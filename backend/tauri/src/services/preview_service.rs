@@ -41,11 +41,11 @@ pub async fn internal_error(req: &Request<'_>) -> Option<NamedFile> {
 }
 
 pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Build> {
-    log::info!("configure_rocket");
+    log::info!("初始化项目页面预览服务");
     let resource_dir = handle
         .path()
         .resource_dir()
-        .expect("Preview::Failed to get resource directory");
+        .expect("获取App资源目录失败");
     let admin_path = resource_dir.join("assets").join("admin");
     let config = Config {
         port: 8789,       // 指定端口
@@ -74,7 +74,7 @@ pub fn configure_rocket(handle: tauri::AppHandle) -> rocket::Rocket<rocket::Buil
 // 获取项目详情
 #[get("/project/detail/<id>")]
 pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
-    log::debug!("Preview::get_project_detail: id: {}", id);
+    log::debug!("TPreviewService::get_project_detail(): 项目ID({})", id);
     match Project::load(id) {
         Ok(project) => Ok(Json(project)),
         Err(_) => Err(Status::InternalServerError),
@@ -85,7 +85,7 @@ pub fn get_project_detail(id: String) -> Result<Json<Project>, Status> {
 // 获取页面详情
 #[get("/page/detail/id/<project_id>/<id>")]
 pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Status> {
-    log::debug!("Preview::get_page_detail: project_id: {}, id: {}", project_id, id);
+    log::debug!("TPreviewService::get_page_detail(): 查询页面信息, 页面项目ID({}), 页面ID({})", project_id, id);
     match PageConfig::get_page_detail_with_id(id, project_id) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),
@@ -95,7 +95,7 @@ pub fn get_page_detail(project_id:String, id: String) -> Result<Json<Page>, Stat
 // 获取页面详情
 #[get("/page/detail/<project_id>/<path>")]
 pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Json<Page>, Status> {
-    log::debug!("Preview::get_page_detail_with_path: project_id: {}, path: {}", project_id, path);
+    log::debug!("TPreviewService::get_page_detail_with_path(): 查询页面信息,页面项目ID({}), 页面路由({})", project_id, path);
     match PageConfig::get_page_detail_with_path(project_id, path) {
         Ok(page) => Ok(Json(page)),
         Err(_) => Err(Status::InternalServerError),

@@ -3,6 +3,8 @@ pub mod file;
 pub mod dirs;
 pub mod setup;
 
+use chrono::Local;
+use log::{Level, info};
 use std::net::TcpStream;
 
 use tauri::{process::current_binary, AppHandle, Runtime, Manager};
@@ -31,7 +33,7 @@ pub fn restart_application<R: Runtime>(app_handle: AppHandle<R>) {
     if arg.len() > 1 {
         args.extend(arg.iter().skip(1).cloned());
     }
-    log::info!("restart app: {:#?} with args: {:#?}", path, args);
+    info!("restart app: {:#?} with args: {:#?}", path, args);
     std::process::Command::new(path)
         .args(args)
         .spawn()
@@ -39,3 +41,23 @@ pub fn restart_application<R: Runtime>(app_handle: AppHandle<R>) {
     app_handle.exit(0);
     std::process::exit(0);
   }
+
+pub fn custom_log_out(out: tauri_plugin_log::fern::FormatCallback<'_>, message: &std::fmt::Arguments<'_>, record: &log::Record<'_>) {
+    // 自定义日志级别映射
+    let level_short = match record.level() {
+        Level::Error => "E",  // Error -> E
+        Level::Warn => "W",   // Warn -> W
+        Level::Info => "I",   // Info -> I
+        Level::Debug => "D",  // Debug -> D
+        Level::Trace => "T",  // Trace -> T
+    };
+    let file_name = record.file_static().unwrap().split('/').last().unwrap();
+    out.finish(format_args!(
+        "{} ({}:{:#?}) [{}] > {}",
+        Local::now().format("%H:%M:%S").to_string(),
+        file_name,
+        record.line().unwrap_or(0),
+        level_short,
+        message
+    ))
+}

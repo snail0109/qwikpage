@@ -12,13 +12,13 @@ use crate::{
     },
     utils::{check_port_occupied, dirs::get_config_path, setup},
 };
-use chrono::Local;
-use log::{self, Level};
+use log;
 use once_cell::sync::OnceCell;
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
-use tauri::{WebviewUrl, WebviewWindowBuilder};
+use tauri::{is_dev, WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_log::{Target, TargetKind};
+use utils::custom_log_out;
 
 // #[cfg(target_os = "windows")]
 // use {
@@ -188,34 +188,4 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running qwikpage application");
-}
-
-fn custom_log_out(out: tauri_plugin_log::fern::FormatCallback<'_>, message: &std::fmt::Arguments<'_>, record: &log::Record<'_>) {
-    // 自定义日志级别映射
-    let level_short = match record.level() {
-        Level::Error => "E",  // Error -> E
-        Level::Warn => "W",   // Warn -> W
-        Level::Info => "I",   // Info -> I
-        Level::Debug => "D",  // Debug -> D
-        Level::Trace => "T",  // Trace -> T
-    };
-    out.finish(format_args!(
-        "{} ({:#?}:{:#?}) [{}] > {}",
-        Local::now().format("%H:%M:%S").to_string(),
-        record.target(),
-        record.line().unwrap_or(0),
-        level_short,
-        message
-    ))
-}
-
-fn is_dev() -> bool {
-    #[cfg(dev)]
-    {
-        return true;
-    }
-    #[cfg(not(dev))]
-    {
-        return false;
-    }
 }
