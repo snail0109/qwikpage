@@ -16,20 +16,21 @@ pub fn get_project_list(
     page_size: usize,
     keyword: Option<String>,
 ) -> Result<ProjectList, String> {
+    log::debug!("TProjectService::get_project_list(): 分页获取项目列表({},{},{:?})", page_num, page_size, Some(&keyword));
     paginated_query_project_list(page_num, page_size, keyword)
 }
 
 // 获取项目详情
 #[command]
 pub fn get_project_detail(id: String) -> JSResp<Project> {
-    log::debug!("Project::get_project_detail start, id: {}", id);
+    log::debug!("TProjectService::get_project_detail(): 获取项目详情({})", id);
     JSResp::from(Project::load(id))
 }
 
 // 新建项目
 #[command]
 pub fn add_project(params: ProjectAddParams) -> JSResp<Project> {
-    log::debug!("Project::add_project start, params: {:#?}", params);
+    log::debug!("TProjectService::add_project(): 新增项目({:#?})", params);
     let project = add_project_inner(params);
     JSResp::from(project)
 }
@@ -37,7 +38,7 @@ pub fn add_project(params: ProjectAddParams) -> JSResp<Project> {
 // 更新项目
 #[command]
 pub fn update_project(params: ProjectUpdateParams) -> JSResp<bool> {
-    log::debug!("Project::update_project start, params: {:#?}", params);
+    log::debug!("TProjectService::update_project(): 更新项目({:#?})", params);
     let mut project = Project::load(params.id.clone()).unwrap();
     let res = project.update(params);
     JSResp::from(res)
@@ -46,7 +47,7 @@ pub fn update_project(params: ProjectUpdateParams) -> JSResp<bool> {
 // 删除项目
 #[command]
 pub async fn delete_project(id: String, group_id: String, logo_url: String) -> JSResp<bool> {
-    log::debug!("Project::delete_project start, id: {}", id.clone());
+    log::debug!("TProjectService::delete_project(): 删除项目({})", id.clone());
     let res = Project::delete(id, group_id, logo_url).await;
     JSResp::from(res)
 }
@@ -54,7 +55,7 @@ pub async fn delete_project(id: String, group_id: String, logo_url: String) -> J
 // 修改项目logo
 #[command]
 pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, String> {
-    log::debug!("Project::upload_project_resource, params: {:#?}", params);
+    log::debug!("TProjectService::upload_project_resource(): 修改项目logo({:#?})", params);
     let res = ResourceConfig::upload_project_resource(params);
     res.await.map_err(|op| op.to_string())
 }

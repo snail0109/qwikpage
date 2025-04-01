@@ -15,7 +15,7 @@ pub fn get_page_list(
     project_id: String,
 ) -> Result<PageList, String> {
     log::debug!(
-        "Page::get_page_list start, page_num: {}, page_size: {}, keyword: {:?}, project_id: {:?}",
+        "TPageService::get_page_list(): 获取页面列表, 页码({}), 分页数量({}), 关键字({:?}), 项目ID({:?})",
         page_num, page_size, keyword, project_id
     );
     let pages_list =
@@ -27,7 +27,7 @@ pub fn get_page_list(
 #[command]
 pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, ErrorResponse> {
     log::debug!(
-        "Page::get_page_detail_with_id start, id: {}, project_id: {}",
+        "TPageService::get_page_detail_with_id(): 获取页面详情, 页面Id({}), 项目ID({}),",
         id,
         project_id
     );
@@ -39,7 +39,7 @@ pub fn get_page_detail_with_id(id: String, project_id: String) -> Result<Page, E
 #[command]
 pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Page, ErrorResponse> {
     log::debug!(
-        "Page::get_page_detail_with_path start, project_id: {}, path: {}",
+        "TPageService::get_page_detail_with_path(): 获取页面详情, 项目ID({}), 项目文件路径:({})",
         project_id,
         path
     );
@@ -50,25 +50,25 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Pag
 // menu
 #[command]
 pub fn add_page(params: PageAddParams) -> JSResp<Page> {
-    log::debug!("Page::add_page start, params: {:#?}", params);
+    log::debug!("TPageService::add_page(): 新增页面（{:#?}", params);
     let page = PageConfig::add_page(params);
     JSResp::from(page)
 }
 
 #[command]
 pub fn update_page(params: PageUpdateParams) -> JSResp<bool> {
-    log::debug!("Page::update_page start, params: {:#?}", params);
+    log::debug!("TPageService::update_page(): 更新页面({:#?})", params);
     JSResp::from(PageConfig::update(params))
 }
 
 #[command]
 pub fn delete_page(id: String, project_id: String) -> JSResp<bool> {
-    log::debug!("Page::delete_page start, id: {}", id);
+    log::debug!("TPageService::delete_page(): 删除页面({})", id);
     JSResp::from(PageConfig::delete(id, project_id))
 }
 
 #[command]
 pub fn copy_page(params: PageCopyParams) -> JSResp<String> {
-    log::debug!("Page::copy_page start, params: {:#?}", params);
+    log::debug!("TPageService::copy_page(): 复制页面({:#?})", params);
     JSResp::from(PageConfig::copy(params))
 }

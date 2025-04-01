@@ -45,7 +45,6 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
 
       {/* ---组件属性--- */}
       {attrs.map((item: SchemaType, index) => {
-        debugger
         if (!item) return;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;

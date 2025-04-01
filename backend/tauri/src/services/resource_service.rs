@@ -10,7 +10,7 @@ use crate::{
 // 查询分组资源信息
 #[command]
 pub async fn load_resource(params: ResourceQueryParams) -> JSResp<Vec<ResourceGroupInfo>> {
-    log::debug!("Resource::load_resource resource: {:?}", params);
+    log::debug!("TResourceService::load_resource(): 查询分组资源信息({:?})", params);
     let config = ResourceConfig::load(params).await;
     JSResp::from(config)
 }
@@ -18,7 +18,7 @@ pub async fn load_resource(params: ResourceQueryParams) -> JSResp<Vec<ResourceGr
 // 创建资源分组(目录)
 #[command]
 pub async fn add_resource_group(params: OperResourceGroupParams) -> JSResp<bool> {
-    log::debug!("Resource::add resource group: {:?}", params);
+    log::debug!("TResourceService::add_resource_group(): 创建资源分组,分组名({:?})", params.group_name);
     let config = ResourceConfig::add_resource_group(params).await;
     JSResp::from(config)
 }
@@ -26,7 +26,7 @@ pub async fn add_resource_group(params: OperResourceGroupParams) -> JSResp<bool>
 // 删除资源分组(目录)
 #[command]
 pub async fn delete_resource_group(params: OperResourceGroupParams) -> JSResp<bool> {
-    log::debug!("Resource::delete resource group: {:?}", params);
+    log::debug!("TResourceService::delete_resource_group(): 删除资源分组,分组名({:?})", params.group_name);
     let config = ResourceConfig::delete_resource_group(params).await;
     JSResp::from(config)
 }
@@ -34,7 +34,7 @@ pub async fn delete_resource_group(params: OperResourceGroupParams) -> JSResp<bo
 // 更新资源分组(目录)
 #[command]
 pub async fn update_resource_group(params: OperResourceGroupParams) -> JSResp<bool> {
-    log::debug!("Resource::update resource group: {:?}", params);
+    log::debug!("TResourceService::update_resource_group() : 更新资源分组信息({:?})", params);
     let config = ResourceConfig::update_resource_group(params).await;
     JSResp::from(config)
 }
@@ -42,7 +42,7 @@ pub async fn update_resource_group(params: OperResourceGroupParams) -> JSResp<bo
 // 导入资源
 #[command]
 pub async fn import_resource(params: UploadParams) -> JSResp<bool> {
-    log::debug!("Resource::import resource group");
+    log::debug!("TResourceService::import_resource(): 导入资源");
     let config = ResourceConfig::import_resources(params).await;
     JSResp::from(config)
 }
@@ -50,7 +50,7 @@ pub async fn import_resource(params: UploadParams) -> JSResp<bool> {
 // 重命名资源
 #[command]
 pub async fn rename_resource(params: RenameResource) -> JSResp<bool> {
-    log::debug!("Resource::rename resource: {:?}", params);
+    log::debug!("TResourceService::rename_resource(): 重命名资源({:?}-{:?})", params.resource_name, params.new_resource_name);
     let config = ResourceConfig::rename_resource(params).await;
     JSResp::from(config)
 }
@@ -58,7 +58,7 @@ pub async fn rename_resource(params: RenameResource) -> JSResp<bool> {
 // 删除资源
 #[command]
 pub async fn delete_resource(params: DeleteResource) -> JSResp<bool> {
-    log::debug!("Resource::delete resource: {:?}", params);
+    log::debug!("TResourceService::delete_resource(): 删除资源({:?})", params);
     let config = ResourceConfig::delete_resource(params).await;
     JSResp::from(config)
 }
@@ -67,6 +67,6 @@ pub async fn delete_resource(params: DeleteResource) -> JSResp<bool> {
 // 参数: path - 字体文件的路径
 #[command]
 pub fn parse_font_metadata(path: String) -> JSResp<FontMeta> {
-    log::debug!("Resource::parse font metadata: {:?}", path);
+    log::debug!("TResourceService::parse_font_metadata(): 解析字体元数据({:?})", path);
     JSResp::from(load_font_metadata(path))
 }
