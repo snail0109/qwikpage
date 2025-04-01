@@ -355,7 +355,7 @@ const Header = memo(() => {
                                         { label: '960px', value: '960px' },
                                         { label: '自适应', value: 'auto' },
                                     ]}
-                                    style={{ width: 85 }}
+                                    style={{ width: 95 }}
                                     value={canvasWidth}
                                     onChange={handleClickCanvas}
                                     suffixIcon={
