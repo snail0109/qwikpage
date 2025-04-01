@@ -203,7 +203,6 @@ export default {
     },
     {
       type: 'function',
-      label: '校验规则',
       render: (form: FormInstance) => {
         return <RulesSetting key="rule-list" form={form} />;
       },

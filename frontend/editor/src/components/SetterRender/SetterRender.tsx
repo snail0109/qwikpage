@@ -49,7 +49,7 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
 
-        // 检查是否是表单项的标题或字段配置
+        // 检查是否是表单项配置（包含标题，name字段，和栅格等）
         const isFormItemLabelOrName = Array.isArray(item.name) &&
           item.name.length > 0 &&
           item.name[0] === 'formItem' &&
@@ -106,7 +106,7 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
           FormControl = <Slider {...item.props} />;
         } else if (item.type === 'Variable') {
           FormControl = <VariableBindInput {...item.props} />;
-        } else if (item.type === 'function') {
+        } else if (item.type === 'function' && formItemId) {
           return item.render?.(form);
         } else if (item.type === 'Icons') {
           // 获取所有的antd图标，动态渲染到下拉框中
