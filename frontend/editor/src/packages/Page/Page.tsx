@@ -5,7 +5,7 @@ import { usePageStore } from '@/stores/pageStore';
 import { handleActionFlow } from '@/packages/utils/action';
 import { FormContext } from '@/packages/utils/context';
 import { isNotEmpty, getInitValue } from '@/packages/utils/util';
-import { HotKeys } from 'react-hotkeys';
+import { GlobalHotKeys } from 'react-hotkeys';
 import { keyMap } from '@/constants/hotKeys';
 
 /**
@@ -72,16 +72,16 @@ const Page: React.FC = () => {
         }
       } else {
         // 如果没有父组件，则取消选择
-        setSelectedElement(undefined); // 使用 undefined 而不是 null
+        setSelectedElement(undefined);
       }
     }
   }, [selectedElement, elementsMap, setSelectedElement]);
 
   const handlers = {
-    'ESC': (e: KeyboardEvent | undefined) => {
+    '1': (e: KeyboardEvent | undefined) => {
       e?.preventDefault();
       e?.stopPropagation();
-      console.log('esc');
+      console.log('1');
       handleEscKey();
     }
   }
@@ -134,7 +134,7 @@ const Page: React.FC = () => {
   return (
     // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
     <FormContext.Provider value={{ initValues, getValue }}>
-      <HotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
+      <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
         <div
           style={{
             minHeight: 'calc(100vh - 74px - 40px)',
@@ -147,7 +147,7 @@ const Page: React.FC = () => {
         >
           {<MarsRender elements={elements || []} />}
         </div>
-      </HotKeys>
+      </GlobalHotKeys>
     </FormContext.Provider>
   );
 };

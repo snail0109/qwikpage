@@ -11,6 +11,8 @@ import { ResourceGroupProvider } from "@/context/resource";
 import ResourceGroupList, { IResourceGroup } from "./components/ResourceGroupList";
 import ResourceUpload from "@/components/ResourceUpload";
 import { invoke } from "@tauri-apps/api/core";
+import { GlobalHotKeys } from 'react-hotkeys';
+import { keyMap } from '@/constants/hotKeys';
 // import { listen } from "@tauri-apps/api/event";
 
 export const RESOURCE_TABS = [
@@ -259,97 +261,108 @@ export default function Home() {
             });
     };
 
+    const handlers = {
+        'ESC': (e: KeyboardEvent | undefined) => {
+            e?.preventDefault();
+            e?.stopPropagation();
+            console.log('esc');
+            history.back();
+        }
+    }
+
     return (
-        <Layout.Content className={styles.resourceContainer}
-        onDragOver={(e) => {
-            // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
-            e.preventDefault();
-        }}
-        onDrop={(e) => {
-            // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
-            e.preventDefault();
-        }}
-        >
-            {/* 搜索工具条 */}
-            <SearchBar
-                className={styles.searchBar}
-                showGroup={false}
-                noNeedCreate
-                noNeedFresh
-                form={form}
-                searchPlaceholder={placeholder}
-                projectName={project_name}
-                submit={refresh}
-                refresh={refresh}
-                needOpenDir
-                openDir={handleOpenDir}
-            />
-            <Divider />
-            <ConfigProvider
-                theme={{
-                    components: {
-                        Button: {
-                            defaultShadow: "none",
-                        },
-                    },
+        <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
+            <Layout.Content className={styles.resourceContainer}
+                onDragOver={(e) => {
+                    // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                    e.preventDefault();
+                }}
+                onDrop={(e) => {
+                    // 阻止从操作系统向浏览器中拖拽文件时，浏览器默认行为
+                    e.preventDefault();
                 }}
             >
-                <div
-                    className={styles.topContainer}
-                    onMouseUp={() => {
-                        console.log("styles.topContainer");
+                {/* 搜索工具条 */}
+                <SearchBar
+                    className={styles.searchBar}
+                    showGroup={false}
+                    noNeedCreate
+                    noNeedFresh
+                    form={form}
+                    searchPlaceholder={placeholder}
+                    projectName={project_name}
+                    submit={refresh}
+                    refresh={refresh}
+                    needOpenDir
+                    openDir={handleOpenDir}
+                />
+                <Divider />
+                <ConfigProvider
+                    theme={{
+                        components: {
+                            Button: {
+                                defaultShadow: "none",
+                            },
+                        },
                     }}
                 >
-                    <div>
-                        {RESOURCE_TABS.map((tab) => (
-                            <Button
-                                key={tab.value}
-                                autoInsertSpace={false}
-                                className={resource_type === tab.value ? styles.active : ""}
-                                onClick={() => onChangTab(tab)}
-                            >
-                                {tab.label}
-                                <div className={styles.checkContainer}></div>
+                    <div
+                        className={styles.topContainer}
+                        onMouseUp={() => {
+                            console.log("styles.topContainer");
+                        }}
+                    >
+                        <div>
+                            {RESOURCE_TABS.map((tab) => (
+                                <Button
+                                    key={tab.value}
+                                    autoInsertSpace={false}
+                                    className={resource_type === tab.value ? styles.active : ""}
+                                    onClick={() => onChangTab(tab)}
+                                >
+                                    {tab.label}
+                                    <div className={styles.checkContainer}></div>
+                                </Button>
+                            ))}
+                        </div>
+                        <div>
+                            <Button className={styles.createGroupBtn} onClick={handleAddResGroup}>
+                                创建分组
                             </Button>
-                        ))}
+                            <Tooltip title="刷新">
+                                <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
+                            </Tooltip>
+                        </div>
                     </div>
-                    <div>
-                        <Button className={styles.createGroupBtn} onClick={handleAddResGroup}>
-                            创建分组
-                        </Button>
-                        <Tooltip title="刷新">
-                            <Button icon={<RedoOutlined className={styles.refreshButton} />} onClick={refresh}></Button>
-                        </Tooltip>
-                    </div>
-                </div>
-            </ConfigProvider>
-            <div
-                className={styles.pagesContent}
-                onMouseUp={() => {
-                    console.log("styles.pagesContent");
-                }}
-            >
-                <ResourceGroupProvider
-                    resource_type={resource_type}
-                    onImport={onImportClick}
-                    onEditGroup={onEditGroupClick}
-                    onDeleteGroup={onDeleteGroupClick}
-                    onEditResource={onEditResourceClick}
-                    onDeleteResource={onDeleteResourceClick}
+                </ConfigProvider>
+                <div
+                    className={styles.pagesContent}
+                    onMouseUp={() => {
+                        console.log("styles.pagesContent");
+                    }}
                 >
-                    <ResourceGroupList data={data} />
-                </ResourceGroupProvider>
-            </div>
-            {/* 创建分组弹框 */}
-            <CreateGroup
-                createRef={createGroupRef}
-                update={refresh}
-                customConfirm={renameResource}
-                project_id={project_id!}
-                resource_type={resource_type}
-            />
-            {/* 上传资源 */}
-            <ResourceUpload uploadRef={uploadfileRef} />
-        </Layout.Content>
+                    <ResourceGroupProvider
+                        resource_type={resource_type}
+                        onImport={onImportClick}
+                        onEditGroup={onEditGroupClick}
+                        onDeleteGroup={onDeleteGroupClick}
+                        onEditResource={onEditResourceClick}
+                        onDeleteResource={onDeleteResourceClick}
+                    >
+                        <ResourceGroupList data={data} />
+                    </ResourceGroupProvider>
+                </div>
+                {/* 创建分组弹框 */}
+                <CreateGroup
+                    createRef={createGroupRef}
+                    update={refresh}
+                    customConfirm={renameResource}
+                    project_id={project_id!}
+                    resource_type={resource_type}
+                />
+                {/* 上传资源 */}
+                <ResourceUpload uploadRef={uploadfileRef} />
+            </Layout.Content>
+        </GlobalHotKeys>
     );
 }
