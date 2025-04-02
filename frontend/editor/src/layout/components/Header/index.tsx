@@ -206,7 +206,7 @@ const Header = memo(() => {
                 id: page.id,
                 name,
                 remark,
-                pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
+                pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {}, formItemData: {} }),
                 projectId: page.projectId,
             };
 
@@ -282,7 +282,7 @@ const Header = memo(() => {
             await pageService.updatePageData({
                 id: page.id,
                 projectId: page.projectId,
-                pageData: JSON.stringify({ ...page.pageData, variableData: {}, formData: {} }),
+                pageData: JSON.stringify({ ...page.pageData, variableData: {}, formData: {}, formItemData: {} }),
             });
             message.success("页面保存成功");
             updateEditState(false);

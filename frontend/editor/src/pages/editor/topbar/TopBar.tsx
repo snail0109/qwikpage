@@ -62,7 +62,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
       await pageService.updatePageData({
         id,
         projectId,
-        pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {} }),
+        pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {}, formItemData: {} }),
       });
       message.success('页面保存成功');
       updateEditState(false);
