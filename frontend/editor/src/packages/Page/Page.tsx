@@ -78,7 +78,7 @@ const Page: React.FC = () => {
   }, [selectedElement, elementsMap, setSelectedElement]);
 
   const handlers = {
-    '1': (e: KeyboardEvent | undefined) => {
+    'CTRL+D': (e: KeyboardEvent | undefined) => {
       e?.preventDefault();
       e?.stopPropagation();
       console.log('1');

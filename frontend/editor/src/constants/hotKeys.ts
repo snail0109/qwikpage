@@ -1,4 +1,4 @@
 export const keyMap = {
     'ESC': 'esc',
-    '1':'1',
+    'CTRL+D': 'ctrl+d',
 };
