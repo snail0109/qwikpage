@@ -71,7 +71,7 @@ export function SystemSetting(props: ISystemSettingProps) {
     // 重置为默认
     const onRestore = async () => {
         await invoke("restore_preferences")
-        const preferences =  await get_preferences();
+        const preferences = await get_preferences();
         form.setFieldsValue({
             fontfamily: preferences.fontFamily,
             dataDir: preferences.projectPath,
@@ -123,7 +123,7 @@ export function SystemSetting(props: ISystemSettingProps) {
                 <Button color="primary" variant="outlined" onClick={onRestore}>
                     重置为默认
                 </Button>
-                <span style={{paddingLeft: 8}}>重启程序生效</span>
+                <span style={{ paddingLeft: 8 }}>重启程序生效</span>
             </div>
 
             <div>
@@ -142,6 +142,7 @@ export function SystemSetting(props: ISystemSettingProps) {
             <Form form={form} layout="vertical" autoComplete="off">
                 <Form.Item label="字体" name="fontfamily">
                     <Select
+                        showSearch
                         placeholder="请选择字体"
                         options={(systemFontFamilys || []).map((font) => ({ label: font, value: font }))}
                     />
