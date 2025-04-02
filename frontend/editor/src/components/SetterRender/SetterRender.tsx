@@ -8,6 +8,7 @@ import VariableBindInput from '../VariableBind/VariableBind';
 import InputSelect from '../InputSelect/InputSelect';
 import InputPx from '../StyleConfig/InputPx';
 import styles from './index.module.less';
+import { usePageStore } from '@/stores/pageStore';
 
 // 如果没有设置label，则独占一行
 const formLayoutFull = {
@@ -17,15 +18,24 @@ const formLayoutFull = {
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
-  elementId?: string;
-  formItemId?: string;
 }
 /**
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
-const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
+const SetterRender = memo(({ attrs, form }: IAttrs) => {
+  const { selectedElement, elementsMap } = usePageStore((state) => {
+    return {
+      selectedElement: state.selectedElement,
+      elementsMap: state.page.pageData.elementsMap,
+    };
+  });
+
   if (attrs.length === 0) return <></>;
+
+  const elementId = selectedElement?.id;
+  const formItemId = selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined;
+
   console.log(attrs)
   // 根据type枚举
   return (
@@ -35,7 +45,7 @@ const SetterRender = memo(({ attrs, form, elementId, formItemId }: IAttrs) => {
       {!formItemId && elementId && <Form.Item name={['formItem', 'name']} label="组件名称">
         <Input defaultValue={elementId} />
       </Form.Item>}
-      {formItemId && formItemId && <Form.Item name={['formItem', 'name']} label="组件名称">
+      {formItemId && <Form.Item name={['formItem', 'name']} label="组件名称">
         <Input defaultValue={formItemId} />
       </Form.Item>}
       {/* 是否显示 */}

@@ -146,8 +146,6 @@ const ConfigPanel = memo(() => {
             <SetterRender
               attrs={ComponentConfig?.attrs || []}
               form={form}
-              elementId={selectedElement?.id}
-              formItemId={selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined}
             />
           </Suspense>
         </Form>

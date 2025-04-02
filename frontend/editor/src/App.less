@@ -57,10 +57,6 @@ html {
 }
 
 // 鼠标悬停时显示滚动条
-*:hover > ::-webkit-scrollbar-thumb {
+:hover::-webkit-scrollbar-thumb {
   background-color: @scrollbar-thumb-bg;
-  
-  &:hover {
-    background-color: @scrollbar-thumb-bg;
-  }
 }
