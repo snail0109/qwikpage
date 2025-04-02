@@ -122,7 +122,6 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
         } else if (item.type === 'Icons') {
           // 获取所有的antd图标，动态渲染到下拉框中
           const iconsList: { [key: string]: any } = icons;
-          console.log('iconsList', iconsList)
           FormControl = (
             <Select placeholder="请选择菜单图表" showSearch allowClear>
               {Object.keys(icons)
@@ -133,12 +132,6 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
                   })
                   return (
                     <Select.Option value={key} key={key}>
-                      {/* {React.createElement(iconsList[key], {
-                        style: {
-                          fontSize: '18px',
-                          verticalAlign: 'middle',
-                        },
-                      })} */}
                       <span
                         className='anticon'
                         style={{
