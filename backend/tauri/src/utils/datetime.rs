@@ -15,3 +15,27 @@ pub fn format_resource_system_time(system_time: SystemTime) -> String {
     let datetime: DateTime<Local> = system_time.into();
     datetime.format(RESOURCE_DATE_FORMAT).to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::TimeZone;
+
+    #[test]
+    fn test_get_current_time() {
+        let current_time = get_current_time();
+        assert!(current_time.len() == 19);
+        assert!(current_time.contains('-'));
+        assert!(current_time.contains(':'));
+        assert!(current_time.contains(' '));
+    }
+
+    #[test]
+    fn test_format_resource_system_time() {
+        let test_time = Local.with_ymd_and_hms(2024, 3, 15, 14, 30, 45).unwrap();
+        let system_time = test_time.into();
+        let formatted_time = format_resource_system_time(system_time);
+        assert_eq!(formatted_time, "2024/03/15");
+    }
+  
+}
