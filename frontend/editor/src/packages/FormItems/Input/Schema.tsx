@@ -11,7 +11,7 @@ export default {
       label: '标签配置',
       key: 'formItem',
     },
-     {
+    {
       type: 'Input',
       label: '标题',
       name: ['formItem', 'label'],
@@ -237,7 +237,9 @@ export default {
     {
       value: 'onPressEnter',
       name: '回车事件',
-    },
+    }
+  ],
+  methods: [
     {
       name: 'setValue',
       title: '赋值',
@@ -246,5 +248,5 @@ export default {
       name: 'getValue',
       title: '获取值',
     }
-  ],
+  ]
 };

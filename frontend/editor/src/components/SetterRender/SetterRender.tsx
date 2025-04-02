@@ -37,7 +37,6 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
   const elementId = selectedElement?.id;
   const formItemId = selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined;
 
-  console.log(attrs)
   // 根据type枚举
   return (
     <>

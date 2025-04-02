@@ -9,6 +9,7 @@ import {
   NotificationAction,
   VariableAction,
 } from '../types';
+import { isString, isArray } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
 import { handleApi } from './handleApi';
 import { usePageStore } from '@/stores/pageStore';
@@ -258,7 +259,9 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
     return;
   }
   try {
-    const result = await ref?.[action.method]?.({ ...action?.params, ...data });
+    // TODO 需要处理组件方法的参数
+    const isSingle = isString(data) || isArray(data);
+    const result = await ref?.[action.method]?.(isSingle ? data : { ...action?.params, ...data });
     if (typeof result === 'boolean') {
       if (result) {
         execAction(next?.success || next, data);
@@ -391,6 +394,7 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
   } else if (action.assignmentType === 'assignment') {
     if (action.assignmentWay === 'static') {
       value = action.value;
+      data = value;
     } else {
       value = defaultVariable(action.variableType, data);
     }
