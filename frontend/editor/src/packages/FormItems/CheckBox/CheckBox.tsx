@@ -23,11 +23,11 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MCheckBox = ({ id, type, inForm, formItemValue, config, onChange }: ComponentType<IConfig>, ref: any) => {
+const MCheckBox = ({ id, type, formItemValue, config, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
-  const { initValues, getValue } = useFormContext();
+  const { initValues, getValue, inForm } = useFormContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
   /**
@@ -99,6 +99,10 @@ const MCheckBox = ({ id, type, inForm, formItemValue, config, onChange }: Compon
       update: (data: any) => {
         // 重新加载表格数据
         getDataList(data);
+      },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        initValues(type, name, value);
       },
       getValue: () => {
         const name = config.props.formItem?.name || id;

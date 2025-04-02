@@ -2,7 +2,6 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import { Form, Input, InputProps, FormItemProps } from 'antd';
 import * as icons from '@ant-design/icons';
 import { ComponentType } from '@/packages/types';
-import { isNull } from '@/packages/utils/util';
 import { useFormContext } from '@/packages/utils/context';
 import omit from 'lodash-es/omit';
 
@@ -18,13 +17,13 @@ export interface IConfig {
  * @param props 系统属性值：componentId、componentName等
  * @returns 返回组件
  */
-const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
-  const { initValues } = useFormContext();
+const MInput = ({ id, type, formItemValue, config, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
+  const { initValues, getValue, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
   // 初始化默认值
   useEffect(() => {
-    const name: string = config.props.formItem?.name;
+    const name: string = config.props.formItem?.name || id;
     const value = config.props.defaultValue;
     initValues(type, name, value);
   }, [config.props.defaultValue]);
@@ -36,21 +35,28 @@ const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentT
 
   // 输入事件
   const handleChange = (val: string) => {
+    const name = config.props.formItem?.name || id;
+    if (!inForm) {
+      // 控件不在表单内需要自行维护值
+      initValues(type, name, val);
+    }
     onChange?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
 
   // 失去焦点事件
   const handleBlur = (val: string) => {
+    const name = config.props.formItem?.name || id;
     onBlur?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
   // 回车事件
   const handlePressEnter = (val: string) => {
+    const name = config.props.formItem?.name || id;
     onPressEnter?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
   useImperativeHandle(ref, () => {
@@ -67,6 +73,14 @@ const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentT
       disable() {
         setDisabled(true);
       },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        initValues(type, name, value);
+      },
+      getValue: () => {
+        const name = config.props.formItem?.name || id;
+        return getValue(name)
+      }
     };
   });
   const iconsList: { [key: string]: any } = icons;
@@ -80,6 +94,7 @@ const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentT
           style={config.style}
           prefix={config.props.formWrap.prefixIcons ? React.createElement(iconsList[config.props.formWrap.prefixIcons]) : null}
           suffix={config.props.formWrap.suffixIcons ? React.createElement(iconsList[config.props.formWrap.suffixIcons]) : null}
+          value={formItemValue}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={(event) => handleBlur(event.target.value)}
           onPressEnter={(event: any) => handlePressEnter(event.target.value)}

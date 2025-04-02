@@ -133,7 +133,7 @@ const Page: React.FC = () => {
 
   return (
     // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
-    <FormContext.Provider value={{ initValues, getValue }}>
+    <FormContext.Provider value={{ initValues, getValue, inForm: false }}>
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
         <div
           style={{

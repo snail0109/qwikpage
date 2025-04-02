@@ -10,6 +10,7 @@ import { createContext, useContext } from 'react';
 
 export const FormContext = createContext<{
   form?: FormInstance;
+  inForm: boolean;
   initValues: (type: string, name: string, value: any) => void;
   getValue: (name: string) => any;
 } | null>(null);
@@ -21,6 +22,7 @@ export const useFormContext = () => {
     // message.warning('表单项必须放在Form组件、SearchForm组件或者GridForm组件内');
     return {
       form: null,
+      inForm: false,
       initValues() { },
       getValue() { return null; },
     };

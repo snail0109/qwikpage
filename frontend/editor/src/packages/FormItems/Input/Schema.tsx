@@ -238,5 +238,13 @@ export default {
       value: 'onPressEnter',
       name: '回车事件',
     },
+    {
+      name: 'setValue',
+      title: '赋值',
+    },
+    {
+      name: 'getValue',
+      title: '获取值',
+    }
   ],
 };

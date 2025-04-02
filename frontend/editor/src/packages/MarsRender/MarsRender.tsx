@@ -165,7 +165,6 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
         <Component
           id={item.id}
           type={item.type}
-          inForm={item.inForm}
           formItemValue={formItemData[item.id]}
           config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
           elements={item.elements || []}
