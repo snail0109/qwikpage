@@ -22,6 +22,7 @@
     "@tauri-apps/plugin-process": "~2",
     "@tauri-apps/plugin-store": "~2",
     "@tauri-apps/plugin-updater": "~2",
+    "@tauri-apps/plugin-http": "~2",
     "@xyflow/react": "^12.3.0",
     "bytemd": "^1.21.0",
     "css": "^3.0.0",

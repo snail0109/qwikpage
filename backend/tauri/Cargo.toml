@@ -46,6 +46,7 @@ tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
+tauri-plugin-http = {version = "2", features = ["unsafe-headers"] }
 # tauri-plugin-fs = { version = "2.0.0", features = ["watch"] }
 tauri-plugin-single-instance = "2"
 zip = "2.2.2"

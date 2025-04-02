@@ -29,3 +29,4 @@ frontend/**/*/node_modules
 backend/target
 target
 gen
+backend/tauri/gen/schemas
