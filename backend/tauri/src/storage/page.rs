@@ -1,3 +1,4 @@
+use crate::manager::preference_manager::PreferencesManager;
 use crate::storage::response::ErrorResponse;
 use crate::types::page::{PageAddParams, PageCopyParams, PageList, PageUpdateParams};
 use crate::utils::datetime::get_current_time;
@@ -10,8 +11,6 @@ use std::fs;
 use std::io::{self, ErrorKind};
 use std::path::PathBuf;
 use uuid::Uuid;
-
-use super::config::Config;
 
 pub struct PageConfig {}
 
@@ -37,7 +36,7 @@ impl PageConfig {
     }
 
     pub fn get_page_dir(project_id: &String) -> PathBuf {
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let page_dir: PathBuf = root_dir.join(project_id).join("pages");
         page_dir
     }

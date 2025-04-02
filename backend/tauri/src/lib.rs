@@ -4,6 +4,7 @@ mod services;
 mod storage;
 mod types;
 mod utils;
+mod manager;
 
 use crate::{
     services::{

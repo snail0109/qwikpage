@@ -4,6 +4,7 @@ use std::io::ErrorKind;
 use std::path::Path;
 use std::fs;
 
+use crate::manager::preference_manager::PreferencesManager;
 use crate::types::group::GroupConfig;
 use crate::types::project::{MenuMode, MenuThemeColor, Project, ProjectAddParams, ProjectLayout, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::datetime::get_current_time;
@@ -11,7 +12,6 @@ use crate::utils::dirs::get_default_build_path;
 use crate::utils::file::is_valid_file;
 use crate::utils::paginate;
 
-use super::config::Config;
 use super::resource::ResourceConfig;
 
 // 项目配置文件
@@ -48,7 +48,7 @@ impl Project {
     }
 
     pub fn save(&self) -> Result<bool, Error> {
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let project_dir_path = root_dir.join(self.id.clone());
         if !project_dir_path.exists() {
             fs::create_dir_all(&project_dir_path)?;
@@ -60,7 +60,7 @@ impl Project {
     }
 
     pub fn load(project_id: String) -> Result<Self, String> {
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let project_file = root_dir.join(project_id).join(PROJECT_CONFIG_FILE);
         log::info!("加载项目配置文件: {:#?}", project_file);
         match fs::read_to_string(&project_file) {
@@ -110,7 +110,7 @@ impl Project {
         group_id: String,
         logo_url: String,
     ) -> Result<bool, Error> {
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let project_dir = root_dir.join(&project_id);
         log::info!("删除项目:{:#?}", project_dir);
         tokio::fs::remove_dir_all(project_dir).await?;
@@ -129,7 +129,7 @@ impl Project {
 
     pub fn count_pages_in_project(project_id: &str) -> usize {
         log::debug!("ProjectStotage::count_pages_in_project: 统计项目页面数量: {}", project_id);
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let page_dir = root_dir.join(&project_id).join("pages");
         // 目录不存在则返回 0
         if !page_dir.exists() {
@@ -153,7 +153,7 @@ impl Project {
 
     pub fn get_project_list_by_option(keyword: Option<String>) -> Result<Vec<ProjectSummary>, String> {
         log::debug!("ProjectStorage::get_project_list_by_option : 根据项目名称查询项目列表, 项目名称({:?})", keyword);
-        let root_dir = &Config::global().preferences().get_project_path();
+        let root_dir = &PreferencesManager::get_project_path();
         let mut project_list = Vec::new();
 
         if let Ok(entries) = fs::read_dir(&root_dir) {
@@ -225,7 +225,7 @@ pub fn paginated_query_project_list(
         "分页查询项目列表, page_num: {}, page_size: {}, keyword: {:?}",
         page_num, page_size, keyword
     );
-    let root_dir = &Config::global().preferences().get_project_path();
+    let root_dir = &PreferencesManager::get_project_path();
     let mut project_list = Vec::new();
 
     if let Ok(entries) = fs::read_dir(&root_dir) {
@@ -271,7 +271,7 @@ pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
     let project_id = uuid::Uuid::new_v4().to_string();
     let group_id = params.group_id.clone();
     log::info!("新增项目, 项目ID({})", &project_id);
-    let root_dir = &Config::global().preferences().get_project_path();
+    let root_dir = &PreferencesManager::get_project_path();
     let project_dir_path = root_dir.join(project_id.clone());
     if !project_dir_path.exists() {
         fs::create_dir_all(&project_dir_path)?;

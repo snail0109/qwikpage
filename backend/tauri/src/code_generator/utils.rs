@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use crate::error::{CommonError, Result};
-use crate::storage::config::Config;
+use crate::manager::preference_manager::PreferencesManager;
 use futures::future::BoxFuture;
 use log::info;
 use tokio::fs as async_fs;
@@ -105,7 +105,7 @@ pub async fn export_resources(
     public_dir_name: &str,
 ) -> Result<()> {
     // 获取项目资源目录
-    let config_path = Config::global().preferences().get_project_path();
+    let config_path = PreferencesManager::get_project_path();
     let prj_res_dir = config_path.join(&project_id).join("resources");
 
     if !prj_res_dir.exists() {

@@ -3,6 +3,7 @@ use chrono::Utc;
 use log::info;
 use sanitize_filename::sanitize;
 
+use crate::manager::preference_manager::PreferencesManager;
 use crate::types::resource::{
     DeleteResource, OperResourceGroupParams, RenameResource, ResourceGroupInfo, ResourceInfo,
     ResourceType, UploadParams, UploadResourceParams,
@@ -13,8 +14,6 @@ use futures::future::join_all;
 use log::error;
 use std::path::{Path, PathBuf};
 use tokio::fs::{create_dir_all, read_dir, remove_dir_all, rename};
-
-use super::config::Config;
 
 pub struct ResourceConfig {}
 
@@ -192,9 +191,7 @@ impl ResourceConfig {
     // 添加项目临时logo资源
     pub async fn upload_project_resource(params: UploadResourceParams) -> Result<PathBuf, Error> {
         // 构建项目资源目录路径
-        let root_dir = Config::global()
-            .preferences()
-            .get_project_path()
+        let root_dir = PreferencesManager::get_project_path()
             .join("project_logo");
         log::info!("项目资源目录路径: {:?}", root_dir);
         // temp_res_dir 拼接当前时间戳
@@ -265,7 +262,7 @@ async fn get_res_type_root_dir(
     project_id: &String,
     resource_type: &ResourceType,
 ) -> Result<PathBuf, Error> {
-    let root_dir = Config::global().preferences().get_project_path();
+    let root_dir = PreferencesManager::get_project_path();
     let prj_res_dir =
         create_directory_if_not_exists(root_dir.join(project_id).join("resources")).await?;
     let res_root_dir =
