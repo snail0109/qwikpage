@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Form, Input, InputNumber, Radio, Select, Switch, Slider, FormInstance, Tooltip, Popover } from 'antd';
-import * as icons from '@ant-design/icons';
+import * as icons from '@qwikpage/icons';
 import { QuestionCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { SchemaType } from '@/packages/types';
 import MColorPicker from '../ColorPicker';
@@ -9,6 +9,7 @@ import InputSelect from '../InputSelect/InputSelect';
 import InputPx from '../StyleConfig/InputPx';
 import styles from './index.module.less';
 import { usePageStore } from '@/stores/pageStore';
+import { renderIconDefinitionToSVGElement } from '@qwikpage/icons/es/helpers';
 
 // 如果没有设置label，则独占一行
 const formLayoutFull = {
@@ -121,19 +122,31 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
         } else if (item.type === 'Icons') {
           // 获取所有的antd图标，动态渲染到下拉框中
           const iconsList: { [key: string]: any } = icons;
+          console.log('iconsList', iconsList)
           FormControl = (
             <Select placeholder="请选择菜单图表" showSearch allowClear>
               {Object.keys(icons)
                 .filter((item) => !['default', 'createFromIconfontCN', 'getTwoToneColor', 'setTwoToneColor', 'IconProvider'].includes(item))
                 .map((key) => {
+                  const svgHTMLString = renderIconDefinitionToSVGElement(iconsList[key], {
+                    extraSVGAttrs: { width: '1em', height: '1em', fill: 'currentColor' },
+                  })
                   return (
                     <Select.Option value={key} key={key}>
-                      {React.createElement(iconsList[key], {
+                      {/* {React.createElement(iconsList[key], {
                         style: {
                           fontSize: '18px',
                           verticalAlign: 'middle',
                         },
-                      })}
+                      })} */}
+                      <span
+                        className='anticon'
+                        style={{
+                          fontSize: '18px',
+                          verticalAlign: 'middle',
+                        }}
+                        dangerouslySetInnerHTML={{ __html: svgHTMLString }}
+                      />
                     </Select.Option>
                   );
                 })}
