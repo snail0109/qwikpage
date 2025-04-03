@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useState, useRef } from "react";
-import { Form, Modal, Tabs, ConfigProvider, Button } from "antd";
+import { Form, Modal, Tabs, ConfigProvider, Button, Spin } from "antd";
 import type { TabsProps } from "antd";
 import BaseSetting from "./BaseSetting";
 import ReturnStructure from "./ReturnStructure";
@@ -54,6 +54,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   }));
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // 添加 loading 状态
   const apiTestModalRef = useRef<{ showModal: (data?: any) => void }>();
 
   // 初始化接口配置数据
@@ -141,6 +142,8 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
   const handleApiTest = async () => {
+    setLoading(true); // 开始加载
+    
     const apiConfig: ApiConfig = form.getFieldsValue();
     const { apiUrl, method, contentType, isCors, params } = apiConfig;
 
@@ -171,6 +174,8 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
         error: true,
         message: error.message || "请求失败"
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -258,7 +263,12 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Button color="primary" variant="outlined" onClick={handleApiTest}>
+      <Button 
+        color="primary" 
+        variant="outlined" 
+        onClick={handleApiTest}
+        disabled={loading} // 在加载时禁用按钮
+      >
         测试
       </Button>
       <div>
@@ -289,9 +299,11 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
             },
           }}
         >
-          <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
-            <Tabs defaultActiveKey="1" items={items} size="small" />
-          </Form>
+          <Spin spinning={loading} tip="请求测试中...">
+            <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
+              <Tabs defaultActiveKey="1" items={items} size="small" />
+            </Form>
+          </Spin>
         </ConfigProvider>
       </Modal>
       {/* 接口设置 */}
