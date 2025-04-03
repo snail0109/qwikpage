@@ -262,7 +262,7 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
   try {
     // TODO 需要处理组件方法的参数
     const isSingle = isString(data) || isArray(data);
-    const result = await ref?.[action.method]?.({ ...action?.params, ...data });
+    const result = await ref?.[action.method]?.(isSingle ? data : { ...action?.params, ...data });
     if (typeof result === 'boolean') {
       if (result) {
         execAction(next?.success || next, data);
