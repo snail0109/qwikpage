@@ -1,9 +1,8 @@
 import { Suspense, lazy, memo, useEffect, useState } from 'react';
-import { ConfigProvider, Flex, Form, Tabs } from 'antd';
+import { ConfigProvider, Form, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import { usePageStore } from '@/stores/pageStore';
-import { CheckOutlined, CopyOutlined, Html5TwoTone } from '@ant-design/icons';
 import ConfigSvg from '@/assets/icons/config.svg?react';
 import { message } from '@/utils/AntdGlobal';
 import { defaultsDeep } from 'lodash-es';

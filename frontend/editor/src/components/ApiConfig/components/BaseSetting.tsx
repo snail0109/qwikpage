@@ -129,12 +129,10 @@ const SettingForm = function () {
                     )}
                 </Form.List>
             </Form.Item>
-            {/* <Form.Item name="sendOn" extra={'用表达式来设置该请求的发送条件'} label="发送条件">
-        <Input />
-      </Form.Item> */}
-
-            <Form.Item label="开启代理" name="isCors" valuePropName="checked">
-                <Switch />
+            <Form.Item label="开启代理">
+                <Form.Item name="isCors" valuePropName="checked" noStyle>
+                    <Switch />
+                </Form.Item>
                 <span className={styles.corsExtra}>开启接口代理对解决跨域问题很有用</span>
             </Form.Item>
         </>

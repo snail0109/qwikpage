@@ -35,13 +35,13 @@ const ApiTestModal = (props: any, ref: any) => {
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
   loader.config({
     paths: {
-      vs: `/monaco-editor/0.50.0/min/vs`,
+      vs: window.location.origin + '/monaco-editor/0.50.0/min/vs'
     },
     "vs/nls": { availableLanguages: { "*": "zh-cn" } },
   });
 
   return (
-    <Modal wrapClassName={styles.apiSettingModal} width={"597px"} title="测试" open={open} onCancel={handleCancel}>
+    <Modal wrapClassName={styles.apiSettingModal} width={"800px"} title="测试" open={open} onCancel={handleCancel}>
       <ConfigProvider
         theme={{
           token: {
