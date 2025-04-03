@@ -10,6 +10,7 @@ use std::fs::{self, File};
 use std::io::Write;
 
 use crate::constant;
+use crate::templates::{get_components, get_store, get_types, get_utils};
 
 // 生成路由文件
 pub fn gen_router(
@@ -47,6 +48,9 @@ pub fn init_dirs(output_dir: &Path) -> Result<(), Error> {
         "src/components",
         "src/router",
         "src/views",
+        "src/stores",
+        "src/types",
+        "src/utils",
     ];
     Ok(for dir in dirs {
         fs::create_dir_all(output_dir.join(dir))?;
@@ -55,7 +59,13 @@ pub fn init_dirs(output_dir: &Path) -> Result<(), Error> {
 
 // 初始化一些默认文件
 pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> Result<(), Error> {
-    let temp_files = constant::template_files();
+    let mut temp_files = Vec::new();
+    temp_files.extend(constant::template_files());
+    temp_files.extend(get_components());
+    temp_files.extend(get_store());
+    temp_files.extend(get_types());
+    temp_files.extend(get_utils());
+    // let temp_files = constant::template_files();
     Ok(for file in temp_files {
         let file_path = output_dir.join(&file.filename);
         if let Some(parent) = file_path.parent() {
@@ -81,7 +91,14 @@ pub fn generate_package_json(
         "dependencies": {
             "ant-design-vue": "^4.2.6",
             "vue": "^3.5.13",
-            "vue-router": "^4.5.0"
+            "vue-router": "^4.5.0",
+            "dayjs": "^1.11.10",
+            "lodash-es": "^4.17.21",
+            "pinia": "^3.0.1",
+            "qs": "^6.12.1",
+            "axios": "^0.27.2",
+            "copy-to-clipboard": "^3.3.3",
+            "@qwikpage/icons": "^0.0.1"
         },
         "devDependencies": {
             "@tsconfig/node22": "^22.0.0",
@@ -89,10 +106,13 @@ pub fn generate_package_json(
             "@vitejs/plugin-vue": "^5.2.1",
             "@vitejs/plugin-vue-jsx": "^4.1.1",
             "@vue/tsconfig": "^0.7.0",
+            "npm-run-all2": "^7.0.2",
             "typescript": "~5.7.3",
             "vite": "^6.1.0",
             "vite-plugin-vue-devtools": "^7.7.2",
-            "vue-tsc": "^2.2.2"
+            "vue-tsc": "^2.2.2",
+            "@types/lodash-es": "^4.17.12",
+            "@types/qs": "^6.9.15"
         }
     });
     artifacts.push(write_file(

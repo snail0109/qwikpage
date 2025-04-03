@@ -1,5 +1,6 @@
 mod constant;
 mod utils;
+pub mod templates;
 
 use anyhow::Error;
 use code_core::ffi::result_to_cstring;
@@ -11,18 +12,22 @@ use handlebars::{to_json, Handlebars};
 use serde_json::Map;
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use std::process::Command;
 use std::thread;
 use utils::{
     gen_router, generate_package_json, init_dirs, init_files, register_helpers,
     register_partial, write_file,
 };
 
-
 struct VueGenerator {
     page_list: Vec<Page>,
     output_dir: PathBuf,
     reg: Handlebars<'static>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct FileTemplate {
+    pub filename: String,
+    pub content: String,
 }
 
 impl VueGenerator {

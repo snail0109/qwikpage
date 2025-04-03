@@ -1,3 +1,5 @@
+use crate::FileTemplate;
+
 pub const VITE_CONFIG: &str = r#"
 import { fileURLToPath, URL } from 'node:url'
 
@@ -96,6 +98,41 @@ pub const DTS: &str = r#"
 
 pub const APP_VUE: &str = r#"
 <script setup lang="ts">
+import { provide } from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/stores";
+import { getInitValue } from "@/utils/util";
+import type { FormContextType } from '@/types';
+
+const { pageState } = storeToRefs(appStore.page);
+const { setFormItemData } = appStore.page;
+
+const initValues = (type: string, name: string | number | (string | number)[], value: any) => {
+  if (name) {
+    const initValue = getInitValue(type, value);
+    setFormItemData({
+      name,
+      value: initValue,
+    });
+  }
+};
+
+const getValue = (name: string) => {
+  const formItemData = pageState.value.page.pageData.formItemData;
+  const value = formItemData[name];
+  console.log("普通控件取值打印 [name]: value", `[${name}]: `, value)
+  return value;
+};
+
+const useFormContext = (): FormContextType => {
+  return {
+    initValues,
+    getValue,
+    inForm: '',
+  };
+};
+
+provide("useFormContext", useFormContext);
 </script>
 
 <template>
@@ -119,15 +156,26 @@ pub const APP_VUE: &str = r#"
 "#;
 
 pub const MAIN: &str = r#"
+
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import Antd from 'ant-design-vue';
+import { registerStore } from '@/stores';
 import 'ant-design-vue/dist/reset.css';
 import router from './router';
+import { install } from '@/components';
 
 const app = createApp(App);
 app.use(Antd);
 app.use(router);
+
+// 注册pinia store
+app.use(createPinia());
+registerStore();
+
+// 注册components组件
+install(app);
 app.mount('#app');
 "#;
 
@@ -220,12 +268,6 @@ call npm run dev
 pause
 
 "#;
-
-#[derive(Debug)]
-pub struct FileTemplate {
-    pub filename: String,
-    pub content: String,
-}
 
 pub fn template_files() -> [FileTemplate; 10] {
     [
