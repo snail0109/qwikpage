@@ -24,8 +24,9 @@ const VariableSetting = (_: any, ref: any) => {
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
   loader.config({
     paths: {
-      vs: window.location.origin + '/monaco-editor/0.52.2/min/vs',
+      vs: window.location.origin + '/monaco-editor/0.50.0/min/vs',
     },
+    'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
   });
 
   // 暴露方法

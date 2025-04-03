@@ -5,7 +5,7 @@ import { usePageStore } from "@/stores/pageStore";
 import styles from "../index.module.less";
 import { isNotEmpty } from "@/packages/utils/util";
 
-const ApiTestModal = (props: any, ref: any) => { 
+const ApiTestModal = (props: any, ref: any) => {
   const editorRef = useRef<any>(null);
   const theme = usePageStore((state) => state.theme);
   const [form] = Form.useForm();
@@ -35,7 +35,7 @@ const ApiTestModal = (props: any, ref: any) => {
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
   loader.config({
     paths: {
-      vs: `/monaco-editor/0.52.2/min/vs`,
+      vs: `/monaco-editor/0.50.0/min/vs`,
     },
     "vs/nls": { availableLanguages: { "*": "zh-cn" } },
   });
