@@ -1,7 +1,7 @@
 import VariableBind from "@/components/VariableBind/VariableBind";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Form, Radio, Input, Switch, Space, Col, Row } from "antd";
-import styles from '../index.module.less';
+import styles from "../index.module.less";
 
 const SettingForm = function () {
     const formLayout = {
@@ -14,7 +14,7 @@ const SettingForm = function () {
                 <Input />
             </Form.Item>
             <Row gutter={80}>
-                <Col span={12} >
+                <Col span={12}>
                     <Form.Item
                         label="接口名称"
                         name="name"
@@ -27,7 +27,7 @@ const SettingForm = function () {
                         <Input placeholder="请输入接口中文名称，eg: 用户列表" maxLength={20} showCount />
                     </Form.Item>
                 </Col>
-                <Col span={12} >
+                <Col span={12}>
                     <Form.Item
                         label="请求方式"
                         name="method"
@@ -47,21 +47,17 @@ const SettingForm = function () {
                     </Form.Item>
                 </Col>
             </Row>
-            <Form.Item label="接口地址" extra="支持模板语法：${id}，前提是事件流中有该字段。">
-                <Space direction="vertical" style={{ width: "100%" }}>
-                    <Form.Item
-                        label="STG地址"
-                        name="stgApi"
-                        noStyle
-                        rules={[
-                            {
-                                required: true,
-                            },
-                        ]}
-                    >
-                        <Input placeholder="http://mars-api.marsview.cc/api/user" />
-                    </Form.Item>
-                </Space>
+            <Form.Item
+                label="接口地址"
+                name="apiUrl"
+                rules={[
+                    {
+                        required: true,
+                    },
+                ]}
+                extra="支持模板语法：${id}，前提是事件流中有该字段。"
+            >
+                <Input placeholder="http://mars-api.marsview.cc/api/user" />
             </Form.Item>
             <Row gutter={80}>
                 <Col span={12}>
@@ -94,23 +90,31 @@ const SettingForm = function () {
                 </Col>
             </Row>
 
-
             <Form.Item label="发送参数" wrapperCol={{ span: 24 }}>
                 <Form.List name="params">
                     {(fields, { add, remove }) => (
                         <div style={{ maxHeight: 180, overflowY: "auto" }}>
                             {fields.map(({ name }, index) => (
                                 <div
-                                    style={{ marginBottom: fields.length === index + 1 ? 0 : 10, alignItems: "center", display: "flex", gap: 10, paddingRight: index === 0 ? 38 : 0 }}
+                                    style={{
+                                        marginBottom: fields.length === index + 1 ? 0 : 10,
+                                        alignItems: "center",
+                                        display: "flex",
+                                        gap: 10,
+                                        paddingRight: index === 0 ? 38 : 0,
+                                    }}
                                     key={`header-${index}`}
                                 >
-                                    <Form.Item name={[name, "key"]} noStyle >
+                                    <Form.Item name={[name, "key"]} noStyle>
                                         <Input placeholder="请输入参数名" />
                                     </Form.Item>
                                     <Form.Item name={[name, "value"]} noStyle>
                                         <VariableBind placeholder="请输入参数值" />
                                     </Form.Item>
-                                    <PlusOutlined className={styles.variableIcon} onClick={() => add({ key: "", value: "" })} />
+                                    <PlusOutlined
+                                        className={styles.variableIcon}
+                                        onClick={() => add({ key: "", value: "" })}
+                                    />
                                     {index > 0 && (
                                         <MinusOutlined
                                             className={styles.variableIcon}
@@ -129,7 +133,7 @@ const SettingForm = function () {
         <Input />
       </Form.Item> */}
 
-            <Form.Item label="开启代理" name="isCors">
+            <Form.Item label="开启代理" name="isCors" valuePropName="checked">
                 <Switch />
                 <span className={styles.corsExtra}>开启接口代理对解决跨域问题很有用</span>
             </Form.Item>

@@ -50,21 +50,21 @@ export default () => {
     },
     {
       title: "URL",
-      dataIndex: "stgApi",
-      key: "stgApi",
+      dataIndex: "apiUrl",
+      key: "apiUrl",
     },
     {
       title: "操作",
       key: "action",
       width: 120,
       align: "center",
-      render: (event, row) => (
+      render: (_, row) => (
         <div style={{ display: 'flex', alignItems: "center" }}>
-          <Button type="link" onClick={() => handleEdit(event, row)}>
+          <Button type="link" onClick={() => handleEdit(row)}>
             修改
           </Button>
           <Divider type="vertical" />
-          <Button type="link" onClick={() => handleRemove(event, row.id)}>
+          <Button type="link" onClick={() => handleRemove(row.id)}>
             删除
           </Button>
         </div>
@@ -84,14 +84,12 @@ export default () => {
   };
 
   // 修改接口
-  const handleEdit = (event: React.MouseEvent, item: ApiType) => {
-    event.preventDefault();
+  const handleEdit = (item: ApiType) => {
     modalRef.current?.showModal(item.id);
   };
 
-  // 删除删除
-  const handleRemove = (event: React.MouseEvent, id: string) => {
-    event.preventDefault();
+  // 删除接口
+  const handleRemove = (id: string) => {
     removeApi(id);
   };
 
@@ -103,11 +101,11 @@ export default () => {
   return (
     <>
       <div className={styles.apiConfigHeader}>
-        <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
+        <Button type="link" icon={<PlusOutlined />} onClick={handleAdd}>
           新增
         </Button>
         <Divider type="vertical" />
-        <Button type="link" icon={<SettingOutlined />} onClick={() => handleInterceptors()}>
+        <Button type="link" icon={<SettingOutlined />} onClick={handleInterceptors}>
           全局拦截器
         </Button>
       </div>

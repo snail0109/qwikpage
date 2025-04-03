@@ -8,6 +8,7 @@ import ApiTestModal from "./ApiTestModal";
 import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
+import { fetch } from '@tauri-apps/plugin-http';
 
 export type SettingModalProp = {
   update?: (id: string) => void;
@@ -26,7 +27,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   // 初始化接口配置数据
   const initValue = {
     method: "GET",
-    url: "",
+    apiUrl: "",
     sourceType: "json",
     params: [{ key: "", value: "" }],
     contentType: "application/json",
@@ -105,54 +106,66 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   }
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
-  const handleApiTest = () => {
+  const handleApiTest = async () => {
     // 获取当前页面的接口配置数据
     const apiConfig = form.getFieldsValue();
 
+    debugger
+
+    const response = await fetch("https://672971b56d5a4901b6d248.mockapi.io/api/v1/page", {
+      method: "GET",
+      headers: {
+      "Content-Type": "application/json",
+      },
+    })
+      if (response.ok){
+      const data = await response.json ();
+      console.log("测试数据", data);
+      }
     apiTestModalRef.current?.showModal();
   }
 
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button color="primary" variant="outlined" onClick={handleApiTest}>
-          测试
+      <Button color="primary" variant="outlined" onClick={handleApiTest}>
+        测试
+      </Button>
+      <div>
+        <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
+          取消
         </Button>
-        <div>
-          <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
-            取消
-          </Button>
-          <Button type="primary" onClick={handleOk}>
-            确定
-          </Button>
-        </div>
+        <Button type="primary" onClick={handleOk}>
+          确定
+        </Button>
       </div>
+    </div>
   );
-  
+
 
   return (
     <>
-    <Modal
-      wrapClassName={styles.apiSettingModal}
-      width={"800px"}
-      title="接口配置"
-      open={open}
-      onCancel={handleCancel}
-      footer={customFooter}
-    >
-      <ConfigProvider
-        theme={{
-          token: {
-            fontSize: 12,
-          },
-        }}
+      <Modal
+        wrapClassName={styles.apiSettingModal}
+        width={"800px"}
+        title="接口配置"
+        open={open}
+        onCancel={handleCancel}
+        footer={customFooter}
       >
-        <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
-          <Tabs defaultActiveKey="1" items={items} size="small" />
-        </Form>
-      </ConfigProvider>
-    </Modal>
-    {/* 接口设置 */}
-    <ApiTestModal ref={apiTestModalRef}></ApiTestModal>
+        <ConfigProvider
+          theme={{
+            token: {
+              fontSize: 12,
+            },
+          }}
+        >
+          <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
+            <Tabs defaultActiveKey="1" items={items} size="small" />
+          </Form>
+        </ConfigProvider>
+      </Modal>
+      {/* 接口设置 */}
+      <ApiTestModal ref={apiTestModalRef}></ApiTestModal>
     </>
   );
 };

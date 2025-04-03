@@ -205,6 +205,7 @@ export interface ApiType {
   id: string;
   name: string; //接口名称
   url: string;
+  apiUrl: string;
   stgApi: string;
   preApi: string;
   prdApi: string;
