@@ -14,6 +14,38 @@ export type SettingModalProp = {
   update?: (id: string) => void;
 };
 
+// 定义参数类型
+interface ParamType {
+  key: string;
+  value: string | { type: string; value: string };
+}
+
+// 定义简化后的参数类型
+interface SimplifiedParam {
+  key: string;
+  value: string;
+}
+
+// 定义 API 配置类型
+interface ApiConfig {
+  apiUrl: string;
+  method: string;
+  contentType: string;
+  isCors: boolean;
+  params?: ParamType[];
+  id?: string;
+  [key: string]: any;
+}
+
+// 定义请求选项类型
+interface FetchOptions {
+  method: string;
+  headers: Record<string, string>;
+  mode: RequestMode;
+  body?: string | FormData;
+  [key: string]: any;
+}
+
 const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const { apis, addApi, updateApi } = usePageStore((state) => ({
     apis: state.page.pageData.apis,
@@ -46,6 +78,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       isError: true,
     },
   };
+  
   useImperativeHandle(ref, () => ({
     showModal: (id?: string) => {
       // 初始化接口配置数据
@@ -81,6 +114,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       children: <ReturnTips />,
     },
   ];
+  
   // 保存
   async function handleOk() {
     const valid = await form.validateFields();
@@ -107,23 +141,120 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
   const handleApiTest = async () => {
-    // 获取当前页面的接口配置数据
-    const apiConfig = form.getFieldsValue();
+    const apiConfig: ApiConfig = form.getFieldsValue();
+    const { apiUrl, method, contentType, isCors, params } = apiConfig;
 
-    debugger
+    try {
+      // params为[{key: "333", value: {type: "static", value: "Dddd"}}],需要格式化
+      const simplifiedParams: SimplifiedParam[] = params?.map(param => ({
+        key: param.key,
+        value: typeof param.value === 'object' ? param.value.value : param.value
+      })) || [];
 
-    const response = await fetch("https://672971b56d5a4901b6d248.mockapi.io/api/v1/page", {
-      method: "GET",
-      headers: {
-      "Content-Type": "application/json",
-      },
-    })
-      if (response.ok){
-      const data = await response.json ();
-      console.log("测试数据", data);
+      // 构建请求配置
+      const { url, options } = buildFetchConfig(
+        apiUrl,
+        method,
+        contentType,
+        isCors,
+        simplifiedParams
+      );
+
+      console.log("请求 URL:", url);
+      console.log("请求配置:", options);
+      // 发送请求并处理响应
+      const response = await fetch(url, options);
+      await handleResponse(response, options.mode);
+    } catch (error: any) {
+      console.error("API 测试错误:", error);
+      apiTestModalRef.current?.showModal({
+        error: true,
+        message: error.message || "请求失败"
+      });
+    }
+  };
+
+  // 构建 fetch 请求配置
+  const buildFetchConfig = (
+    apiUrl: string,
+    method: string,
+    contentType: string,
+    isCors: boolean,
+    params: SimplifiedParam[]
+  ): { url: string; options: FetchOptions } => {
+    const headers: Record<string, string> = contentType === "multipart/form-data"
+      ? {}
+      : { "Content-Type": contentType };
+
+    const mode = isCors ? 'cors' : 'no-cors';
+    const options: FetchOptions = { method, headers, mode };
+
+    // 处理 URL 和请求体
+    let url = apiUrl;
+    if (method === "GET") {
+      url = appendQueryParams(apiUrl, params);
+    } else {
+      const body = buildRequestBody(contentType, params);
+      if (body) {
+        options.body = body;
       }
-    apiTestModalRef.current?.showModal();
-  }
+    }
+
+    return { url, options };
+  };
+
+  // 为 GET 请求添加查询参数
+  const appendQueryParams = (url: string, params: SimplifiedParam[]): string => {
+    if (!params.length) return url;
+
+    const queryParams = new URLSearchParams();
+    params.forEach(param => queryParams.append(param.key, param.value));
+    return `${url}?${queryParams.toString()}`;
+  };
+
+  // 根据内容类型构建请求体
+  const buildRequestBody = (
+    contentType: string,
+    params: SimplifiedParam[]
+  ): string | FormData | undefined => {
+    switch (contentType) {
+      case "application/json": {
+        const jsonBody: Record<string, string> = {};
+        params.forEach(param => { jsonBody[param.key] = param.value; });
+        return JSON.stringify(jsonBody);
+      }
+
+      case "multipart/form-data": {
+        const formData = new FormData();
+        params.forEach(param => formData.append(param.key, param.value));
+        return formData;
+      }
+
+      case "application/x-www-form-urlencoded": {
+        const urlParams = new URLSearchParams();
+        params.forEach(param => urlParams.append(param.key, param.value));
+        return urlParams.toString();
+      }
+    }
+  };
+
+  // 处理响应
+  const handleResponse = async (response: Response, mode: string): Promise<void> => {
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status} ${response.statusText}`);
+    }
+
+    if (mode === 'no-cors') {
+      apiTestModalRef.current?.showModal({
+        message: "请求已发送，但由于 no-cors 模式限制，无法读取响应内容"
+      });
+      return;
+    }
+
+    const data = await response.json();
+    console.log("测试数据", data);
+    apiTestModalRef.current?.showModal(data);
+  };
 
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -140,7 +271,6 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       </div>
     </div>
   );
-
 
   return (
     <>
