@@ -47,9 +47,5 @@ where
         self.save(&data)?;
         Ok(data)
     }
-
-    /// 获取存储路径
-    pub fn get_path(&self) -> &str {
-        &self.path
-    }
+    
 }
