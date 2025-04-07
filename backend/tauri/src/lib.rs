@@ -8,7 +8,7 @@ mod manager;
 
 use crate::{
     services::{
-        code_service, group_service, page_service, preference_service, preview_service,
+        code_service, project_group_service, page_service, preference_service, preview_service,
         project_service, resource_service, sys_service,
     },
     utils::{check_port_occupied, dirs::get_config_path, setup},
@@ -153,11 +153,10 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             // 分组
-            group_service::add_group,
-            group_service::edit_group,
-            group_service::delete_group,
-            group_service::load_groups,
-            group_service::load_groups_with_projects,
+            project_group_service::add_group,
+            project_group_service::edit_group,
+            project_group_service::delete_group,
+            project_group_service::load_groups_with_projects,
             // 项目
             project_service::get_project_list,
             project_service::add_project,

@@ -5,7 +5,7 @@ use std::path::Path;
 use std::fs;
 
 use crate::manager::preference_manager::PreferencesManager;
-use crate::types::group::GroupConfig;
+use crate::manager::project_group_manager::ProjectGroupManager;
 use crate::types::project::{MenuMode, MenuThemeColor, Project, ProjectAddParams, ProjectLayout, ProjectList, ProjectSummary, ProjectUpdateParams};
 use crate::utils::datetime::get_current_time;
 use crate::utils::dirs::get_default_build_path;
@@ -114,8 +114,7 @@ impl Project {
         let project_dir = root_dir.join(&project_id);
         log::info!("删除项目:{:#?}", project_dir);
         tokio::fs::remove_dir_all(project_dir).await?;
-        let mut config = GroupConfig::load()?;
-        if let Err(e) = config.remove_project_from_group(group_id.clone(), project_id.clone()) {
+        if let Err(e) = ProjectGroupManager::remove_project_from_current_group(group_id.clone(), project_id.clone()) {
             // 处理错误，例如记录日志或返回错误
             log::error!("从分组中删除项目失败: {}", e);
             return Err(anyhow::anyhow!(
@@ -286,13 +285,7 @@ pub fn add_project_inner(params: ProjectAddParams) -> Result<Project, Error> {
     );
     project.save()?;
 
-    // group_id 为 None 时，添加到默认分组
-    let mut config = GroupConfig::load().map_err(|e| {
-        log::error!("加载分组配置文件失败: {}", e);
-        anyhow::anyhow!("加载分组配置文件失败: {}", e)
-    })?;
-    config
-        .add_group_project(group_id.clone(), project_id.clone())
+    ProjectGroupManager::add_project_to_current_group(group_id.clone(), project_id.clone())
         .map_err(|e| {
             log::error!(
                 "将项目({})添加到分组({})失败:{}",

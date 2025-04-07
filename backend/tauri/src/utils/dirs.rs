@@ -34,6 +34,10 @@ pub fn projects_group_path() -> PathBuf {
     get_config_path().join("projects.json")
 }
 
+pub fn projects_group_backup_path() -> PathBuf {
+    get_config_path().join("projects_backup.json")
+}
+
 pub fn init_preference() {
     let path = app_preferences_path();
     if !path.exists() {
