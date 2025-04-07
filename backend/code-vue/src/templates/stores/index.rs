@@ -1,16 +1,15 @@
 pub const STORE_INDEX: &str = r#"
-import type { App } from 'vue';
-import * as components from './components';
+import { usePageStore } from "./pageStore";
 
-export const install = function (app: App) {
-  Object.keys(components).forEach(key => {
-    const component = (components as Record<string, any>)[key];
-    if (component.install) {
-      app.use(component);
-    }
-  });
-  return app;
+type PageStoreType = ReturnType<typeof usePageStore>;
+
+interface AppStore {
+  page: PageStoreType
+}
+const appStore = {} as AppStore;
+export const registerStore = () => {
+  appStore.page = usePageStore()
 }
 
-export default { install };
+export default appStore;
 "#;

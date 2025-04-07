@@ -7,15 +7,13 @@ use code_core::ffi::result_to_cstring;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
 use code_core::types::page::Page;
 use code_core::types::route::RouteInfo;
-use code_core::{pinyin_name, CodeGenerator, TemplateData};
-use handlebars::{to_json, Handlebars};
-use serde_json::Map;
+use code_core::{pinyin_name, CodeGenerator};
+use handlebars::Handlebars;
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use std::thread;
 use utils::{
-    gen_router, generate_package_json, init_dirs, init_files, register_helpers,
-    register_partial, write_file,
+    gen_router, gen_view, generate_package_json, init_dirs, init_files, register_helpers,
+    register_partial,
 };
 
 struct VueGenerator {
@@ -106,62 +104,14 @@ impl CodeGenerator for VueGenerator {
         });
 
         // 处理页面数据
-        let page_data = &config.page_data;
-
-        // 处理模版数据
-        let template_data = match TemplateData::from_json(page_data) {
-            Ok(data) => data,
-            Err(e) => {
-                return Err(Error::msg(format!("Failed to parse template data: {}", e)));
-            }
-        };
-
-        let mut data = Map::new();
-        data.insert("components".to_string(), to_json(template_data.components));
-
-        // 替换模版变量
-        let output = match self.reg.render("views", &data) {
-            Ok(output) => output,
-            Err(e) => {
-                return Err(Error::msg(format!("Failed to render template: {}", e)));
-            }
-        };
         let file_name = format!("{}.vue", component);
-        let file_path = output_dir.join("src/views").join(file_name);
-        write_file(file_path.clone(), &output)?;
-        // 格式化文件
-        format_vue_file(file_path.clone());
+        let file_result = gen_view(output_dir.clone(), &file_name, config)?;
 
         Ok(GeneratedArtifact {
-            file_path: file_path.to_string_lossy().to_string(),
-            content: output,
+            file_path: file_result.file_path,
+            content: file_result.content,
         })
     }
-}
-
-fn format_vue_file(file_path: PathBuf) {
-    // 创建一个新线程来处理格式化
-    thread::spawn(move || {
-        // 使用标准库的 Command
-        let prettier_check = std::process::Command::new("npx")
-            .args(&["--no-install", "prettier", "--version"])
-            .output();
-        
-        if prettier_check.is_err() || !prettier_check.unwrap().status.success() {
-            eprintln!("Warning: Prettier not available, skipping code formatting");
-            return;
-        }
-        
-        let output = std::process::Command::new("npx")
-            .args(&["prettier", "--write", file_path.to_str().unwrap()])
-            .output();
-            
-        if let Err(e) = output {
-            eprintln!("Error formatting Vue file: {}", e);
-        } else if !output.unwrap().status.success() {
-            eprintln!("Prettier formatting failed");
-        }
-    });
 }
 
 #[no_mangle]

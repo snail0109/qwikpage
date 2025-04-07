@@ -4,13 +4,15 @@ use std::path::{Path, PathBuf};
 use anyhow::Error;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
 use code_core::types::route::RouteInfo;
+use code_core::types::page::Page;
 use handlebars::Handlebars;
-use serde_json::{Value};
+use serde_json::{self, json, Value};
 use std::fs::{self, File};
 use std::io::Write;
+use std::thread;
 
 use crate::constant;
-use crate::templates::{get_components, get_store, get_types, get_utils};
+use crate::templates::{get_components, get_store, get_types, get_utils, VIEW_TEMPLATE};
 
 // 生成路由文件
 pub fn gen_router(
@@ -26,6 +28,60 @@ pub fn gen_router(
     });
     let output = handlebars.render("router", &data)?;
     write_file(output_dir.join("src/router/index.ts"), &output)
+}
+
+// 生成视图内容
+pub fn gen_view(
+    output_dir: PathBuf,
+    file_name: &str,
+    page: &Page,
+) -> Result<GeneratedArtifact, Error> {
+    let file_path = output_dir.join("src/views").join(file_name);
+     // 创建一个自定义的 JSON 对象
+     let frontend_data = json!({
+        "id": page.id,
+        "name": page.name,
+        "path": page.path,
+        "remark": page.remark,
+        "pageData": page.page_data,
+    });
+     // 将 JSON 转换为字符串
+     let page_json = serde_json::to_string_pretty(&frontend_data)
+     .map_err(|e| anyhow::anyhow!("序列化失败: {}", e))?;
+    let replacement = format!("const pageInfo = {};", page_json);
+    let result = VIEW_TEMPLATE.replace("{{ pageInfo }}", &replacement);
+    write_file(file_path.clone(), &result)?;
+    format_vue_file(file_path.clone());
+    Ok(GeneratedArtifact {
+        file_path: file_path.to_string_lossy().to_string(),
+        content: result,
+    })
+}
+
+// 格式化 Vue 文件
+fn format_vue_file(file_path: PathBuf) {
+    // 创建一个新线程来处理格式化
+    thread::spawn(move || {
+        // 使用标准库的 Command
+        let prettier_check = std::process::Command::new("npx")
+            .args(&["--no-install", "prettier", "--version"])
+            .output();
+        
+        if prettier_check.is_err() || !prettier_check.unwrap().status.success() {
+            eprintln!("Warning: Prettier not available, skipping code formatting");
+            return;
+        }
+        
+        let output = std::process::Command::new("npx")
+            .args(&["prettier", "--write", file_path.to_str().unwrap()])
+            .output();
+            
+        if let Err(e) = output {
+            eprintln!("Error formatting Vue file: {}", e);
+        } else if !output.unwrap().status.success() {
+            eprintln!("Prettier formatting failed");
+        }
+    });
 }
 
 // 写文件
@@ -65,14 +121,26 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
     temp_files.extend(get_store());
     temp_files.extend(get_types());
     temp_files.extend(get_utils());
-    // let temp_files = constant::template_files();
-    Ok(for file in temp_files {
+    for file in temp_files {
         let file_path = output_dir.join(&file.filename);
+        let path_str = file_path.to_string_lossy();
+        if path_str.contains("src/components/") || 
+        path_str.contains("src\\components\\") {
+            // 检查文件是否已存在
+            if file_path.exists() {
+                println!("文件已存在，跳过: {}", file_path.display());
+                continue;
+            }
+        }
+        // 确保父目录存在
         if let Some(parent) = file_path.parent() {
             fs::create_dir_all(parent)?;
         }
+        // 写入文件并记录生成的文件
         artifacts.push(write_file(file_path, &file.content)?);
-    })
+    }
+
+    Ok(())
 }
 
 // 生成 package.json 文件
@@ -122,21 +190,26 @@ pub fn generate_package_json(
     Ok(())
 }
 
-
 // 注册自定义 helper
 pub fn register_partial(handlebars: &mut Handlebars) {
-    handlebars.register_template_string("views", include_str!("templates/views.hbs"))
+    handlebars
+        .register_template_string("views", include_str!("templates/views.hbs"))
         .unwrap();
     // 注册组件代码片段
-    handlebars.register_partial("qwikpageform", include_str!("templates/form.hbs"))
+    handlebars
+        .register_partial("qwikpageform", include_str!("templates/form.hbs"))
         .unwrap();
-    handlebars.register_partial("qwikpageinput", include_str!("templates/input.hbs"))
+    handlebars
+        .register_partial("qwikpageinput", include_str!("templates/input.hbs"))
         .unwrap();
-    handlebars.register_partial("qwikpagebutton", include_str!("templates/button.hbs"))
+    handlebars
+        .register_partial("qwikpagebutton", include_str!("templates/button.hbs"))
         .unwrap();
-    handlebars.register_partial("qwikpageflex", include_str!("templates/flex.hbs"))
+    handlebars
+        .register_partial("qwikpageflex", include_str!("templates/flex.hbs"))
         .unwrap();
-    handlebars.register_partial("qwikpagecheckbox", include_str!("templates/checkbox.hbs"))
+    handlebars
+        .register_partial("qwikpagecheckbox", include_str!("templates/checkbox.hbs"))
         .unwrap();
 }
 
@@ -188,7 +261,6 @@ pub fn style_helper(
     Ok(())
 }
 
-
 pub fn json_helper(
     h: &handlebars::Helper,
     _: &handlebars::Handlebars,
@@ -210,10 +282,11 @@ pub fn obj_to_props_helper(
     out: &mut dyn handlebars::Output,
 ) -> handlebars::HelperResult {
     let param = h.param(0).unwrap();
-    
+
     if let Value::Object(obj) = param.value() {
         // 创建一个不带引号的对象字符串表示
-        let props: Vec<String> = obj.iter()
+        let props: Vec<String> = obj
+            .iter()
             .map(|(k, v)| {
                 let value_str = match v {
                     Value::String(s) => format!("\"{}\"", s),
@@ -222,11 +295,11 @@ pub fn obj_to_props_helper(
                 format!("{}: {}", k, value_str)
             })
             .collect();
-        
+
         out.write(&format!("{{{}}}", props.join(", ")))?;
     } else {
         out.write("{}")?;
     }
-    
+
     Ok(())
 }
