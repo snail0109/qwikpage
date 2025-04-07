@@ -6,7 +6,7 @@ import { usePageStore } from '@/stores/pageStore';
 import VsEditor from '../VsEditor';
 import { getElement } from '@/utils/util';
 import styles from './variable.module.less';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, isEmpty } from 'lodash-es';
 import components from '@/config/components';
 
 const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, ref: any) => {
@@ -33,7 +33,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
         if (!element) return;
         element.elements?.map((item: any) => {
           const formItem = elementsMap[item.id]?.config.props.formItem;
-          if (formItem) {
+          if (formItem && formItem.name) {
             item.name = `${formItem.label}(${formItem.name})`;
           } else {
             item.name = '';
@@ -44,7 +44,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
           element.elements = element.elements.filter((item: any) => item.name);
         }
         list.push(element);
-      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !elementsMap[id].inForm) {
+      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !isEmpty(elementsMap[id].config.props.formItem) && !elementsMap[id].inForm) {
         // 收集不处于表单中的表单控件
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
