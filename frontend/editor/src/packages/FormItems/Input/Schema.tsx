@@ -36,6 +36,7 @@ export default {
           { label: '文本', value: 'text' },
           { label: '密码', value: 'password' },
         ],
+        defaultValue: 'text',
       },
     },
     {
