@@ -28,7 +28,7 @@ export interface ComItemType {
   type: string;
   name: string | number;
   parentId?: string;
-  inForm?: boolean;
+  inForm?: string | boolean;
   elements: ComItemType[];
   remoteUrl?: string;
   remoteConfigUrl?: string;
@@ -51,7 +51,7 @@ export type ComponentType<T = any> = {
   remoteConfigUrl?: string;
   remoteCssUrl?: string;
   parentId?: string;
-  inForm?: boolean; // 是否处于表单内
+  inForm?: string | boolean; // 是否处于表单内
   formItemValue?: any; // 表单项的value
   config: ConfigType<T>;
   // 属性中用于展示的事件，跟配置中的事件不同

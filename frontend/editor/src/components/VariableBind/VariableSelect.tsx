@@ -2,9 +2,10 @@ import { Button, Collapse, Form, Modal, Popover, Tree } from 'antd';
 import type { CollapseProps } from 'antd';
 import { forwardRef, memo, useCallback, useImperativeHandle, useState } from 'react';
 import { DownOutlined, NotificationOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { isString } from 'lodash-es';
 import { usePageStore } from '@/stores/pageStore';
 import VsEditor from '../VsEditor';
-import { getElement } from '@/utils/util';
+import { getElement, getParentForm } from '@/utils/util';
 import styles from './variable.module.less';
 import { cloneDeep, isEmpty } from 'lodash-es';
 import components from '@/config/components';
@@ -31,19 +32,27 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
       if (id.startsWith('SearchForm_') || id.startsWith('Form_') || id.startsWith('GridForm_') || id.startsWith('MarsTable_')) {
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
-        element.elements?.map((item: any) => {
-          const formItem = elementsMap[item.id]?.config.props.formItem;
-          if (formItem && formItem.name) {
-            item.name = `${formItem.label}(${formItem.name})`;
-          } else {
-            item.name = '';
-          }
-        });
-        // 排除不是表单的元素
-        if (element.elements) {
-          element.elements = element.elements.filter((item: any) => item.name);
-        }
+        element.elements = [];
         list.push(element);
+      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !isEmpty(elementsMap[id].config.props.formItem) && elementsMap[id].inForm) {
+        // 表单内的表单项
+        const { element }: any = getElement(cloneDeep(elements), id);
+        if (!element) return;
+        const { element: parentElement }: any = getParentForm(cloneDeep(elementsMap), elementsMap[id]);
+        if (!parentElement) {
+          return;
+        }
+        const targetForm = list.find(item => item.id === parentElement.id);
+        if (!targetForm) {
+          return;
+        }
+        const formItem = elementsMap[id]?.config.props.formItem;
+        if (formItem && formItem.name) {
+          targetForm?.elements.push({
+            ...element,
+            name: `${formItem.label}(${formItem.name})`,
+          })
+        }
       } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !isEmpty(elementsMap[id].config.props.formItem) && !elementsMap[id].inForm) {
         // 收集不处于表单中的表单控件
         const { element }: any = getElement(cloneDeep(elements), id);
@@ -200,7 +209,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
     } else if (node.inForm) {
       // 表单内的表单项
       const formItem = elementsMap[node.id]?.config.props.formItem;
-      form.setFieldValue('expression', `${beforeExpression} context.${node.parentId}.${formItem.name}`.trimStart());
+      form.setFieldValue('expression', `${beforeExpression} context.${isString(node.inForm) ? node.inForm : node.parentId}.${formItem.name}`.trimStart());
     } else {
       // 不在表单内的表单项
       form.setFieldValue('expression', `${beforeExpression} context.${node.id}`);

@@ -3,6 +3,7 @@ import { ComponentType, ComItemType } from '@/packages/types';
 import dayjs from 'dayjs';
 import parse from 'style-to-object';
 import { IMenuItem } from '@/types';
+import { isBoolean, isString } from 'lodash-es';
 
 /**
  * 生成组件ID
@@ -56,6 +57,59 @@ export const getElement = (elements: ComItemType[], id?: string): { element: Com
   }
   return { element: null, index: -1, elements: [] };
 };
+
+/**
+ * 递归查找组件
+ * element：返回当前元素
+ * index：返回当前元素在父级中的索引
+ * elements：返回父级列表
+ */
+export const getParentForm = (elementsMap: { [key: string]: ComponentType }, element: ComponentType): { element: ComItemType | null; index: number; elements: ComItemType[] } => {
+  // 直接根据id查找表单组件
+  const { inForm, id } = element;
+  if (inForm && isString(inForm)) {
+    const targetElement = elementsMap[inForm as string];
+    const { type, name, parentId, remoteUrl, remoteConfigUrl, remoteCssUrl } = targetElement;
+    return {
+      element: {
+        id,
+        type,
+        name,
+        parentId,
+        inForm,
+        remoteUrl,
+        remoteConfigUrl,
+        remoteCssUrl,
+        elements: [],
+      },
+      index: -1,
+      elements: [],
+    };
+  }
+  if (id.startsWith('SearchForm_') || id.startsWith('Form_') || id.startsWith('GridForm_')) {
+    const { type, name, parentId, remoteUrl, remoteConfigUrl, remoteCssUrl } = element;
+    return {
+      element: {
+        id,
+        type,
+        name,
+        parentId,
+        inForm,
+        remoteUrl,
+        remoteConfigUrl,
+        remoteCssUrl,
+        elements: [],
+      },
+      index: -1,
+      elements: [],
+    };
+  }
+  const parentElement = elementsMap[element.parentId as string];
+  if (parentElement) {
+    return getParentForm(elementsMap, parentElement);
+  }
+  return { element: null, index: -1, elements: [] };
+}
 
 /**
  * 解析CSS样式
@@ -354,9 +408,9 @@ export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: C
   if (!parentId) return false;
   const parentElement = elementsMap[parentId];
   if (!parentElement) return false;
-  const { type } = parentElement;
+  const { type, id } = parentElement;
   if (type === 'Form') {
-    return true;
+    return id;
   }
   const deep = deepth + 1;
   return judgeIfInForm(parentId, elementsMap, deep);
