@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Form, Input, InputNumber, Radio, Select, Switch, Slider, FormInstance, Tooltip, Popover } from 'antd';
 import * as icons from '@qwikpage/icons';
 import { QuestionCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
@@ -32,10 +32,59 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
     };
   });
 
-  if (attrs.length === 0) return <></>;
-
   const elementId = selectedElement?.id;
   const formItemId = selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined;
+
+  useEffect(() => {
+    if (!formItemId || !elementId) return;
+
+    // 准备要设置的表单值
+    const formValues = { formItem: {} };
+    let hasChanges = false;
+
+    // 获取当前元素的表单项配置
+    const formItemConfig = elementsMap[elementId]?.config?.props?.formItem;
+
+    // 处理labelCol配置
+    if (formItemConfig?.labelCol?.span !== undefined) {
+      formValues.formItem.labelCol = { span: formItemConfig.labelCol.span };
+      hasChanges = true;
+    } else {
+      // 如果当前元素没有配置，尝试获取父元素的配置
+      const parentId = elementsMap[elementId]?.parentId;
+      if (parentId && elementsMap[parentId]) {
+        const parentElementLabelCol = elementsMap[parentId].config.props.labelCol;
+        if (parentElementLabelCol?.span !== undefined) {
+          formValues.formItem.labelCol = { span: parentElementLabelCol.span };
+          hasChanges = true;
+        }
+      }
+    }
+
+    // 处理wrapperCol配置
+    if (formItemConfig?.wrapperCol?.span !== undefined) {
+      formValues.formItem.wrapperCol = { span: formItemConfig.wrapperCol.span };
+      hasChanges = true;
+    } else {
+      // 如果当前元素没有配置，尝试获取父元素的配置
+      const parentId = elementsMap[elementId]?.parentId;
+      if (parentId && elementsMap[parentId]) {
+        const parentElementWrapperCol = elementsMap[parentId].config.props.wrapperCol;
+        if (parentElementWrapperCol?.span !== undefined) {
+          formValues.formItem.wrapperCol = { span: parentElementWrapperCol.span };
+          hasChanges = true;
+        }
+      }
+    }
+
+    // 只有当有值需要设置时才调用setFieldsValue，避免不必要的渲染
+    if (hasChanges) {
+      form.setFieldsValue(formValues);
+    }
+  }, [formItemId, elementId, elementsMap, form]);
+
+  if (attrs.length === 0) return <></>;
+  console.log(attrs)
 
   // 根据type枚举
   return (
