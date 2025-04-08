@@ -5,6 +5,65 @@ import { cloneDeep } from 'lodash-es';
 import { createId, getElement, judgeIfInForm } from '@/utils/util';
 import { merge } from 'lodash-es';
 import storage from '@/utils/storage';
+
+/**
+ * 处理元素ID变更的函数
+ */
+function handleElementIdChange(state: PageState, oldId: string, newId: string) {
+  // 复制元素配置到新ID
+  state.page.pageData.elementsMap[newId] = {...state.page.pageData.elementsMap[oldId]};
+  state.page.pageData.elementsMap[newId].id = newId;
+  
+  // 递归更新elements中的ID及其引用
+  const updateElementsRecursive = (elements:ComponentType[]) => {
+    for (let i = 0; i < elements.length; i++) {
+      // 更新元素自身ID
+      if (elements[i].id === oldId) {
+        elements[i].id = newId;
+      }
+      
+      // 更新parentId引用
+      if (elements[i].parentId === oldId) {
+        elements[i].parentId = newId;
+      }
+      
+      // 更新inForm引用
+      if (elements[i].inForm === oldId) {
+        elements[i].inForm = newId;
+      }
+      
+      // 递归处理子元素
+      if (elements[i].elements && elements[i].elements.length > 0) {
+        updateElementsRecursive(elements[i].elements);
+      }
+    }
+  };
+  
+  updateElementsRecursive(state.page.pageData.elements);
+  
+  // 更新所有元素的parentId和inForm引用
+  Object.keys(state.page.pageData.elementsMap).forEach(key => {
+    const element = state.page.pageData.elementsMap[key];
+    if (element.parentId === oldId) {
+      element.parentId = newId;
+    }
+    
+    if (element.inForm === oldId) {
+      element.inForm = newId;
+    }
+  });
+  
+  // 删除旧的元素配置
+  delete state.page.pageData.elementsMap[oldId];
+  
+  // 如果当前选中的元素是被修改的元素，更新selectedElement
+  if (state.selectedElement && state.selectedElement.id === oldId) {
+    state.selectedElement.id = newId;
+  }
+  
+  return newId; // 返回新ID，方便后续使用
+}
+
 /**
  * 页面信息存储
  */
@@ -317,6 +376,22 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
     set(
       produce((state) => {
         state.isEdit = true; // 标记为编辑状态
+        
+        // 处理ID变更
+        if (payload.type === 'props' && payload.props.id && payload.props.id !== payload.id) {
+          const oldId = payload.id;
+          const newId = payload.props.id;
+          
+          // 调用ID变更处理函数
+          handleElementIdChange(state, oldId, newId);
+          
+          // 从props中删除id字段，避免后续处理再次使用
+          delete payload.props.id;
+          
+          // 更新payload.id为新ID，以便后续处理使用新ID
+          payload.id = newId;
+        }
+        
         const item = state.page.pageData.elementsMap[payload.id];
         // 属性修改
         if (payload.type === 'props') {

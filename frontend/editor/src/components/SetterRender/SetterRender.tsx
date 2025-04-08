@@ -32,7 +32,9 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
   });
 
   const elementId = selectedElement?.id;
+  
   const formItemId = selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined;
+  console.log("formItemId:", formItemId, "elementId:", elementId);
    
   if (attrs.length === 0) return <></>;
   // console.log(attrs)
@@ -42,7 +44,7 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {!formItemId && elementId && <Form.Item name={['formItem', 'name']} label="组件名称">
+      {!formItemId && elementId && <Form.Item name={'id'} label="组件名称">
         <Input defaultValue={elementId} />
       </Form.Item>}
       {formItemId && <Form.Item name={['formItem', 'name']} label="组件名称">
