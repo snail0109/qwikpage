@@ -30,7 +30,7 @@ export default {
     {
       type: 'RadioGroupBtn',
       label: '类型',
-      name: ['type'],
+      name: ['formWrap', 'type'],
       props: {
         options: [
           { label: '文本', value: 'text' },

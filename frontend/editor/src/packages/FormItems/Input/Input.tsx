@@ -84,10 +84,12 @@ const MInput = ({ id, type, formItemValue, config, onChange, onBlur, onPressEnte
     };
   });
 
+  const Com = config.props.formWrap?.type === 'password' ? Input.Password : Input;
+
   return (
     visible && (
       <Form.Item {...config.props.formItem} data-id={id} data-type={type}>
-        <Input
+        <Com
           {...omit(config.props.formWrap, ['prefixIcons', 'suffixIcons'])}
           disabled={disabled}
           variant={config.props.formWrap.variant || undefined}

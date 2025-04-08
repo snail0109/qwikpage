@@ -1,10 +1,9 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Form, Input, InputProps, FormItemProps } from 'antd';
-import * as icons from '@ant-design/icons';
 import { ComponentType } from '@materials/types';
-import { isNull } from '@materials/utils/util';
 import { useFormContext } from '@materials/utils/context';
 import omit from 'lodash-es/omit';
+import QIcon from '@materials/components/icons/QIcon';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -72,17 +71,17 @@ const MInput = ({ type, config, onChange, onBlur, onPressEnter }: ComponentType<
       },
     };
   });
-  const iconsList: { [key: string]: any } = icons;
+  const Com = config.props.formWrap?.type === 'password' ? Input.Password : Input;
   return (
     visible && (
       <Form.Item {...config.props.formItem}>
-        <Input
+        <Com
           {...omit(config.props.formWrap, ['prefixIcons', 'suffixIcons'])}
           disabled={disabled}
           variant={config.props.formWrap.variant || undefined}
           style={config.style}
-          prefix={config.props.formWrap.prefixIcons ? React.createElement(iconsList[config.props.formWrap.prefixIcons]) : null}
-          suffix={config.props.formWrap.suffixIcons ? React.createElement(iconsList[config.props.formWrap.suffixIcons]) : null}
+          prefix={config.props.formWrap.prefixIcons ? <QIcon name={config.props.formWrap.prefixIcons} /> : null}
+          suffix={config.props.formWrap.suffixIcons ? <QIcon name={config.props.formWrap.suffixIcons} /> : null}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={(event) => handleBlur(event.target.value)}
           onPressEnter={(event: any) => handlePressEnter(event.target.value)}
