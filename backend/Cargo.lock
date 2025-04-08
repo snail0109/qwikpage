@@ -742,6 +742,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "code-react"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "code-core",
+ "handlebars",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "code-vue"
 version = "0.1.0"
 dependencies = [

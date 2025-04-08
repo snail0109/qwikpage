@@ -1,5 +1,5 @@
 [workspace]
-members = ["tauri", "code-core", "code-vue"]
+members = ["tauri", "code-core", "code-vue", "code-react"]
 resolver = "2"
 
 [workspace.package]

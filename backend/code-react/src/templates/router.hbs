@@ -1,0 +1,21 @@
+import React from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+import { lazyLoad } from '@/components/LazyLoad';
+
+const router = [
+    {{#each routes}}
+    { 
+      path: '{{this.path}}', 
+      element: lazyLoad(React.lazy(() => import('{{this.component_path}}')))
+    },
+    {{#if @last}}
+    { 
+      path: '/', 
+      element: lazyLoad(React.lazy(() => import('{{this.component_path}}')))
+    },
+    {{/if}}
+    {{/each}}
+]
+
+
+export default createBrowserRouter(router);

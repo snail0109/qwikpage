@@ -89,9 +89,9 @@ export default function Category({ list }: { list: IProject[] }) {
                     label: "Vue",
                 },
                 {
-                    key: "rn",
+                    key: "react",
                     icon: <CodeIcon />,
-                    label: "React Native",
+                    label: "React",
                 },
                 {
                     key: "app",
@@ -112,7 +112,7 @@ export default function Category({ list }: { list: IProject[] }) {
         if (_key === "config") {
             return handleOpenProject(id);
         }
-        if (["rn", "vue", "app"].includes(_key)) {
+        if (["react", "vue", "app"].includes(_key)) {
             return handleExportProjectCode(id, _key).then(res => {
                 message.success("导出成功，请到本地查看");
             }).catch((error) => {

@@ -1,5 +1,5 @@
 pub const ACTION_INDEX: &str = r#"
-import {
+import type {
   ActionNode,
   ApiConfig,
   ConfirmAction,
@@ -10,12 +10,14 @@ import {
   NotificationAction,
   VariableAction,
 } from '@/types';
+import { isString, isArray } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
 import { handleApi } from './handleApi';
 import { usePageStore } from '@/stores/pageStore';
-import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate } from './util';
-import { Modal, message, notification } from '@/utils/AntdGlobal';
-import { defaultVariable } from '@/utils/util'
+import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate, defaultVariable } from './util';
+import { message, notification, Modal } from 'ant-design-vue';
+import request from './request';
+import router from '@/router';
 
 // 把工作流转换为链表结构，此算法需要进一步优化。
 function convertArrayToLinkedList(nodes: any, isSuccessBranch = true) {
@@ -203,9 +205,9 @@ const execAction = (node: any, params: any = {}) => {
     } else if (node.action.actionType === 'disable') {
       handleDisable(node, data);
     } else if (node.action.actionType === 'sendMessage') {
-      // handleSendMessage(node, data);
+      handleSendMessage(node, data);
     } else if (node.action.actionType === 'createNode') {
-      // handleCreateNode(node, data);
+      handleCreateNode(node, data);
     } else if (node.action.actionType === 'script') {
       handleRunScripts(node, data);
     }
@@ -258,7 +260,9 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
     return;
   }
   try {
-    const result = await ref?.[action.method]?.({ ...action?.params, ...data });
+    // TODO 需要处理组件方法的参数
+    const isSingle = isString(data) || isArray(data);
+    const result = await ref?.[action.method]?.(isSingle ? data : { ...action?.params, ...data });
     if (typeof result === 'boolean') {
       if (result) {
         execAction(next?.success || next, data);
@@ -356,17 +360,30 @@ const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any)
 const handleJumpLink = async ({ action, next }: ActionNode<JumpLinkAction>, data: any) => {
   const params = new URLSearchParams(data);
   if (action.jumpType === 'route') {
-    let url = action.url;
     if (params.size > 0) {
-      url += action.url.indexOf('?') > -1 ? '&' : '?' + params;
+      // 解析路径
+      const path = action.url.split('?')[0];
+      
+      // 合并所有查询参数
+      const query: any = {};
+      const allParams = new URLSearchParams(action.url.includes('?') ? action.url.split('?')[1] : '');
+      params.forEach((value, key) => allParams.append(key, value));
+      
+      // 转换为对象
+      allParams.forEach((value, key) => {
+        query[key] = value;
+      });
+      
+      router.push({ path, query });
+    } else {
+      router.push(action.url);
     }
-    // TODO
-    // router.navigate(url);
   } else if (action.jumpType === 'micro') {
-    if (!window.microApp) {
-      console.warn('跨服务跳转：当前页面不在微应用环境中，无法跳转');
-    }
-    window.microApp?.dispatch({ type: 'router', path: action.url, data });
+    // TODO 跨服务跳转
+    // if (!window.microApp) {
+    //   console.warn('跨服务跳转：当前页面不在微应用环境中，无法跳转');
+    // }
+    // window.microApp?.dispatch({ type: 'router', path: action.url, data });
   } else if (action.jumpType === 'link') {
     const url = `${action.url}${action.url.indexOf('?') > -1 ? '&' : '?'}${params}`;
     if (action.isNewWindow) {
@@ -392,11 +409,14 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
   } else if (action.assignmentType === 'assignment') {
     if (action.assignmentWay === 'static') {
       value = action.value;
+      // TODO 静态赋值，data取何值
+      data = value;
     } else {
       value = defaultVariable(action.variableType, data);
     }
   }
-  usePageStore.getState().setVariableData({
+  const pageStore = usePageStore();
+  pageStore.setVariableData({
     name: action.name,
     value,
   });
@@ -477,29 +497,29 @@ const handleDisable = async (
 /**
  * 发送飞书消息
  */
-// const handleSendMessage = async (
-//   { action, next }: ActionNode<{ msg_type: string; content: string; template_id: string; receive_id: number }>,
-//   data: any,
-// ) => {
-//   const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/sendMessage`, { ...action, variables: data });
-//   if (res.data.code === 0) {
-//     execAction(next?.success || next, res.data.data);
-//   } else {
-//     execAction(next?.fail, res.msg);
-//   }
-// };
+const handleSendMessage = async (
+  { action, next }: ActionNode<{ msg_type: string; content: string; template_id: string; receive_id: number }>,
+  data: any,
+) => {
+  const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/sendMessage`, { ...action, variables: data });
+  if (res.data.code === 0) {
+    execAction(next?.success || next, res.data.data);
+  } else {
+    execAction(next?.fail, res.msg);
+  }
+};
 
 /**
  * 创建知识库副本
  */
-// const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number; node_token: string; title: string }>, data: any) => {
-//   const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/createNode`, { ...action, variables: data });
-//   if (res.data.code === 0) {
-//     execAction(next?.success || next, res.data.data);
-//   } else {
-//     execAction(next?.fail, res.msg);
-//   }
-// };
+const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number; node_token: string; title: string }>, data: any) => {
+  const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/createNode`, { ...action, variables: data });
+  if (res.data.code === 0) {
+    execAction(next?.success || next, res.data.data);
+  } else {
+    execAction(next?.fail, res.msg);
+  }
+};
 
 /**
  * 运行脚本
