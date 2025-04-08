@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Form, Input, InputNumber, Radio, Select, Switch, Slider, FormInstance, Tooltip, Popover } from 'antd';
+import { Form, Input, InputNumber, Radio, Select, Switch, Slider, FormInstance } from 'antd';
 import * as icons from '@qwikpage/icons';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { SchemaType } from '@/packages/types';
@@ -15,14 +15,17 @@ const formLayoutFull = {
   labelCol: { span: 0 },
   wrapperCol: { span: 24 },
 };
+
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
 }
+
 /**
  * 属性设置器
  * 根据JSON生成简单的属性配置
  */
+
 const SetterRender = memo(({ attrs, form }: IAttrs) => {
   const { selectedElement, elementsMap } = usePageStore((state) => {
     return {
@@ -32,32 +35,42 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
   });
 
   const elementId = selectedElement?.id;
-  
   const formItemId = selectedElement?.id ? elementsMap[selectedElement.id]?.config?.props?.formItem?.name : undefined;
-  console.log("formItemId:", formItemId, "elementId:", elementId);
-   
+
   if (attrs.length === 0) return <></>;
-  // console.log(attrs)
 
   // 根据type枚举
   return (
     <>
       {/* ---组件共有属性--- */}
       {/* 组件名称 */}
-      {!formItemId && elementId && <Form.Item name={'id'} label="组件名称">
-        <Input defaultValue={elementId} />
-      </Form.Item>}
-      {formItemId && <Form.Item name={['formItem', 'name']} label="组件名称">
-        <Input defaultValue={formItemId} />
-      </Form.Item>}
+      {!formItemId && elementId && (
+        <Form.Item name={'id'} label="组件名称">
+          <Input />
+        </Form.Item>
+      )}
+      {formItemId && (
+        <Form.Item name={['formItem', 'name']} label="组件名称">
+          <Input />
+        </Form.Item>
+      )}
       {/* 是否显示 */}
-      {(formItemId || elementId) && <Form.Item layout='horizontal' colon={false} key="showOrHide" name="showOrHide" label="是否显示" valuePropName="checked">
-        <Switch size='small' defaultChecked />
-      </Form.Item>}
+      {(formItemId || elementId) && (
+        <Form.Item
+          layout='horizontal'
+          colon={false}
+          key="showOrHide"
+          name="showOrHide"
+          label="是否显示"
+          valuePropName="checked"
+        >
+          <Switch size='small' />
+        </Form.Item>
+      )}
 
       {/* ---组件属性--- */}
       {attrs.map((item: SchemaType, index) => {
-        if (!item) return;
+        if (!item) return null;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
 
@@ -72,35 +85,43 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
           return null;
         }
 
-        if (item.type == 'Title') {
+        if (item.type === 'Title') {
           return null;
-        } else if (item.type == 'Input') {
+        } else if (item.type === 'Input') {
           FormControl = <Input {...item.props} />;
         } else if (item.type === 'InputPx') {
           FormControl = <InputPx {...item.props} />;
-        } else if (item.type == 'TextArea') {
+        } else if (item.type === 'TextArea') {
           FormControl = <Input.TextArea rows={3} cols={8} {...item.props} />;
-        } else if (item.type == 'InputSelect') {
+        } else if (item.type === 'InputSelect') {
           FormControl = <InputSelect {...item.props} />;
-        } else if (item.type == 'Switch') {
+        } else if (item.type === 'Switch') {
           return (
-            <Form.Item layout='horizontal' colon={false} key={key} name={item.name} label={item.label} tooltip={item.tooltip} valuePropName="checked">
+            <Form.Item
+              layout='horizontal'
+              colon={false}
+              key={key}
+              name={item.name}
+              label={item.label}
+              tooltip={item.tooltip}
+              valuePropName="checked"
+            >
               <Switch size='small' />
             </Form.Item>
           );
-        } else if (item.type == 'Select') {
+        } else if (item.type === 'Select') {
           FormControl = <Select {...item.props} />;
-        } else if (item.type == 'Radio') {
+        } else if (item.type === 'Radio') {
           FormControl = <Radio.Group {...item.props} suffixIcon={<CaretDownOutlined />} />;
-        } else if (item.type == 'InputNumber') {
+        } else if (item.type === 'InputNumber') {
           FormControl = <InputNumber {...item.props} style={{ width: '100%' }} />;
-        } else if (item.type == 'RadioGroup') {
+        } else if (item.type === 'RadioGroup') {
           FormControl = <Radio.Group {...item.props} />;
-        } else if (item.type == 'RadioGroupBtn') {
+        } else if (item.type === 'RadioGroupBtn') {
           FormControl = <Radio.Group {...item.props} optionType="button" block />;
-        } else if (item.type == 'ColorPicker') {
+        } else if (item.type === 'ColorPicker') {
           FormControl = <MColorPicker {...item.props} format="hex" />;
-        } else if (item.type == 'Slider') {
+        } else if (item.type === 'Slider') {
           FormControl = <Slider {...item.props} />;
         } else if (item.type === 'Variable') {
           FormControl = <VariableBindInput {...item.props} />;
