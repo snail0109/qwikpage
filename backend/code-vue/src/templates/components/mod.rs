@@ -8,13 +8,13 @@ pub mod input;
 pub mod checkbox;
 pub mod material;
 pub mod components;
-pub mod index;
+pub mod comp_index;
 
 pub fn get_components() -> Vec<FileTemplate> {
     let mut files = vec![];
     files.push(FileTemplate {
         filename: String::from("src/components/index.ts"),
-        content: String::from(index::COM_INDEX),
+        content: String::from(comp_index::COM_INDEX),
     });
     files.push(FileTemplate {
         filename: String::from("src/components/components.ts"),

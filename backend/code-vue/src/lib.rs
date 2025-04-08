@@ -1,6 +1,6 @@
 mod constant;
-mod utils;
 pub mod templates;
+mod utils;
 
 use anyhow::Error;
 use code_core::ffi::result_to_cstring;
@@ -8,18 +8,13 @@ use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOp
 use code_core::types::page::Page;
 use code_core::types::route::RouteInfo;
 use code_core::{pinyin_name, CodeGenerator};
-use handlebars::Handlebars;
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use utils::{
-    gen_router, gen_view, generate_package_json, init_dirs, init_files, register_helpers,
-    register_partial,
-};
+use utils::{gen_router, gen_view, generate_package_json, init_dirs, init_files};
 
 struct VueGenerator {
     page_list: Vec<Page>,
     output_dir: PathBuf,
-    reg: Handlebars<'static>,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -30,16 +25,9 @@ pub struct FileTemplate {
 
 impl VueGenerator {
     fn new(options: &GeneratorOptions) -> Self {
-        let mut reg = Handlebars::new();
-
-        register_partial(&mut reg);
-
-        register_helpers(&mut reg);
-
         Self {
             page_list: options.page_list.clone(),
             output_dir: options.output_dir.clone(),
-            reg,
         }
     }
 }

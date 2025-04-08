@@ -1,12 +1,11 @@
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use anyhow::Error;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
-use code_core::types::route::RouteInfo;
 use code_core::types::page::Page;
+use code_core::types::route::RouteInfo;
 use handlebars::Handlebars;
-use serde_json::{self, json, Value};
+use serde_json::{self, json};
 use std::fs::{self, File};
 use std::io::Write;
 use std::thread;
@@ -37,17 +36,17 @@ pub fn gen_view(
     page: &Page,
 ) -> Result<GeneratedArtifact, Error> {
     let file_path = output_dir.join("src/views").join(file_name);
-     // 创建一个自定义的 JSON 对象
-     let frontend_data = json!({
+    // 创建一个自定义的 JSON 对象
+    let frontend_data = json!({
         "id": page.id,
         "name": page.name,
         "path": page.path,
         "remark": page.remark,
         "pageData": page.page_data,
     });
-     // 将 JSON 转换为字符串
-     let page_json = serde_json::to_string_pretty(&frontend_data)
-     .map_err(|e| anyhow::anyhow!("序列化失败: {}", e))?;
+    // 将 JSON 转换为字符串
+    let page_json = serde_json::to_string_pretty(&frontend_data)
+        .map_err(|e| anyhow::anyhow!("序列化失败: {}", e))?;
     let replacement = format!("const pageInfo = {};", page_json);
     let result = VIEW_TEMPLATE.replace("{{ pageInfo }}", &replacement);
     write_file(file_path.clone(), &result)?;
@@ -66,16 +65,16 @@ fn format_vue_file(file_path: PathBuf) {
         let prettier_check = std::process::Command::new("npx")
             .args(&["--no-install", "prettier", "--version"])
             .output();
-        
+
         if prettier_check.is_err() || !prettier_check.unwrap().status.success() {
             eprintln!("Warning: Prettier not available, skipping code formatting");
             return;
         }
-        
+
         let output = std::process::Command::new("npx")
             .args(&["prettier", "--write", file_path.to_str().unwrap()])
             .output();
-            
+
         if let Err(e) = output {
             eprintln!("Error formatting Vue file: {}", e);
         } else if !output.unwrap().status.success() {
@@ -124,7 +123,7 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
     for file in temp_files {
         let file_path = output_dir.join(&file.filename);
         // let path_str = file_path.to_string_lossy();
-        // if path_str.contains("src/components/") || 
+        // if path_str.contains("src/components/") ||
         // path_str.contains("src\\components\\") {
         //     // 检查文件是否已存在
         //     if file_path.exists() {
@@ -187,119 +186,5 @@ pub fn generate_package_json(
         output_dir.join("package.json"),
         &serde_json::to_string_pretty(&package_json).unwrap(),
     )?);
-    Ok(())
-}
-
-// 注册自定义 helper
-pub fn register_partial(handlebars: &mut Handlebars) {
-    handlebars
-        .register_template_string("views", include_str!("templates/views.hbs"))
-        .unwrap();
-    // 注册组件代码片段
-    handlebars
-        .register_partial("qwikpageform", include_str!("templates/form.hbs"))
-        .unwrap();
-    handlebars
-        .register_partial("qwikpageinput", include_str!("templates/input.hbs"))
-        .unwrap();
-    handlebars
-        .register_partial("qwikpagebutton", include_str!("templates/button.hbs"))
-        .unwrap();
-    handlebars
-        .register_partial("qwikpageflex", include_str!("templates/flex.hbs"))
-        .unwrap();
-    handlebars
-        .register_partial("qwikpagecheckbox", include_str!("templates/checkbox.hbs"))
-        .unwrap();
-}
-
-// 注册自定义 helper
-pub fn register_helpers(handlebars: &mut Handlebars) {
-    handlebars.register_helper("style", Box::new(style_helper));
-    handlebars.register_helper("json", Box::new(json_helper));
-    handlebars.register_helper("objToProps", Box::new(obj_to_props_helper));
-}
-
-pub fn style_helper(
-    h: &handlebars::Helper,
-    _: &handlebars::Handlebars,
-    _: &handlebars::Context,
-    _: &mut handlebars::RenderContext,
-    out: &mut dyn handlebars::Output,
-) -> handlebars::HelperResult {
-    // 从参数中获取样式对象
-    let styles: HashMap<String, String> = h
-        .param(0)
-        .and_then(|v| v.value().as_object())
-        .map(|o| {
-            o.iter()
-                .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string()))
-                .collect()
-        })
-        .unwrap();
-
-    // 转换并拼接样式字符串
-    let css = styles
-        .iter()
-        .map(|(k, v)| {
-            let key = k
-                .chars()
-                .enumerate()
-                .fold(String::new(), |mut acc, (i, c)| {
-                    if c.is_uppercase() && i > 0 {
-                        acc.push('-');
-                    }
-                    acc.push(c.to_ascii_lowercase());
-                    acc
-                });
-            format!("{}: {}", key, v)
-        })
-        .collect::<Vec<_>>()
-        .join("; ");
-
-    out.write(&format!("{}", css))?;
-    Ok(())
-}
-
-pub fn json_helper(
-    h: &handlebars::Helper,
-    _: &handlebars::Handlebars,
-    _: &handlebars::Context,
-    _: &mut handlebars::RenderContext,
-    out: &mut dyn handlebars::Output,
-) -> handlebars::HelperResult {
-    let param = h.param(0).unwrap();
-    let json_str = serde_json::to_string(param.value()).unwrap_or_default();
-    out.write(&json_str)?;
-    Ok(())
-}
-
-pub fn obj_to_props_helper(
-    h: &handlebars::Helper,
-    _: &handlebars::Handlebars,
-    _: &handlebars::Context,
-    _: &mut handlebars::RenderContext,
-    out: &mut dyn handlebars::Output,
-) -> handlebars::HelperResult {
-    let param = h.param(0).unwrap();
-
-    if let Value::Object(obj) = param.value() {
-        // 创建一个不带引号的对象字符串表示
-        let props: Vec<String> = obj
-            .iter()
-            .map(|(k, v)| {
-                let value_str = match v {
-                    Value::String(s) => format!("\"{}\"", s),
-                    _ => v.to_string(),
-                };
-                format!("{}: {}", k, value_str)
-            })
-            .collect();
-
-        out.write(&format!("{{{}}}", props.join(", ")))?;
-    } else {
-        out.write("{}")?;
-    }
-
     Ok(())
 }
