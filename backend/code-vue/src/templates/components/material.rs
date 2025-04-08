@@ -159,7 +159,8 @@ const Material = defineComponent({
         if (Object.keys(elementsMap).length === 0) return;
         handleFormRegExp(elementsMap[item.id].config);
         handleBindVariable(elementsMap[item.id].config);
-      }
+      },
+      { immediate: true }
     );
 
     return () => {

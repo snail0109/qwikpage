@@ -25,7 +25,8 @@ const CheckBox = defineComponent({
   name: 'QCheckBox',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, expose }: any) {
+    const { onChange, ...rest } = attrs;
     const useFormContext = inject<UseFormContextType>('useFormContext', () => defaultFormContext());
     const { initValues, getValue: getItemValue } = useFormContext();
 
@@ -101,7 +102,7 @@ const CheckBox = defineComponent({
     const handleChange = (val: any[]) => {
       const name = props.config.props.formItem?.name || props.id;
       initValues(props.type, name, val);
-      props.onChange?.({
+      onChange?.({
         [String(name)]: val,
       });
     };
@@ -140,7 +141,7 @@ const CheckBox = defineComponent({
     return () => visible.value && (
       <AFormItem {...props.config.props.formItem}>
         <ACheckBoxGroup
-          {...attrs}
+          {...rest}
           {...props.config.props.formWrap}
           disabled={disabled.value}
           style={props.config.style}

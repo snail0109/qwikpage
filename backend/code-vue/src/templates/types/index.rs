@@ -90,10 +90,7 @@ export const commonProps = <TKeys extends string>() => ({
   children: {
     type: Array as PropType<VNode[]>,
     default: () => []
-  },
-  ...(Object.fromEntries(
-    [''].map(key => [`on${key}`, Function])
-  ) as unknown as { [K in keyof OnProps<TKeys>]: PropType<OnProps<TKeys>[K]> })
+  }
 });
 
 /**

@@ -8,13 +8,14 @@ const Button = defineComponent({
   name: 'QButton',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, expose }: any) {
+    const { onClick, ...rest } = attrs;
     const visible = ref(true);
     const disabled = ref(false);
     const loading = ref(false);
 
     const handleClick = () => {
-      props.onClick?.();
+      onClick?.();
     }
 
     const show = () => {
@@ -57,7 +58,7 @@ const Button = defineComponent({
       const config = props.config;
       return visible.value && (
         <AButton
-          {...attrs}
+          {...rest}
           id={id}
           style={config.style}
           loading={loading.value}

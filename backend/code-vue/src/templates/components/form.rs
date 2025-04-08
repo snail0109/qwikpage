@@ -12,7 +12,8 @@ const Form = defineComponent({
   name: 'QForm',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, expose }: any) {
+    const { onFinish, onChange, ...rest } = attrs;
     const { pageState } = storeToRefs(appStore.page);
     const { setFormData } = appStore.page;
 
@@ -21,7 +22,7 @@ const Form = defineComponent({
 
     // 提交表单
     const handleFinish = (values: any) => {
-      props.onFinish?.(dateFormat(props.elements || [], values));
+      onFinish?.(dateFormat(props.elements || [], values));
     };
 
     // 提交表单失败
@@ -32,7 +33,7 @@ const Form = defineComponent({
     // 监听表单值变化
     const handleChange = (_: any, allValues: any) => {
       const values = dateFormat(props.elements || [], allValues);
-      props.onChange?.(values);
+      onChange?.(values);
     };
     const show = () => {
       visible.value = true;
@@ -115,7 +116,7 @@ const Form = defineComponent({
 
     return () => visible.value && (
       <AForm
-        {...attrs}
+        {...rest}
         ref={formRef}
         id={props.id}
         style={props.config.style}

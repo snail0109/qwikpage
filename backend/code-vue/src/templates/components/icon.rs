@@ -7,11 +7,12 @@ const Icon = defineComponent({
   name: 'QIcon',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, expose }: any) {
+    const { onClick, ...rest } = attrs;
     const visible = ref(true);
 
     const handleClick = () => {
-      props.onClick?.();
+      onClick?.();
     }
 
     const show = () => {
@@ -27,7 +28,7 @@ const Icon = defineComponent({
       const config = props.config;
       return visible.value && (
         <q-base-icon
-          {...attrs}
+          {...rest}
           style={config.style}
           {...config.props}
           icon={config.props.icon}

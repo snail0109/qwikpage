@@ -10,7 +10,8 @@ const Input = defineComponent({
   name: 'QInput',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, expose }: any) {
+    const { onChange, onBlur, onPressEnter, ...rest } = attrs;
     const useFormContext = inject<UseFormContextType>('useFormContext', () => defaultFormContext());
     const { initValues, getValue: getItemValue } = useFormContext();
 
@@ -41,7 +42,7 @@ const Input = defineComponent({
     const handleChange = (val: string) => {
       const name = props.config.props.formItem?.name || props.id;
       initValues(props.type, name, val);
-      props.onChange?.({
+      onChange?.({
         [name]: val,
       });
     };
@@ -49,7 +50,7 @@ const Input = defineComponent({
     // 失去焦点事件
     const handleBlur = (val: string) => {
       const name = props.config.props.formItem?.name || props.id;
-      props.onBlur?.({
+      onBlur?.({
         [name]: val,
       });
     };
@@ -57,7 +58,7 @@ const Input = defineComponent({
     // 回车事件
     const handlePressEnter = (val: string) => {
       const name = props.config.props.formItem?.name || props.id;
-      props.onPressEnter?.({
+      onPressEnter?.({
         [name]: val,
       });
     };
@@ -90,7 +91,7 @@ const Input = defineComponent({
     return () => visible.value && (
       <AFormItem {...props.config.props.formItem}>
         <AInput
-          {...attrs}
+          {...rest}
           {...omit(props.config.props.formWrap, ['prefixIcons', 'suffixIcons'])}
           disabled={disabled.value}
           style={props.config.style}

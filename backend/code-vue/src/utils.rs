@@ -123,15 +123,15 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
     temp_files.extend(get_utils());
     for file in temp_files {
         let file_path = output_dir.join(&file.filename);
-        let path_str = file_path.to_string_lossy();
-        if path_str.contains("src/components/") || 
-        path_str.contains("src\\components\\") {
-            // 检查文件是否已存在
-            if file_path.exists() {
-                println!("文件已存在，跳过: {}", file_path.display());
-                continue;
-            }
-        }
+        // let path_str = file_path.to_string_lossy();
+        // if path_str.contains("src/components/") || 
+        // path_str.contains("src\\components\\") {
+        //     // 检查文件是否已存在
+        //     if file_path.exists() {
+        //         println!("文件已存在，跳过: {}", file_path.display());
+        //         continue;
+        //     }
+        // }
         // 确保父目录存在
         if let Some(parent) = file_path.parent() {
             fs::create_dir_all(parent)?;
