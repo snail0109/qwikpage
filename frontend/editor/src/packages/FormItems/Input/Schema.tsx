@@ -42,9 +42,9 @@ export default {
     {
       type: 'Variable',
       label: '值',
-      name: ['value'],
+      name: ['defaultValue'],
       props: {
-        placeholder: '请选择表达式',
+        placeholder: '请输入默认值',
       },
     },
     {

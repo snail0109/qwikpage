@@ -38,7 +38,10 @@ export default {
     {
       type: 'Variable',
       label: '选中值',
-      name: ['value'],
+      name: ['defaultValue'],
+      props: {
+        placeholder: '请输入默认值',
+      },
     },
     {
       type: 'Input',

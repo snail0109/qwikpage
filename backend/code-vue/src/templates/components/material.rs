@@ -38,7 +38,7 @@ import { isNull, renderFormula, isFormPlugin } from '@/utils/util';
 import appStore from "@/stores";
 import { withInstall, defaultFormContext } from "@/utils/type";
 import { setComponentRef } from '@/utils/useComponentRefs';
-import { omit, isEmpty } from 'lodash-es';
+import { omit, isEmpty, cloneDeep } from 'lodash-es';
 import { handleActionFlow } from '@/utils/action';
 import type { ConfigType, ComItemType, EventType, UseFormContextType } from "@/types";
 import * as components from '@/components/components'
@@ -133,6 +133,16 @@ const Material = defineComponent({
       return eventFunction;
     };
 
+    const updateConfig = () => {
+      const item = props.item;
+      const elementsMap = pageState.value.page.pageData.elementsMap;
+      if (Object.keys(elementsMap).length === 0) return;
+      const newConfig = cloneDeep(elementsMap[item.id].config);
+      handleFormRegExp(newConfig);
+      handleBindVariable(newConfig);
+      config.value = newConfig;
+    }
+
     onMounted(() => {
       const item = props.item;
       const elementsMap = pageState.value.page.pageData.elementsMap;
@@ -144,7 +154,7 @@ const Material = defineComponent({
       } else {
         currentCom.value = item.type;
       }
-      config.value = elementsMap[item.id].config;
+      updateConfig();
     });
 
     watch(
@@ -155,13 +165,9 @@ const Material = defineComponent({
         pageState.value.page.pageData.elementsMap,
       ],
       () => {
-        const item = props.item;
-        const elementsMap = pageState.value.page.pageData.elementsMap;
-        if (Object.keys(elementsMap).length === 0) return;
-        handleFormRegExp(elementsMap[item.id].config);
-        handleBindVariable(elementsMap[item.id].config);
+        updateConfig();
       },
-      { immediate: true }
+      { deep: true }
     );
 
     return () => {

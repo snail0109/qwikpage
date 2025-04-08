@@ -104,9 +104,10 @@ const Input = defineComponent({
       }
       return null;
     }
+    const Com = props.config.props.formWrap?.type === 'password' ? AInput.Password : AInput;
     return () => visible.value && (
       <AFormItem {...props.config.props.formItem}>
-        <AInput
+        <Com
           {...rest}
           {...omit(props.config.props.formWrap, ['prefixIcons', 'suffixIcons'])}
           disabled={disabled.value}
@@ -120,7 +121,7 @@ const Input = defineComponent({
           onBlur={(event: any) => handleBlur(event.target.value)}
           onPressEnter={(event: any) => handlePressEnter(event.target.value)}
         >
-        </AInput>
+        </Com>
       </AFormItem>
     );
   }
