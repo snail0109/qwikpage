@@ -6,6 +6,7 @@ import { isString } from 'lodash-es';
 import { usePageStore } from '@/stores/pageStore';
 import VsEditor from '../VsEditor';
 import { getElement, getParentForm } from '@/utils/util';
+import { isFormPlugin } from '@/packages/utils/util';
 import styles from './variable.module.less';
 import { cloneDeep, isEmpty } from 'lodash-es';
 import components from '@/config/components';
@@ -29,12 +30,13 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
   const getFormAndTable = useCallback(() => {
     const list: Array<{ id: string; name: string; elements: any[] }> = [];
     Object.keys(elementsMap).map((id) => {
+      const formPlugin = isFormPlugin(elementsMap[id]);
       if (id.startsWith('SearchForm_') || id.startsWith('Form_') || id.startsWith('GridForm_') || id.startsWith('MarsTable_')) {
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
         element.elements = [];
         list.push(element);
-      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !isEmpty(elementsMap[id].config.props.formItem) && elementsMap[id].inForm) {
+      } else if (formPlugin && elementsMap[id].inForm) {
         // 表单内的表单项
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
@@ -53,7 +55,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
             name: `${formItem.label}(${formItem.name})`,
           })
         }
-      } else if (elementsMap[id].type !== 'FormItem' && elementsMap[id].config.props.formItem && !isEmpty(elementsMap[id].config.props.formItem) && !elementsMap[id].inForm) {
+      } else if (formPlugin && !elementsMap[id].inForm) {
         // 收集不处于表单中的表单控件
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;

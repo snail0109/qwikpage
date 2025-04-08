@@ -133,11 +133,11 @@ const components = [
       //   name: '栅格布局',
       //   type: 'Row',
       // },
-      // {
-      //   icon: <IconColumn />,
-      //   name: '栅格布局',
-      //   type: 'Grid',
-      // },
+      {
+        icon: <IconColumn />,
+        name: '栅格布局',
+        type: 'Grid',
+      },
     ],
   },
   {

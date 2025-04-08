@@ -9,9 +9,10 @@ import dayjs from 'dayjs';
 import * as antd from 'antd';
 import * as Plots from '@ant-design/plots';
 import * as icons from '@ant-design/icons';
-import { isNull, loadStyle, renderFormula } from '@/packages/utils/util';
+import { isNull, loadStyle, renderFormula, isFormPlugin } from '@/packages/utils/util';
 import { omit } from 'lodash-es';
 import { getComponent } from '@/packages/index';
+import ComWrapper from './ComWrapper';
 import './index.less';
 
 /**
@@ -159,19 +160,42 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
     return eventFunction;
   };
 
+  const isInForm = isFormPlugin(elementsMap[item.id], true);
+  const tooltip = config?.props?.formItem?.tooltip || config?.props?.tooltip;
+
   if (Component && config?.props.showOrHide !== false) {
     return (
       <Suspense fallback={<antd.Spin size="default"></antd.Spin>}>
-        <Component
-          id={item.id}
-          type={item.type}
-          formItemValue={formItemData[item.id]}
-          config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
-          elements={item.elements || []}
-          // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
-          {...createEvents()}
-          ref={(ref: any) => setComponentRef(item.id, ref)}
-        />
+        {
+          !isInForm && tooltip ? (
+            <antd.Tooltip title={tooltip} placement="topLeft">
+              <ComWrapper>
+                <Component
+                  id={item.id}
+                  type={item.type}
+                  formItemValue={formItemData[item.id]}
+                  config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
+                  elements={item.elements || []}
+                  // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
+                  {...createEvents()}
+                  ref={(ref: any) => setComponentRef(item.id, ref)}
+                />
+              </ComWrapper>
+
+            </antd.Tooltip>
+          ) : (
+            <Component
+              id={item.id}
+              type={item.type}
+              formItemValue={formItemData[item.id]}
+              config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
+              elements={item.elements || []}
+              // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
+              {...createEvents()}
+              ref={(ref: any) => setComponentRef(item.id, ref)}
+            />
+          )
+        }
       </Suspense>
     );
   }

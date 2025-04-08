@@ -87,7 +87,7 @@ export default {
     {
       type: 'Input',
       label: '工具提示',
-      name: ['tooltip'],
+      name: ['formItem', 'tooltip'],
       props: {
         placeholder: '请输入工具提示',
       },

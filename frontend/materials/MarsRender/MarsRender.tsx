@@ -9,8 +9,9 @@ import { produce } from 'immer';
 import dayjs from 'dayjs';
 import * as antd from 'antd';
 import * as Plots from '@ant-design/plots';
-import { isNull, loadStyle, renderFormula } from '@materials/utils/util';
+import { isNull, loadStyle, renderFormula, isFormPlugin } from '@materials/utils/util';
 import { omit } from 'lodash-es';
+import ComWrapper from './ComWrapper';
 import './index.less';
 
 let cachedComponents: any = {};
@@ -159,9 +160,28 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
     return eventFunction;
   };
 
+  const isInForm = isFormPlugin(elementsMap[item.id], true);
+  const tooltip = config?.props?.formItem?.tooltip || config?.props?.tooltip;
+
   if (Component && config?.props.showOrHide !== false) {
     if (cached) {
-      return (
+      return !isInForm && tooltip ? (
+        <antd.Tooltip title={tooltip} placement="topLeft">
+          <ComWrapper>
+            <Component
+              className={['mars-component']} // 暂时还没用，日后可能会用
+              id={item.id}
+              config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
+              elements={item.elements || []}
+              // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
+              {...createEvents()}
+              ref={(ref: any) => {
+                setComponentRef(item.id, ref);
+              }}
+            />
+          </ComWrapper>
+        </antd.Tooltip>
+      ) : (
         <Component
           className={['mars-component']} // 暂时还没用，日后可能会用
           id={item.id}
@@ -177,19 +197,42 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
     } else {
       return (
         <Suspense fallback={<antd.Spin size="default"></antd.Spin>}>
-          <Component
-            id={item.id}
-            type={item.type}
-            inForm={item.inForm}
-            formItemValue={formItemData[item.id]}
-            config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
-            elements={item.elements || []}
-            // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
-            {...createEvents()}
-            ref={(ref: any) => {
-              setComponentRef(item.id, ref);
-            }}
-          />
+          {
+            !isInForm && tooltip ? (
+              <antd.Tooltip title={tooltip} placement="topLeft">
+                <ComWrapper>
+                  <Component
+                    id={item.id}
+                    type={item.type}
+                    inForm={item.inForm}
+                    formItemValue={formItemData[item.id]}
+                    config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
+                    elements={item.elements || []}
+                    // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
+                    {...createEvents()}
+                    ref={(ref: any) => {
+                      setComponentRef(item.id, ref);
+                    }}
+                  />
+                </ComWrapper>
+              </antd.Tooltip>
+            ) : (
+              <Component
+                id={item.id}
+                type={item.type}
+                inForm={item.inForm}
+                formItemValue={formItemData[item.id]}
+                config={{ ...config, props: { ...omit(config?.props, ['showOrHide']) } }}
+                elements={item.elements || []}
+                // 把事件函数传递给子组件，子组件触发对应事件时，会执行回调函数
+                {...createEvents()}
+                ref={(ref: any) => {
+                  setComponentRef(item.id, ref);
+                }}
+              />
+            )
+          }
+
         </Suspense>
       );
     }
