@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+use crate::utils::datetime::get_current_time;
 
 use super::project::ProjectSummary;
 
@@ -31,4 +34,29 @@ pub struct GroupWithProjectDetail {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GroupWithProjectList {
     pub groups: Vec<GroupWithProjectDetail>,
+}
+
+
+
+// 实现Default trait为ProjectGroups
+impl Default for ProjectGroups {
+    fn default() -> Self {
+        Self {
+            groups: vec![ProjectGroup::default()],
+        }
+    }
+}
+
+impl Default for ProjectGroup {
+    fn default() -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            name: "默认分组".to_string(),
+            is_default: true,
+            projects: None,
+            created_at: get_current_time(),
+            updated_at: Some(get_current_time()),
+        }
+    }
+    
 }

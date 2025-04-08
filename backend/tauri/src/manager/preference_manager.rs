@@ -4,12 +4,7 @@ use std::path::PathBuf;
 use std::sync::{RwLock, RwLockReadGuard};
 
 use crate::storage::local_storage::LocalStorage;
-use crate::{
-    types::preferences::Preferences,
-    utils::dirs::{app_preferences_path, get_default_code_path},
-};
-const DEFAULT_FONT_SIZE: u32 = 12;
-const DEFAULT_FONT_BOLD: &str = "normal";
+use crate::{types::preferences::Preferences, utils::dirs::app_preferences_path};
 
 // 全局配置单例
 pub struct PreferencesManager {
@@ -62,31 +57,15 @@ impl PreferencesManager {
     // 重命名为内部实例方法
     fn get_project_path_impl(&self) -> PathBuf {
         let prefs = self.preferences();
-        log::debug!("PreferencesManager::get_project_path_impl: 项目路径: {:?}", prefs.project_path);
+        log::debug!(
+            "PreferencesManager::get_project_path_impl: 项目路径: {:?}",
+            prefs.project_path
+        );
         PathBuf::from(prefs.project_path.clone())
     }
 
     // 使用原名称作为静态方法
     pub fn get_project_path() -> PathBuf {
         Self::global().get_project_path_impl()
-    }
-}
-
-impl Default for Preferences {
-    fn default() -> Self {
-        let font_family = if cfg!(target_os = "macos") {
-            "PingFang SC".to_string()
-        } else {
-            "Microsoft YaHei Mono".to_string()
-        };
-        Self {
-            font_family,
-            theme: "auto".to_string(),
-            language: "auto".to_string(),
-            font_size: DEFAULT_FONT_SIZE,
-            font_bold: DEFAULT_FONT_BOLD.to_string(),
-            check_update: true,
-            project_path: get_default_code_path(),
-        }
     }
 }

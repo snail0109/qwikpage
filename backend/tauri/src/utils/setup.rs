@@ -29,10 +29,17 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     if !backup_path.exists() {
         log::trace!("备份项目分组配置");
-        fs::copy(projects_group_path(), backup_path).unwrap();
-        // 清理 projects.json 内容 为 {}
-        fs::write(projects_group_path(), "{}").unwrap();
-    } 
+        let projects_group_path = projects_group_path();
+        if projects_group_path.exists() {
+            // 如果 projects.json 存在 备份一份
+            fs::copy(&projects_group_path, backup_path).unwrap();
+            // 清理 projects.json 内容 为 {}
+            fs::write(&projects_group_path, "{}").unwrap();
+        } else {
+            // 如果不存在 则创建一个空的 projects.json
+            fs::write(&projects_group_path, "{}").unwrap();
+        }
+    }
 
     Ok(())
 }

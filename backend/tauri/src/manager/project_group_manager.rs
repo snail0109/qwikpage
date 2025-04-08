@@ -44,17 +44,6 @@ impl ProjectGroupManager {
         })
     }
 
-    // 创建默认分组
-    fn default_group() -> ProjectGroup {
-        ProjectGroup {
-            id: Uuid::new_v4().to_string(),
-            name: "默认分组".to_string(),
-            is_default: true,
-            projects: None,
-            created_at: get_current_time(),
-            updated_at: Some(get_current_time()),
-        }
-    }
 
     // 获取指定路径的组列表
     fn project_groups<P: AsRef<Path>>(&self, path: P) -> Vec<ProjectGroup> {
@@ -69,7 +58,7 @@ impl ProjectGroupManager {
         }
 
         // 如果路径不存在或者没有分组信息，创建默认分组并更新文件
-        let default_group = Self::default_group();
+        let default_group = ProjectGroup::default();
         let _ = self.update_project_groups(|data| {
             data.project_groups
                 .entry(path_str.clone())
@@ -273,14 +262,5 @@ impl ProjectGroupManager {
         })?;
 
         Ok(())
-    }
-}
-
-// 实现Default trait为ProjectGroups
-impl Default for ProjectGroups {
-    fn default() -> Self {
-        Self {
-            groups: vec![ProjectGroupManager::default_group()],
-        }
     }
 }
