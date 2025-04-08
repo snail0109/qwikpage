@@ -148,7 +148,7 @@ const FloatingCollector = () => {
         </div>
       )}
 
-      <div className={`${styles.iconContainer} ${isExpanded ? styles.expanded : ''}`}>
+      {/* <div className={`${styles.iconContainer} ${isExpanded ? styles.expanded : ''}`}>
         <Tooltip title="弹框" placement="right">
           <Button className={styles.iconButton} onClick={() => handleTypeClick(1)}>
             <Badge count={modalList.length} size="small" color={token.colorPrimary} showZero>
@@ -163,7 +163,7 @@ const FloatingCollector = () => {
             </Badge>
           </Button>
         </Tooltip>
-      </div>
+      </div> */}
     </div>
   );
 };
