@@ -36,7 +36,6 @@ const Grid = ({ id, type, config, elements }: ComponentType, ref: any) => {
         methods,
       });
     },
-    // TODO: 拖拽组件时，容器呈现背景色（后期需要判断组件是否可以拖入）
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
@@ -55,18 +54,18 @@ const Grid = ({ id, type, config, elements }: ComponentType, ref: any) => {
     };
   });
 
+  const gutter = config.props?.gutter || 0;
+
   return (
     visible && (
-      <Row style={config.style} {...config.props} data-id={id} data-type={type} ref={drop}>
-        <Col span={24}>
-          {elements?.length ? (
-            <MarsRender elements={elements || []} />
-          ) : (
-            <div className="slots" style={{ height: 100, lineHeight: '100px' }}>
-              拖拽组件到这里
-            </div>
-          )}
-        </Col>
+      <Row style={config.style} {...config.props} gutter={gutter} data-id={id} data-type={type} ref={drop}>
+        {elements?.length ? (
+          <MarsRender elements={elements || []} />
+        ) : (
+          <div className="slots" style={{ height: 100, lineHeight: '100px' }}>
+            拖拽组件到这里
+          </div>
+        )}
       </Row>
     )
   );

@@ -7,9 +7,8 @@ import MColorPicker from '../ColorPicker';
 import VariableBindInput from '../VariableBind/VariableBind';
 import InputSelect from '../InputSelect/InputSelect';
 import InputPx from '../StyleConfig/InputPx';
-import styles from './index.module.less';
 import { usePageStore } from '@/stores/pageStore';
-import { renderIconDefinitionToSVGElement } from '@qwikpage/icons/es/helpers';
+import QIcon from '@/components/icons/QIcon';
 
 // 如果没有设置label，则独占一行
 const formLayoutFull = {
@@ -106,26 +105,14 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
         } else if (item.type === 'function' && formItemId) {
           return item.render?.(form);
         } else if (item.type === 'Icons') {
-          // 获取所有的antd图标，动态渲染到下拉框中
-          const iconsList: { [key: string]: any } = icons;
           FormControl = (
             <Select placeholder="请选择菜单图表" showSearch allowClear>
               {Object.keys(icons)
                 .filter((item) => !['default', 'createFromIconfontCN', 'getTwoToneColor', 'setTwoToneColor', 'IconProvider'].includes(item))
                 .map((key) => {
-                  const svgHTMLString = renderIconDefinitionToSVGElement(iconsList[key], {
-                    extraSVGAttrs: { width: '1em', height: '1em', fill: 'currentColor' },
-                  })
                   return (
                     <Select.Option value={key} key={key}>
-                      <span
-                        className='anticon'
-                        style={{
-                          fontSize: '18px',
-                          verticalAlign: 'middle',
-                        }}
-                        dangerouslySetInnerHTML={{ __html: svgHTMLString }}
-                      />
+                      <QIcon name={key} />
                     </Select.Option>
                   );
                 })}

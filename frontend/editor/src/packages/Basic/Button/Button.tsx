@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Button } from 'antd';
-import * as icons from '@ant-design/icons';
+import QIcon from '@/components/icons/QIcon';
 import { ComponentType } from '@/packages/types';
 /*泛型只需要定义组件本身用到的属性*/
 export interface IConfig {
@@ -45,7 +45,6 @@ const MButton = ({ id, type, config, onClick }: ComponentType<IConfig>, ref: any
   const handleClick = () => {
     onClick?.();
   };
-  const iconsList: { [key: string]: any } = icons;
   const { authCode, authScript, ...props } = config.props;
   return (
     visible && (
@@ -54,7 +53,7 @@ const MButton = ({ id, type, config, onClick }: ComponentType<IConfig>, ref: any
         loading={loading}
         disabled={disabled}
         {...props}
-        icon={props.icon ? React.createElement(iconsList[props.icon]) : null}
+        icon={props.icon ? <QIcon name={props.icon} /> : null}
         data-id={id}
         data-type={type}
         onClick={handleClick}
