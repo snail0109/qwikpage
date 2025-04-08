@@ -35,11 +35,6 @@ const ConfigPanel = memo(() => {
   });
   const [form] = Form.useForm();
   const [ComponentConfig, setComponentConfig] = useState<any>(null);
-  // const [isCopy, setCopy] = useState<boolean>(false);
-  // const [clientSize, setClientSize] = useState({
-  //   width: 0,
-  //   height: 0,
-  // });
 
   useDebounceEffect;
   /**
@@ -68,12 +63,6 @@ const ConfigPanel = memo(() => {
           });
         }
         form.setFieldValue('id', selectedElement.id);
-        // 获取组件尺寸
-        // const target = document.querySelector(`[data-id=${selectedElement?.id}]`);
-        // if (target) {
-        //   const size = target.getBoundingClientRect();
-        //   setClientSize(size);
-        // }
       } else {
         // 获取页面配置
         getComponent('PageConfig').then((res: any) => {
@@ -116,16 +105,6 @@ const ConfigPanel = memo(() => {
       });
     }
   };
-
-  // 复制组件ID
-  // const handleCopy = () => {
-  //   copy(selectedElement?.id || pageName);
-  //   message.info('复制成功');
-  //   setCopy(true);
-  //   setTimeout(() => {
-  //     setCopy(false);
-  //   }, 3000);
-  // };
 
   const formLayout = {
     // labelCol: { span: 8 },
