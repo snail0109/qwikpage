@@ -14,20 +14,26 @@ import styles from "./index.module.less";
 import LR from "@/assets/image/LR.png";
 import UD from "@/assets/image/UD.png";
 import project from "@/pages/home/project";
+import { GlobalHotKeys } from "react-hotkeys";
+import { keyMap } from "@/constants/hotKeys";
 
 const MenuModeOptions = [
-    [{
-        label: "垂直",
-        value: "vertical",
-    },
-    {
-        label: "内嵌",
-        value: "inline",
-    },],
-    [{
-        label: "水平",
-        value: "horizontal",
-    },]
+    [
+        {
+            label: "垂直",
+            value: "vertical",
+        },
+        {
+            label: "内嵌",
+            value: "inline",
+        },
+    ],
+    [
+        {
+            label: "水平",
+            value: "horizontal",
+        },
+    ],
 ];
 
 const MenyThemeColor = [
@@ -38,8 +44,8 @@ const MenyThemeColor = [
     {
         label: "浅色",
         value: "light",
-    }
-]
+    },
+];
 
 /**
  * 项目配置
@@ -149,7 +155,7 @@ const Config: React.FC = memo(() => {
             params: {
                 file_path: filePath,
                 project_id: id,
-                old_file_path: logoUrl
+                old_file_path: logoUrl,
             },
         })
             .then((res) => {
@@ -171,17 +177,26 @@ const Config: React.FC = memo(() => {
         const dirPath = await open({
             multiple: false,
             defaultPath: defaultDir,
-            directory: true
+            directory: true,
         });
 
         if (!dirPath || dirPath?.length === 0) {
             return;
         }
-        form.setFieldValue('codeExportPath', dirPath);
-    }
+        form.setFieldValue("codeExportPath", dirPath);
+    };
+
+    const handlers = {
+        ESC: (e: KeyboardEvent | undefined) => {
+            e?.preventDefault();
+            e?.stopPropagation();
+            console.log("esc");
+            history.back();
+        },
+    };
 
     return (
-        <>
+        <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
             <Form
                 form={form}
                 initialValues={{
@@ -212,7 +227,15 @@ const Config: React.FC = memo(() => {
                     <Input placeholder={"项目名称: Mars"} {...props} maxLength={15} showCount />
                 </Form.Item>
                 <Form.Item label="导出目录" name="codeExportPath">
-                    <Input placeholder={"导出项目所在的目录"} addonAfter={<EllipsisOutlined onClick={() => changeCodeExportDir(form.getFieldValue('codeExportPath'))} />} {...props} />
+                    <Input
+                        placeholder={"导出项目所在的目录"}
+                        addonAfter={
+                            <EllipsisOutlined
+                                onClick={() => changeCodeExportDir(form.getFieldValue("codeExportPath"))}
+                            />
+                        }
+                        {...props}
+                    />
                 </Form.Item>
                 <Form.Item label="项目描述" name="remark">
                     <Input.TextArea
@@ -251,33 +274,33 @@ const Config: React.FC = memo(() => {
                 <Form.Item noStyle shouldUpdate>
                     {(form: any) => {
                         const layout = form.getFieldValue("layout");
-                        const menuMode = form.getFieldValue('menuMode')
-                        const targetOptions = layout === 1 ? MenuModeOptions[0] : MenuModeOptions[1]
+                        const menuMode = form.getFieldValue("menuMode");
+                        const targetOptions = layout === 1 ? MenuModeOptions[0] : MenuModeOptions[1];
                         return (
                             <Form.Item label="菜单模式" name="menuMode">
                                 <RadioButtonGroup
                                     disabled={type === "detail"}
                                     options={targetOptions}
                                     selected={menuMode}
-                                    onChangeTab={handleChangeTab('menuMode')}
+                                    onChangeTab={handleChangeTab("menuMode")}
                                 />
                             </Form.Item>
-                        )
+                        );
                     }}
                 </Form.Item>
                 <Form.Item noStyle shouldUpdate>
                     {(form: any) => {
-                        const menuThemeColor = form.getFieldValue('menuThemeColor')
+                        const menuThemeColor = form.getFieldValue("menuThemeColor");
                         return (
                             <Form.Item label="菜单主题" name="menuThemeColor">
                                 <RadioButtonGroup
                                     disabled={type === "detail"}
                                     options={MenyThemeColor}
                                     selected={menuThemeColor}
-                                    onChangeTab={handleChangeTab('menuThemeColor')}
+                                    onChangeTab={handleChangeTab("menuThemeColor")}
                                 />
                             </Form.Item>
-                        )
+                        );
                     }}
                 </Form.Item>
                 <Form.Item label="系统主题" name="systemThemeColor">
@@ -341,7 +364,7 @@ const Config: React.FC = memo(() => {
                 <p>1. 删除项目，会彻底删除项目本身、菜单列表以及归属页面列表。</p>
                 <p>2. 删除项目后，您将无法找回，请慎重操作！</p>
             </Modal>
-        </>
+        </GlobalHotKeys>
     );
 });
 
