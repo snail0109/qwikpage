@@ -20,11 +20,11 @@ export default {
     //   label: '字段',
     //   name: ['formItem', 'name'],
     // },
-    {
-      type: 'Variable',
-      label: '数据源',
-      name: ['options'],
-    },
+    // {
+    //   type: 'Variable',
+    //   label: '数据源',
+    //   name: ['options'],
+    // },
      {
       type: 'Input',
       label: '文本显示字段',

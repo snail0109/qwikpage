@@ -381,4 +381,20 @@ export const handleArrayVariable = (list: any = [], data: any = {}) => {
     return prev;
   }, {});
 };
+
+/**
+ * 判断是否为表单控件。
+ * @param element - 元素elementsMap对象
+ */
+export const isFormPlugin = (element: ComponentType, needJudgeInform?: boolean) => {
+  const { config } = element;
+  const { formItem, formWrap } = config.props || {};
+  if (formItem && formWrap) {
+    if (needJudgeInform) {
+      return formItem.name && formItem.name.length > 0;
+    }
+    return true;
+  }
+  return false;
+};
 "#;

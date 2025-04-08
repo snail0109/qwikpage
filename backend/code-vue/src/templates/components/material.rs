@@ -33,7 +33,8 @@ pub const MATERIAL_ITEM_INDEX: &str = r#"
 import { defineComponent, ref, watch, onMounted, inject } from "vue";
 import type { PropType } from 'vue';
 import { storeToRefs } from "pinia";
-import { isNull, renderFormula } from '@/utils/util';
+import { Tooltip } from 'ant-design-vue';
+import { isNull, renderFormula, isFormPlugin } from '@/utils/util';
 import appStore from "@/stores";
 import { withInstall, defaultFormContext } from "@/utils/type";
 import { setComponentRef } from '@/utils/useComponentRefs';
@@ -53,7 +54,7 @@ const Material = defineComponent({
     }
   },
   setup(props, { attrs }) {
-     const useFormContext = inject<UseFormContextType>('useFormContext', () => defaultFormContext());
+    const useFormContext = inject<UseFormContextType>('useFormContext', () => defaultFormContext());
     const { inForm } = useFormContext();
     const { pageState } = storeToRefs(appStore.page);
     const currentCom = ref("");
@@ -177,7 +178,23 @@ const Material = defineComponent({
         value = inForm ? pageState.value.page.pageData.formData[inForm]?.[config.value.props.formItem.name] : pageState.value.page.pageData.formItemData[item.id];
       }
       const DynamicComponent = components[currentCom.value as keyof typeof components] as any;
-      return (
+      const isInForm = isFormPlugin(pageState.value.page.pageData.elementsMap[item.id], true);
+      const tooltip = config.value?.props?.formItem?.tooltip || config.value?.props?.tooltip;
+      return !isInForm && tooltip ? (
+        <Tooltip title={tooltip} placement="topLeft">
+          <DynamicComponent
+            {...attrs}
+            key={item.id}
+            id={item.id}
+            type={item.type}
+            formItemValue={value}
+            config={{ ...config.value, props: { ...omit(config.value?.props, ['showOrHide']) } }}
+            elements={item.elements || []}
+            {...createEvents()}
+            ref={(el: any) => setComponentRef(item.id, el)}
+          />
+        </Tooltip>
+      ) : (
         <DynamicComponent
           {...attrs}
           key={item.id}

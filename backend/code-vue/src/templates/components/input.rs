@@ -5,6 +5,7 @@ import { withInstall, defaultFormContext } from '@/utils/type';
 import omit from 'lodash-es/omit';
 import type { UseFormContextType } from '@/types';
 import { commonProps } from '@/types';
+import { isObject, has, isString } from 'lodash-es';
 
 const Input = defineComponent({
   name: 'QInput',
@@ -42,9 +43,7 @@ const Input = defineComponent({
     const handleChange = (val: string) => {
       const name = props.config.props.formItem?.name || props.id;
       initValues(props.type, name, val);
-      onChange?.({
-        [name]: val,
-      });
+      onChange?.(val);
     };
 
     // 失去焦点事件
@@ -79,7 +78,13 @@ const Input = defineComponent({
 
     const setValue = (value: any) => {
       const name = props.config.props.formItem?.name || props.id;
-      initValues(props.type, name, value);
+      if (isObject(value) && has(value, name)) {
+        initValues(props.type, name, value[name]);
+      } else if (isString(value)) {
+        initValues(props.type, name, value);
+      } else {
+        console.error('[input]', 'setValue参数错误，请检查', value);
+      }
     }
 
     const getValue = () => {
@@ -88,6 +93,17 @@ const Input = defineComponent({
     }
 
     expose({ show, hide, enable, disable, setValue, getValue })
+
+    const renderIcon = (name: string) => {
+      if (name) {
+        return (
+          <q-base-icon
+            icon={name}
+          />
+        )
+      }
+      return null;
+    }
     return () => visible.value && (
       <AFormItem {...props.config.props.formItem}>
         <AInput
@@ -96,6 +112,10 @@ const Input = defineComponent({
           disabled={disabled.value}
           style={props.config.style}
           value={props.formItemValue}
+          v-slots={{
+            prefix: () => renderIcon(props.config.props.formWrap.prefixIcons),
+            suffix: () => renderIcon(props.config.props.formWrap.suffixIcons), 
+          }}
           onChange={(event: any) => handleChange(event.target.value)}
           onBlur={(event: any) => handleBlur(event.target.value)}
           onPressEnter={(event: any) => handlePressEnter(event.target.value)}

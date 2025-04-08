@@ -9,6 +9,7 @@ import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { commonProps } from '@/types';
 import type { UseFormContextType } from '@/types';
+import { isObject, isArray } from 'lodash-es';
 
 export interface IConfig {
   defaultValue: string;
@@ -102,9 +103,7 @@ const CheckBox = defineComponent({
     const handleChange = (val: any[]) => {
       const name = props.config.props.formItem?.name || props.id;
       initValues(props.type, name, val);
-      onChange?.({
-        [String(name)]: val,
-      });
+      onChange?.(val);
     };
 
     const show = () => {
@@ -128,7 +127,13 @@ const CheckBox = defineComponent({
 
     const setValue = (value: any) => {
       const name = props.config.props.formItem?.name || props.id;
-      initValues(props.type, name, value);
+      if (isObject(value) && name in value) {
+        initValues(props.type, name, value[name as keyof typeof value]);
+      } else if (isArray(value)) {
+        initValues(props.type, name, value);
+      } else {
+        console.error('[checkbox]', 'setValue参数错误，请检查', value);
+      }
     }
 
     const getValue = () => {
