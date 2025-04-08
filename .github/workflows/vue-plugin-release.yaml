@@ -1,0 +1,121 @@
+name: "vue-plugin-release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '要编译的分支'
+        required: true
+        default: 'dev'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      build_time: ${{ steps.get_build_time.outputs.build_time }}
+    steps:
+      - name: 获取构建时间
+        id: get_build_time
+        shell: bash
+        run: |
+          BuildTime=$(TZ='Asia/Shanghai' date +%Y%m%d%H%M%S)
+          echo "build_time=$BuildTime" >> "$GITHUB_OUTPUT"
+          echo "Build Time: ${BuildTime}"
+
+  build:
+    needs: prepare
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest"
+            target: "aarch64-apple-darwin"
+            artifact_name: "qwikpage-vue-plugin-mac-arm64"
+            file_name: "libcode_vue_arm64.dylib"
+            original_file: "libcode_vue.dylib"
+          - platform: "macos-latest"
+            target: "x86_64-apple-darwin"
+            artifact_name: "qwikpage-vue-plugin-mac-x64"
+            file_name: "libcode_vue_x64.dylib"
+            original_file: "libcode_vue.dylib"
+          - platform: "windows-latest"
+            target: "x86_64-pc-windows-msvc"
+            artifact_name: "qwikpage-win-x64"
+            file_name: "code_vue.dll"
+            original_file: "code_vue.dll"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.inputs.branch || 'dev' }}
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: |
+          cd backend/code-vue
+          cargo build --release --target ${{ matrix.target }}
+
+      - name: Rename library file (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          cp backend/target/${{ matrix.target }}/release/${{ matrix.original_file }} backend/target/${{ matrix.target }}/release/${{ matrix.file_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: backend/target/${{ matrix.target }}/release/${{ matrix.file_name }}
+          if-no-files-found: error
+
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create release directory
+        run: mkdir -p release-files
+
+      - name: Download Mac ARM64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qwikpage-vue-plugin-mac-arm64
+          path: release-files
+
+      - name: Download Mac x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qwikpage-vue-plugin-mac-x64
+          path: release-files
+
+      - name: Download Windows x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qwikpage-win-x64
+          path: release-files
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: QwikPage Vue Plugin v${{ needs.prepare.outputs.build_time }}
+          tag_name: vue-plugin-v${{ needs.prepare.outputs.build_time }}
+          body: |
+            QwikPage Vue Plugin 版本发布
+            - 构建时间: ${{ needs.prepare.outputs.build_time }}
+            
+            ### 文件说明
+            - `libcode_vue_arm64.dylib` - macOS ARM64 版本
+            - `libcode_vue_x64.dylib` - macOS x64 版本
+            - `code_vue.dll` - Windows x64 版本
+          draft: false
+          prerelease: true
+          files: release-files/*
