@@ -44,7 +44,7 @@ const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemTyp
 
   return (
     // FormContext.Provider 用于管理不在表单内的控件 取值 赋值
-    <FormContext.Provider value={{ initValues, getValue }}>
+    <FormContext.Provider value={{ initValues, getValue, inForm: false }}>
       <div style={config?.style}>{<MarsRender elements={elements || []} />}</div>
     </FormContext.Provider>
   );

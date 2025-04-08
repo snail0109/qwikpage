@@ -2,9 +2,10 @@ import { Form, FormItemProps, RadioProps, Checkbox } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { ComponentType } from '@materials/types';
 import { handleApi } from '@materials/utils/handleApi';
-import { isNotEmpty, isNull } from '@materials/utils/util';
+import { isNotEmpty } from '@materials/utils/util';
 import { useFormContext } from '@materials/utils/context';
 import { usePageStore } from '@materials/stores/pageStore';
+import { isObject, isArray } from 'lodash-es';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -23,11 +24,11 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MCheckBox = ({ id, type, config, inForm, formItemValue, onChange }: ComponentType<IConfig>, ref: any) => {
+const MCheckBox = ({ id, type, config, formItemValue, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
-  const { initValues, getValue } = useFormContext();
+  const { initValues, getValue, inForm } = useFormContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
   /**
@@ -103,7 +104,17 @@ const MCheckBox = ({ id, type, config, inForm, formItemValue, onChange }: Compon
       getValue: () => {
         const name = config.props.formItem?.name || id;
         return getValue(name)
-      }
+      },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        if (isObject(value) && value[name]) {
+          initValues(type, name, value[name]);
+        } else if (isArray(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error('[checkbox]', 'setValue参数错误，请检查', value);
+        }
+      },
     };
   });
 
@@ -113,9 +124,7 @@ const MCheckBox = ({ id, type, config, inForm, formItemValue, onChange }: Compon
       // 控件不在表单内需要自行维护值
       initValues(type, name, val);
     }
-    onChange?.({
-      [name]: val,
-    });
+    onChange?.(val);
   };
 
   return (

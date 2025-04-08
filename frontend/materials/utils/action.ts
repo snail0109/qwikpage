@@ -9,7 +9,7 @@ import {
   NotificationAction,
   VariableAction,
 } from '@materials/types';
-import { isString, isArray } from 'lodash-es';
+import { isArray, isObject } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
 import { handleApi } from './handleApi';
 import { usePageStore } from '@materials/stores/pageStore';
@@ -261,8 +261,8 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
   }
   try {
     // TODO 需要处理组件方法的参数
-    const isSingle = isString(data) || isArray(data);
-    const result = await ref?.[action.method]?.(isSingle ? data : { ...action?.params, ...data });
+    const canRest = isObject(data) && !isArray(data);
+    const result = await ref?.[action.method]?.(canRest ? { ...action?.params, ...data } : data);
     if (typeof result === 'boolean') {
       if (result) {
         execAction(next?.success || next, data);

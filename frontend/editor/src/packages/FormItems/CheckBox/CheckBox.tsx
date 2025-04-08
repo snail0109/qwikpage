@@ -5,6 +5,7 @@ import { handleApi } from '@/packages/utils/handleApi';
 import { isNotEmpty } from '@/packages/utils/util';
 import { useFormContext } from '@/packages/utils/context';
 import { usePageStore } from '@/stores/pageStore';
+import { isObject, isArray } from 'lodash-es';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -102,7 +103,13 @@ const MCheckBox = ({ id, type, formItemValue, config, onChange }: ComponentType<
       },
       setValue: (value: any) => {
         const name = config.props.formItem?.name || id;
-        initValues(type, name, value);
+        if (isObject(value) && value[name]) {
+          initValues(type, name, value[name]);
+        } else if (isArray(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error('[checkbox]', 'setValue参数错误，请检查', value);
+        }
       },
       getValue: () => {
         const name = config.props.formItem?.name || id;
@@ -117,9 +124,7 @@ const MCheckBox = ({ id, type, formItemValue, config, onChange }: ComponentType<
       // 控件不在表单内需要自行维护值
       initValues(type, name, val);
     }
-    onChange?.({
-      [name]: val,
-    });
+    onChange?.(val);
   };
 
   return (

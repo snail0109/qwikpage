@@ -4,6 +4,7 @@ import { ComponentType } from '@materials/types';
 import { useFormContext } from '@materials/utils/context';
 import omit from 'lodash-es/omit';
 import QIcon from '@materials/components/icons/QIcon';
+import { isObject, has, isString } from 'lodash-es';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -17,13 +18,13 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MInput = ({ type, config, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
-  const { initValues } = useFormContext();
+const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
+  const { initValues, getValue, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
   // 初始化默认值
   useEffect(() => {
-    const name: string = config.props.formItem?.name;
+    const name: string = config.props.formItem?.name || id;
     const value = config.props.defaultValue;
     initValues(type, name, value);
   }, [config.props.defaultValue]);
@@ -35,23 +36,28 @@ const MInput = ({ type, config, onChange, onBlur, onPressEnter }: ComponentType<
 
   // 输入事件
   const handleChange = (val: string) => {
+    const name = config.props.formItem?.name || id;
+    if (!inForm) {
+      // 控件不在表单内需要自行维护值
+      initValues(type, name, val);
+    }
     onChange &&
-      onChange({
-        [config.props.formItem.name]: val,
-      });
+      onChange(val);
   };
 
   // 失去焦点事件
   const handleBlur = (val: string) => {
+    const name = config.props.formItem?.name || id;
     onBlur?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
 
   // 回车事件
   const handlePressEnter = (val: string) => {
+    const name = config.props.formItem?.name || id;
     onPressEnter?.({
-      [config.props.formItem.name]: val,
+      [name]: val,
     });
   };
 
@@ -69,6 +75,20 @@ const MInput = ({ type, config, onChange, onBlur, onPressEnter }: ComponentType<
       disable() {
         setDisabled(true);
       },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        if (isObject(value) && has(value, name)) {
+          initValues(type, name, value[name]);
+        } else if (isString(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error('[input]','setValue参数错误，请检查', value);
+        }
+      },
+      getValue: () => {
+        const name = config.props.formItem?.name || id;
+        return getValue(name)
+      }
     };
   });
   const Com = config.props.formWrap?.type === 'password' ? Input.Password : Input;

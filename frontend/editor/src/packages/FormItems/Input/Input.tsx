@@ -4,6 +4,7 @@ import { ComponentType } from '@/packages/types';
 import { useFormContext } from '@/packages/utils/context';
 import omit from 'lodash-es/omit';
 import QIcon from '@/components/icons/QIcon';
+import { isObject, has, isString } from 'lodash-es';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -40,9 +41,7 @@ const MInput = ({ id, type, formItemValue, config, onChange, onBlur, onPressEnte
       // 控件不在表单内需要自行维护值
       initValues(type, name, val);
     }
-    onChange?.({
-      [name]: val,
-    });
+    onChange?.(val);
   };
 
   // 失去焦点事件
@@ -75,7 +74,13 @@ const MInput = ({ id, type, formItemValue, config, onChange, onBlur, onPressEnte
       },
       setValue: (value: any) => {
         const name = config.props.formItem?.name || id;
-        initValues(type, name, value);
+        if (isObject(value) && has(value, name)) {
+          initValues(type, name, value[name]);
+        } else if (isString(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error('[input]','setValue参数错误，请检查', value);
+        }
       },
       getValue: () => {
         const name = config.props.formItem?.name || id;

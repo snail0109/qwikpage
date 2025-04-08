@@ -8,6 +8,7 @@ import { createContext, useContext } from 'react';
 
 export const FormContext = createContext<{
   form?: FormInstance;
+  inForm: boolean;
   initValues: (type: string, name: string, value: any) => void;
   getValue: (name: string) => any;
 } | null>(null);
@@ -16,6 +17,8 @@ export const useFormContext = () => {
   const context = useContext(FormContext);
   if (!context) {
     return {
+      form: null,
+      inForm: false,
       initValues() { },
       getValue() { return null; },
     };
