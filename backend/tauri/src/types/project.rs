@@ -96,6 +96,7 @@ pub struct ProjectSummary {
     pub name: String,
     pub remark: Option<String>,
     pub theme_color: String,
+    pub system_theme_color: Option<String>,
     pub count: usize,
     pub updated_at: String,
     pub logo: String,

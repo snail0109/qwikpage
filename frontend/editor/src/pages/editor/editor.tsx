@@ -14,8 +14,6 @@ import { usePageStore } from '@/stores/pageStore';
 import Page from '@/packages/Page/Page';
 import PageConfig from '@/packages/Page/Schema';
 import FloatingCollector from '@/components/FloatingCollector';
-import { handleActionFlow } from '@/packages/utils/action';
-import TopBar from './topbar/TopBar';
 import styles from './index.module.less';
 /**
  * 画布
@@ -66,6 +64,7 @@ const Editor = () => {
   const [loaded, setLoaded] = useState(false);
   const { id, projectId } = useParams();
   const navigate = useNavigate();
+  const themeColor = storage.get('themeColor') || '#1677ff';
 
   // 监听页面变动，在路由切换的时候提示未修改
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
@@ -98,11 +97,13 @@ const Editor = () => {
     pageService
       .getPageDetail({ id, projectId: projectId! })
       .then((res: any) => {
-        let pageData: any = {};
+        let pageData: any = { config: PageConfig.config };
+        pageData.config.props.theme = themeColor;
         try {
           pageData = res.pageData ? JSON.parse(res.pageData) : { config: PageConfig.config };
         } catch (error) {
           pageData = { config: PageConfig.config };
+          pageData.config.props.theme = themeColor;
           console.error(error);
           console.info('【json数据】', res.pageData);
           message.error('页面数据格式错误，请检查');

@@ -8,6 +8,7 @@ export interface IProject {
   name: string;
   logo: string;
   themeColor: string;
+  systemThemeColor: string;
   remark: string;
   count: number;
 }

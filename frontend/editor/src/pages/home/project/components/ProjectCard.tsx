@@ -19,6 +19,7 @@ import BrowseIcon from "@/assets/icons/BrowseIcon.svg?react";
 import FolderIcon from "@/assets/icons/FolderIcon.svg?react";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
+import storage from "@/utils/storage";
 
 const { Paragraph } = Typography;
 
@@ -62,6 +63,8 @@ export default function Category({ list }: { list: IProject[] }) {
     const handleOpenPages = (id: string) => {
         const project = list.find((item) => item.id === id);
         if (project) {
+            const themeColor = project.systemThemeColor || '#1677ff';
+            storage.set('themeColor', themeColor);
             navigate(`/project/pages?projectId=${id}&projectName=${encodeURIComponent(project.name)}`);
         }
     };
