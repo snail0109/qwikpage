@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { produce } from 'immer';
 import { ComponentType, ApiType, PageVariable, EventType, ComItemType } from '@/packages/types';
 import { cloneDeep } from 'lodash-es';
-import { createId, getElement, judgeIfInForm } from '@/utils/util';
+import { createId, getElement, judgeIfInForm, COLUMN_MAP } from '@/utils/util';
 import { merge } from 'lodash-es';
 import storage from '@/utils/storage';
 
@@ -11,56 +11,56 @@ import storage from '@/utils/storage';
  */
 function handleElementIdChange(state: PageState, oldId: string, newId: string) {
   // 复制元素配置到新ID
-  state.page.pageData.elementsMap[newId] = {...state.page.pageData.elementsMap[oldId]};
+  state.page.pageData.elementsMap[newId] = { ...state.page.pageData.elementsMap[oldId] };
   state.page.pageData.elementsMap[newId].id = newId;
-  
+
   // 递归更新elements中的ID及其引用
-  const updateElementsRecursive = (elements:ComponentType[]) => {
+  const updateElementsRecursive = (elements: ComponentType[]) => {
     for (let i = 0; i < elements.length; i++) {
       // 更新元素自身ID
       if (elements[i].id === oldId) {
         elements[i].id = newId;
       }
-      
+
       // 更新parentId引用
       if (elements[i].parentId === oldId) {
         elements[i].parentId = newId;
       }
-      
+
       // 更新inForm引用
       if (elements[i].inForm === oldId) {
         elements[i].inForm = newId;
       }
-      
+
       // 递归处理子元素
       if (elements[i].elements && elements[i].elements.length > 0) {
         updateElementsRecursive(elements[i].elements);
       }
     }
   };
-  
+
   updateElementsRecursive(state.page.pageData.elements);
-  
+
   // 更新所有元素的parentId和inForm引用
   Object.keys(state.page.pageData.elementsMap).forEach(key => {
     const element = state.page.pageData.elementsMap[key];
     if (element.parentId === oldId) {
       element.parentId = newId;
     }
-    
+
     if (element.inForm === oldId) {
       element.inForm = newId;
     }
   });
-  
+
   // 删除旧的元素配置
   delete state.page.pageData.elementsMap[oldId];
-  
+
   // 如果当前选中的元素是被修改的元素，更新selectedElement
   if (state.selectedElement && state.selectedElement.id === oldId) {
     state.selectedElement.id = newId;
   }
-  
+
   return newId; // 返回新ID，方便后续使用
 }
 
@@ -146,6 +146,7 @@ export interface PageAction {
   moveElements: (payload: any) => void;
   setSelectedElement: (payload: any) => void;
   removeElements: (payload: any) => void;
+  updateGridChildren: (payload: any) => void;
   dragSortElements: (payload: any) => void;
   addVariable: (payload: PageVariable) => void;
   editVariable: (payload: PageVariable) => void;
@@ -376,22 +377,22 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
     set(
       produce((state) => {
         state.isEdit = true; // 标记为编辑状态
-        
+
         // 处理ID变更
         if (payload.type === 'props' && payload.props.id && payload.props.id !== payload.id) {
           const oldId = payload.id;
           const newId = payload.props.id;
-          
+
           // 调用ID变更处理函数
           handleElementIdChange(state, oldId, newId);
-          
+
           // 从props中删除id字段，避免后续处理再次使用
           delete payload.props.id;
-          
+
           // 更新payload.id为新ID，以便后续处理使用新ID
           payload.id = newId;
         }
-        
+
         const item = state.page.pageData.elementsMap[payload.id];
         // 属性修改
         if (payload.type === 'props') {
@@ -560,6 +561,88 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
         }
         deepFind(state.page.pageData.elements);
         state.selectedElement = undefined;
+      }),
+    );
+  },
+  updateGridChildren(payload: any) {
+    const { id, cols = 3 } = payload;
+    const colNumArr = COLUMN_MAP[cols as keyof typeof COLUMN_MAP];
+    const addCols: any[] = []; // 标记需要新增的cols
+    const removeCols: any[] = []; // 标记需要删除的cols
+    const editCols: any[] = []; // 标记需要编辑的cols
+    set(
+      produce((state) => {
+        state.isEdit = true; // 标记为编辑状态
+        function deepFind(list: ComponentType[]) {
+          for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            if (item.id == id) {
+              const { elements = [] } = item;
+              // 先删除多余的cols
+              if (elements.length > colNumArr.length) {
+                removeCols.push(...elements.slice(colNumArr.length).map((item) => item.id));
+                elements.splice(colNumArr.length);
+              }
+              colNumArr.forEach((colNum, index) => {
+                if (elements[index]) {
+                  editCols.push({ id: elements[index].id, colNum });
+                } else {
+                  // 新增cols
+                  const newCol: any = {
+                    id: createId('Col', 6),
+                    type: 'Col',
+                    name: '列组件',
+                    parentId: id,
+                  }
+                  elements.push({ ...newCol, elements: [] });
+                  addCols.push({
+                    ...newCol,
+                    config: {
+                      props: { span: colNum },
+                      style: {},
+                      events: [],
+                      api: {},
+                      source: '',
+                    },
+                    events: [],
+                    methods: [],
+                  });
+                }
+              });
+              // 修改elementsMap内的cols
+              if (editCols.length) {
+                editCols.forEach((col) => {
+                  state.page.pageData.elementsMap[col.id].config.props.span = col.colNum;
+                });
+              }
+              if (addCols.length) {
+                addCols.forEach((col) => {
+                  state.page.pageData.elementsMap[col.id] = col;
+                });
+              }
+              if (removeCols.length) {
+                // 递归删除相互引用的嵌套父子组件
+                const deepRemove = (id: string) => {
+                  Object.values(state.page.pageData.elementsMap).map((item: any) => {
+                    if (item.parentId == id) {
+                      delete state.page.pageData.elementsMap[item.id];
+                      deepRemove(item.id);
+                    }
+                    return item;
+                  });
+                }
+                removeCols.forEach((col) => {
+                  delete state.page.pageData.elementsMap[col];
+                  deepRemove(col);
+                });
+              }
+              break;
+            } else if (item.elements?.length) {
+              deepFind(item.elements);
+            }
+          }
+        }
+        deepFind(state.page.pageData.elements);
       }),
     );
   },

@@ -16,6 +16,8 @@ export default {
       name: 'span',
       props: {
         placeholder: '请输入占位格数',
+        max: 24,
+        min: 1
       },
     },
     {
@@ -24,6 +26,8 @@ export default {
       name: 'offset',
       props: {
         placeholder: '请输入左侧偏移格数',
+        max: 24,
+        min: 1
       },
     },
     // {

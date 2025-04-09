@@ -23,7 +23,7 @@ const ApiConfig = lazy(() => import('@/components/ApiConfig/ApiConfig'));
  * 生成左侧组件列表
  */
 const ConfigPanel = memo(() => {
-  const { pageName, pageProps, selectedElement, savePageInfo, elementsMap, editElement } = usePageStore((state) => {
+  const { pageName, pageProps, selectedElement, savePageInfo, elementsMap, editElement, updateGridChildren } = usePageStore((state) => {
     return {
       pageName: state.page.name,
       pageProps: state.page.pageData.config.props,
@@ -31,6 +31,7 @@ const ConfigPanel = memo(() => {
       savePageInfo: state.savePageInfo,
       elementsMap: state.page.pageData.elementsMap,
       editElement: state.editElement,
+      updateGridChildren: state.updateGridChildren,
     };
   });
   const [form] = Form.useForm();
@@ -84,20 +85,26 @@ const ConfigPanel = memo(() => {
   );
 
   const { run } = useDebounceFn(
-    () => {
-      handleValueChange(form.getFieldsValue());
+    (changedValues) => {
+      const columnNumChange = changedValues?.colNum; 
+      handleValueChange(form.getFieldsValue(), columnNumChange);
     },
     { wait: 300 },
   );
 
   // 接收表单值
-  const handleValueChange = (values: any) => {
+  const handleValueChange = async (values: any, columnNumChange: any) => {
     if (selectedElement?.id) {
-      editElement({
+      const id = selectedElement.id;
+      await editElement({
         id: selectedElement.id,
         type: 'props',
         props: values,
       });
+      if (columnNumChange) {
+        // Grid修改列排列需要修改子组件数量
+        updateGridChildren({ id, cols: columnNumChange });
+      }
     } else {
       savePageInfo({
         type: 'props',

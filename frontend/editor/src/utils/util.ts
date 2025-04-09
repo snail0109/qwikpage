@@ -415,3 +415,9 @@ export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: C
   const deep = deepth + 1;
   return judgeIfInForm(parentId, elementsMap, deep);
 }
+
+export const COLUMN_MAP = {
+  3: [8, 8, 8],
+  4: [2, 4, 8, 10],
+  2: [10, 14]
+}

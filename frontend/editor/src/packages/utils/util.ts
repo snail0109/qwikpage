@@ -498,9 +498,3 @@ export const isFormPlugin = (element: ComponentType, needJudgeInform?: boolean) 
   }
   return false;
 }
-
-export const COLUMN_MAP = {
-  3: [8, 8, 8],
-  4: [2, 4, 8, 10],
-  2: [10, 14]
-}
