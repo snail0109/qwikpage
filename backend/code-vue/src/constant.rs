@@ -102,12 +102,16 @@ import { provide } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { getInitValue } from "@/utils/util";
-import type { FormContextType } from '@/types';
+import type { FormContextType } from "@/types";
 
 const { pageState } = storeToRefs(appStore.page);
 const { setFormItemData } = appStore.page;
 
-const initValues = (type: string, name: string | number | (string | number)[], value: any) => {
+const initValues = (
+  type: string,
+  name: string | number | (string | number)[],
+  value: any
+) => {
   if (name) {
     const initValue = getInitValue(type, value);
     setFormItemData({
@@ -120,7 +124,7 @@ const initValues = (type: string, name: string | number | (string | number)[], v
 const getValue = (name: string) => {
   const formItemData = pageState.value.page.pageData.formItemData;
   const value = formItemData[name];
-  console.log("普通控件取值打印 [name]: value", `[${name}]: `, value)
+  console.log("普通控件取值打印 [name]: value", `[${name}]: `, value);
   return value;
 };
 
@@ -128,7 +132,7 @@ const useFormContext = (): FormContextType => {
   return {
     initValues,
     getValue,
-    inForm: '',
+    inForm: "",
   };
 };
 
@@ -141,7 +145,7 @@ provide("useFormContext", useFormContext);
   </div>
 </template>
 
-<style scoped>
+<style>
 * {
   margin: 0;
   padding: 0;
@@ -151,6 +155,11 @@ provide("useFormContext", useFormContext);
   color: rgb(0, 0, 0);
   background-color: rgb(255, 255, 255);
   padding: 20px;
+  .ant-form-inline {
+    > .ant-form-item {
+      margin-bottom: 15px !important;
+    }
+  }
 }
 </style>
 "#;
