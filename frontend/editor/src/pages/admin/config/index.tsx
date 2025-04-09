@@ -13,35 +13,7 @@ import styles from "./index.module.less";
 import { GlobalHotKeys } from "react-hotkeys";
 import { keyMap } from "@/constants/hotKeys";
 
-const MenuModeOptions = [
-    [
-        {
-            label: "垂直",
-            value: "vertical",
-        },
-        {
-            label: "内嵌",
-            value: "inline",
-        },
-    ],
-    [
-        {
-            label: "水平",
-            value: "horizontal",
-        },
-    ],
-];
-
-const MenyThemeColor = [
-    {
-        label: "深色",
-        value: "dark",
-    },
-    {
-        label: "浅色",
-        value: "light",
-    },
-];
+let projectDetail: any = {};
 
 /**
  * 项目配置
@@ -61,8 +33,10 @@ const Config: React.FC = memo(() => {
 
     // 项目加载
     useEffect(() => {
+        projectDetail = {};
         if (!id) return;
         projectService.getProjectDetail(id).then((res) => {
+            projectDetail = res;
             form.setFieldsValue(res);
             setGroupId(res.groupId);
             setSelectedColor(res.themeColor);
@@ -77,14 +51,14 @@ const Config: React.FC = memo(() => {
             const value = form.getFieldsValue();
             setLoading(true);
             // value 转化成 snake_case格式
-            const { menuMode, menuThemeColor, systemThemeColor, codeExportPath, ...rest } = value;
-
+            const { systemThemeColor, codeExportPath, ...rest } = value;
             await projectService.updateProject({
+                ...projectDetail,
                 ...rest,
                 theme_color: selectedColor,
                 system_theme_color: systemThemeColor,
-                menu_mode: menuMode,
-                menu_theme_color: menuThemeColor,
+                menu_mode: projectDetail.menuMode,
+                menu_theme_color: projectDetail.menuThemeColor,
                 code_export_path: codeExportPath,
             });
             message.success("更新成功");
