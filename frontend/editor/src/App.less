@@ -60,3 +60,29 @@ html {
 :hover::-webkit-scrollbar-thumb {
   background-color: @scrollbar-thumb-bg;
 }
+.flexRadio {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  .ant-radio-button-wrapper {
+    padding: 0 8px;
+  }
+  .columnButton {
+    display: flex;
+    justify-content: space-around;
+    >span {
+      display: block;
+      width: 45px;
+      margin-right: 10px;
+    }
+    .columnContainer {
+      flex: 1;
+      display: flex;
+      gap: 2px;
+      padding: 5px 0;
+      > div {
+        background: #B9D2FF;
+      }
+    }
+  }
+}

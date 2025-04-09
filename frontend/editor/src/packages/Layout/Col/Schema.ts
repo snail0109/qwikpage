@@ -12,36 +12,36 @@ export default {
     },
     {
       type: 'InputNumber',
-      label: '占位格数',
+      label: '占据栅格数',
       name: 'span',
       props: {
-        placeholder: '输入占位格数',
+        placeholder: '请输入占位格数',
       },
     },
     {
       type: 'InputNumber',
-      label: '偏移格数',
+      label: '偏移栅格数',
       name: 'offset',
       props: {
-        placeholder: '左侧偏移格数',
+        placeholder: '请输入左侧偏移格数',
       },
     },
-    {
-      type: 'InputNumber',
-      label: '左拉格数',
-      name: 'pull',
-      props: {
-        placeholder: '左侧偏移格数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '右推格数',
-      name: 'push',
-      props: {
-        placeholder: '右侧偏移格数',
-      },
-    },
+    // {
+    //   type: 'InputNumber',
+    //   label: '左拉格数',
+    //   name: 'pull',
+    //   props: {
+    //     placeholder: '左侧偏移格数',
+    //   },
+    // },
+    // {
+    //   type: 'InputNumber',
+    //   label: '右推格数',
+    //   name: 'push',
+    //   props: {
+    //     placeholder: '右侧偏移格数',
+    //   },
+    // },
   ],
   config: {
     // 组件默认属性值

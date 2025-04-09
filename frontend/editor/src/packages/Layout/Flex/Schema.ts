@@ -77,8 +77,12 @@ export default {
     style: {},
     events: [],
     api: {},
-    source: '',
   },
   // 组件事件
-  events: [],
+  events: [
+    {
+      value: 'onClick',
+      name: '点击事件',
+    },
+  ],
 };
