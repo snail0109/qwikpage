@@ -7,13 +7,9 @@ import { message } from "@/utils/AntdGlobal";
 import { ArrowLeftOutlined, EllipsisOutlined } from "@ant-design/icons";
 import ColorPicker from "@/components/ColorPicker";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
-import RadioButtonGroup from "@/components/RadioButtonGroup";
 import ProjectLogo from "@/components/ProjectLogo";
 import { projectService } from "@/services";
 import styles from "./index.module.less";
-import LR from "@/assets/image/LR.png";
-import UD from "@/assets/image/UD.png";
-import project from "@/pages/home/project";
 import { GlobalHotKeys } from "react-hotkeys";
 import { keyMap } from "@/constants/hotKeys";
 
@@ -256,64 +252,8 @@ const Config: React.FC = memo(() => {
                 <Form.Item label="LOGO" name="logo" rules={[{ required: true, message: "请上传项目Logo" }]}>
                     <ProjectLogo disabled={type === "detail"} logoUrl={logoUrl} handleUpload={handleUpload} />
                 </Form.Item>
-                <Form.Item label="系统布局" name="layout">
-                    <Radio.Group
-                        {...props}
-                        onChange={(event) =>
-                            form.setFieldValue("menuMode", event.target.value === 1 ? "inline" : "horizontal")
-                        }
-                    >
-                        <Radio value={1}>
-                            <img style={{ width: 100 }} src={LR} alt="左右布局" />
-                        </Radio>
-                        <Radio value={2}>
-                            <img style={{ width: 100 }} src={UD} alt="上左右下布局" />
-                        </Radio>
-                    </Radio.Group>
-                </Form.Item>
-                <Form.Item noStyle shouldUpdate>
-                    {(form: any) => {
-                        const layout = form.getFieldValue("layout");
-                        const menuMode = form.getFieldValue("menuMode");
-                        const targetOptions = layout === 1 ? MenuModeOptions[0] : MenuModeOptions[1];
-                        return (
-                            <Form.Item label="菜单模式" name="menuMode">
-                                <RadioButtonGroup
-                                    disabled={type === "detail"}
-                                    options={targetOptions}
-                                    selected={menuMode}
-                                    onChangeTab={handleChangeTab("menuMode")}
-                                />
-                            </Form.Item>
-                        );
-                    }}
-                </Form.Item>
-                <Form.Item noStyle shouldUpdate>
-                    {(form: any) => {
-                        const menuThemeColor = form.getFieldValue("menuThemeColor");
-                        return (
-                            <Form.Item label="菜单主题" name="menuThemeColor">
-                                <RadioButtonGroup
-                                    disabled={type === "detail"}
-                                    options={MenyThemeColor}
-                                    selected={menuThemeColor}
-                                    onChangeTab={handleChangeTab("menuThemeColor")}
-                                />
-                            </Form.Item>
-                        );
-                    }}
-                </Form.Item>
                 <Form.Item label="系统主题" name="systemThemeColor">
                     <ColorPicker {...props} />
-                </Form.Item>
-                <Form.Item label="面包屑" name="breadcrumb" valuePropName="checked">
-                    <Switch {...props} />
-                </Form.Item>
-                <Form.Item label="多页签" name="tag" valuePropName="checked">
-                    <Switch {...props} />
-                </Form.Item>
-                <Form.Item label="页脚" name="footer" valuePropName="checked">
-                    <Switch {...props} />
                 </Form.Item>
                 <div className={styles.editBtn}>
                     {type === "detail" ? (
