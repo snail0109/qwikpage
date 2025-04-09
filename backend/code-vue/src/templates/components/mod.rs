@@ -3,6 +3,8 @@ use crate::FileTemplate;
 pub mod button;
 pub mod icon;
 pub mod flex;
+pub mod grid;
+pub mod col;
 pub mod form;
 pub mod input;
 pub mod checkbox;
@@ -39,6 +41,14 @@ pub fn get_components() -> Vec<FileTemplate> {
     files.push(FileTemplate {
         filename: String::from("src/components/Flex/index.tsx"),
         content: String::from(flex::FLEX_INDEX),
+    });
+    files.push(FileTemplate {
+        filename: String::from("src/components/Grid/index.tsx"),
+        content: String::from(grid::GRID_INDEX),
+    });
+    files.push(FileTemplate {
+        filename: String::from("src/components/Col/index.tsx"),
+        content: String::from(col::COL_INDEX),
     });
     files.push(FileTemplate {
         filename: String::from("src/components/Input/index.tsx"),

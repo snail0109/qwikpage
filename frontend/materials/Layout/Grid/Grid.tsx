@@ -1,5 +1,5 @@
 import { ComponentType } from '@materials/types';
-import { Row, Col } from 'antd';
+import { Row } from 'antd';
 import MarsRender from '@materials/MarsRender/MarsRender';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 
@@ -31,9 +31,7 @@ const MGrid = ({ id, type, config, elements }: ComponentType, ref: any) => {
   return (
     visible && (
       <Row style={config.style} {...config.props} data-id={id} data-type={type}>
-        <Col span={24}>
-          {elements?.length ? <MarsRender elements={elements || []} /> : <></>}
-        </Col>
+        <MarsRender elements={elements || []} />
       </Row>
     )
   );
