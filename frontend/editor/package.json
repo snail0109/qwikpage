@@ -15,6 +15,7 @@
     "@bytemd/react": "^1.21.0",
     "@monaco-editor/react": "^4.6.0",
     "@qwikpage/materials": "workspace:^",
+    "@qwikpage/core": "workspace:^",
     "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-log": "~2",
     "@tauri-apps/plugin-opener": "^2",

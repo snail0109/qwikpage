@@ -1,0 +1,30 @@
+.rulerItemWrap {
+  position: relative;
+  background-color: #F6F6F6;
+  margin: 8px -5px;
+  padding: 8px 5px;
+  border-radius: 4px;
+
+  :global {
+    .ant-form-item-horizontal {
+      .ant-form-item-control-input-content {
+        justify-content: start !important;
+      }
+    }
+  }
+
+  &:hover .deleteRulerBtn {
+    color: #333333;
+  }
+
+  .deleteRulerBtn {
+    position: absolute;
+    top: 8px;
+    right: 3px;
+    color: #999999;
+  }
+}
+
+.addRulerBtn {
+  color: var(--ant-color-primary);
+}
