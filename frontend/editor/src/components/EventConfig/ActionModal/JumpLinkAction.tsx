@@ -20,7 +20,7 @@ const OpenModalAction = ({ form }: { form: FormInstance }) => {
       <Form.Item label="跳转方式" name={'jumpType'}>
         <Radio.Group buttonStyle="solid">
           <Radio.Button value="route">系统内跳转</Radio.Button>
-          <Radio.Button value="micro">跨服务跳转</Radio.Button>
+          {/* <Radio.Button value="micro">跨服务跳转</Radio.Button> */}
           <Radio.Button value="link">超链接跳转</Radio.Button>
         </Radio.Group>
       </Form.Item>

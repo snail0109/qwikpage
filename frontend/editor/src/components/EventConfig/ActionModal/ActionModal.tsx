@@ -88,26 +88,26 @@ const ActionModal = (props: any, ref: any) => {
       label: '弹框',
       key: 'modal-nav',
       children: [
-        {
-          label: '打开弹框',
-          key: 'openModal',
-          render: () => <OpenModalAction />,
-        },
-        {
-          label: '关闭弹框',
-          key: 'closeModal',
-          render: () => <OpenModalAction />,
-        },
-        {
-          label: '打开抽屉',
-          key: 'openDrawer',
-          render: () => <OpenDrawerAction />,
-        },
-        {
-          label: '关闭抽屉',
-          key: 'closeDrawer',
-          render: () => <OpenDrawerAction />,
-        },
+        // {
+        //   label: '打开弹框',
+        //   key: 'openModal',
+        //   render: () => <OpenModalAction />,
+        // },
+        // {
+        //   label: '关闭弹框',
+        //   key: 'closeModal',
+        //   render: () => <OpenModalAction />,
+        // },
+        // {
+        //   label: '打开抽屉',
+        //   key: 'openDrawer',
+        //   render: () => <OpenDrawerAction />,
+        // },
+        // {
+        //   label: '关闭抽屉',
+        //   key: 'closeDrawer',
+        //   render: () => <OpenDrawerAction />,
+        // },
         {
           label: '确认框',
           key: 'showConfirm',
@@ -140,11 +140,11 @@ const ActionModal = (props: any, ref: any) => {
           key: 'request',
           render: () => <RequestAction type="request" />,
         },
-        {
-          label: '文件下载',
-          key: 'download',
-          render: () => <RequestAction type="download" />,
-        },
+        // {
+        //   label: '文件下载',
+        //   key: 'download',
+        //   render: () => <RequestAction type="download" />,
+        // },
       ],
     },
     {
