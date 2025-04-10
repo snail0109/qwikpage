@@ -22,7 +22,7 @@ const Text = defineComponent({
 
     // 计算文本样式
     const textStyle = computed(() => {
-      const style = { display: 'block', ...props.config.style };
+      const style = { ...props.config.style };
       const hiddenText = props.config.props?.hiddenText;
 
       switch (hiddenText) {

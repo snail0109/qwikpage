@@ -38,13 +38,14 @@ const MText = ({ id, type, config, onClick }: ComponentType, ref: any) => {
   // 根据 hiddenText 属性设置文本样式
   const getTextStyle = () => {
     const hiddenText = config.props?.hiddenText;
-    const style = { display: 'block', ...config.style };
+    const style = { ...config.style };
     
     switch (hiddenText) {
       case 'ellipsis':
         style.whiteSpace = 'nowrap';
         style.overflow = 'hidden';
         style.textOverflow = 'ellipsis';
+        style.display = 'block';
         break;
       case 'break':
         style.whiteSpace = 'break-spaces';
