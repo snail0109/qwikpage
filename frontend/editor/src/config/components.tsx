@@ -154,11 +154,11 @@ const components = [
       //   name: '图标',
       //   type: 'Icon',
       // },
-      // {
-      //   icon: <IconText />,
-      //   name: '文本',
-      //   type: 'Text',
-      // },
+      {
+        icon: <IconText />,
+        name: '文本',
+        type: 'Text',
+      },
       // {
       //   icon: <IconLink />,
       //   name: '超链接',

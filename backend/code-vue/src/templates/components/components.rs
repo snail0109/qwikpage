@@ -10,4 +10,5 @@ export { default as Input } from './Input';
 export { default as CheckBox } from './CheckBox';
 export { default as Material } from './MarsRender/Material';
 export { default as MarsRender } from './MarsRender';
+export { default as Text } from './Text';
 "#;

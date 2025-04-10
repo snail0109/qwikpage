@@ -1,10 +1,9 @@
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { Typography } from 'antd';
-import dayjs from 'dayjs';
 import { ComponentType } from '@/packages/types';
-import { formatNumber, handleFormatter } from '@/packages/utils/util';
-import { message } from '@/utils/AntdGlobal';
+import { handleFormatter } from '@qwikpage/core/utils/utils';
 import { omit } from 'lodash-es';
+import './index.less';
 
 /**
  *
@@ -18,25 +17,8 @@ const MText = ({ id, type, config, onClick }: ComponentType, ref: any) => {
 
   useEffect(() => {
     const originText = config.props?.text?.toString() || '';
-    const format = config.props?.format;
-    const script = config.props?.script;
-    let value: string | number = originText;
-    if (format === 'YYYY-MM-DD HH:mm:ss') {
-      value = dayjs(originText).format(format);
-    } else if (format === 'YYYY-MM-DD') {
-      value = dayjs(originText).format(format);
-    } else if (format === 'HH:mm:ss') {
-      value = dayjs(originText).format(format);
-    } else if (format === 'money') {
-      value = formatNumber(originText, 'currency');
-    } else if (format === 'number') {
-      value = formatNumber(originText, 'decimal');
-    } else if (format === 'percent') {
-      value = formatNumber(originText, 'percent');
-    }
-    const renderText = handleFormatter(script)?.(value);
-    setText(renderText?.toString() || value);
-  }, [config.props.text, config.props?.format, config.props?.script]);
+    setText(originText);
+  }, [config.props.text]);
 
   // 对外暴露方法
   useImperativeHandle(ref, () => {
@@ -52,10 +34,48 @@ const MText = ({ id, type, config, onClick }: ComponentType, ref: any) => {
   const handleClick = () => {
     onClick?.();
   };
+
+  // 根据 hiddenText 属性设置文本样式
+  const getTextStyle = () => {
+    const hiddenText = config.props?.hiddenText;
+    const style = { display: 'block', ...config.style };
+    
+    switch (hiddenText) {
+      case 'ellipsis':
+        style.whiteSpace = 'nowrap';
+        style.overflow = 'hidden';
+        style.textOverflow = 'ellipsis';
+        break;
+      case 'break':
+        style.whiteSpace = 'break-spaces';
+        style.wordBreak = 'break-all';
+        break;
+      case 'wrap':
+        style.whiteSpace = 'pre-wrap';
+        style.wordBreak = 'normal';
+        break;
+      case 'nowrap':
+        style.whiteSpace = 'nowrap';
+        break;
+      default:
+        // 默认不处理
+        break;
+    }
+    
+    return style;
+  };
+
   return (
     visible && (
-      <Typography.Text style={config.style} {...omit(config.props, ['script', 'text'])} onClick={handleClick} data-id={id} data-type={type}>
-        {text}
+      <Typography.Text 
+        style={getTextStyle()} 
+        {...omit(config.props, ['script', 'text', 'hiddenText'])} 
+        onClick={handleClick} 
+        data-id={id} 
+        data-type={type}
+        className="text-placeholder" // 只有编辑器中使用, 防止文本内容为空时, 文本框无法被选中
+      >
+        {text || ''}
       </Typography.Text>
     )
   );
