@@ -79,6 +79,11 @@ const AdminLayout = () => {
           colorPrimary: projectInfo.systemThemeColor || '#1677ff',
         },
         hashed: false,
+        components: {
+          Form: {
+            inlineItemMarginBottom: 15,
+          },
+        }
       }}
     >
       {/* <Layout> */}

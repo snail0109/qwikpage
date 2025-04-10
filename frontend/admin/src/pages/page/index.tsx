@@ -62,6 +62,11 @@ export default function () {
           colorLink: theme,
           colorInfo: theme,
         },
+        components: {
+          Form: {
+            inlineItemMarginBottom: 15,
+          },
+        }
       }}
     >
       <Page config={pageData?.config} elements={pageData?.elements} />
