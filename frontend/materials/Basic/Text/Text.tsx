@@ -69,7 +69,7 @@ const MText = ({ config, onClick }: ComponentType, ref: any) => {
         visible && (
             <Typography.Text
                 style={getTextStyle()}
-                {...omit(config.props, ["script", "text", "hiddenText"])}
+                {...omit(config.props, ["script", "text", "hiddenText", 'formItem'])}
                 onClick={handleClick}
             >
                 {text}

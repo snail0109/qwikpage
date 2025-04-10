@@ -1,7 +1,6 @@
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { Typography } from 'antd';
 import { ComponentType } from '@/packages/types';
-import { handleFormatter } from '@qwikpage/core/utils/utils';
 import { omit } from 'lodash-es';
 import './index.less';
 
@@ -70,7 +69,7 @@ const MText = ({ id, type, config, onClick }: ComponentType, ref: any) => {
     visible && (
       <Typography.Text 
         style={getTextStyle()} 
-        {...omit(config.props, ['script', 'text', 'hiddenText'])} 
+        {...omit(config.props, ['script', 'text', 'hiddenText', 'formItem'])} 
         onClick={handleClick} 
         data-id={id} 
         data-type={type}

@@ -3,6 +3,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { Typography } from "ant-design-vue";
 import { withInstall } from "@/utils/type";
 import { commonProps } from "@/types";
+import { omit } from 'lodash-es';
 
 const Text = defineComponent({
   name: "QText",
@@ -66,7 +67,7 @@ const Text = defineComponent({
       visible.value && (
         <Typography.Text
           style={textStyle.value}
-          {...props.config.props}
+          {...omit(props.config.props, ["script", "text", "hiddenText", 'formItem'])}
         >
           {text.value}
         </Typography.Text>
