@@ -34,7 +34,7 @@ const themeColorToImageMap: { [key: string]: string } = {
     red: prored,
 };
 
-let currentState = '';
+let currentState = "";
 
 /**
  * 编辑器顶部组件
@@ -192,10 +192,10 @@ const Header = memo(() => {
 
     useEffect(() => {
         if (!isPageSave && currentState) {
-            if (currentState === 'save') {
-                handleSave()
-            } else if (currentState === 'export') {
-                handleExport()
+            if (currentState === "save") {
+                handleSave();
+            } else if (currentState === "export") {
+                handleExport();
             }
         }
     }, [isPageSave]);
@@ -206,8 +206,8 @@ const Header = memo(() => {
     const triggerSave = (event: React.MouseEvent) => {
         event.stopPropagation();
         triggerPageSave(true);
-        currentState = 'save';
-    }
+        currentState = "save";
+    };
     // 保存DSL的处理函数
     const handleSave = async () => {
         setSaveLoading(true);
@@ -241,14 +241,14 @@ const Header = memo(() => {
         } finally {
             setSaveLoading(false);
             storage.remove("current_dsl_content");
-            currentState = '';
+            currentState = "";
         }
     };
 
     const triggerExport = (event: React.MouseEvent) => {
         event.stopPropagation();
         triggerPageSave(true);
-        currentState = 'export';
+        currentState = "export";
     };
 
     // 导出DSL的处理函数
@@ -293,7 +293,7 @@ const Header = memo(() => {
         } finally {
             setExportLoading(false);
             storage.remove("current_dsl_content");
-            currentState = '';
+            currentState = "";
         }
     };
 
@@ -358,15 +358,16 @@ const Header = memo(() => {
             >
                 <div
                     className={styles.logo}
-                    onClick={goHome}
                     style={{ color: ["/project/pages", "/resources"].includes(location.pathname) ? "#fff" : "#000" }}
                 >
-                    <Logo
-                        style={{
-                            color: ["/project/pages", "/resources"].includes(location.pathname) ? "#fff" : "#216EF7",
-                        }}
-                    />
-                    <span>QwikPage</span>
+                    <span onClick={goHome}>
+                        <Logo
+                            style={{
+                                color: ["/project/pages", "/resources"].includes(location.pathname) ? "#fff" : "#216EF7",
+                            }}
+                        />
+                        <span>QwikPage</span>
+                    </span>
                     {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
                         <>
                             <div className={styles.divider}></div>
