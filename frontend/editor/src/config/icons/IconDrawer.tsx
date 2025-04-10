@@ -2,7 +2,7 @@ const IconDrawer = (props: any) => {
     const { width = '20px', height = '20px' } = props;
     return (
         <svg width={width} height={height} viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <g id="一期-主要界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="一期-主要界面" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <g id="首页-组件图片" transform="translate(-730, -532)">
                     <g id="复选" transform="translate(730, 532)">
                         <g id="编组-13" transform="translate(1, 0)">

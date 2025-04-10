@@ -2,7 +2,7 @@ const IconImage = (props: any) => {
   const { width = '20px', height = '20px' } = props;
   return (
     <svg width={width} height={height} viewBox="0 0 21 20" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <g id="一期-主要界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="一期-主要界面" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
         <g id="首页-组件图片" transform="translate(-821, -458)">
           <g id="图片" transform="translate(821, 458)">
             <rect id="矩形" x="0" y="0" width="20" height="20"></rect>
