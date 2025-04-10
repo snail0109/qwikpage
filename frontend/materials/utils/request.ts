@@ -34,7 +34,21 @@ instance.interceptors.request.use((config) => {
   };
   // 接口跨域转发
   if (config.isCors) {
-    config.url = `${import.meta.env.VITE_BASE_API}/ai/proxy`;
+    // 保存原始URL和方法，用于代理请求
+    const originalUrl = config.url;
+    const originalMethod = config.method?.toUpperCase() || 'GET';
+
+    // 构建代理请求的数据
+    const proxyData = {
+      method: originalMethod,
+      target_url: originalUrl,
+      data: originalMethod !== 'GET' ? config.data : undefined
+    };
+
+    // 修改为代理请求
+    config.url = `${import.meta.env.VITE_BASE_API}/proxy`;
+    config.method = 'POST';
+    config.data = proxyData;
   }
   if (requestInterceptor) {
     const requestConfig = new Function('config', `return (${requestInterceptor})(config);`);

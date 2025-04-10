@@ -47,7 +47,7 @@ export const handleApi = async (
     // 解析模板字符串：http://mars-api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(apiUrl, sendParams);
     config.url = stgUrl;
-    config.isCors = false; // 统一关闭代理
+    config.isCors = isCors;
     let response = null;
     try {
       // 下载接口需要做单独处理，事件行为模块会传递actionType和filename

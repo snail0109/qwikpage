@@ -56,6 +56,7 @@ futures = "0.3"
 sanitize-filename = "0.6.0"
 font-kit = "0.14.2"
 tauri-plugin-store = "2"
+rocket_cors = "0.6.0"
 
 [target.'cfg(windows)'.dependencies]
 deelevate = "0.2.0"

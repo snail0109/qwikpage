@@ -31,12 +31,27 @@ instance.interceptors.request.use((config) => {
     ...config.headers,
     ...handleArrayVariable(headers),
     Accept: 'application/json, text/plain, */*',
-    proxyApi: config.isCors ? config.url : '',
   };
   // 接口跨域转发
   if (config.isCors) {
-    config.url = `${import.meta.env.VITE_BASE_API}/ai/proxy`;
+    // 保存原始URL和方法，用于代理请求
+    const originalUrl = config.url;
+    const originalMethod = config.method?.toUpperCase() || 'GET';
+    
+    // 构建代理请求的数据
+    const proxyData = {
+      method: originalMethod,
+      target_url: originalUrl,
+      data: originalMethod !== 'GET' ? config.data : undefined
+    };
+    
+    // 修改为代理请求
+    config.url = `${import.meta.env.VITE_BASE_API}/proxy`;
+    config.method = 'POST';
+    config.data = proxyData;
   }
+  
+  // 应用自定义请求拦截器
   if (requestInterceptor) {
     const requestConfig = new Function('config', `return (${requestInterceptor})(config);`);
     return requestConfig(config);
@@ -48,7 +63,7 @@ instance.interceptors.request.use((config) => {
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    const { responseInterceptor } = usePageStore.getState().page.pageData.interceptor;
+    const { responseInterceptor } = usePageStore.getState().page.pageData.interceptor || {};
     // 返回拦截
     let res = response;
     if (responseInterceptor) {
