@@ -74,6 +74,7 @@ export interface PageState {
   selectedElement: { type: string; id: string } | undefined;
   isUpdateToolbar: boolean; // 更新遮罩
   isEdit: boolean; // 是否编辑了页面
+  isPageSave: boolean; // 是否保存
   canvasWidth: string; // 画布宽度
   page: {
     id: string;
@@ -158,11 +159,13 @@ export interface PageAction {
   updateToolbar: () => void;
   clearPageInfo: () => void;
   setCurrentTab: (tab: string) => void;
+  triggerPageSave: (isPageSave: boolean) => void;
 }
 export const usePageStore = create<PageState & PageAction>((set) => ({
   mode: 'edit',
   // 是否编辑了页面
   isEdit: false,
+  isPageSave: false, // 是否保存
   theme: 'light',
   selectedElement: undefined,
   isUpdateToolbar: false,
@@ -771,4 +774,8 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
   },
   currentTab: "",
   setCurrentTab: (tab: string) => set({ currentTab: tab }),
+  // 触发页面保存
+  triggerPageSave: (isPageSave: boolean) => {
+    set({ isPageSave });
+  }
 }));

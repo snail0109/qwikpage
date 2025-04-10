@@ -5,6 +5,7 @@ import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
 import SearchBar from "./SearchBar";
 import SearchIcon from "@/assets/icons/search.svg?react";
+import storage from "@/utils/storage";
 
 /**
  * 代码面板
@@ -17,10 +18,11 @@ const CodingPanel = () => {
     const [initialSearchText, setInitialSearchText] = useState('');
     const [editorReady, setEditorReady] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false);
-    const { theme, page, savePageInfo } = usePageStore((state) => ({
+    const { theme, page, isPageSave, triggerPageSave } = usePageStore((state) => ({
         theme: state.theme,
         page: state.page,
-        savePageInfo: state.savePageInfo,
+        isPageSave: state.isPageSave,
+        triggerPageSave: state.triggerPageSave,
     }));
 
     // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
@@ -61,6 +63,17 @@ const CodingPanel = () => {
     useEffect(() => {
         editorRef.current?.setValue(JSON.stringify({ page }, null, 2));
     }, [page]);
+
+    useEffect(() => {
+        if (isPageSave) {
+            // 触发保存方法
+            const value = editorRef.current?.getValue();
+            if (value) {
+                storage.set('current_dsl_content', value);
+            }
+            triggerPageSave(false);
+        }
+    }, [isPageSave]);
 
     return (
         <Row style={{ margin: '10px -8px 0 10px', position: 'relative' }}>

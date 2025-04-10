@@ -34,6 +34,8 @@ const themeColorToImageMap: { [key: string]: string } = {
     red: prored,
 };
 
+let currentState = '';
+
 /**
  * 编辑器顶部组件
  */
@@ -73,9 +75,11 @@ const Header = memo(() => {
         savePageInfo,
         currentTab,
         isEdit,
+        isPageSave,
         updateEditState,
         canvasWidth,
         updateCanvasWidth,
+        triggerPageSave,
     } = usePageStore((state) => {
         return {
             page: state.page,
@@ -86,9 +90,11 @@ const Header = memo(() => {
             savePageInfo: state.savePageInfo,
             currentTab: state.currentTab,
             isEdit: state.isEdit,
+            isPageSave: state.isPageSave,
             updateEditState: state.updateEditState,
             canvasWidth: state.canvasWidth,
             updateCanvasWidth: state.updateCanvasWidth,
+            triggerPageSave: state.triggerPageSave,
         };
     });
 
@@ -184,17 +190,30 @@ const Header = memo(() => {
         updateHeaderStyle();
     }, [location.pathname, projectId, macStoplightsVisible, isMac]);
 
+    useEffect(() => {
+        if (!isPageSave && currentState) {
+            if (currentState === 'save') {
+                handleSave()
+            } else if (currentState === 'export') {
+                handleExport()
+            }
+        }
+    }, [isPageSave]);
+
     // 判断是否显示DSL相关按钮
     const showDSLButtons = currentTab === PanelKey.CodingPanel;
 
-    // 保存DSL的处理函数
-    const handleSave = async (event: React.MouseEvent) => {
+    const triggerSave = (event: React.MouseEvent) => {
         event.stopPropagation();
+        triggerPageSave(true);
+        currentState = 'save';
+    }
+    // 保存DSL的处理函数
+    const handleSave = async () => {
         setSaveLoading(true);
-
         try {
             // 获取当前页面数据
-            const value = JSON.parse(localStorage.getItem("current_dsl_content") || "{}");
+            const value = JSON.parse(storage.get("current_dsl_content") || "{}");
 
             if (!value || !value.page) {
                 message.error("页面数据格式异常，请检查重试");
@@ -221,17 +240,24 @@ const Header = memo(() => {
             console.error("保存失败:", error);
         } finally {
             setSaveLoading(false);
+            storage.remove("current_dsl_content");
+            currentState = '';
         }
     };
 
-    // 导出DSL的处理函数
-    const handleExport = async (event: React.MouseEvent) => {
+    const triggerExport = (event: React.MouseEvent) => {
         event.stopPropagation();
+        triggerPageSave(true);
+        currentState = 'export';
+    };
+
+    // 导出DSL的处理函数
+    const handleExport = async () => {
         setExportLoading(true);
 
         try {
             // 获取当前页面数据
-            const value = JSON.parse(localStorage.getItem("current_dsl_content") || "{}");
+            const value = JSON.parse(storage.get("current_dsl_content") || "{}");
 
             if (!value || !value.page) {
                 message.error("页面数据格式异常，请检查重试");
@@ -266,6 +292,8 @@ const Header = memo(() => {
             console.error("导出失败:", error);
         } finally {
             setExportLoading(false);
+            storage.remove("current_dsl_content");
+            currentState = '';
         }
     };
 
@@ -357,7 +385,7 @@ const Header = memo(() => {
                                     iconPosition={"start"}
                                     size="small"
                                     loading={saveLoading}
-                                    onClick={handleSave}
+                                    onClick={triggerSave}
                                 >
                                     保存
                                 </Button>
@@ -367,7 +395,7 @@ const Header = memo(() => {
                                     iconPosition={"start"}
                                     size="small"
                                     loading={exportLoading}
-                                    onClick={handleExport}
+                                    onClick={triggerExport}
                                 >
                                     导出
                                 </Button>
