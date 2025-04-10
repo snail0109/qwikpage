@@ -4,7 +4,7 @@ import MarsRender from '@/packages/MarsRender/MarsRender';
 import { usePageStore } from '@/stores/pageStore';
 import { handleActionFlow } from '@/packages/utils/action';
 import { FormContext } from '@/packages/utils/context';
-import { isNotEmpty, getInitValue } from '@/packages/utils/util';
+import { getInitValue } from '@/packages/utils/util';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { keyMap } from '@/constants/hotKeys';
 
@@ -116,7 +116,7 @@ const Page: React.FC = () => {
   }, [config.events]);
 
   const initValues = useCallback((type: string, name: string, value: any) => {
-    if (name && isNotEmpty(value)) {
+    if (name) {
       const initValue = getInitValue(type, value);
       setFormItemData({
         name,

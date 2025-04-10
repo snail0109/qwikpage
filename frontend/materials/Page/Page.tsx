@@ -4,7 +4,7 @@ import { FormContext } from '@materials/utils/context';
 import { usePageStore } from '@materials/stores/pageStore';
 import { handleActionFlow } from '@materials/utils/action';
 import { ComItemType, ConfigType } from '@materials/types/index';
-import { isNotEmpty, getInitValue } from '@materials/utils/util';
+import { getInitValue } from '@materials/utils/util';
 
 /**
  * @param props 组件本身属性
@@ -28,7 +28,7 @@ const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemTyp
   }, [config?.events]);
 
   const initValues = useCallback((type: string, name: string, value: any) => {
-    if (name && isNotEmpty(value)) {
+    if (name) {
       const initValue = getInitValue(type, value);
       setFormItemData({
         name,
