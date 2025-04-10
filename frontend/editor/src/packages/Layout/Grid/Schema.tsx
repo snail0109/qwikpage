@@ -47,8 +47,8 @@ export default {
             label: <div className="columnButton">
               <span>2列样式</span>
               <div className="columnContainer">
-                <div style={{ width: '33.3%' }}></div>
-                <div style={{ width: '66.6%' }}></div>
+                <div style={{ width: '25%' }}></div>
+                <div style={{ width: '75%' }}></div>
               </div>
             </div>
           }

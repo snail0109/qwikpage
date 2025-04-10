@@ -419,5 +419,5 @@ export function judgeIfInForm(elementId: string, elementsMap: { [key: string]: C
 export const COLUMN_MAP = {
   3: [8, 8, 8],
   4: [2, 4, 8, 10],
-  2: [10, 14]
+  2: [6, 18]
 }
