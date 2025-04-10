@@ -86,11 +86,28 @@ const ConfigPanel = memo(() => {
 
   const { run } = useDebounceFn(
     (changedValues) => {
-      const columnNumChange = changedValues?.colNum; 
+      // 检查是否是特殊字段的变更
+      const isSpecialField =
+        // 检查 id 字段
+        'id' in changedValues ||
+        // 检查 formItem.name 字段
+        (changedValues.formItem && 'name' in changedValues.formItem);
+
+      // 如果是特殊字段变更，不自动保存
+      if (isSpecialField) {
+        return;
+      }
+
+      const columnNumChange = changedValues?.colNum;
       handleValueChange(form.getFieldsValue(), columnNumChange);
     },
     { wait: 300 },
   );
+
+  // 为特殊字段添加单独的处理函数，属性面板组件名称（不要自动失焦保存）
+  const handleSpecialFieldBlur = () => {
+    handleValueChange(form.getFieldsValue(), false);
+  };
 
   // 接收表单值
   const handleValueChange = async (values: any, columnNumChange: any) => {
@@ -131,6 +148,7 @@ const ConfigPanel = memo(() => {
             <SetterRender
               attrs={ComponentConfig?.attrs || []}
               form={form}
+              handleSpecialFieldBlur={handleSpecialFieldBlur}
             />
           </Suspense>
         </Form>

@@ -19,6 +19,7 @@ const formLayoutFull = {
 interface IAttrs {
   attrs: SchemaType[];
   form: FormInstance;
+  handleSpecialFieldBlur?: () => void;
 }
 
 /**
@@ -26,7 +27,7 @@ interface IAttrs {
  * 根据JSON生成简单的属性配置
  */
 
-const SetterRender = memo(({ attrs, form }: IAttrs) => {
+const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur }: IAttrs) => {
   const { selectedElement, elementsMap } = usePageStore((state) => {
     return {
       selectedElement: state.selectedElement,
@@ -46,12 +47,12 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
       {/* 组件名称 */}
       {!formItemId && elementId && (
         <Form.Item name={'id'} label="组件名称">
-          <Input />
+          <Input onBlur={handleSpecialFieldBlur} />
         </Form.Item>
       )}
       {formItemId && (
         <Form.Item name={['formItem', 'name']} label="组件名称">
-          <Input />
+          <Input onBlur={handleSpecialFieldBlur} />
         </Form.Item>
       )}
       {/* 是否显示 */}
