@@ -105,9 +105,31 @@ const ConfigPanel = memo(() => {
   );
 
   // 为特殊字段添加单独的处理函数，属性面板组件名称（不要自动失焦保存）
-  const handleSpecialFieldBlur = () => {
-    handleValueChange(form.getFieldsValue(), false);
-  };
+  const handleSpecialFieldBlur = (fieldName: string | string[], originalValue: string) => {
+  const values = form.getFieldsValue();
+  let currentValue;
+  
+  // 获取当前字段的值
+  if (Array.isArray(fieldName)) {
+    // 处理嵌套字段如 ['formItem', 'name']
+    currentValue = fieldName.reduce((obj, key) => obj?.[key], values);
+  } else {
+    currentValue = values[fieldName];
+  }
+
+  // 如果当前值为空，则恢复原值
+  if (!currentValue || currentValue.trim() === '') {
+    form.setFieldsValue({
+      ...values,
+      ...(Array.isArray(fieldName)
+        ? { [fieldName[0]]: { ...values[fieldName[0]], [fieldName[1]]: originalValue } }
+        : { [fieldName]: originalValue })
+    });
+  } else {
+    // 否则正常处理值变更
+    handleValueChange(values, false);
+  }
+};
 
   // 接收表单值
   const handleValueChange = async (values: any, columnNumChange: any) => {
@@ -148,7 +170,7 @@ const ConfigPanel = memo(() => {
             <SetterRender
               attrs={ComponentConfig?.attrs || []}
               form={form}
-              handleSpecialFieldBlur={handleSpecialFieldBlur}
+              handleSpecialFieldBlur={(fieldName, originalValue) => handleSpecialFieldBlur(fieldName, originalValue)}
             />
           </Suspense>
         </Form>
