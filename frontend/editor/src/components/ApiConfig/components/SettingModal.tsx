@@ -65,7 +65,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     params: [{ key: "", value: "" }],
     contentType: "application/json",
     replaceData: "merge",
-    isCors: true,
+    isCors: false,
     result: {
       code: "code",
       data: "data",
