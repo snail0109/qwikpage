@@ -263,6 +263,8 @@ export function renderFormula(formula: string, eventParams: any = {}) {
       ...formData,
       ...formItemData,
     };
+    console.log(">>>>>>>context", context, eventParams)
+    // debugger
     const result = dynamicFunc(context, eventParams || {});
     if (typeof result === 'function') return result(context, eventParams || {});
     return result;
