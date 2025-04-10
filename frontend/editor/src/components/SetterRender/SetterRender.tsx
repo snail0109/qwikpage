@@ -64,7 +64,7 @@ const SetterRender = memo(({ attrs, form }: IAttrs) => {
           label="是否显示"
           valuePropName="checked"
         >
-          <Switch size='small' />
+          <Switch size='small' defaultChecked/>
         </Form.Item>
       )}
 
