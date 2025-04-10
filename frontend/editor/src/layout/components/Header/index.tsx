@@ -21,7 +21,7 @@ import progreen from "@/assets/image/header/headerT_green.png";
 import propurple from "@/assets/image/header/headerT_purple.png";
 import prored from "@/assets/image/header/headerT_red.png";
 import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
-import { EyeOutlined, SaveOutlined, LeftOutlined } from "@ant-design/icons";
+import { EyeOutlined, SaveOutlined, LeftCircleOutlined } from "@ant-design/icons";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 const appWebview = getCurrentWebviewWindow();
@@ -299,6 +299,20 @@ const Header = memo(() => {
         openUrl(previewUrl);
     };
 
+    // 返回页面
+    const goBackToPage = async () => {
+        console.log("点击了页面名称", page.projectId);
+        try {
+            const projectDetail = await projectService.getProjectDetail(page.projectId);
+            navigate(
+                `/project/pages?projectId=${page.projectId}&projectName=${encodeURIComponent(projectDetail.name)}`
+            );
+        } catch (error) {
+            console.error("获取项目名称失败", error);
+            navigate(`/project/pages?projectId=${page.projectId}`);
+        }
+    };
+
     return (
         <>
             <Layout.Header
@@ -328,26 +342,7 @@ const Header = memo(() => {
                     {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
                         <>
                             <div className={styles.divider}></div>
-                            <div
-                                className={styles.pageName}
-                                onClick={async (e) => {
-                                    e.stopPropagation();
-                                    console.log("点击了页面名称", page.projectId);
-                                    try {
-                                        const projectDetail = await projectService.getProjectDetail(page.projectId);
-                                        navigate(
-                                            `/project/pages?projectId=${
-                                                page.projectId
-                                            }&projectName=${encodeURIComponent(projectDetail.name)}`
-                                        );
-                                    } catch (error) {
-                                        console.error("获取项目名称失败", error);
-                                        navigate(`/project/pages?projectId=${page.projectId}`);
-                                    }
-                                }}
-                            >
-                                {page.name}
-                            </div>
+                            <div className={styles.pageName}>{page.name}</div>
                         </>
                     )}
                 </div>
@@ -418,6 +413,17 @@ const Header = memo(() => {
                                 </Button>
                                 <Button type="text" icon={<EyeOutlined />} onClick={handlePreview} size="small">
                                     预览
+                                </Button>
+                                <Button
+                                    type="text"
+                                    icon={<LeftCircleOutlined />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        goBackToPage();
+                                    }}
+                                    size="small"
+                                >
+                                    返回
                                 </Button>
                             </Space>
                             <div className={styles.divider}></div>
