@@ -57,7 +57,7 @@ const SettingForm = function () {
                 ]}
                 extra="支持模板语法：${id}，前提是事件流中有该字段。"
             >
-                <Input placeholder="http://mars-api.marsview.cc/api/user" />
+                <Input placeholder="https://mock.iwhalecloud.com" />
             </Form.Item>
             <Row gutter={80}>
                 <Col span={12}>
