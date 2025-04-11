@@ -1,12 +1,8 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
-import * as Icons from '@ant-design/icons';
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import * as icons from '@qwikpage/icons';
+import { renderIconDefinitionToSVGElement } from '@qwikpage/icons/es/helpers';
 import { ComponentType } from '@/packages/types';
-/**
- *
- * @param props 组件本身属性
- * @param style 组件样式
- * @returns
- */
+
 const MImage = (
   {
     id,
@@ -20,32 +16,57 @@ const MImage = (
   ref: any,
 ) => {
   const [visible, setVisible] = useState(true);
+  const [iconSvg, setIconSvg] = useState<string>('');
+
+  // 加载图标SVG
+  useEffect(() => {
+    if (visible && config?.props?.icon) {
+      const icon = config.props.icon in icons
+        ? icons[config.props.icon as keyof typeof icons]
+        : null;
+
+      if (!icon) {
+        setIconSvg(''); // 清空图标
+        return; // 直接 return，不返回任何值
+      }
+
+      const svgHTMLString = renderIconDefinitionToSVGElement(icon, {
+        extraSVGAttrs: { width: '1em', height: '1em', fill: 'currentColor' },
+      });
+      setIconSvg(svgHTMLString);
+    }
+  }, [visible, config?.props?.icon]);
+
   // 对外暴露方法
-  useImperativeHandle(ref, () => {
-    return {
-      show() {
-        setVisible(true);
-      },
-      hide() {
-        setVisible(false);
-      },
-    };
-  });
+  useImperativeHandle(ref, () => ({
+    show() {
+      setVisible(true);
+    },
+    hide() {
+      setVisible(false);
+    },
+  }));
 
   const handleClick = () => {
     onClick?.();
   };
 
-  const iconsList: { [key: string]: any } = Icons;
+  if (!visible || !iconSvg) return null;
+
   return (
-    visible &&
-    React.createElement(iconsList[config.props.icon], {
-      style: config.style,
-      ...config.props,
-      'data-id': id,
-      'data-type': type,
-      onClick: handleClick,
-    })
+    <span
+      className="anticon"
+      style={{
+        fontSize: '18px',
+        verticalAlign: 'middle',
+        ...config?.style,
+      }}
+      data-id={id}
+      data-type={type}
+      onClick={handleClick}
+      dangerouslySetInnerHTML={{ __html: iconSvg }}
+    />
   );
 };
+
 export default forwardRef(MImage);
