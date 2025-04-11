@@ -18,7 +18,7 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
+const MInput = ({ id, type, config, formItemValue, onChange, onBlur, onPressEnter }: ComponentType<IConfig>, ref: any) => {
   const { initValues, getValue, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
@@ -102,6 +102,7 @@ const MInput = ({ id, type, config, onChange, onBlur, onPressEnter }: ComponentT
           style={config.style}
           prefix={config.props.formWrap.prefixIcons ? <QIcon name={config.props.formWrap.prefixIcons} /> : null}
           suffix={config.props.formWrap.suffixIcons ? <QIcon name={config.props.formWrap.suffixIcons} /> : null}
+          value={formItemValue}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={(event) => handleBlur(event.target.value)}
           onPressEnter={(event: any) => handlePressEnter(event.target.value)}
