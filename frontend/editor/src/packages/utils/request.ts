@@ -63,6 +63,7 @@ instance.interceptors.request.use((config) => {
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
+    console.log('原始响应:', response.data); 
     const { responseInterceptor } = usePageStore.getState().page.pageData.interceptor || {};
     // 返回拦截
     let res = response;

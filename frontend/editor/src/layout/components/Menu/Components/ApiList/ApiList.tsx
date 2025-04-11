@@ -18,7 +18,7 @@ const getTagProps = (method: ApiType["method"]) => {
     case 'PUT':
       return { color: '#3463DA', text: 'PUT' };
     case 'PATCH':
-      return { color: '#22B7A6', text: 'PUT' };
+      return { color: '#22B7A6', text: 'PATCH' };
     case 'DELETE':
       return { color: '#BC3B3B', text: 'DELETE' };
     default:

@@ -8,7 +8,7 @@ import ApiTestModal from "./ApiTestModal";
 import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
-import { fetch } from '@tauri-apps/plugin-http';
+import { handleApiTest } from '@/packages/utils/handleApi';
 
 export type SettingModalProp = {
   update?: (id: string) => void;
@@ -61,7 +61,6 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const initValue = {
     method: "GET",
     apiUrl: "",
-    sourceType: "json",
     params: [{ key: "", value: "" }],
     contentType: "application/json",
     replaceData: "merge",
@@ -141,33 +140,25 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   }
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
-  const handleApiTest = async () => {
+  const handleRequestTest = async () => {
     setLoading(true); // 开始加载
     
-    const apiConfig: ApiConfig = form.getFieldsValue();
-    const { apiUrl, method, contentType, isCors, params } = apiConfig;
-
     try {
-      // params为[{key: "333", value: {type: "static", value: "Dddd"}}],需要格式化
-      const simplifiedParams: SimplifiedParam[] = params?.map(param => ({
-        key: param.key,
-        value: typeof param.value === 'object' ? param.value.value : param.value
-      })) || [];
-
-      // 构建请求配置
-      const { url, options } = buildFetchConfig(
-        apiUrl,
-        method,
-        contentType,
-        isCors,
-        simplifiedParams
-      );
-
-      console.log("请求 URL:", url);
-      console.log("请求配置:", options);
-      // 发送请求并处理响应
-      const response = await fetch(url, options);
-      await handleResponse(response, options.mode);
+      const apiConfig = form.getFieldsValue();
+      // 转换参数格式以匹配 handleApi 的要求
+      const sendParams = apiConfig.params?.reduce((acc: Record<string, any>, param: ParamType) => {
+        acc[param.key] = typeof param.value === 'object' ? param.value.value : param.value;
+        return acc;
+      }, {}) || {};
+ 
+      // 使用 handleApi 发送请求
+      const response = await handleApiTest(apiConfig, sendParams);
+  
+      // 处理响应
+        apiTestModalRef.current?.showModal({
+          ...response,
+        });
+      
     } catch (error: any) {
       console.error("API 测试错误:", error);
       apiTestModalRef.current?.showModal({
@@ -179,94 +170,12 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     }
   };
 
-  // 构建 fetch 请求配置
-  const buildFetchConfig = (
-    apiUrl: string,
-    method: string,
-    contentType: string,
-    isCors: boolean,
-    params: SimplifiedParam[]
-  ): { url: string; options: FetchOptions } => {
-    const headers: Record<string, string> = contentType === "multipart/form-data"
-      ? {}
-      : { "Content-Type": contentType };
-
-    const mode = isCors ? 'cors' : 'no-cors';
-    const options: FetchOptions = { method, headers, mode };
-
-    // 处理 URL 和请求体
-    let url = apiUrl;
-    if (method === "GET") {
-      url = appendQueryParams(apiUrl, params);
-    } else {
-      const body = buildRequestBody(contentType, params);
-      if (body) {
-        options.body = body;
-      }
-    }
-
-    return { url, options };
-  };
-
-  // 为 GET 请求添加查询参数
-  const appendQueryParams = (url: string, params: SimplifiedParam[]): string => {
-    if (!params.length) return url;
-
-    const queryParams = new URLSearchParams();
-    params.forEach(param => queryParams.append(param.key, param.value));
-    return `${url}?${queryParams.toString()}`;
-  };
-
-  // 根据内容类型构建请求体
-  const buildRequestBody = (
-    contentType: string,
-    params: SimplifiedParam[]
-  ): string | FormData | undefined => {
-    switch (contentType) {
-      case "application/json": {
-        const jsonBody: Record<string, string> = {};
-        params.forEach(param => { jsonBody[param.key] = param.value; });
-        return JSON.stringify(jsonBody);
-      }
-
-      case "multipart/form-data": {
-        const formData = new FormData();
-        params.forEach(param => formData.append(param.key, param.value));
-        return formData;
-      }
-
-      case "application/x-www-form-urlencoded": {
-        const urlParams = new URLSearchParams();
-        params.forEach(param => urlParams.append(param.key, param.value));
-        return urlParams.toString();
-      }
-    }
-  };
-
-  // 处理响应
-  const handleResponse = async (response: Response, mode: string): Promise<void> => {
-    if (!response.ok) {
-      throw new Error(`请求失败: ${response.status} ${response.statusText}`);
-    }
-
-    if (mode === 'no-cors') {
-      apiTestModalRef.current?.showModal({
-        message: "请求已发送，但由于 no-cors 模式限制，无法读取响应内容"
-      });
-      return;
-    }
-
-    const data = await response.json();
-    console.log("测试数据", data);
-    apiTestModalRef.current?.showModal(data);
-  };
-
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <Button 
         color="primary" 
         variant="outlined" 
-        onClick={handleApiTest}
+        onClick={handleRequestTest}
         disabled={loading} // 在加载时禁用按钮
       >
         测试

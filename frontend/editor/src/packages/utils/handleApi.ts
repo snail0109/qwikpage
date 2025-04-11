@@ -4,6 +4,7 @@
 
 import { usePageStore } from '@/stores/pageStore';
 import { ApiConfig } from '../types';
+import { ApiType } from "@/packages/types";
 import request from './request';
 import { message } from '@/utils/AntdGlobal';
 import { getEnv, handleArrayVariable, renderFormula, renderTemplate } from './util';
@@ -175,4 +176,97 @@ export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 're
       data: mergeValues,
     };
   }
+};
+
+export const handleApiTest = async (apiTestConfig: ApiType, sendParams: any = {}) => {
+  const { method, apiUrl, contentType, replaceData, isCors = true, params, result, tips } = apiTestConfig;
+  // 处理参数
+  const config: any = mergeParams(method, replaceData, params, sendParams);
+  // 解析模板字符串：http://api.test.cc/user/${id}
+  const stgUrl = renderTemplate(apiUrl, sendParams);
+  config.url = stgUrl;
+  config.isCors = isCors;
+  let response = null;
+  try {
+    if (method === 'GET') {
+      response = (await request.get(config.url, config)) || {};
+    } else if (method === 'DELETE') {
+      response = (await request.delete(config.url, config)) || {};
+    } else {
+      const data = contentType === 'application/x-www-form-urlencoded' ? qs.stringify(config.data) : config.data;
+
+      config.headers = {
+        ...config.headers,
+        'Content-Type': contentType,
+      };
+
+      if (method === 'PUT') {
+        response = (await request.put(config.url, data, config)) || {};
+      } else if (method === 'PATCH') {
+        response = (await request.patch(config.url, data, config)) || {};
+      } else {
+        response = (await request.post(config.url, data, config)) || {};
+      }
+    }
+
+  } catch (error: any) {
+    response = {
+      status: 200,
+      data: { [result.code]: 500, [result.data]: '', [result.msg]: error },
+    };
+  }
+  let res: { [key: string]: any } | any[] = response.data;
+  console.log('处理前 res:', res);
+  return {[result.data]: res}
+  
+  // 统一格式化：强制按 result 的键名重组数据
+  if (Array.isArray(res) || typeof res !== 'object' || res === null) {
+    res = {
+      [result.code]: result.codeValue,
+      [result.data]: res,
+      [result.msg]: ''
+    };
+  } else {
+    res = {
+      [result.code]: result.codeValue ?? 0,
+      [result.data]: result.data ? res[result.data] : res,
+      [result.msg]: result.msg ? res[result.msg] ?? '' : '',
+    };
+  }
+
+  // 提取字段（此时 res 的键名已标准化）
+  const code = Number(res[result.code] ?? 0);
+  const data = res[result.data];
+  const msg = res[result.msg] ?? '';
+
+  if (code === result.codeValue) {
+    // 如果开启了系统提示，则优先使用系统提示
+    if (tips?.isSuccess) {
+      msg && message.success(msg);
+    } else if (tips?.success) {
+      // 最后使用自定义错误
+      message.success(tips?.success);
+    }
+  } else {
+    // 如果开启了系统错误，则优先使用系统报错
+    if (tips?.isError && msg) {
+      message.error(msg);
+    } else if (tips?.fail) {
+      // 最后使用自定义错误
+      message.error(tips?.fail);
+    }
+  }
+  // 根据 sourceField 解析数据
+  let renderData = data;
+  // if (typeof api.sourceField === 'object') {
+  //   if (api.sourceField.type === 'static') {
+  //     renderData = api.sourceField.value ? get(res, api.sourceField.value) : data;
+  //   } else {
+  //     renderData = renderFormula(api.sourceField.value, res);
+  //   }
+  // } else if (typeof api.sourceField === 'string' && api.sourceField) {
+  //   renderData = get(res, api.sourceField);
+  // }
+  return { [result.code]: code === result.codeValue ? 0 : code, [result.data]: data, [result.msg]: msg };
+  
 };

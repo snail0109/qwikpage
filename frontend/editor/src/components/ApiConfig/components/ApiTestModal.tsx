@@ -10,10 +10,10 @@ const ApiTestModal = (props: any, ref: any) => {
   const theme = usePageStore((state) => state.theme);
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
-  const [testValue, setTestValue] = useState("");
+  const [testValue, setTestValue] = useState();
 
   useImperativeHandle(ref, () => ({
-    showModal: (data?: string) => {
+    showModal: (data?: any) => {
       if (data) {
         setTestValue(data);
       }
