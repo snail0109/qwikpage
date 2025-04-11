@@ -5,7 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { message } from "@/utils/AntdGlobal";
 import { ArrowLeftOutlined, EllipsisOutlined } from "@ant-design/icons";
-import ColorPicker from "@/components/ColorPicker";
+import ColorPicker from "./ColorPicker";
 import ColorRadioGroup from "@/components/RadioColorGroup/RadioColorGroup";
 import ProjectLogo from "@/components/ProjectLogo";
 import { projectService } from "@/services";
