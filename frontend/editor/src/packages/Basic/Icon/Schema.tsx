@@ -17,15 +17,23 @@ export default {
       name: 'icon',
     },
     {
-      type: 'InputNumber',
-      label: '旋转角度',
-      name: 'rotate',
+      type: 'Input',
+      label: '工具提示',
+      name: ['formItem', 'tooltip'],
+      props: {
+        placeholder: '请输入工具提示',
+      },
     },
-    {
-      type: 'Switch',
-      label: '旋转动画',
-      name: 'spin',
-    },
+    // {
+    //   type: 'InputNumber',
+    //   label: '旋转角度',
+    //   name: 'rotate',
+    // },
+    // {
+    //   type: 'Switch',
+    //   label: '旋转动画',
+    //   name: 'spin',
+    // },
   ],
   config: {
     // 组件默认属性值

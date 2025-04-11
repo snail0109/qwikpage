@@ -149,11 +149,11 @@ const components = [
         name: '按钮',
         type: 'Button',
       },
-      // {
-      //   icon: <IconFont />,
-      //   name: '图标',
-      //   type: 'Icon',
-      // },
+      {
+        icon: <IconFont />,
+        name: '图标',
+        type: 'Icon',
+      },
       {
         icon: <IconText />,
         name: '文本',
