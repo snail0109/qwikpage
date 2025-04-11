@@ -389,7 +389,7 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
           // 调用ID变更处理函数
           handleElementIdChange(state, oldId, newId);
 
-          // 从props中删除id字段，避免后续处理再次使用
+          // FIXME: 从props中删除id字段，避免后续处理再次使用
           delete payload.props.id;
 
           // 更新payload.id为新ID，以便后续处理使用新ID
@@ -399,6 +399,10 @@ export const usePageStore = create<PageState & PageAction>((set) => ({
         const item = state.page.pageData.elementsMap[payload.id];
         // 属性修改
         if (payload.type === 'props') {
+          // FIXME: 从props中删除id字段，避免后续处理再次使用
+          if(payload.props.id) {
+            delete payload.props.id;
+          }
           item.config.props = payload.props;
           // Tabs标签对象需要同步属性值到Tab组件中
           if (item.type === 'Tabs') {
