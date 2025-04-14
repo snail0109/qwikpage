@@ -51,6 +51,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     #[cfg(target_os = "macos")]
     {
         let arch = std::env::consts::ARCH;
+        log::info!("当前是({})架构", arch);
         // Mac 只支持 x86_64 和 arm64 两种架构
         let arch_dir = if arch == "x86_64" {
             "x86_64"
