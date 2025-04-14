@@ -50,9 +50,15 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     let lib_path: PathBuf;
     #[cfg(target_os = "macos")]
     {
-        let arch = std::env::consts::ARCH; // 获取当前架构
+        let arch = std::env::consts::ARCH;
+        // Mac 只支持 x86_64 和 arm64 两种架构
+        let arch_dir = if arch == "x86_64" {
+            "x86_64"
+        } else {
+            "arm64"
+        };
         lib_path = plugins_dir
-            .join(arch)
+            .join(arch_dir)
             .join(format!("libcode_{}.dylib", params.export_type));
     }
 
