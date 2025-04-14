@@ -11,33 +11,64 @@ export default {
       key: 'basic',
     },
     {
-      type: 'TextArea',
-      label: '文本内容',
+      type: 'Variable',
+      label: '文本',
       name: 'text',
+      props: {
+        placeholder: '请输入文本内容',
+      },
     },
     {
       type: 'Input',
-      label: '跳转链接',
+      label: '工具提示',
+      name: ['formItem', 'tooltip'],
+      props: {
+        placeholder: '请输入工具提示',
+      },
+    },
+    {
+      type: 'RadioGroupBtn',
+      label: '连接类型',
+      name: ['type'],
+      props: {
+        options: [
+          { value: 'redirect', label: '页面跳转' },
+          { value: 'download', label: '文件下载' },
+        ],
+        defaultValue: 'redirect',
+      },
+    },
+    {
+      type: 'Input',
+      label: '链接地址',
       name: 'href',
+      props: {
+        placeholder: '请输入',
+      },
     },
     {
       type: 'Select',
-      label: '跳转位置',
+      label: '链接打开方式',
       name: 'target',
       props: {
         options: [
-          { value: '_self', label: '当前页面加载（默认）' },
-          { value: '_blank', label: '打开新页签' },
-          { value: '_parent', label: '父窗口打开' },
-          { value: '_top', label: '最顶级窗口打开' },
+          { value: '_self', label: '当前窗口' },
+          { value: '_blank', label: '新窗口' },
+          { value: '_parent', label: '父级窗口' },
+          { value: '_top', label: '顶级窗口' },
         ],
       },
+    },
+    {
+      type: 'Switch',
+      label: '禁用',
+      name: 'disabled',
     },
   ],
   config: {
     // 组件默认属性值
     props: {
-      text: '',
+      text: '欢迎使用QwikPage设计器',
       href: '',
       target: '_blank',
     },

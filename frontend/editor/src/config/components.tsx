@@ -49,8 +49,8 @@ import IconButton from './icons/IconButton';
 // import IconTag from './icons/IconTag';
 // import IconDropdwon from './icons/IconDropdown';
 import IconFont from './icons/IconFont';
-import IconModal from './icons/IconModal';
-import IconDrawer from './icons/IconDrawer';
+// import IconModal from './icons/IconModal';
+// import IconDrawer from './icons/IconDrawer';
 /**
  * 组件配置列表
  */
@@ -159,11 +159,11 @@ const components = [
         name: '文本',
         type: 'Text',
       },
-      // {
-      //   icon: <IconLink />,
-      //   name: '超链接',
-      //   type: 'Link',
-      // },
+      {
+        icon: <IconLink />,
+        name: '超链接',
+        type: 'Link',
+      },
       // {
       //   icon: <IconImage />,
       //   name: '图片',

@@ -12,6 +12,7 @@ pub mod material;
 pub mod components;
 pub mod comp_index;
 mod text;
+mod link;
 
 pub fn get_components() -> Vec<FileTemplate> {
     let mut files = vec![];
@@ -70,6 +71,10 @@ pub fn get_components() -> Vec<FileTemplate> {
     files.push(FileTemplate {
         filename: String::from("src/components/Text/index.tsx"),
         content: String::from(text::TEXT_INDEX),
+    });
+    files.push(FileTemplate {
+        filename: String::from("src/components/Link/index.tsx"),
+        content: String::from(link::LINK_INDEX),
     });
     return files;
 }
