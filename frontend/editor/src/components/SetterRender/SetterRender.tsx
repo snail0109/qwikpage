@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import { Form, Input, InputNumber, Radio, Select, Switch, Slider, FormInstance } from "antd";
-import * as icons from "@qwikpage/icons";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { SchemaType } from "@/packages/types";
 import MColorPicker from "../ColorPicker";
@@ -8,7 +7,7 @@ import VariableBindInput from "../VariableBind/VariableBind";
 import InputSelect from "../InputSelect/InputSelect";
 import InputPx from "../StyleConfig/InputPx";
 import { usePageStore } from "@/stores/pageStore";
-import QIcon from "@/components/icons/QIcon";
+import QIconList from '@/components/icons/QIconList';
 
 // 如果没有设置label，则独占一行
 const formLayoutFull = {
@@ -82,7 +81,7 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
       )}
 
       {/* ---组件属性--- */}
-      {attrs.map((item: SchemaType, index) => {
+      {attrs.map((item: SchemaType, index) => {     
         if (!item) return null;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;
@@ -145,28 +144,7 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
         } else if (item.type === "function" && formItemId) {
           return item.render?.(form);
         } else if (item.type === "Icons") {
-          FormControl = (
-            <Select placeholder="请选择菜单图表" showSearch allowClear>
-              {Object.keys(icons)
-                .filter(
-                  (item) =>
-                    ![
-                      "default",
-                      "createFromIconfontCN",
-                      "getTwoToneColor",
-                      "setTwoToneColor",
-                      "IconProvider",
-                    ].includes(item)
-                )
-                .map((key) => {
-                  return (
-                    <Select.Option value={key} key={key}>
-                      <QIcon name={key} />
-                    </Select.Option>
-                  );
-                })}
-            </Select>
-          );
+          FormControl = <QIconList {...item.props} />
         }
         return (
           <Form.Item
