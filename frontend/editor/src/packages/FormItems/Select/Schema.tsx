@@ -27,45 +27,27 @@ export default {
       name: ['defaultValue'],
     },
     {
-      type: 'Switch',
-      label: '无样式',
-      name: ['formItem', 'noStyle'],
+      type: 'Input',
+      label: '文本显示字段',
+      name: ['field', 'label'],
     },
     {
       type: 'Input',
-      label: 'Extra',
-      name: ['formItem', 'extra'],
-      tooltip: '表单控件下方显示的提示信息',
-      props: {
-        placeholder: '请输入',
-      },
+      label: '值字段',
+      name: ['field', 'value'],
     },
-    {
-      type: 'Input',
-      label: 'Tooltip',
-      name: ['formItem', 'tooltip'],
-      tooltip: '表单项后面显示的提示信息',
-      props: {
-        placeholder: '请输入',
-      },
-    },
-    {
-      type: 'Title',
-      label: '表单配置',
-      key: 'title2',
-    },
+    // {
+    //   type: 'Switch',
+    //   label: '可检索',
+    //   name: ['formWrap', 'showSearch'],
+    // },
     {
       type: 'Switch',
       label: '支持清除',
       name: ['formWrap', 'allowClear'],
     },
     {
-      type: 'Switch',
-      label: '可检索',
-      name: ['formWrap', 'showSearch'],
-    },
-    {
-      type: 'Select',
+      type: 'RadioGroupBtn',
       label: '选项模式',
       name: ['formWrap', 'mode'],
       props: {
@@ -78,7 +60,7 @@ export default {
     },
     {
       type: 'InputNumber',
-      label: '最大Tag数量',
+      label: '最大选中数量',
       name: ['formWrap', 'maxTagCount'],
     },
     {
@@ -88,91 +70,23 @@ export default {
     },
     {
       type: 'Switch',
-      label: '禁用',
-      name: ['formWrap', 'disabled'],
+      label: '虚拟滚动',
+      name: ['formWrap', 'virtual'],
+    },
+    {
+      type: 'Input',
+      label: '工具提示',
+      name: ['formItem', 'tooltip'],
+      props: {
+        placeholder: '请输入工具提示',
+      },
     },
     {
       type: 'Switch',
-      label: '包含Label',
-      name: ['formWrap', 'labelInValue'],
-      tooltip: '提交时，会把label包装到value中',
+      label: '禁用',
+      name: ['formWrap', 'disabled'],
     },
-    {
-      type: 'Select',
-      label: '边框样式',
-      name: ['formWrap', 'variant'],
-      props: {
-        options: [
-          { value: '', label: '无' },
-          { value: 'outlined', label: '外边框' },
-          { value: 'borderless', label: '无边框' },
-          { value: 'filled', label: '填充' },
-        ],
-      },
-    },
-    {
-      type: 'Title',
-      label: '布局',
-      key: 'FormLayout',
-    },
-    {
-      type: 'InputNumber',
-      label: '标签占位',
-      name: ['formItem', 'labelCol', 'span'],
-      props: {
-        placeholder: '占位格数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '标签偏移',
-      name: ['formItem', 'labelCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件占列',
-      name: ['formItem', 'wrapperCol', 'span'],
-      props: {
-        placeholder: '占位格数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件偏移',
-      name: ['formItem', 'wrapperCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'Title',
-      label: '字段映射',
-      key: 'fieldMap',
-    },
-    {
-      type: 'Input',
-      label: 'label',
-      name: ['field', 'label'],
-    },
-    {
-      type: 'Input',
-      label: 'value',
-      name: ['field', 'value'],
-    },
-    {
-      type: 'Title',
-      label: '校验规则',
-      key: 'rules',
-    },
-    {
-      type: 'function',
-      render: (form: FormInstance) => {
-        return <RulesSetting key="rule-list" form={form} />;
-      },
-    },
+   
   ],
   config: {
     props: {
@@ -185,6 +99,7 @@ export default {
         placeholder: '请选择数据',
         allowClear: true,
         mode: '',
+        vitural: true,
       },
       field: {
         label: 'label',

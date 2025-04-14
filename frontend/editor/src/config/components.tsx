@@ -226,11 +226,11 @@ const components = [
       //   name: '密码框',
       //   type: 'InputPassword',
       // },
-      // {
-      //   icon: <IconFormSelect />,
-      //   name: '下拉框',
-      //   type: 'Select',
-      // },
+      {
+        icon: <IconFormSelect />,
+        name: '下拉框',
+        type: 'Select',
+      },
       // {
       //   icon: <IconFormDate />,
       //   name: '日期',

@@ -23,16 +23,27 @@ export interface IConfig {
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MSelect = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) => {
+const MSelect = ({ id, type, formItemValue, config, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
-  const { initValues } = useFormContext();
+  const { initValues, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
   // 初始化默认值
   useEffect(() => {
     const name: string = config.props.formItem?.name;
-    const value = config.props.defaultValue;
+    let value: string|number = config.props.defaultValue;
+     // 处理被引号包裹的字符串
+     if (typeof value === "string") {
+      // 去除外层的单引号或双引号
+      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+      } else {
+          if (value && !isNaN(Number(value))) {
+              value = Number(value);
+          }
+      }
+  }
     initValues(type, name, value);
   }, [config.props.defaultValue]);
 
@@ -100,10 +111,12 @@ const MSelect = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) =
   });
 
   const handleChange = (val: any) => {
-    onChange &&
-      onChange({
-        [config.props.formItem.name]: val,
-      });
+    const name = config.props.formItem?.name || id;
+    if (!inForm) {
+        // 控件不在表单内需要自行维护值
+        initValues(type, name, val);
+    }
+    onChange?.(val);
   };
 
   return (
@@ -112,6 +125,7 @@ const MSelect = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) =
         <Select
           {...config.props.formWrap}
           disabled={disabled}
+          value={formItemValue}
           variant={config.props.formWrap.variant || undefined}
           options={data}
           style={config.style}
