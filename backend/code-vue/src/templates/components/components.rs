@@ -12,4 +12,5 @@ export { default as Material } from './MarsRender/Material';
 export { default as MarsRender } from './MarsRender';
 export { default as Text } from './Text';
 export { default as Link } from './Link';
+export { default as Select } from './Select';
 "#;

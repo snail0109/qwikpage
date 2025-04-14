@@ -2,9 +2,11 @@ import { ComponentType } from "@/packages/types";
 import { Form, Select, FormItemProps, SelectProps } from "antd";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { handleApi } from "@/packages/utils/handleApi";
-import { isNotEmpty, isNull } from "@/packages/utils/util";
+import { isNotEmpty } from "@/packages/utils/util";
 import { useFormContext } from "@/packages/utils/context";
 import { usePageStore } from "@/stores/pageStore";
+import { isObject } from "lodash-es";
+import { isArray } from "lodash-es";
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
 export interface IConfig {
@@ -24,7 +26,7 @@ export interface IConfig {
  * @returns 返回组件
  */
 const MSelect = ({ id, formItemValue, type, config, onChange }: ComponentType<IConfig>, ref: any) => {
-    const { initValues, inForm } = useFormContext();
+    const { initValues, getValue, inForm } = useFormContext();
     const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
     const [visible, setVisible] = useState(true);
     const [disabled, setDisabled] = useState<boolean | undefined>();
@@ -107,6 +109,20 @@ const MSelect = ({ id, formItemValue, type, config, onChange }: ComponentType<IC
             update: (data: any) => {
                 // 重新加载表格数据
                 getDataList(data);
+            },
+            getValue: () => {
+                const name = config.props.formItem?.name || id;
+                return getValue(name);
+            },
+            setValue: (value: any) => {
+                const name = config.props.formItem?.name || id;
+                if (isObject(value) && value[name]) {
+                    initValues(type, name, value[name]);
+                } else if (isArray(value)) {
+                    initValues(type, name, value);
+                } else {
+                    console.error("[select]", "setValue参数错误，请检查", value);
+                }
             },
         };
     });
