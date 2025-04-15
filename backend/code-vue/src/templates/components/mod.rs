@@ -13,6 +13,7 @@ pub mod components;
 pub mod comp_index;
 mod text;
 mod link;
+mod select;
 
 pub fn get_components() -> Vec<FileTemplate> {
     let mut files = vec![];
@@ -75,6 +76,10 @@ pub fn get_components() -> Vec<FileTemplate> {
     files.push(FileTemplate {
         filename: String::from("src/components/Link/index.tsx"),
         content: String::from(link::LINK_INDEX),
+    });
+    files.push(FileTemplate {
+        filename: String::from("src/components/Select/index.tsx"),
+        content: String::from(select::SELECT_INDEX),
     });
     return files;
 }
