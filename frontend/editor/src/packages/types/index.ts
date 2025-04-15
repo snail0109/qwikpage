@@ -285,6 +285,7 @@ export enum FormType {
   function = 'function',
   Slider = 'Slider',
   Variable = 'Variable',
+  VariableSwitch = 'VariableSwitch',
   Icons = 'Icons',
 }
 

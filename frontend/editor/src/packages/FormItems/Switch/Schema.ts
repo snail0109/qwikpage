@@ -13,59 +13,74 @@ export default {
       type: 'Input',
       label: '标题',
       name: ['formItem', 'label'],
+      props: {
+        placeholder: '请输入文本标题',
+      },
     },
+    // {
+    //   type: 'Input',
+    //   label: '字段',
+    //   name: ['formItem', 'name'],
+    // },
     {
-      type: 'Input',
-      label: '字段',
-      name: ['formItem', 'name'],
-    },
-    {
-      type: 'Switch',
-      label: '默认值',
+      type: 'VariableSwitch',
+      label: '值',
       name: ['defaultValue'],
     },
-    {
-      type: 'Switch',
-      label: '无样式',
-      name: ['formItem', 'noStyle'],
-    },
+    // {
+    //   type: 'Switch',
+    //   label: '无样式',
+    //   name: ['formItem', 'noStyle'],
+    // },
+    // {
+    //   type: 'Input',
+    //   label: 'Extra',
+    //   name: ['formItem', 'extra'],
+    //   tooltip: '表单控件下方显示的提示信息',
+    // },
+    // {
+    //   type: 'Input',
+    //   label: 'Tooltip',
+    //   name: ['formItem', 'tooltip'],
+    //   tooltip: '表单项后面显示的提示信息',
+    // },
+    // {
+    //   type: 'Title',
+    //   label: '表单配置',
+    //   key: 'title2',
+    // },
     {
       type: 'Input',
-      label: 'Extra',
-      name: ['formItem', 'extra'],
-      tooltip: '表单控件下方显示的提示信息',
+      label: '开启文案',
+      name: ['formWrap', 'checkedChildren'],
+      props: {
+        placeholder: '请输入',
+      },
     },
+    // {
+    //   type: 'Input',
+    //   label: '关闭文案',
+    //   name: ['formWrap', 'unCheckedChildren'],
+    // },
     {
       type: 'Input',
-      label: 'Tooltip',
+      label: '工具提示',
       name: ['formItem', 'tooltip'],
-      tooltip: '表单项后面显示的提示信息',
-    },
-    {
-      type: 'Title',
-      label: '表单配置',
-      key: 'title2',
+      props: {
+        placeholder: '请输入工具提示',
+      },
     },
     {
       type: 'Switch',
       label: '禁用',
       name: ['formWrap', 'disabled'],
     },
-    {
-      type: 'Input',
-      label: '开启文案',
-      name: ['formWrap', 'checkedChildren'],
-    },
-    {
-      type: 'Input',
-      label: '关闭文案',
-      name: ['formWrap', 'unCheckedChildren'],
-    },
-    {
-      type: 'Switch',
-      label: '加载中',
-      name: ['formWrap', 'loading'],
-    },
+    
+    // {
+    //   type: 'Switch',
+    //   label: '加载中',
+    //   name: ['formWrap', 'loading'],
+    // },
   ],
   config: {
     props: {

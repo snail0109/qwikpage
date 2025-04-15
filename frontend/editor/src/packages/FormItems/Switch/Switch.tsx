@@ -55,7 +55,7 @@ const MSwitch = ({ id, type, config, onChange }: ComponentType, ref: any) => {
   return (
     visible && (
       <Form.Item {...config.props.formItem} data-id={id} data-type={type} valuePropName="checked">
-        <Switch {...config.props.formWrap} disabled={disabled} style={config.style} onChange={handleChange} />
+        <Switch {...config.props.formWrap} value={config.props.defaultValue} disabled={disabled} style={config.style} onChange={handleChange} />
       </Form.Item>
     )
   );

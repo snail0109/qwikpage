@@ -251,11 +251,11 @@ const components = [
       //   name: '单选框',
       //   type: 'Radio',
       // },
-      // {
-      //   icon: <IconFormSwitch />,
-      //   name: '开关',
-      //   type: 'Switch',
-      // },
+      {
+        icon: <IconFormSwitch />,
+        name: '开关',
+        type: 'Switch',
+      },
       // {
       //   icon: <IconFormTextArea />,
       //   name: '多行文本框',

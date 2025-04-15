@@ -4,6 +4,7 @@ import { CaretDownOutlined } from "@ant-design/icons";
 import { SchemaType } from "@/packages/types";
 import MColorPicker from "../ColorPicker";
 import VariableBindInput from "../VariableBind/VariableBind";
+import VariableSwitch from '../VariableBind//VariableSwitch';
 import InputSelect from "../InputSelect/InputSelect";
 import InputPx from "../StyleConfig/InputPx";
 import { usePageStore } from "@/stores/pageStore";
@@ -141,6 +142,8 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
           FormControl = <Slider {...item.props} />;
         } else if (item.type === "Variable") {
           FormControl = <VariableBindInput {...item.props} />;
+        }else if (item.type === "VariableSwitch") {
+          return ( <VariableSwitch {...item} /> );
         } else if (item.type === "function" && formItemId) {
           return item.render?.(form);
         } else if (item.type === "Icons") {
