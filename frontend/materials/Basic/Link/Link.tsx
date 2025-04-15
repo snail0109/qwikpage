@@ -1,5 +1,5 @@
 import { ComponentType } from '@materials/types';
-import { useState, useImperativeHandle, forwardRef } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 
 /**
  *
@@ -7,8 +7,15 @@ import { useState, useImperativeHandle, forwardRef } from 'react';
  * @param style 组件样式
  * @returns
  */
-const MLink = ({ id, type, config }: ComponentType, ref: any) => {
+const MLink = ({ config }: ComponentType, ref: any) => {
+  const [text, setText] = useState('');
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const originText = config.props?.text?.toString() || '';
+    setText(originText);
+  }, [config.props.text]);
+
   // 对外暴露方法
   useImperativeHandle(ref, () => {
     return {
@@ -23,7 +30,7 @@ const MLink = ({ id, type, config }: ComponentType, ref: any) => {
   return (
     visible && (
       <a style={config.style} {...config.props}>
-        {config.props.text}
+        {text || "超链接文本占位"}
       </a>
     )
   );
