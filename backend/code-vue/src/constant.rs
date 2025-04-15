@@ -20,8 +20,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      {proxyInfo}
+    }
+  },
 })
-
 "#;
 
 pub const TS_CONFIG_NOE: &str = r#"
@@ -278,12 +282,20 @@ pause
 
 "#;
 
+pub const ENV_CONFIG: &str = r#"
+#接口地址
+VITE_BASE_API=/qwikpageApi
+"#;
+
+pub fn template_config_file() -> FileTemplate {
+    FileTemplate {
+        filename: String::from("vite.config.ts"),
+        content: String::from(VITE_CONFIG),
+    }
+}
+
 pub fn template_files() -> [FileTemplate; 10] {
     [
-        FileTemplate {
-            filename: String::from("vite.config.ts"),
-            content: String::from(VITE_CONFIG),
-        },
         FileTemplate {
             filename: String::from("tsconfig.node.json"),
             content: String::from(TS_CONFIG_NOE),
@@ -314,12 +326,16 @@ pub fn template_files() -> [FileTemplate; 10] {
             content: String::from(MAIN),
         },
         FileTemplate {
-          filename: String::from("start"),
-          content: String::from(START_SH_CONFIG),
+            filename: String::from("start"),
+            content: String::from(START_SH_CONFIG),
         },
         FileTemplate {
-          filename: String::from("start.cmd"),
-          content: String::from(START_WIN_CONFIG),
+            filename: String::from("start.cmd"),
+            content: String::from(START_WIN_CONFIG),
         },
+        FileTemplate {
+          filename: String::from(".env"),
+          content: String::from(ENV_CONFIG),
+      },
     ]
 }

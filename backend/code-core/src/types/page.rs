@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -28,12 +28,11 @@ pub struct Element {
     pub elements: Vec<Element>,
 }
 
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ElementObj {
     pub config: Value,
-    pub events: Vec<Event>, 
-    pub methods: Vec<Method>, 
+    pub events: Vec<Event>,
+    pub methods: Vec<Method>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,7 +51,6 @@ pub struct Interceptor {
     pub timeout_error_message: String,
 }
 
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct PageContent {
     pub elements: Vec<Element>,
@@ -62,19 +60,18 @@ pub struct PageContent {
     pub interceptor: Option<Interceptor>,
 }
 
-
 // 事件
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Event {
-   pub value: String,
-   pub name: String,
+    pub value: String,
+    pub name: String,
 }
 
 // methods
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Method {
-   pub name: String,
-   pub title: String,
+    pub name: String,
+    pub title: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -87,7 +84,19 @@ pub struct MergedElement {
     pub name: String,
     pub elements: Vec<MergedElement>,
     pub config: Value,
-    pub events: Vec<Event>, 
-    pub methods: Vec<Method>, 
+    pub events: Vec<Event>,
+    pub methods: Vec<Method>,
 }
 
+// ApiConfig 结构体
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ApiConfig {
+    #[serde(rename = "apiUrl")]
+    pub api_url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PageData {
+    pub apis: HashMap<String, ApiConfig>,
+}

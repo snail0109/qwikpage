@@ -43,13 +43,13 @@ export const handleApi = async (
     }
     const pageStore = usePageStore();
     const apis = pageStore.pageState.page.pageData.apis;
-    const { method, apiUrl, contentType, replaceData = 'merge', params, result, tips } = apis[api.id] || {};
+    const { method, apiUrl, contentType, isCors = true, replaceData = 'merge', params, result, tips } = apis[api.id] || {};
     // 处理参数
     const config: any = mergeParams(method, replaceData, params, sendParams);
     // 解析模板字符串：http://api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(apiUrl, sendParams);
     config.url = stgUrl;
-    config.isCors = false; // 统一关闭代理
+    config.isCors = isCors; // 统一关闭代理
     let response = null;
     try {
       // 下载接口需要做单独处理，事件行为模块会传递actionType和filename

@@ -10,7 +10,7 @@ use code_core::types::route::RouteInfo;
 use code_core::{pinyin_name, CodeGenerator};
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use utils::{gen_router, gen_view, generate_package_json, init_dirs, init_files};
+use utils::{gen_router, gen_view, gen_proxy_config, gen_proxy_config_file, generate_package_json, init_dirs, init_files};
 
 struct VueGenerator {
     page_list: Vec<Page>,
@@ -55,11 +55,13 @@ impl CodeGenerator for VueGenerator {
         let output_dir = PathBuf::from(self.output_dir.clone());
         let page_list = self.page_list.clone();
         let mut route_list: Vec<RouteInfo> = vec![];
+        let mut proxy_list: Vec<String> = vec![];
         let mut artifacts: Vec<GeneratedArtifact> = vec![];
 
         // 遍历 page_list, 调用 generate_page
         for page in page_list {
             if !page.page_data.is_empty() {
+                gen_proxy_config(&page, &mut proxy_list)?;
                 artifacts.push(self.generate_page(&page, &mut route_list)?);
             }
         }
@@ -69,6 +71,10 @@ impl CodeGenerator for VueGenerator {
         if !route_list.is_empty() {
             artifacts.push(gen_router(output_dir.clone(), route_list)?);
         }
+        // if !proxy_map.is_empty() {
+            // println!("proxy_map: {:?}", proxy_map);
+            artifacts.push(gen_proxy_config_file(output_dir.clone(), &mut proxy_list)?);
+        // }
         Ok(artifacts)
     }
 

@@ -13,3 +13,4 @@ anyhow.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 handlebars = "4.3"
+url = "2.3"

@@ -2,13 +2,14 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Error;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
-use code_core::types::page::Page;
+use code_core::types::page::{Page, PageData};
 use code_core::types::route::RouteInfo;
 use handlebars::Handlebars;
 use serde_json::{self, json};
 use std::fs::{self, File};
 use std::io::Write;
 use std::thread;
+use url::Url;
 
 use crate::constant;
 use crate::templates::{get_components, get_store, get_types, get_utils, VIEW_TEMPLATE};
@@ -29,6 +30,52 @@ pub fn gen_router(
     write_file(output_dir.join("src/router/index.ts"), &output)
 }
 
+// 根据页面apiConfig 生成proxy配置
+pub fn gen_proxy_config(
+    page: &Page,
+    proxy_list: &mut Vec<String>,
+) -> Result<(), Error> {
+    // 解析 pageData 字符串为 PageData 结构体
+    let page_data: PageData =
+        serde_json::from_str(&page.page_data).expect("Failed to parse pageData");
+    Ok(for api_config in page_data.apis.values() {
+        if let Ok(url) = Url::parse(&api_config.api_url) {
+            // 提取域名前（包含域名）的部分作为 target
+            let target = url.origin().ascii_serialization();
+            // 提取域名后的路径部分作为 proxy key
+            let path = url.path();
+            let proxy_config = format!(
+                r#"
+                "{}/qwikpageApi{}": {{
+                    "target": "{}",
+                    "changeOrigin": true,
+                    "secure": false,
+                    "rewrite": (path) => path.replace(/^\/qwikpageApi/, '')
+                }}"#,
+                "",  // 可以根据需要添加前缀
+                path,
+                target
+            );
+            proxy_list.push(proxy_config);
+        }
+    })
+}
+
+// 生成proxy config配置文件
+pub fn gen_proxy_config_file(
+    output_dir: PathBuf,
+    proxy_list: &mut Vec<String>,
+) -> Result<GeneratedArtifact, Error> {
+    let temp_file = constant::template_config_file();
+    let file_path = output_dir.join(&temp_file.filename);
+    let result = temp_file.content.replace("{proxyInfo}", &proxy_list.join(",\n"));
+    write_file(file_path.clone(), &result)?;
+    format_vue_file(file_path.clone());
+    Ok(GeneratedArtifact {
+        file_path: file_path.to_string_lossy().to_string(),
+        content: result,
+    })
+}
 // 生成视图内容
 pub fn gen_view(
     output_dir: PathBuf,

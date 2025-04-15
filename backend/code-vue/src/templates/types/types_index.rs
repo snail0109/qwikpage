@@ -18,7 +18,7 @@ export type MaterialType<T = any> = {
 export type FormContextType = {
   initValues: (type: string, name: string | number | (string | number)[], value: any) => void;
   getValue: (name: string) => any;
-  inForm?: string;
+  inForm?: string | boolean;
 }
 
 /**
@@ -223,9 +223,7 @@ export interface ApiType {
   id: string;
   name: string; //接口名称
   url: string;
-  stgApi: string;
-  preApi: string;
-  prdApi: string;
+  apiUrl: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   sourceType?: string; //数据源类型，枚举值
   // 静态数据源映射
