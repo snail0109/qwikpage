@@ -53,3 +53,14 @@
   padding: 2px;
   cursor: pointer;
 }
+
+.variableSwitch {
+  :global {
+    .ant-form-item-label >label.ant-form-item-no-colon {
+      display: flex;
+    }
+    .ant-form-item-label >label.ant-form-item-no-colon::after {
+      display: none;
+    }
+  }
+}
