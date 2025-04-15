@@ -52,9 +52,9 @@ export default {
       name: ['formWrap', 'mode'],
       props: {
         options: [
-          { value: '', label: '单选模式' },
-          { value: 'multiple', label: '多选模式' },
-          { value: 'tags', label: '标签模式' },
+          { value: '', label: '单选' },
+          { value: 'multiple', label: '多选' },
+          { value: 'tags', label: '标签' },
         ],
       },
     },

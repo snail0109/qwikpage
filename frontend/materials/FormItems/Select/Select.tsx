@@ -47,7 +47,7 @@ const MSelect = ({ id, type, formItemValue, config, onChange }: ComponentType<IC
             }
         }
         initValues(type, name, value);
-    }, [config.props.defaultValue]);
+    }, [JSON.stringify(config.props.defaultValue)]);
 
     // 启用和禁用
     useEffect(() => {

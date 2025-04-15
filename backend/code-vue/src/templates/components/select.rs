@@ -80,7 +80,7 @@ const Select = defineComponent({
 
     // 初始化默认值
     watch(
-      () => props.config.props.defaultValue,
+      () => JSON.stringify(props.config.props.defaultValue),
       (newVal) => {
         const name: string = String(
           props.config.props.formItem?.name || props.id
