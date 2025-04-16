@@ -120,7 +120,7 @@ info "	dist: $DIST"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' exit
 
-CONFIG_PATH=$(readlink -f "$PWD/../backend/tauri.conf.json")
+CONFIG_PATH=$(readlink -f "$PWD/../backend/tauri/tauri.conf.json")
 
 # update the version in the tauri release config
 jq '.version="'"$VERSION"'"' "$CONFIG_PATH" >"$TMP_DIR/tauri.conf.json"
