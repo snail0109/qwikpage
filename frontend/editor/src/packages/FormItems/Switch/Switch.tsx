@@ -3,6 +3,8 @@ import { isNull } from '@/packages/utils/util';
 import { Form, Switch } from 'antd';
 import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { useFormContext } from '@/packages/utils/context';
+import { isObject } from "lodash-es";
+import { isArray } from "lodash-es";
 
 /**
  *
@@ -11,7 +13,7 @@ import { useFormContext } from '@/packages/utils/context';
  * @returns 返回组件
  */
 const MSwitch = ({ id, type, config, onChange }: ComponentType, ref: any) => {
-  const { initValues } = useFormContext();
+  const { initValues, getValue, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
 
@@ -41,6 +43,20 @@ const MSwitch = ({ id, type, config, onChange }: ComponentType, ref: any) => {
       },
       disable() {
         setDisabled(true);
+      },
+      getValue: () => {
+        const name = config.props.formItem?.name || id;
+        return getValue(name);
+      },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        if (isObject(value) && value[name]) {
+          initValues(type, name, value[name]);
+        } else if (isArray(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error("[select]", "setValue参数错误，请检查", value);
+        }
       },
     };
   });

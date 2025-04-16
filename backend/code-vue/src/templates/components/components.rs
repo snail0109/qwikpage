@@ -13,4 +13,5 @@ export { default as MarsRender } from './MarsRender';
 export { default as Text } from './Text';
 export { default as Link } from './Link';
 export { default as Select } from './Select';
+export { default as Switch } from './Switch';
 "#;
