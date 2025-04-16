@@ -1,1 +1,0 @@
-import{r as e,j as p}from"./index-BDG7TZje.js";import{T as i}from"./Page-BM8ySwZm.js";import"./index-DBois8Rv.js";import"./index-D9PS53M7.js";const a=({config:t},s)=>{const[o,r]=e.useState(!0);return e.useImperativeHandle(s,()=>({show(){r(!0)},hide(){r(!1)}})),o&&p.jsx(i.Title,{style:t.style,...t.props,children:t.props.text})},x=e.forwardRef(a);export{x as default};
