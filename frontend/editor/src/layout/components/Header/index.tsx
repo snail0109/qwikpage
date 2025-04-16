@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Layout, Button, message, Space, Select } from "antd";
+import { Layout, Button, Space, Select } from "antd";
+import { message } from '@/utils/AntdGlobal';
 import { SettingOutlined } from "@ant-design/icons";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "./index.module.less";
