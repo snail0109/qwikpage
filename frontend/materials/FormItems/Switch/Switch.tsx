@@ -3,6 +3,8 @@ import { isNull } from '@materials/utils/util';
 import { Form, Switch } from 'antd';
 import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { useFormContext } from '@materials/utils/context';
+import { isObject } from "lodash-es";
+import { isArray } from "lodash-es";
 
 /**
  *
@@ -10,10 +12,11 @@ import { useFormContext } from '@materials/utils/context';
  * @param props 系统属性值：componentid、componentname等
  * @returns 返回组件
  */
-const MSwitch = ({ type, config, onChange }: ComponentType, ref: any) => {
-  const { initValues } = useFormContext();
+const MSwitch = ({ id, type, config, onChange }: ComponentType, ref: any) => {
+  const { initValues, getValue, inForm } = useFormContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
+
   // 初始化默认值
   useEffect(() => {
     const name: string = config.props.formItem?.name;
@@ -26,6 +29,7 @@ const MSwitch = ({ type, config, onChange }: ComponentType, ref: any) => {
     if (typeof config.props.formWrap.disabled === 'boolean') setDisabled(config.props.formWrap.disabled);
   }, [config.props.formWrap.disabled]);
 
+  // 对外暴露方法
   useImperativeHandle(ref, () => {
     return {
       show() {
@@ -40,19 +44,34 @@ const MSwitch = ({ type, config, onChange }: ComponentType, ref: any) => {
       disable() {
         setDisabled(true);
       },
+      getValue: () => {
+        const name = config.props.formItem?.name || id;
+        return getValue(name);
+      },
+      setValue: (value: any) => {
+        const name = config.props.formItem?.name || id;
+        if (isObject(value) && value[name]) {
+          initValues(type, name, value[name]);
+        } else if (isArray(value)) {
+          initValues(type, name, value);
+        } else {
+          console.error("[select]", "setValue参数错误，请检查", value);
+        }
+      },
     };
   });
 
   // 监听表单值变化
   const handleChange = (val: string) => {
-    onChange?.({
-      [config.props.formItem.name]: val,
-    });
+    onChange &&
+      onChange({
+        [config.props.formItem.name]: val,
+      });
   };
   return (
     visible && (
       <Form.Item {...config.props.formItem} valuePropName="checked">
-        <Switch {...config.props.formWrap} disabled={disabled} style={config.style} onChange={handleChange} />
+        <Switch {...config.props.formWrap} value={config.props.defaultValue} disabled={disabled} style={config.style} onChange={handleChange} />
       </Form.Item>
     )
   );
