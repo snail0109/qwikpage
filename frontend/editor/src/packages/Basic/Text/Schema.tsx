@@ -58,6 +58,16 @@ export default {
       name: '点击事件',
     },
   ],
+  methods: [
+    {
+      name: 'setValue',
+      title: '赋值',
+    },
+    {
+      name: 'getValue',
+      title: '获取值',
+    }
+  ],
   // 组件接口
   api: {},
 };

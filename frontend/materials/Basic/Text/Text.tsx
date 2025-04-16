@@ -1,9 +1,6 @@
 import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
 import { Typography } from "antd";
-import dayjs from "dayjs";
 import { ComponentType } from "@materials/types";
-import { formatNumber } from "@materials/utils/util";
-import { message } from "@materials/utils/AntdGlobal";
 import { omit } from "lodash-es";
 /**
  *
@@ -27,6 +24,18 @@ const MText = ({ config, onClick }: ComponentType, ref: any) => {
             },
             hide() {
                 setVisible(false);
+            },
+            setValue: (value: any) => {
+                // 判断 value 类型 是否为字符串
+                if (typeof value !== "string") {
+                  console.error("setValue 方法的参数必须是字符串", value);
+                  setText("setValue 方法的参数必须是字符串")
+                  return;
+                }
+                setText(value)
+            },
+            getValue: () => {
+                return text;
             },
         };
     });

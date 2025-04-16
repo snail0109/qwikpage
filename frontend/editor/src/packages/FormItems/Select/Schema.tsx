@@ -137,5 +137,13 @@ export default {
       name: 'update',
       title: '更新数据',
     },
+    {
+      name: 'setValue',
+      title: '赋值',
+    },
+    {
+      name: 'getValue',
+      title: '获取值',
+    }
   ],
 };
