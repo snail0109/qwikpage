@@ -30,7 +30,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "@ant-design/icons": "5.5.2",
-    "@qwikpage/icons": "^0.0.1",
+    "@qwikpage/icons": "^0.0.2",
     "@ant-design/plots": "^1.2.6",
     "@types/qs": "^6.9.15",
     "ahooks": "^3.7.8",

@@ -212,7 +212,7 @@ pub fn generate_package_json(
             "qs": "^6.12.1",
             "axios": "^0.27.2",
             "copy-to-clipboard": "^3.3.3",
-            "@qwikpage/icons": "^0.0.1"
+            "@qwikpage/icons": "^0.0.2"
         },
         "devDependencies": {
             "@tsconfig/node22": "^22.0.0",
