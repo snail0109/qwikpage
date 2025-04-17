@@ -2,7 +2,6 @@ import { getPageDetailWithPath } from '@/api/index';
 import { useLocation, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { usePageStore } from '@qwikpage/materials/stores/pageStore';
-// import { useProjectStore } from '@/stores/projectStore';
 import { message } from '@/utils/AntdGlobal';
 import NotFound from './notFound';
 import Page from '@qwikpage/materials/Page/Page';
@@ -24,7 +23,6 @@ export default function () {
       };
     }),
   );
-  // const pageMap = useProjectStore(useShallow((state) => state.pageMap));
   const { pathname } = useLocation();
   useEffect(() => {
     if (!projectId) return;
