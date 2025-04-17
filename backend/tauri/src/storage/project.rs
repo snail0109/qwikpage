@@ -41,6 +41,7 @@ impl Project {
             tag: false,
             footer: false,
             system_theme_color: Some("#1677FF".to_string()),
+            variables: None,
             created_at: get_current_time(),
             updated_at: get_current_time(),
             code_export_path: get_default_build_path(),
@@ -105,6 +106,17 @@ impl Project {
         }
     }
 
+    pub fn update_variables(&mut self, variables: Option<String>) -> Result<bool, Error> {
+        self.variables = variables;
+        self.updated_at = get_current_time();
+        match self.save() {
+            Ok(_) => Ok(true),
+            Err(e) => {
+                log::error!("Failed to save project variables: {}", e);
+                Err(anyhow::anyhow!("Failed to save project variables: {}", e))
+            }
+        }
+    }
     pub async fn delete(
         project_id: String,
         group_id: String,

@@ -44,6 +44,15 @@ pub fn update_project(params: ProjectUpdateParams) -> JSResp<bool> {
     JSResp::from(res)
 }
 
+// 更新项目变量
+#[command]
+pub fn update_project_variables(id: String, variables: String) -> JSResp<bool> {
+    log::debug!("TProjectService::update_project_variable(): 更新项目变量({})", id);
+    let mut project = Project::load(id).unwrap();
+    let res = project.update_variables(Some(variables));
+    JSResp::from(res)
+}
+
 // 删除项目
 #[command]
 pub async fn delete_project(id: String, group_id: String, logo_url: String) -> JSResp<bool> {

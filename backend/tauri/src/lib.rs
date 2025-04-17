@@ -162,6 +162,7 @@ pub fn run() {
             project_service::add_project,
             project_service::get_project_detail,
             project_service::update_project,
+            project_service::update_project_variables,
             project_service::delete_project,
             project_service::upload_project_resource,
             // 资源管理

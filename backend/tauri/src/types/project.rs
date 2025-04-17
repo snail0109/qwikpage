@@ -67,6 +67,7 @@ pub struct Project {
     pub tag: bool,                          // 是否显示标签页
     pub footer: bool,                       // 是否显示页脚
     pub system_theme_color: Option<String>, // 系统主题颜色
+    pub variables: Option<String>,          // 项目变量
     pub created_at: String,
     pub updated_at: String,
     pub code_export_path: String,   // 代码导出路径
