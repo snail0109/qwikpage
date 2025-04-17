@@ -29,7 +29,7 @@ const MLink = ({ id, type, config }: ComponentType, ref: any) => {
   });
   return (
     visible && (
-      <a style={config.style} {...config.props} data-id={id} data-type={type} >
+      <a style={config.style} {...config.props} data-id={id} data-type={type} onClick={e => e.preventDefault()}>
         {text || "超链接文本占位"}
       </a>
     )
