@@ -153,9 +153,8 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
  
       // 使用 handleApi 发送请求
       const response = await handleApiTest(apiConfig, sendParams);
-      // 处理响应
         apiTestModalRef.current?.showModal({
-          ...response.data,
+          data: response.data,
         });
       
     } catch (error: any) {
