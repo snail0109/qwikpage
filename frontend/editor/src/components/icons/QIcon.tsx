@@ -7,11 +7,10 @@ const iconsList: { [key: string]: any } = icons;
 interface QIconProps {
   name: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
   className?: string;
 }
 
-const QIcon = ({ name, style = {}, onClick, className }: QIconProps) => {
+const QIcon = ({ name, style = {}, className }: QIconProps) => {
   const [iconSvg, setIconSvg] = useState<string>('');
 
   useEffect(() => {
@@ -26,10 +25,9 @@ const QIcon = ({ name, style = {}, onClick, className }: QIconProps) => {
       className={`anticon ${className || ''}`}
       style={{
         fontSize: '18px',
-        display: 'flex',
+        verticalAlign: 'middle',
         ...style,
       }}
-      onClick={onClick}
       dangerouslySetInnerHTML={{ __html: iconSvg }}
     />
   ) : null;
