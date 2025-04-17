@@ -2,6 +2,7 @@ import { Modal, Form, Input, Radio, InputNumber, Switch, ConfigProvider } from '
 import { useImperativeHandle, useState, forwardRef, useRef } from 'react';
 import { PageVariable } from '@/packages/types';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import Editor, { loader } from '@monaco-editor/react';
 import { message } from '@/utils/AntdGlobal';
 /**
@@ -12,11 +13,16 @@ const VariableSetting = (_: any, ref: any) => {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState('add');
   const [dataType, setDataType] = useState('string');
+  const [variableType, setVariableType] = useState<'project' | 'page'>('page');
   const editorRef = useRef<any>(null);
   const [form] = Form.useForm();
   const { theme, addVariable, editVariable } = usePageStore((state) => ({
     theme: state.theme,
     variables: state.page.pageData.variables,
+    addVariable: state.addVariable,
+    editVariable: state.editVariable,
+  }));
+  const { addVariable: addProVariable, editVariable:editProVariable } = useProjectStore((state) => ({
     addVariable: state.addVariable,
     editVariable: state.editVariable,
   }));
@@ -31,7 +37,7 @@ const VariableSetting = (_: any, ref: any) => {
 
   // 暴露方法
   useImperativeHandle(ref, () => ({
-    open(type: 'add' | 'edit', params: PageVariable) {
+    open(type: 'add' | 'edit', params: PageVariable, variableType: 'project' | 'page') {
       if (type === 'edit') {
         if (params.type === 'array' || params.type === 'object') {
           form.setFieldsValue({ ...params, defaultValue: JSON.stringify(params.defaultValue, null, 4) });
@@ -42,6 +48,7 @@ const VariableSetting = (_: any, ref: any) => {
       }
       setType(type);
       setVisible(true);
+      setVariableType(variableType);
     },
   }));
 
@@ -65,9 +72,17 @@ const VariableSetting = (_: any, ref: any) => {
         }
       }
       if (type === 'add') {
-        addVariable(values);
+        if (variableType === 'project') {
+          addProVariable(values); // 新增 project 变量
+        } else {
+          addVariable(values); // 新增 page 变量
+        }
       } else {
-        editVariable(values);
+        if (variableType === 'project') {
+          editProVariable(values);
+        } else {
+          editVariable(values);
+        }
       }
       handleCancel();
     });
@@ -78,6 +93,7 @@ const VariableSetting = (_: any, ref: any) => {
     form.resetFields();
     setVisible(false);
     setDataType('string');
+    setVariableType('page');
   };
   return (
     <Modal title={type === 'add' ? '添加变量' : '修改变量'} open={visible} width={410} onOk={handleOk} onCancel={handleCancel} okText="提交" cancelText="取消">

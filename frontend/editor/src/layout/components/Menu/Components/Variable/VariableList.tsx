@@ -4,20 +4,28 @@ import { FieldNumberOutlined, FieldStringOutlined, PlusOutlined } from '@ant-des
 import VariableSetting from './VariableSetting';
 import { PageVariable } from '@/packages/types';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import type { TableProps } from "antd";
 import styles from './index.module.less';
 
 export default () => {
-  const variableRef = useRef<{ open: (type: 'add' | 'edit', variable?: PageVariable) => void }>();
+  const variableRef = useRef<{ open: (type: 'add' | 'edit',  variableType: 'project' | 'page', variable?: PageVariable) => void }>();
   // 页面组件
-  const { variables, removeVariable } = usePageStore((state) => ({
+  const { variables: pageVariables, removeVariable } = usePageStore((state) => ({
     variables: state.page.pageData.variables,
     removeVariable: state.removeVariable,
   }));
 
-  console.log(variables);
+  // 项目信息
+  const { variables: projectVariables, removeVariable: removeProVariable } = useProjectStore((state) => ({
+    variables: state.variables,
+    removeVariable: state.removeVariable,
+  }));
 
-  const columns: TableProps<PageVariable>["columns"] = [
+  console.log("页面变量", pageVariables);
+  console.log("项目变量", projectVariables);
+
+  const columns = (variableType: 'project' | 'page'): TableProps<PageVariable>["columns"] => [
     {
       title: "名称",
       dataIndex: "name",
@@ -50,11 +58,11 @@ export default () => {
       align: "left",
       render: (_, row) => (
         <div style={{ display: 'flex', alignItems: "center" }}>
-          <Button type="link" onClick={(event) => handleEdit(event, row)} style={{ paddingLeft: 0 }}>
+          <Button type="link" onClick={(event) => handleEdit(event, row, variableType)} style={{ paddingLeft: 0 }}>
             修改
           </Button>
           <Divider type="vertical" />
-          <Button type="link" onClick={(event) => handleRemove(event, row.name)}>
+          <Button type="link" onClick={(event) => handleRemove(event, row.name, variableType)}>
             删除
           </Button>
         </div>
@@ -63,20 +71,24 @@ export default () => {
   ];
 
   // 新增变量
-  const handleAdd = () => {
-    variableRef.current?.open('add');
+  const handleAdd = (variableType: 'project' | 'page') => {
+    variableRef.current?.open('add', variableType);
   };
 
   // 修改变量
-  const handleEdit = (event: React.MouseEvent, item: PageVariable) => {
+  const handleEdit = (event: React.MouseEvent, item: PageVariable, variableType: 'project' | 'page') => {
     event.preventDefault();
-    variableRef.current?.open('edit', item);
+    variableRef.current?.open('edit', variableType, item);
   };
 
   // 删除变量
-  const handleRemove = (event: React.MouseEvent, name: string) => {
+  const handleRemove = (event: React.MouseEvent, name: string, variableType: 'project' | 'page') => {
     event.preventDefault();
-    removeVariable(name);
+    if (variableType === 'page') {
+      removeVariable(name);
+    } else {
+      removeProVariable(name);
+    }
   };
 
   return (
@@ -90,28 +102,28 @@ export default () => {
       }}
     >
       <div className={styles.variableConfigHeader}>
-        <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
+        <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd('project')}>
           新增
         </Button>
       </div>
       <Table<PageVariable>
         size="small"
-        columns={columns}
-        dataSource={variables}
+        columns={columns('project')} 
+        dataSource={projectVariables}
         className={styles.variableConfigTable}
         pagination={false}
       />
       <div className={styles.pageVariableConfig}>
         <div className={styles.pageVariableConfigHeader}>
           <span style={{ fontWeight: "bold" }}>页面变量</span>
-          <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd()}>
+          <Button type="link" icon={<PlusOutlined />} onClick={() => handleAdd('page')}>
             新增
           </Button>
         </div>
         <Table<PageVariable>
           size="small"
-          columns={columns}
-          dataSource={variables}
+          columns={columns('page')}
+          dataSource={pageVariables}
           className={styles.variableConfigTable}
           pagination={false}
         />
