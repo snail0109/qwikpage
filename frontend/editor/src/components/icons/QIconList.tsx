@@ -63,7 +63,7 @@ export default function QIconList({ value, onChange }: any) {
   return (
     <Select
       placeholder="请选择图标"
-      // allowClear
+      allowClear
       value={value ? {
         value: value,
         label: <QIcon name={value} style={{ fontSize: "24px" }} />
@@ -71,7 +71,7 @@ export default function QIconList({ value, onChange }: any) {
       open={open}
       options={options}
       onDropdownVisibleChange={(visible) => setOpen(visible)}
-      // onClear={() => onChange('')}
+      onClear={() => onChange('')}
       dropdownRender={() => (
         <div>
           <Segmented

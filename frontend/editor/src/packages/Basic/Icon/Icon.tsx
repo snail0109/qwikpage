@@ -15,7 +15,7 @@ const MIcon = (
   ref: any
 ) => {
   const [visible, setVisible] = useState(true);
-
+  
   // 对外暴露方法
   useImperativeHandle(ref, () => ({
     show() {
@@ -33,7 +33,7 @@ const MIcon = (
   return (
     visible && (
       <span data-id={id} data-type={type} onClick={handleClick}>
-        <QIcon style={config.style} {...config.props} name={config.props.icon} />
+        <QIcon style={config.style} {...config.props} name={config.props.icon || 'GithubOutlined'} />
       </span>
     )
   );
