@@ -85,7 +85,17 @@ export default {
       label: '禁用',
       name: ['formWrap', 'disabled'],
     },
-   
+    {
+      type: 'Title',
+      label: '校验规则',
+      key: 'rules',
+    },
+    {
+      type: 'function',
+      render: (form: FormInstance) => {
+        return <RulesSetting key="rule-list" form={form} />;
+      },
+    },
   ],
   config: {
     props: {
