@@ -12,7 +12,7 @@ use std::thread;
 use url::Url;
 
 use crate::constant;
-use crate::templates::{get_components, get_store, get_types, get_utils, VIEW_TEMPLATE};
+use crate::templates::{get_components, get_store, get_types, get_utils, get_views, VIEW_TEMPLATE};
 
 // 生成路由文件
 pub fn gen_router(
@@ -167,6 +167,7 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
     temp_files.extend(get_store());
     temp_files.extend(get_types());
     temp_files.extend(get_utils());
+    temp_files.extend(get_views());
     for file in temp_files {
         let file_path = output_dir.join(&file.filename);
         // let path_str = file_path.to_string_lossy();

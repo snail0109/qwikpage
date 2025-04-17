@@ -362,28 +362,25 @@ const handleJumpLink = async ({ action, next }: ActionNode<JumpLinkAction>, data
   if (action.jumpType === 'route') {
     if (params.size > 0) {
       // 解析路径
-      const path = action.url.split('?')[0];
-      
-      // 合并所有查询参数
-      const query: any = {};
-      const allParams = new URLSearchParams(action.url.includes('?') ? action.url.split('?')[1] : '');
-      params.forEach((value, key) => allParams.append(key, value));
-      
-      // 转换为对象
-      allParams.forEach((value, key) => {
-        query[key] = value;
+      const path = action.url.split('?')[0].replace(/^\/+/, '');
+      const state: any = {};
+      params.forEach((value, key) => {
+        state[key] = value;
       });
-      
-      router.push({ path, query });
+      if (action.url.includes('?')) {
+        const urlParams = new URLSearchParams(action.url.split('?')[1]);
+        urlParams.forEach((value, key) => {
+          state[key] = value;
+        });
+      }
+      router.push({
+        path: `/${path}`,
+        state
+      });
     } else {
-      router.push(action.url);
+      const normalizedUrl = action.url.replace(/^\/+/, '');
+      router.push(`/${normalizedUrl}`);
     }
-  } else if (action.jumpType === 'micro') {
-    // TODO 跨服务跳转
-    // if (!window.microApp) {
-    //   console.warn('跨服务跳转：当前页面不在微应用环境中，无法跳转');
-    // }
-    // window.microApp?.dispatch({ type: 'router', path: action.url, data });
   } else if (action.jumpType === 'link') {
     const url = `${action.url}${action.url.indexOf('?') > -1 ? '&' : '?'}${params}`;
     if (action.isNewWindow) {

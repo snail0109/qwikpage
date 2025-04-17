@@ -61,7 +61,7 @@ const Text = defineComponent({
     expose({
       show: () => (visible.value = true),
       hide: () => (visible.value = false),
-      setValue: (val) = > (text.value = val),
+      setValue: (val) => (text.value = val),
       getValue: () => text.value,
     });
 

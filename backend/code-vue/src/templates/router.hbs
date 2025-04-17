@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import NotFound from '@/views/NotFound.vue';
 {{#each routes}}
 import {{this.name}} from '{{this.component_path}}';
 {{/each}}
@@ -6,19 +7,17 @@ import {{this.name}} from '{{this.component_path}}';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { 
+      path: '/:pathMatch(.*)*', 
+      name: 'NotFound', 
+      component: NotFound 
+    },
     {{#each routes}}
     { 
       path: '{{this.path}}', 
       name: '{{this.name}}', 
       component: {{this.name}} 
     },
-    {{#if @last}}
-    { 
-      path: '/', 
-      name: 'HomeDefault', 
-      component: {{this.name}} 
-    },
-    {{/if}}
     {{/each}}
   ]
 })
