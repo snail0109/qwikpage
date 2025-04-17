@@ -55,11 +55,19 @@ pub fn custom_log_out(
         Level::Trace => "T", // Trace -> T
     };
     // 区分windows 和 mac
-    let file_path = record.file_static().unwrap();
-    let file_name = Path::new(file_path)
-        .file_name() // This handles both '/' and '\' separators correctly
-        .unwrap_or_default()
-        .to_string_lossy();
+    let file_path = record.file_static().unwrap_or("<unknown>"); // 使用默认值避免panic
+    let path = Path::new(file_path);
+    let file_name = path
+        .file_name()
+        .map(|s| s.to_string_lossy().into_owned()) // 将文件名转换为字符串
+        .unwrap_or_else(|| {
+            // 如果无法获取文件名，使用整个路径或默认值
+            if file_path.is_empty() {
+                "<unknown>".to_string()
+            } else {
+                file_path.to_string()
+            }
+        });
 
     out.finish(format_args!(
         "{} ({}:{:#?}) [{}] > {}",
