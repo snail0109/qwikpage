@@ -7,10 +7,11 @@ import { getComponent } from '@/packages/index';
 import { IDragTargetItem } from '@/packages/types/index';
 import { checkComponentType, createId, getElement } from '@/utils/util';
 import storage from '@/utils/storage';
-import { pageService } from '@/services';
+import { pageService, projectService } from '@/services';
 import Toolbar from '@/components/Toolbar/Toolbar';
 import { message } from '@/utils/AntdGlobal';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import Page from '@/packages/Page/Page';
 import PageConfig from '@/packages/Page/Schema';
 import FloatingCollector from '@/components/FloatingCollector';
@@ -57,6 +58,12 @@ const Editor = () => {
       updateEditState: state.updateEditState,
       canvasWidth: state.canvasWidth,
       updateCanvasWidth: state.updateCanvasWidth,
+    };
+  });
+
+  const { setProjectVariables } = useProjectStore((state) => {
+    return {
+      setProjectVariables: state.setVariables,
     };
   });
   // 悬浮组件 - 展示悬浮条
@@ -125,6 +132,25 @@ const Editor = () => {
       setSelectedElement(undefined);
     };
   }, [id]);
+
+  // 监听项目变化，重新拉取项目变量
+  useEffect(() => {
+    if (!projectId) return;
+    projectService.getProjectDetail(projectId).then((res: any) => {
+      const { variables = '' } = res;
+      try {
+        const variablesData = JSON.parse(variables);
+        console.log("项目变量：", variablesData);
+        setProjectVariables(variablesData);
+      } catch(error) {
+        console.error(error);
+        message.error('项目变量数据格式错误，请检查, 【json数据】', variables);
+      }
+    }).catch((res) => {
+      console.error(res);
+      message.error('获取项目信息失败');
+    });
+  }, [projectId]);
 
   // 当页面和用户有交互时，增加刷新和返回提示。
   useEffect(() => {

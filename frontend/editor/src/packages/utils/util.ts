@@ -4,6 +4,7 @@
 
 import dayjs from 'dayjs';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import { ComponentType } from '../types';
 import { get } from 'lodash-es';
 import { cloneDeep } from 'lodash-es';
@@ -206,6 +207,18 @@ export function getPageVariable(name?: string) {
 }
 
 /**
+ * 获取项目变量
+ */
+export function getProjectVariable(name?: string) {
+  const projectStore = useProjectStore.getState();
+  const data: { [key: string]: any } = {};
+  projectStore.variables.forEach((item) => {
+    data[item.name] = projectStore.variableData[item.name] ?? item.defaultValue;
+  });
+  return name ? data[name] : data;
+}
+
+/**
  * 创建动态函数
  */
 export function createFunction(params: Array<string> | string, body: string) {
@@ -251,6 +264,8 @@ export function renderFormula(formula: string, eventParams: any = {}) {
       }
     });
     const variableData = getPageVariable();
+    const globalVariableData = getProjectVariable();
+    
     const dynamicFunc = createFunction(fnParams, formula);
     // 添加日期格式化
     const FORMAT = (date: any, fmt: string = 'YYYY-MM-DD HH:mm:ss') => {
@@ -258,13 +273,12 @@ export function renderFormula(formula: string, eventParams: any = {}) {
     };
     const context = {
       variable: variableData,
+      globalVariable: globalVariableData,
       eventParams,
       FORMAT,
       ...formData,
       ...formItemData,
     };
-    console.log(">>>>>>>context", context, eventParams)
-    // debugger
     const result = dynamicFunc(context, eventParams || {});
     if (typeof result === 'function') return result(context, eventParams || {});
     return result;
@@ -346,7 +360,7 @@ export const handleParamVariable = (params: any = {}, data?: any) => {
       // 如果是静态值，则直接赋值。
       if (variableObj?.type === 'static') {
         prev[cur] = variableObj.value;
-      } else if (variableObj?.type === 'variable') {
+      } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
         // 绑定变量时，可能是变量，也可能是绑定某一个表单值
         prev[cur] = renderFormula(variableObj.value, data);
       } else {

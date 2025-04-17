@@ -3,6 +3,7 @@ import { ComItemType, ConfigType } from '@/packages/types/index';
 import { handleActionFlow } from '@/packages/utils/action';
 import { setComponentRef } from '@/packages/utils/useComponentRefs';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import { useShallow } from 'zustand/react/shallow';
 import { produce } from 'immer';
 import dayjs from 'dayjs';
@@ -40,11 +41,16 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
   const { elementsMap, variableData, formData, formItemData, updateToolbar } = usePageStore(
     useShallow((state) => ({
       elementsMap: state.page.pageData.elementsMap,
-      variables: state.page.pageData.variables,
       variableData: state.page.pageData.variableData,
       formData: state.page.pageData.formData,
       formItemData: state.page.pageData.formItemData,
       updateToolbar: state.updateToolbar,
+    })),
+  );
+
+  const { projectVariableData } = useProjectStore(
+    useShallow((state) => ({
+      projectVariableData: state.variableData,
     })),
   );
 
@@ -83,7 +89,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
         handleBindVariable(draft);
       });
     });
-  }, [variableData, formData, formItemData, elementsMap]);
+  }, [variableData, projectVariableData, formData, formItemData, elementsMap]);
 
   // 处理表单正则
   const handleFormRegExp = (config: ConfigType) => {
@@ -124,7 +130,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
         // 如果是静态值，则直接赋值。
         if (variableObj?.type === 'static') {
           config.props[key] = variableObj.value;
-        } else if (variableObj?.type === 'variable') {
+        } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
           // 绑定变量时，可能是变量，也可能是绑定某一个表单值
           config.props[key] = renderFormula(variableObj.value);
         }
