@@ -360,11 +360,14 @@ const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any)
 const handleJumpLink = async ({ action, next }: ActionNode<JumpLinkAction>, data: any) => {
   const params = new URLSearchParams(data);
   if (action.jumpType === 'route') {
-    let url = action.url;
-    if (params.size > 0) {
-      url += action.url.indexOf('?') > -1 ? '&' : '?' + params;
-    }
-    router.navigate(url);
+    const url = action.url;
+    // if (params.size > 0) {
+    //   url += action.url.indexOf('?') > -1 ? '&' : '?' + params;
+    // }
+    const path = url.replace(/^\/+/, '');
+    router.navigate(path, {
+      state: data
+    });
   } else if (action.jumpType === 'micro') {
     if (!window.microApp) {
       console.warn('跨服务跳转：当前页面不在微应用环境中，无法跳转');
