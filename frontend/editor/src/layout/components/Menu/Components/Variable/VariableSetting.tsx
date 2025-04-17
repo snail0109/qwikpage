@@ -1,15 +1,18 @@
 import { Modal, Form, Input, Radio, InputNumber, Switch, ConfigProvider } from 'antd';
 import { useImperativeHandle, useState, forwardRef, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { PageVariable } from '@/packages/types';
 import { usePageStore } from '@/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
 import Editor, { loader } from '@monaco-editor/react';
 import { message } from '@/utils/AntdGlobal';
+import { projectService } from "@/services";
 /**
  * 成员管理
  */
 
 const VariableSetting = (_: any, ref: any) => {
+  const { projectId } = useParams();
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState('add');
   const [dataType, setDataType] = useState('string');
@@ -22,9 +25,10 @@ const VariableSetting = (_: any, ref: any) => {
     addVariable: state.addVariable,
     editVariable: state.editVariable,
   }));
-  const { addVariable: addProVariable, editVariable:editProVariable } = useProjectStore((state) => ({
-    addVariable: state.addVariable,
-    editVariable: state.editVariable,
+  const { addProVariable, editProVariable, projectVariables } = useProjectStore((state) => ({
+    addProVariable: state.addVariable,
+    editProVariable: state.editVariable,
+    projectVariables: state.variables,
   }));
 
   // 初始化monaco，默认为jsdelivery分发，由于网络原因改为本地cdn
@@ -37,7 +41,7 @@ const VariableSetting = (_: any, ref: any) => {
 
   // 暴露方法
   useImperativeHandle(ref, () => ({
-    open(type: 'add' | 'edit', params: PageVariable, variableType: 'project' | 'page') {
+    open(type: 'add' | 'edit', variableType: 'project' | 'page', params: PageVariable) {
       if (type === 'edit') {
         if (params.type === 'array' || params.type === 'object') {
           form.setFieldsValue({ ...params, defaultValue: JSON.stringify(params.defaultValue, null, 4) });
@@ -85,6 +89,12 @@ const VariableSetting = (_: any, ref: any) => {
         }
       }
       handleCancel();
+      // if (variableType === 'project') {
+      //   projectService.updateProVariables({ id: projectId, variables: JSON.stringify(projectVariables) }).then((res) => {
+      //     console.log(res);
+
+      //   });
+      // }
     });
   };
 

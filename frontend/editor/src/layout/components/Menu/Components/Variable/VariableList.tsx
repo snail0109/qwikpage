@@ -17,9 +17,9 @@ export default () => {
   }));
 
   // 项目信息
-  const { variables: projectVariables, removeVariable: removeProVariable } = useProjectStore((state) => ({
-    variables: state.variables,
-    removeVariable: state.removeVariable,
+  const { projectVariables, removeProVariable } = useProjectStore((state) => ({
+    projectVariables: state.variables,
+    removeProVariable: state.removeVariable,
   }));
 
   console.log("页面变量", pageVariables);
