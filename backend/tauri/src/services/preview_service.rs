@@ -134,7 +134,7 @@ pub fn get_page_detail_with_path(project_id: String, path: String) -> Result<Jso
 pub async fn proxy_request(
     proxy_request: Json<ProxyRequest>,
     content_type: Option<&ContentType>,
-) -> Result<(Status, serde_json::Value), Status> {
+) -> Result<(Status,Vec<u8>), Status> {
     let method = proxy_request.method.to_uppercase();
     let target_url = &proxy_request.target_url;
     
@@ -182,8 +182,8 @@ pub async fn proxy_request(
     let rocket_status = Status::new(status_code);
     
     // 获取响应体
-    let response_body = match response.json().await {
-        Ok(data) => data,
+    let response_body = match response.bytes().await {
+        Ok(bytes) => bytes.to_vec(),
         Err(e) => {
             log::error!("读取响应体失败: {}", e);
             return Err(Status::InternalServerError);
