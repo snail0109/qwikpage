@@ -7,6 +7,7 @@ use super::page::Page;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GeneratorOptions {
     pub project_name: String,
+    pub project_variables: Option<String>,
     pub output_dir: PathBuf,
     pub version: String,
     pub package_manager: String, // npm/yarn/pnpm

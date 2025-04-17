@@ -10,7 +10,7 @@ use code_core::types::route::RouteInfo;
 use code_core::{pinyin_name, CodeGenerator};
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use utils::{gen_router, gen_view, gen_proxy_config, gen_proxy_config_file, generate_package_json, init_dirs, init_files};
+use utils::{gen_router, gen_view, gen_proxy_config, gen_proxy_config_file, generate_app, generate_package_json, init_dirs, init_files};
 
 struct VueGenerator {
     page_list: Vec<Page>,
@@ -45,6 +45,9 @@ impl CodeGenerator for VueGenerator {
 
         // 生成package.json
         generate_package_json(options, output_dir, &mut artifacts)?;
+
+        // 生成App.vue
+        generate_app(options, output_dir, &mut artifacts)?;
 
         artifacts.extend(self.generate_code()?);
 

@@ -190,6 +190,19 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
     Ok(())
 }
 
+// 生成入口文件App.vue
+pub fn generate_app(options: &GeneratorOptions, output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> Result<(), Error> {
+    let temp_file = constant::template_app_file();
+    let file_path = output_dir.join(&temp_file.filename);
+    let result = temp_file.content.replace("{variablesInfo}", options.project_variables.as_deref().unwrap_or("[]"));
+    write_file(file_path.clone(), &result)?;
+    format_vue_file(file_path.clone());
+    artifacts.push(write_file(
+        file_path.clone(),
+        result.as_str(),
+    )?);
+    Ok(())
+}
 // 生成 package.json 文件
 pub fn generate_package_json(
     options: &GeneratorOptions,

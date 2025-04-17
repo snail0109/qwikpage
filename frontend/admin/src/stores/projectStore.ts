@@ -17,7 +17,6 @@ export interface ProjectInfo {
 
 export interface PageState {
   projectInfo: ProjectInfo;
-  collapsed: boolean;
   menuTree: any[];
   buttons: any[];
   pageMap: { [key: string]: IMenuItem };
@@ -26,7 +25,6 @@ export interface PageState {
 
 export interface ProjectAction {
   setProjectInfo: (payload: any) => void;
-  updateCollapsed: () => void;
 }
 
 export const useProjectStore = create<PageState & ProjectAction>((set, get) => ({
@@ -34,7 +32,6 @@ export const useProjectStore = create<PageState & ProjectAction>((set, get) => (
     name: '',
     menuMode: 'inline',
   },
-  collapsed: false,
   menuTree: [],
   buttons: [],
   pageMap: {},
@@ -47,12 +44,5 @@ export const useProjectStore = create<PageState & ProjectAction>((set, get) => (
       pageMap,
       menuMap,
     });
-  },
-  updateCollapsed: () => {
-    set((state) => {
-      return {
-        collapsed: !state.collapsed,
-      };
-    });
-  },
+  }
 }));

@@ -206,6 +206,7 @@ export interface VariableAction {
   name: string;
   value: any;
   variableType: string;
+  variableFrom?: 'project' | 'page'; // 变量来源
 }
 
 /**
@@ -260,6 +261,6 @@ export interface PageVariable {
   name: string;
   defaultValue: any;
   type: any;
-  remark: string;
+  remark?: string;
 }
 "#;

@@ -102,14 +102,15 @@ pub const DTS: &str = r#"
 
 pub const APP_VUE: &str = r#"
 <script setup lang="ts">
-import { provide } from "vue";
+import { provide, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { getInitValue } from "@/utils/util";
-import type { FormContextType } from "@/types";
+import type { FormContextType, PageVariable } from "@/types";
 
 const { pageState } = storeToRefs(appStore.page);
 const { setFormItemData } = appStore.page;
+const { setVariables } = appStore.project;
 
 const initValues = (
   type: string,
@@ -141,6 +142,10 @@ const useFormContext = (): FormContextType => {
 };
 
 provide("useFormContext", useFormContext);
+onMounted(() => {
+  const variables: PageVariable[] = {variablesInfo};
+  setVariables(variables);
+});
 </script>
 
 <template>
@@ -294,7 +299,14 @@ pub fn template_config_file() -> FileTemplate {
     }
 }
 
-pub fn template_files() -> [FileTemplate; 10] {
+pub fn template_app_file() -> FileTemplate {
+    FileTemplate {
+        filename: String::from("src/App.vue"),
+        content: String::from(APP_VUE),
+    }
+}
+
+pub fn template_files() -> [FileTemplate; 9] {
     [
         FileTemplate {
             filename: String::from("tsconfig.node.json"),
@@ -317,11 +329,6 @@ pub fn template_files() -> [FileTemplate; 10] {
             content: String::from(DTS),
         },
         FileTemplate {
-            // 默认导入了 element-ui
-            filename: String::from("src/App.vue"),
-            content: String::from(APP_VUE),
-        },
-        FileTemplate {
             filename: String::from("src/main.ts"),
             content: String::from(MAIN),
         },
@@ -334,8 +341,8 @@ pub fn template_files() -> [FileTemplate; 10] {
             content: String::from(START_WIN_CONFIG),
         },
         FileTemplate {
-          filename: String::from(".env"),
-          content: String::from(ENV_CONFIG),
-      },
+            filename: String::from(".env"),
+            content: String::from(ENV_CONFIG),
+        },
     ]
 }

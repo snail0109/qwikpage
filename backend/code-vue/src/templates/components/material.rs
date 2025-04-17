@@ -57,6 +57,7 @@ const Material = defineComponent({
     const useFormContext = inject<UseFormContextType>('useFormContext', () => defaultFormContext());
     const { inForm } = useFormContext();
     const { pageState } = storeToRefs(appStore.page);
+    const { projectState } = storeToRefs(appStore.project);
     const currentCom = ref("");
     const config = ref<ConfigType>();
     const cached = ref(false);
@@ -97,7 +98,7 @@ const Material = defineComponent({
           // 如果是静态值，则直接赋值。
           if (variableObj?.type === 'static') {
             config.props[key] = variableObj.value;
-          } else if (variableObj?.type === 'variable') {
+          } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
             // 绑定变量时，可能是变量，也可能是绑定某一个表单值
             config.props[key] = renderFormula(variableObj.value);
           }
@@ -160,6 +161,7 @@ const Material = defineComponent({
     watch(
       () => [
         pageState.value.page.pageData.variableData,
+        projectState.value.variableData,
         pageState.value.page.pageData.formData,
         pageState.value.page.pageData.formItemData,
         pageState.value.page.pageData.elementsMap,

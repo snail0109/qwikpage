@@ -14,6 +14,7 @@ import { isArray, isObject } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
 import { handleApi } from './handleApi';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate, defaultVariable } from './util';
 import { message, notification, Modal } from 'ant-design-vue';
 import request from './request';
@@ -412,8 +413,8 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
       value = defaultVariable(action.variableType, data);
     }
   }
-  const pageStore = usePageStore();
-  pageStore.setVariableData({
+  const setVariableFunc = action.variableFrom === 'project'? useProjectStore().setVariableData : usePageStore().setVariableData;
+  setVariableFunc({
     name: action.name,
     value,
   });

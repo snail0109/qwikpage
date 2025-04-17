@@ -5,7 +5,7 @@ pub const NOT_FOUND_TEMPLATE: &str = r#"
       <span class="ant-result-subtitle">以下页面可访问:</span>
       <ul>
         <li v-for="route in availableRoutes" :key="route.path">
-          <router-link :to="route.path">{{ route.name }}</router-link>
+          <router-link :to="route.path">{{ route.path === '/' ? route.path : '/' + route.name }}</router-link>
         </li>
       </ul>
     </template>
@@ -17,9 +17,15 @@ import { useRouter } from "vue-router";
 import { computed } from "vue";
 
 const router = useRouter();
-const availableRoutes = computed(() =>
-  router.getRoutes().filter((route) => route.name && route.name !== "NotFound")
-);
+const availableRoutes = computed(() => {
+  const list = router.getRoutes().filter((route) => route.name && route.name !== "NotFound");
+  const defaultIndex = list.findIndex((route) => route.path === "/");
+  if (defaultIndex !== -1) {
+    const defaultRoute = list.splice(defaultIndex, 1)[0];
+    list.unshift(defaultRoute);
+  }
+  return list;
+});
 </script>
 
 <style scoped>

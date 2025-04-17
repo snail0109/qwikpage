@@ -13,6 +13,7 @@ import { isArray, isObject } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
 import { handleApi } from './handleApi';
 import { usePageStore } from '@materials/stores/pageStore';
+import { useProjectStore } from '@materials/stores/projectStore';
 import { copyText, handleArrayVariable, handleParamVariable, isNotEmpty, renderFormula, renderTemplate } from './util';
 import { Modal, message, notification } from '@materials/utils/AntdGlobal';
 import { defaultVariable } from '@materials/utils/util'
@@ -403,7 +404,8 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
       value = defaultVariable(action.variableType, data);
     }
   }
-  usePageStore.getState().setVariableData({
+  const setVariableFunc = action.variableFrom === 'project'? useProjectStore.getState().setVariableData : usePageStore.getState().setVariableData;
+  setVariableFunc({
     name: action.name,
     value,
   });

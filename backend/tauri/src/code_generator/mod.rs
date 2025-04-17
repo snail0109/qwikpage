@@ -113,6 +113,7 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
     // 按需调整
     let options = GeneratorOptions {
         project_name: project.name,
+        project_variables: project.variables,
         output_dir: project_export_path.clone(),
         version: "1.0.0".into(),
         package_manager: "npm".into(),

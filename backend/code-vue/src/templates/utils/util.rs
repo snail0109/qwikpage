@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { get } from 'lodash-es';
 import copy from 'copy-to-clipboard';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import type { ComponentType } from '@/types';
 
 /**
@@ -93,6 +94,19 @@ export function getPageVariable(name?: string) {
 }
 
 /**
+ * 获取项目变量
+ */
+export function getProjectVariable(name?: string) {
+  const projectStore = useProjectStore();
+  const projectData = projectStore.projectState;
+  const data: { [key: string]: any } = {};
+  projectData.variables.forEach((item) => {
+    data[item.name] = projectData.variableData[item.name] ?? item.defaultValue;
+  });
+  return name ? data[name] : data;
+}
+
+/**
  * 渲染逻辑表达式
  * @param formula 表达式字符串
  * @param eventParams 表达式参数，在事件流执行的过程中，如果调用的是脚本运行，则会传入上一个事件流的返回值
@@ -118,6 +132,7 @@ export function renderFormula(formula: string, eventParams?: any) {
       }
     });
     const variableData = getPageVariable();
+    const globalVariableData = getProjectVariable();
     const dynamicFunc = createFunction(fnParams, formula);
     // 添加日期格式化
     const FORMAT = (date: any, fmt: string = 'YYYY-MM-DD HH:mm:ss') => {
@@ -125,6 +140,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     };
     const context = {
       variable: variableData,
+      globalVariable: globalVariableData,
       eventParams,
       FORMAT,
       ...formData,
@@ -212,7 +228,7 @@ export const handleParamVariable = (params: any = {}, data?: any) => {
       // 如果是静态值，则直接赋值。
       if (variableObj?.type === 'static') {
         prev[cur] = variableObj.value;
-      } else if (variableObj?.type === 'variable') {
+      } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
         // 绑定变量时，可能是变量，也可能是绑定某一个表单值
         prev[cur] = renderFormula(variableObj.value, data);
       } else {
