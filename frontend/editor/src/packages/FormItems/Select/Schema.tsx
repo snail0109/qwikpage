@@ -54,7 +54,6 @@ export default {
         options: [
           { value: '', label: '单选' },
           { value: 'multiple', label: '多选' },
-          { value: 'tags', label: '标签' },
         ],
       },
     },
