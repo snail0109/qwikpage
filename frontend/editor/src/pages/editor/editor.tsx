@@ -141,7 +141,9 @@ const Editor = () => {
       try {
         const variablesData = JSON.parse(variables);
         console.log("项目变量：", variablesData);
-        setProjectVariables(variablesData);
+        if (variablesData && variablesData.length) {
+          setProjectVariables(variablesData);
+        }
       } catch(error) {
         console.error(error);
         message.error('项目变量数据格式错误，请检查, 【json数据】', variables);

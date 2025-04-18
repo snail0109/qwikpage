@@ -40,7 +40,9 @@ const AdminLayout = () => {
         if (detail.variables) {
           try {
             const variables = JSON.parse(detail.variables);
-            setProjectVariables(variables);
+            if (variables && variables.length) {
+              setProjectVariables(variables);
+            }
           } catch(error) {
             console.error(error);
             console.info('解析项目变量失败，【variables】', detail.variables);
