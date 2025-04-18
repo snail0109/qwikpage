@@ -9,9 +9,14 @@ const Text = defineComponent({
   name: "QText",
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { expose }) {
+  setup(props, { attrs, expose }) {
+    const { onClick, ...rest } = attrs;
     const visible = ref(true);
     const text = ref("");
+
+    const handleClick = () => {
+      onClick?.();
+    }
     // 监听文本变化
     watch(
       () => props.config.props?.text,
@@ -68,8 +73,10 @@ const Text = defineComponent({
     return () => (
       visible.value && (
         <Typography.Text
+          {...rest}
           style={textStyle.value}
           {...omit(props.config.props, ["script", "text", "hiddenText", 'formItem'])}
+          onClick={handleClick}
         >
           {text.value}
         </Typography.Text>

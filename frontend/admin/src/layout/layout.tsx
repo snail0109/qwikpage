@@ -77,7 +77,7 @@ const AdminLayout = () => {
     >
       <Layout style={{ flexDirection: 'row' }}>
         <div style={{ width: '100vw' }}>
-          <div style={{ height: '100vh', overflow: 'auto' }}>
+          <div className="container" style={{ height: '100vh', overflow: 'auto' }}>
             <Outlet></Outlet>
           </div>
         </div>

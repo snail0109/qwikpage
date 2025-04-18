@@ -1,0 +1,1 @@
+import{r,j as o}from"./index-CR4-B1OC.js";import{af as a}from"./Page-WlfNyvOd.js";import"./index-Cx7zbXF9.js";import"./index-CfXaoCwm.js";const p=({config:e},s)=>{const[i,t]=r.useState(!0);return r.useImperativeHandle(s,()=>({show(){t(!0)},hide(){t(!1)}})),i&&o.jsx(a,{style:e.style,...e.props,children:e.props.text})},n=r.forwardRef(p);export{n as default};
