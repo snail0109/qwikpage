@@ -212,6 +212,9 @@ export function getPageVariable(name?: string) {
 export function getProjectVariable(name?: string) {
   const projectStore = useProjectStore.getState();
   const data: { [key: string]: any } = {};
+  if (!projectStore.variables) {
+    return data;
+  }
   projectStore.variables.forEach((item) => {
     data[item.name] = projectStore.variableData[item.name] ?? item.defaultValue;
   });
