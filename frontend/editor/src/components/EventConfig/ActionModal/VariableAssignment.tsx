@@ -58,7 +58,7 @@ const VariableAssignment = ({ form }: { form: FormInstance }) => {
           
           {/* 项目变量分组 */}
           <Select.OptGroup label="项目变量">
-            {projectVariables.map((item) => (
+            {projectVariables?.map((item) => (
               <Select.Option key={`project_${item.name}`} value={`project:${item.name}`}>
                 {item.name}
               </Select.Option>
