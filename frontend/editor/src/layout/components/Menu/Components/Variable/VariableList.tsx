@@ -1,14 +1,18 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Button, Table, Divider, ConfigProvider } from 'antd';
 import { FieldNumberOutlined, FieldStringOutlined, PlusOutlined } from '@ant-design/icons';
 import VariableSetting from './VariableSetting';
 import { PageVariable } from '@/packages/types';
 import { usePageStore } from '@/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
+import { projectService } from "@/services";
+import { message } from "@/utils/AntdGlobal";
 import type { TableProps } from "antd";
 import styles from './index.module.less';
 
 export default () => {
+  const { projectId } = useParams();
   const variableRef = useRef<{ open: (type: 'add' | 'edit',  variableType: 'project' | 'page', variable?: PageVariable) => void }>();
   // 页面组件
   const { variables: pageVariables, removeVariable } = usePageStore((state) => ({
@@ -24,6 +28,23 @@ export default () => {
 
   console.log("页面变量", pageVariables);
   console.log("项目变量", projectVariables);
+
+   // 监听 projectVariables 变化并调用 API
+   useEffect(() => {
+    if (projectId && projectVariables) {
+      projectService.updateProVariables({ 
+        id: projectId, 
+        variables: JSON.stringify(projectVariables) 
+      })
+      .then((res) => {
+        console.log('变量更新成功:', res);
+      })
+      .catch((err) => {
+        console.error('变量更新失败:', err);
+        message.error('变量更新失败');
+      });
+    }
+  }, [projectVariables, projectId]);
 
   const columns = (variableType: 'project' | 'page'): TableProps<PageVariable>["columns"] => [
     {
