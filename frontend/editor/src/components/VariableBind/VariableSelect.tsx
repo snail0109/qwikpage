@@ -144,6 +144,9 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
  * @returns 
  */
 function transformToList(items: Array<any>, variableType: 'project' | 'page') {
+  if (!items) {
+    return []
+  }
   return items.map((item) => {
     const { name, type, defaultValue } = item;
     const node: any = { name, value: defaultValue, elements: [] };
