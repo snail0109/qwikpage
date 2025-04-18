@@ -1,6 +1,6 @@
 mod utils;
 
-use crate::{storage::page::PageConfig, types::project::Project};
+use crate::{storage::page::PageConfig, types::project::Project, utils::dirs::get_default_build_path};
 use code_core::types::{
     ffi::FfiResult,
     generator::{GeneratedArtifact, GeneratorOptions},
@@ -93,7 +93,10 @@ pub async fn export_code(app: AppHandle, params: ExportCodeParams) -> Result<(),
         return Err("项目没有页面，导出结束".to_string());
     }
 
-    let code_export_path = project.code_export_path;
+    let mut code_export_path = project.code_export_path;
+    if code_export_path.is_empty() {
+        code_export_path = get_default_build_path();
+    }
     let project_export_path = PathBuf::from(code_export_path).join(&params.project_id);
 
     log::info!("创建项目代码目录: {:?}", project_export_path);
