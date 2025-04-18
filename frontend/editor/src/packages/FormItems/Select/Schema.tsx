@@ -108,7 +108,7 @@ export default {
         placeholder: '请选择数据',
         allowClear: true,
         mode: '',
-        vitural: true,
+        virtual: true,
       },
       field: {
         label: 'label',
