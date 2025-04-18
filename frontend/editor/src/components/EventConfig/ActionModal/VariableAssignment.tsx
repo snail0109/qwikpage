@@ -1,11 +1,14 @@
 import { Form, Select, Divider, Input, Radio, FormInstance } from 'antd';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import { useEffect, useState } from 'react';
 import VsEditor from '@/components/VsEditor';
 import VariableBind from '@/components/VariableBind/VariableBind';
 import styles from './index.module.less';
 const VariableAssignment = ({ form }: { form: FormInstance }) => {
   const variables = usePageStore((state) => state.page.pageData.variables);
+  const projectVariables = useProjectStore((state) => state.variables);
+
   const [dataType, setDataType] = useState('string');
 
   useEffect(() => {
@@ -14,11 +17,21 @@ const VariableAssignment = ({ form }: { form: FormInstance }) => {
   }, []);
 
   // 设置数据类型
-  const handleDataChange = (name: string) => {
-    const dataType = variables.find((item) => item.name === name)?.type;
+  const handleDataChange = (value: string) => {
+    const [varType, varName] = value.split(':');
+
+    let dataType;
+    if (varType === 'page') {
+      dataType = variables.find((item) => item.name === varName)?.type;
+      
+    } else if (varType === 'project') {
+      dataType = projectVariables.find((item) => item.name === varName)?.type;
+    }
     setDataType(dataType);
     form.setFieldValue('variableType', dataType);
+    form.setFieldValue('variableFrom', varType);
   };
+
   return (
     <>
       <div className={styles.desc}>
@@ -33,15 +46,30 @@ const VariableAssignment = ({ form }: { form: FormInstance }) => {
         </Radio.Group>
       </Form.Item>
       <Form.Item label="选择变量" name="name" wrapperCol={{ span: 16 }} rules={[{ required: true, message: '请选择变量' }]}>
-        <Select onChange={(val) => handleDataChange(val)}>
-          {variables.map((item) => (
-            <Select.Option key={item.name} value={item.name}>
-              {item.name}
-            </Select.Option>
-          ))}
+      <Select onChange={(val) => handleDataChange(val)}>
+          {/* 页面变量分组 */}
+          <Select.OptGroup label="页面变量">
+            {variables.map((item) => (
+              <Select.Option key={`page_${item.name}`} value={`page:${item.name}`}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select.OptGroup>
+          
+          {/* 项目变量分组 */}
+          <Select.OptGroup label="项目变量">
+            {projectVariables.map((item) => (
+              <Select.Option key={`project_${item.name}`} value={`project:${item.name}`}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select.OptGroup>
         </Select>
       </Form.Item>
       <Form.Item label="数据类型" name="variableType" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item label="数据来源" name="variableFrom" hidden>
         <Input />
       </Form.Item>
       <Form.Item noStyle shouldUpdate>
