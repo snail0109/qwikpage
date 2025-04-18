@@ -1,7 +1,7 @@
 {
   "name": "qwikpage",
   "private": true,
-  "version": "0.0.1-alpha.20250313.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "preview": "vite preview",
