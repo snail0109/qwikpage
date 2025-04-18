@@ -3,9 +3,6 @@ name: "release"
 on:
   release:
     types: [published]
-  schedule:
-    - cron: '0 9 1-5 * *' # UTC 9:00 (北京时间 17:00)，仅工作日
-    - cron: '30 9 1-5 * *'
   workflow_dispatch:
     inputs:
       branch:
@@ -23,10 +20,13 @@ jobs:
         id: get_build_time
         shell: bash
         run: |
-          BuildTime=$(TZ='Asia/Shanghai' date +%Y%m%d%H%M%S)
+          BuildTime=$(TZ="Asia/Shanghai" date +"%Y-%m-%d(%H:%M:%S)")
+          VersionTime=$(TZ='Asia/Shanghai' date +%Y%m%d%H%M%S)
           echo "build_time=$BuildTime" >> "$GITHUB_OUTPUT"
+          echo "version_time=$VersionTime" >> "$GITHUB_OUTPUT"
 
           echo "Build Time: ${BuildTime}"
+          echo "Version Time: ${VersionTime}"
 
   publish-tauri:
     needs: prepare
@@ -44,12 +44,14 @@ jobs:
             args: "--bundles nsis"
 
     runs-on: ${{ matrix.platform }}
+    outputs:
+      app_version: ${{ steps.tauri-build.outputs.appVersion }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           # 定时任务使用P4分支，手动触发使用用户选择的分支，其他情况使用默认分支
-          ref: ${{ github.event_name == 'schedule' && 'dev' || github.event.inputs.branch || github.ref }}
+          ref: 'dev'
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -85,8 +87,8 @@ jobs:
             # 定时触发，从tauri.conf.json内读取，添加时间戳,生成alpha版本
             base_version=$(jq -r '.version' backend/tauri/tauri.conf.json)
             clean_version=$(echo "$base_version" | sed 's/-alpha[^-]*$//')
-            build_time="${{ needs.prepare.outputs.build_time }}"
-            FINAL_VERSION="${clean_version}-alpha.${build_time}"
+            version_time="${{ needs.prepare.outputs.version_time }}"
+            FINAL_VERSION="${clean_version}-alpha.${version_time}"
             echo "Generated version: ${FINAL_VERSION}"
           elif [ "${{ github.event.release.tag_name }}" == "" ]; then
             # 没有release tag，直接用__VERSION__占位符
@@ -120,6 +122,7 @@ jobs:
         shell: bash
 
       - uses: tauri-apps/tauri-action@v0
+        id: tauri-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -131,3 +134,55 @@ jobs:
           releaseDraft: false
           prerelease: ${{ env.PRERELEASE }}
           args: ${{ matrix.args }}
+
+  upload-aliyun:
+    needs: [prepare, publish-tauri]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: 'dev'
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          gh release download v${{ needs.publish-tauri.outputs.app_version }} --pattern "*.exe" --pattern "*.tar.gz" --pattern "*.json" --dir artifacts
+          
+          # 设置 ARTIFACT_PATHS
+          ARTIFACT_PATHS=$(find artifacts -type f \( -name "*.exe" -o -name "*.tar.gz" \) -exec realpath {} \; | tr '\n' ' ')
+          echo "ARTIFACT_PATHS=$ARTIFACT_PATHS" >> $GITHUB_ENV
+          
+          # 设置 JSON_PATH
+          JSON_PATH=$(find artifacts -type f -name "*.json" -exec realpath {} \;)
+          echo "JSON_PATH=$JSON_PATH" >> $GITHUB_ENV
+          
+          echo "二进制文件路径："
+          echo "$ARTIFACT_PATHS"
+          
+          echo "JSON文件路径："
+          echo "$JSON_PATH"
+
+      # 安装上传到阿里云的依赖
+      - name: Install dependencies for upload
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          echo "Dependencies installed for Linux"
+          curl --version
+
+      # 上传到阿里云
+      - name: Upload To Aliyun
+        shell: bash
+        env:
+          ALIYUN_USERNAME: ${{ secrets.ALIYUN_USERNAME }}
+          ALIYUN_PASSWORD: ${{ secrets.ALIYUN_PASSWORD }}
+          ALIYUN_BASE_URL: ${{ secrets.ALIYUN_BASE_URL }}
+          APP_VERSION: ${{ needs.publish-tauri.outputs.app_version }}
+          ARTIFACT_PATHS: ${{ env.ARTIFACT_PATHS }}
+          JSON_PATH: ${{ env.JSON_PATH }}
+        run: |
+          chmod +x ./scripts/upload_artifacts.sh
+          ./scripts/upload_artifacts.sh
