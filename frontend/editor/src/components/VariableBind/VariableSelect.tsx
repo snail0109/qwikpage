@@ -4,6 +4,7 @@ import { forwardRef, memo, useCallback, useImperativeHandle, useState } from 're
 import { DownOutlined, NotificationOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { isString } from 'lodash-es';
 import { usePageStore } from '@/stores/pageStore';
+import { useProjectStore } from '@/stores/projectStore';
 import VsEditor from '../VsEditor';
 import { getElement, getParentForm } from '@/utils/util';
 import { isFormPlugin } from '@/packages/utils/util';
@@ -14,12 +15,20 @@ import components from '@/config/components';
 const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, ref: any) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
+  // 页面
   const { variables, pageName, elements, elementsMap } = usePageStore((state) => {
     return {
       variables: state.page.pageData.variables,
       pageName: state.page.name,
       elements: state.page.pageData.elements,
       elementsMap: state.page.pageData.elementsMap,
+    };
+  });
+
+  // 项目
+  const { projectVariables } = useProjectStore((state) => {
+    return {
+      projectVariables: state.variables,
     };
   });
 
@@ -104,53 +113,71 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
         //   ],
         // },
         {
-          name: '全局变量',
+          name: '变量',
           id: 'PageVariable',
           type: 'PageVariable',
-          elements: transformToList(variables),
+          elements: transformToList(variables, 'page'),
         },
         ...getFormAndTable(),
       ],
     },
+    {
+      name: `项目变量`,
+      id: 'project',
+      elements: transformToList(projectVariables, 'project'),
+      // elements: [
+      //   {
+      //     name: '全局变量',
+      //     id: 'ProjectVariable',
+      //     type: 'ProjectVariable',
+      //     elements: transformToList(projectVariables),
+      //   },
+      // ],
+    }
   ];
 
   /**
-   * 把变量转换为树形结构
-   * 对象需要递归展开
-   * @param items
-   * @returns
-   */
-  function transformToList(items: Array<any>) {
-    return items.map((item) => {
-      const { name, type, defaultValue } = item;
-      const node: any = { name, value: defaultValue, elements: [] };
+ * 把变量转换为树形结构
+ * 对象需要递归展开
+ * @param items 变量列表
+ * @param variableType 变量类型 'project' | 'page'
+ * @returns 
+ */
+function transformToList(items: Array<any>, variableType: 'project' | 'page') {
+  return items.map((item) => {
+    const { name, type, defaultValue } = item;
+    const node: any = { name, value: defaultValue, elements: [] };
 
-      if (type === 'array') {
-        node.type = 'Variable';
-        node.id = item.name;
-        node.name = `Array<${item.name}>${item.remark ? '(' + item.remark + ')' : ''}`;
-      } else if (type === 'object') {
-        node.id = item.name;
-        node.name = `${item.name}${item.remark ? '(' + item.remark + ')' : ''}`;
-        node.type = 'Variable';
-        node.elements = transformToList(
-          Object.entries(defaultValue).map(([key, value]) => {
-            return {
-              type: Array.isArray(value) ? 'array' : typeof value,
-              id: item.name + '.' + key,
-              name: item.name + '.' + key,
-              defaultValue: value,
-            };
-          }),
-        );
-      } else {
-        node.type = 'Variable';
-        node.id = item.name;
-        node.name = `${item.name}${item.remark ? '(' + item.remark + ')' : ''}`;
-      }
-      return node;
-    });
-  }
+    // 根据变量类型设置不同的 type
+    const baseType = variableType === 'project' ? 'ProjectVariable' : 'Variable';
+
+    if (type === 'array') {
+      node.type = baseType;
+      node.id = item.name;
+      node.name = `Array<${item.name}>${item.remark ? '(' + item.remark + ')' : ''}`;
+    } else if (type === 'object') {
+      node.id = item.name;
+      node.name = `${item.name}${item.remark ? '(' + item.remark + ')' : ''}`;
+      node.type = baseType;
+      node.elements = transformToList(
+        Object.entries(defaultValue).map(([key, value]) => {
+          return {
+            type: Array.isArray(value) ? 'array' : typeof value,
+            id: item.name + '.' + key,
+            name: item.name + '.' + key,
+            defaultValue: value,
+          };
+        }),
+        variableType
+      );
+    } else {
+      node.type = baseType;
+      node.id = item.name;
+      node.name = `${item.name}${item.remark ? '(' + item.remark + ')' : ''}`;
+    }
+    return node;
+  });
+}
 
   useImperativeHandle(ref, () => {
     return {
@@ -195,14 +222,22 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
       form.setFieldValue('expression', `${beforeExpression} context.store.${node.id}`.trimStart());
       return;
     }
-    // 选择页面全局变量
+    // 选择页面变量
     if (node.type === 'Variable') {
       form.setFieldValue('expression', `${beforeExpression} context.variable.${node.id}`.trimStart());
+      return;
+    }
+
+    // 选择项目变量
+    if (node.type === 'ProjectVariable') {
+      form.setFieldValue('expression', `${beforeExpression} context.globalVariable.${node.id}`.trimStart());
       return;
     }
     // 判断取值方式，如果是表单项，就按照表单的方式取值
     if (node.type === 'PageVariable') {
       form.setFieldValue('expression', `${beforeExpression} context.variable`);
+    } else if (node.type === 'ProjectVariable') {
+      form.setFieldValue('expression', `${beforeExpression} context.globalVariable`);
     } else if (node.type === 'EditTable') {
       const name = elementsMap[node.id]?.config.props.field;
       if (name) form.setFieldValue('expression', `${beforeExpression} context.${node.parentId}.${name}`.trimStart());
@@ -264,7 +299,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
   return (
     <Modal open={visible} onCancel={handleCancel} title="逻辑编辑器" width={1100} onOk={handleSubmit} okText="确认" cancelText="取消">
       <div style={{ marginBlock: 10 }}>
-        <NotificationOutlined style={{ color: '#7D33FF' }} />
+        <NotificationOutlined style={{ color: '#216EF7' }} />
         <span style={{ marginLeft: 5 }}>下表为页面定义的全局变量，选择时，直接鼠标点击对应的行即可。</span>
       </div>
       <div className={styles.container}>
