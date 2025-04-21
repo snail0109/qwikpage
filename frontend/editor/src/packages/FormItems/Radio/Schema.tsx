@@ -21,98 +21,6 @@ export default {
       name: ['formItem', 'name'],
     },
     {
-      type: 'Variable',
-      label: '默认值',
-      name: ['defaultValue'],
-    },
-    {
-      type: 'Switch',
-      label: '无样式',
-      name: ['formItem', 'noStyle'],
-    },
-    {
-      type: 'Select',
-      label: '按钮类型',
-      name: ['formWrap', 'optionType'],
-      props: {
-        options: [
-          { value: 'default', label: '默认' },
-          { value: 'button', label: '按钮' },
-        ],
-      },
-    },
-    {
-      type: 'Select',
-      label: '按钮样式',
-      name: ['formWrap', 'buttonStyle'],
-      tooltip: '指定按钮类型为按钮后，才会生效',
-      props: {
-        options: [
-          { value: 'outline', label: '虚线' },
-          { value: 'solid', label: '实线' },
-        ],
-      },
-    },
-    {
-      type: 'Switch',
-      label: '禁用',
-      name: ['formWrap', 'disabled'],
-    },
-    {
-      type: 'Input',
-      label: 'Extra',
-      name: ['formItem', 'extra'],
-      tooltip: '表单控件下方显示的提示信息',
-    },
-    {
-      type: 'Input',
-      label: 'Tooltip',
-      name: ['formItem', 'tooltip'],
-      tooltip: '表单项后面显示的提示信息',
-    },
-    {
-      type: 'Title',
-      label: '布局',
-      key: 'FormLayout',
-    },
-    {
-      type: 'InputNumber',
-      label: '标签占位',
-      name: ['formItem', 'labelCol', 'span'],
-      props: {
-        placeholder: '占位格数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '标签偏移',
-      name: ['formItem', 'labelCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件占列',
-      name: ['formItem', 'wrapperCol', 'span'],
-      props: {
-        placeholder: '占位格数',
-      },
-    },
-    {
-      type: 'InputNumber',
-      label: '控件偏移',
-      name: ['formItem', 'wrapperCol', 'offset'],
-      props: {
-        placeholder: '偏移数',
-      },
-    },
-    {
-      type: 'Title',
-      label: '字段映射',
-      key: 'fieldMap',
-    },
-    {
       type: 'Input',
       label: 'label',
       name: ['field', 'label'],
@@ -123,9 +31,46 @@ export default {
       name: ['field', 'value'],
     },
     {
+      type: 'Variable',
+      label: '选中值',
+      name: ['defaultValue'],
+      props: {
+        placeholder: '请输入默认值',
+      },
+    },
+    {
+      type: 'Input',
+      label: '工具提示',
+      name: ['formItem', 'tooltip'],
+      props: {
+        placeholder: '请输入工具提示',
+      },
+    },
+    {
+      type: 'Switch',
+      label: '禁用',
+      name: ['formWrap', 'disabled'],
+    },
+    {
       type: 'Title',
       label: '校验规则',
       key: 'rules',
+    },
+    {
+      type: 'InputNumber',
+      label: '标签栅格布局',
+      name: ['formItem', 'labelCol', 'span'],
+      props: {
+        placeholder: '请输入',
+      },
+    },
+    {
+      type: 'InputNumber',
+      label: '控件栅格布局',
+      name: ['formItem', 'wrapperCol', 'span'],
+      props: {
+        placeholder: '请输入',
+      },
     },
     {
       type: 'function',

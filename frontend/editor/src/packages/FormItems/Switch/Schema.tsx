@@ -78,6 +78,22 @@ export default {
             name: ["formWrap", "disabled"],
         },
         {
+            type: 'InputNumber',
+            label: '标签栅格布局',
+            name: ['formItem', 'labelCol', 'span'],
+            props: {
+              placeholder: '请输入',
+            },
+          },
+          {
+            type: 'InputNumber',
+            label: '控件栅格布局',
+            name: ['formItem', 'wrapperCol', 'span'],
+            props: {
+              placeholder: '请输入',
+            },
+          },
+        {
             type: "Title",
             label: "校验规则",
             key: "rules",
