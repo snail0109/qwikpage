@@ -6,6 +6,7 @@ import { usePageStore } from '@/stores/pageStore';
 import NodeModal from '../FlowNode/NodeModal';
 import { NodeType } from '../FlowNode/FlowNode';
 import styles from './index.module.less';
+import pageConfig from '@/packages/Page/Schema'
 
 const EventConfig = memo(() => {
   type callback = (nodeList: NodeType[]) => void;
@@ -35,7 +36,7 @@ const EventConfig = memo(() => {
         key: item.value,
         label: item.name,
       }))
-    : state.page.pageData.events.map((item) => ({
+    : pageConfig.events.map((item) => ({
         key: item.value,
         label: item.name,
       }));
