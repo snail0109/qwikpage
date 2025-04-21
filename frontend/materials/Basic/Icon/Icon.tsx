@@ -35,9 +35,14 @@ const MIcon = (
   };
 
   const iconsList: { [key: string]: any } = Icons;
+
+   // 获取icon名称，如果没有则使用默认值GithubOutlined
+   const iconName = config.props?.icon || 'GithubOutlined';
+   const IconComponent = iconsList[iconName] || iconsList['GithubOutlined'];
+   
   return (
     visible &&
-    React.createElement(iconsList[config.props.icon], {
+    React.createElement(IconComponent, {
       style: config.style,
       ...config.props,
       onClick: handleClick,
