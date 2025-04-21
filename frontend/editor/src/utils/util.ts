@@ -421,3 +421,25 @@ export const COLUMN_MAP = {
   4: [2, 4, 8, 10],
   2: [6, 18]
 }
+
+/**
+ * 对版本号进行美化，兼容旧版本
+ * release版本: vx.y.z
+ * beta版本: rx.y.z.timestamp 去除beta，alpha，rc等标识
+ * @param {String} version - 版本号
+ */
+export const beautifyVersion = (version: string = '') => {
+  const versionArr = version.split('.');
+  const ifBeta = version.includes('beta') || version.includes('alpha') || version.includes('rc') || versionArr.length > 3;
+  const newVersion = version.replace(/(beta|alpha|rc|-)/g, '');
+  if (ifBeta) {
+    const versions = newVersion.split('.');
+    const lastVersion = versions[versions.length - 1];
+    if (lastVersion.length >= 14) {
+      versions[versions.length - 1] = lastVersion.substring(0, 8) + "_" + lastVersion.substring(8);
+      return `r${versions.join('.')}`;
+    }
+    return `r${newVersion}`;
+  }
+  return `v${newVersion}`;
+};

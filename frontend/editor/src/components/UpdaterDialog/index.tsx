@@ -7,6 +7,7 @@ import { Modal, Progress, Button } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./index.module.less";
 import { CloseCircleOutlined } from "@ant-design/icons";
+import { beautifyVersion } from "@/utils/util";
 
 type InstallStatus = "Downloading" | "DownloadAndInstall" | "Done" | "Up-to-date" | "Error";
 
@@ -131,7 +132,7 @@ function UpdaterDialog() {
                 {status === "Error" && "Error occurred"}
                 {!status && updaterInstancece && "New version available"}
             </h4>
-            {status === "Up-to-date" && <Button onClick={confirmUpdate}>更新到 {updaterInstancece?.version}</Button>}
+            {status === "Up-to-date" && <Button onClick={confirmUpdate}>更新到 {beautifyVersion(updaterInstancece?.version)}</Button>}
             {status === "DownloadAndInstall" && <Progress percent={Math.round(progress)} />}
             {status === 'Done' && needRestart && <Button onClick={restart_app}>重启</Button>}
 
