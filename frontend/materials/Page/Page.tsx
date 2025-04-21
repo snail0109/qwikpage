@@ -3,8 +3,34 @@ import MarsRender from '@materials/MarsRender/MarsRender';
 import { FormContext } from '@materials/utils/context';
 import { usePageStore } from '@materials/stores/pageStore';
 import { handleActionFlow } from '@materials/utils/action';
-import { ComItemType, ConfigType } from '@materials/types/index';
+import { ComItemType, ConfigType, EventType } from '@materials/types/index';
 import { getInitValue } from '@materials/utils/util';
+
+let eventFunction: { [key: string]: (params?: any) => void } = {};
+const createEvents = (events: EventType[]) => {
+  eventFunction = {};
+  // 没有配置事件流，直接返回
+  if (!events?.length) {
+    return {};
+  }
+  // 把重复的事件push到数组中（一个点击事件，可能有多个事件流）
+  const obj: { [key: string]: any[] } = {};
+  events.forEach((event) => {
+    if (event.actions?.length > 0) {
+      obj[event.eventName] = (obj[event.eventName] || []).concat([event.actions]);
+    }
+  });
+  // 遍历对象，按顺序执行事件流
+  for (const key in obj) {
+    eventFunction[key] = (params: any) => {
+      // 同一个事件：循环执行多个事件流
+      obj[key].forEach((actions) => {
+        handleActionFlow(actions, params);
+      });
+    };
+  }
+  return eventFunction;
+};
 
 /**
  * @param props 组件本身属性
@@ -19,13 +45,20 @@ const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemTyp
       setFormItemData: state.setFormItemData,
     };
   });
+
   useEffect(() => {
-    config?.events?.forEach((event: any) => {
-      if (event.actions?.length > 0) {
-        handleActionFlow(event.actions, {});
-      }
-    });
+    createEvents(config?.events || [])
   }, [config?.events]);
+
+  useEffect(() => {
+    createEvents(config?.events || []);
+    // 实例化挂载完成
+    eventFunction['onMount']?.();
+    return () => {
+      // 销毁事件
+      eventFunction['onDestory']?.();
+    }
+  }, []);
 
   const initValues = useCallback((type: string, name: string, value: any) => {
     if (name) {

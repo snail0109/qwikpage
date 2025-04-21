@@ -1,3 +1,4 @@
+import { EventType } from '@/packages/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRafState } from 'ahooks';
 import MarsRender from '@/packages/MarsRender/MarsRender';
@@ -7,6 +8,32 @@ import { FormContext } from '@/packages/utils/context';
 import { getInitValue } from '@/packages/utils/util';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { keyMap } from '@/constants/hotKeys';
+
+let eventFunction: { [key: string]: (params?: any) => void } = {};
+const createEvents = (events: EventType[]) => {
+  eventFunction = {};
+  // 没有配置事件流，直接返回
+  if (!events?.length) {
+    return {};
+  }
+  // 把重复的事件push到数组中（一个点击事件，可能有多个事件流）
+  const obj: { [key: string]: any[] } = {};
+  events.forEach((event) => {
+    if (event.actions?.length > 0) {
+      obj[event.eventName] = (obj[event.eventName] || []).concat([event.actions]);
+    }
+  });
+  // 遍历对象，按顺序执行事件流
+  for (const key in obj) {
+    eventFunction[key] = (params: any) => {
+      // 同一个事件：循环执行多个事件流
+      obj[key].forEach((actions) => {
+        handleActionFlow(actions, params);
+      });
+    };
+  }
+  return eventFunction;
+};
 
 /**
  * @param props 组件本身属性
@@ -86,7 +113,7 @@ const Page: React.FC = () => {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const addEventListener = () => {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
@@ -108,12 +135,18 @@ const Page: React.FC = () => {
   }, [isDragging]);
 
   useEffect(() => {
-    config.events?.forEach((event) => {
-      if (event.actions?.length > 0) {
-        handleActionFlow(event.actions, {});
-      }
-    });
+    createEvents(config.events || [])
   }, [config.events]);
+
+  useEffect(() => {
+    createEvents(config.events || []);
+    // 实例化挂载完成
+    eventFunction['onMount']?.();
+    return () => {
+      // 销毁事件
+      eventFunction['onDestory']?.();
+    }
+  }, []);
 
   const initValues = useCallback((type: string, name: string, value: any) => {
     if (name) {

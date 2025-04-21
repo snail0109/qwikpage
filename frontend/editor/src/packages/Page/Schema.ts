@@ -44,7 +44,15 @@ export default {
   events: [
     {
       value: 'onLoad',
-      name: '初始化事件',
+      name: '页面初始化',
     },
+    {
+      value: 'onMount',
+      name: '实例化挂载完成',
+    },
+    {
+      value: 'onDestory',
+      name: '页面销毁',
+    }
   ],
 };
