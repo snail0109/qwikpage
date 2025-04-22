@@ -5,7 +5,7 @@ import { useDrop } from 'react-dnd';
 import { getComponent } from '@/packages/index';
 import MarsRender from '@/packages/MarsRender/MarsRender';
 import { usePageStore } from '@/stores/pageStore';
-import * as icons from '@ant-design/icons';
+import QIcon from "@/components/icons/QIcon";
 import { omit } from 'lodash-es';
 import { handleActionFlow } from '@/packages/utils/action';
 /**
@@ -62,16 +62,18 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
   };
 
   const bulkActionList = config.props.bulkActionList || [];
-  const iconsList: { [key: string]: any } = icons;
+
   return (
     visible && (
       <Card
         style={config.style}
-        {...omit(config.props, ['cover', 'meta'])}
+        {...omit(config.props, ['cover', 'meta', 'title'])}
         data-id={id}
         data-type={type}
+        {...(config.props.header ? { title: config.props.title } : {})}
         cover={config.props.cover ? <img src={config.props.cover} /> : null}
         extra={
+          config.props.header && (
           <div style={{ display: 'flex', gap: 10 }}>
             {bulkActionList.map((item: any, index: number) => {
               return (
@@ -79,14 +81,14 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
                   key={item.eventName}
                   type={item.type}
                   danger={item.danger}
-                  icon={item.icon ? React.createElement(iconsList[item.icon]) : null}
+                  icon={item.icon ? <QIcon name={item.icon} /> : null}
                   onClick={() => handleOperate(item.eventName)}
                 >
                   {item.text}
                 </Button>
               );
             })}
-          </div>
+          </div>)
         }
         onClick={() => onClick?.()}
         ref={drop}

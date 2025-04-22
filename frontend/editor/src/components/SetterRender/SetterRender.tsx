@@ -82,7 +82,7 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
       )}
 
       {/* ---组件属性--- */}
-      {attrs.map((item: SchemaType, index) => {     
+      {attrs.map((item: SchemaType, index) => {
         if (!item) return null;
         const key = item.key || item.name?.toString() || item.label?.toString() + index.toString();
         let FormControl = <></>;

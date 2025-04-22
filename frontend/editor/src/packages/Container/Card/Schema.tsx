@@ -119,6 +119,7 @@ export default {
       },
       size: 'default',
       bordered: true,
+      header: true,
       meta: {
         title: '低代码搭建平台',
         description: '全栈自研、低代码搭建、逻辑编排、权限控制',
