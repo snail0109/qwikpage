@@ -47,7 +47,9 @@ const Page = ({ config, elements }: { config?: ConfigType; elements?: ComItemTyp
   });
 
   useEffect(() => {
-    createEvents(config?.events || [])
+    createEvents(config?.events || []);
+    // 页面初始化
+    eventFunction['onLoad']?.();
   }, [config?.events]);
 
   useEffect(() => {

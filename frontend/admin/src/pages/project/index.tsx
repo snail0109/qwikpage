@@ -53,5 +53,9 @@ export default function () {
     };
   }, [projectId, pathname]);
 
+  if (!pageData?.config) {
+    return <></>;
+  }
+
   return <>{notFound ? <NotFound /> : <Page config={pageData?.config} elements={pageData?.elements} />}</>;
 }
