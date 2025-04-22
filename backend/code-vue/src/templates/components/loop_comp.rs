@@ -14,7 +14,7 @@ import appStore from "@/stores";
 import { commonProps } from "@/types";
 import { withInstall } from "@/utils/type";
 import { handleApi } from "@/utils/handleApi";
-import { Row } from "ant-design-vue";
+import { Flex } from "ant-design-vue";
 
 const Loop = defineComponent({
   name: "QLoop",
@@ -80,7 +80,7 @@ const Loop = defineComponent({
           data-type={props.type}
         >
           {props.elements?.length > 0 && (
-            <Row id={props.id} style={props.config.style} {...restLayout}>
+            <Flex id={props.id} style={props.config.style} {...restLayout}>
               {dataItems.value.map((item, index) => (
                 <LoopItemProvider
                   key={item[rowKey || "id"]}
@@ -92,7 +92,7 @@ const Loop = defineComponent({
                   <q-render elements={props.elements} />
                 </LoopItemProvider>
               ))}
-            </Row>
+            </Flex>
           )}
         </div>
       );

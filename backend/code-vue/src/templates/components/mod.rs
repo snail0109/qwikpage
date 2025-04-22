@@ -17,6 +17,7 @@ mod select;
 mod switch;
 mod loop_comp;
 mod image;
+mod card;
 
 pub fn get_components() -> Vec<FileTemplate> {
     let mut files = vec![];
@@ -97,5 +98,11 @@ pub fn get_components() -> Vec<FileTemplate> {
         filename: String::from("src/components/Image/index.tsx"),
         content: String::from(image::IMG_INDEX),
     });
+
+    files.push(FileTemplate {
+        filename: String::from("src/components/Card/index.tsx"),
+        content: String::from(card::CARD_INDEX),
+    });
+
     return files;
 }
