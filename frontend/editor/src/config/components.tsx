@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 // import IconTitle from './icons/IconTitle';
 import IconCard from "./icons/IconCard";
 import IconForm from "./icons/IconForm";
+import IconLoop from "./icons/IconLoop";
 // import IconDiv from './icons/IconDiv';
 import IconFlex from "./icons/IconFlex";
 // import IconSpace from './icons/IconSpace';
@@ -77,7 +78,7 @@ const components = [
         title: "高级组件",
         data: [
             {
-                icon: <IconForm />,
+                icon: <IconLoop />,
                 name: "循环",
                 type: "Loop",
             },
@@ -98,7 +99,7 @@ const components = [
         title: "容器组件",
         data: [
             {
-                icon: <IconForm />,
+                icon: <IconCard />,
                 name: "Card容器",
                 type: "Card",
             },

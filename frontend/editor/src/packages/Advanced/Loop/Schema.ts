@@ -41,5 +41,6 @@ export default {
     },
     // 组件事件
     events: [],
+    // TODO 组件方法
     methods: [],
 };
