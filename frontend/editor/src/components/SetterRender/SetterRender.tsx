@@ -50,7 +50,7 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
     return Promise.resolve();
   };
 
-  if (attrs.length === 0) return <></>;
+  if (attrs.length === 0 && selectedElement?.type !== "Loop") return <></>;
 
   // 根据type枚举
   return (
