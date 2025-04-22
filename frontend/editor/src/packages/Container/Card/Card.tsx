@@ -1,11 +1,13 @@
+import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { ComponentType, IDragTargetItem } from '@/packages/types';
 import { Button, Card, Avatar } from 'antd';
 import { useDrop } from 'react-dnd';
 import { getComponent } from '@/packages/index';
 import MarsRender from '@/packages/MarsRender/MarsRender';
 import { usePageStore } from '@/stores/pageStore';
-import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import * as icons from '@ant-design/icons';
 import { omit } from 'lodash-es';
+import { handleActionFlow } from '@/packages/utils/action';
 /**
  *
  * @param props 组件本身属性
@@ -53,6 +55,14 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
 
   const meta = useMemo(() => config.props.meta, [config.props.meta]);
   const avatar = useMemo(() => config.props.avatar || undefined, [config.props.avatar]);
+
+  const handleOperate = (eventName: string) => {
+    const btnEvent = config.events.find((event) => event.eventName === eventName);
+    handleActionFlow(btnEvent?.actions, {});
+  };
+
+  const bulkActionList = config.props.bulkActionList || [];
+  const iconsList: { [key: string]: any } = icons;
   return (
     visible && (
       <Card
@@ -62,17 +72,21 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
         data-type={type}
         cover={config.props.cover ? <img src={config.props.cover} /> : null}
         extra={
-          config.props.extra?.text ? (
-            <Button
-              {...config.props.extra}
-              onClick={(event) => {
-                event.stopPropagation();
-                onClickMore?.();
-              }}
-            >
-              {config.props.extra?.text}
-            </Button>
-          ) : null
+          <div style={{ display: 'flex', gap: 10 }}>
+            {bulkActionList.map((item: any, index: number) => {
+              return (
+                <Button
+                  key={item.eventName}
+                  type={item.type}
+                  danger={item.danger}
+                  icon={item.icon ? React.createElement(iconsList[item.icon]) : null}
+                  onClick={() => handleOperate(item.eventName)}
+                >
+                  {item.text}
+                </Button>
+              );
+            })}
+          </div>
         }
         onClick={() => onClick?.()}
         ref={drop}

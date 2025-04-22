@@ -146,6 +146,8 @@ const SetterRender = memo(({ attrs, form, handleSpecialFieldBlur = () => { } }: 
           return ( <VariableSwitch {...item} /> );
         } else if (item.type === "function" && formItemId) {
           return item.render?.(form);
+        }  else if (item.type === "Actions") {
+          FormControl = item.render?.(form) as React.ReactElement;
         } else if (item.type === "Icons") {
           FormControl = <QIconList {...item.props} />
         }

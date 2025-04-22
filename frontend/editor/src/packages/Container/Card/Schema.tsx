@@ -1,7 +1,8 @@
 /**
  * 组件配置和属性值
  */
-
+import { FormInstance } from 'antd';
+import ActionSetting from '@/components/BulkAction/ActionSetting';
 export default {
   // 组件属性配置JSON
   attrs: [
@@ -16,14 +17,15 @@ export default {
       name: 'bordered',
     },
     {
-      type: 'Select',
-      label: '卡片尺寸',
+      type: 'RadioGroupBtn',
+      label: 'Card尺寸',
       name: 'size',
       props: {
         options: [
-          { label: '默认', value: 'default' },
-          { label: '小', value: 'small' },
+          { label: 'default', value: 'default' },
+          { label: 'small', value: 'small' },
         ],
+        defaultValue: 'default',
       },
     },
     {
@@ -36,28 +38,35 @@ export default {
       label: '头部标题',
       name: 'title',
     },
+    // {
+    //   type: 'Input',
+    //   label: '头部按钮',
+    //   name: ['extra', 'text'],
+    // },
     {
-      type: 'Input',
+      type: 'Actions',
       label: '头部按钮',
-      name: ['extra', 'text'],
-    },
-    {
-      type: 'Select',
-      label: '按钮类型',
-      name: ['extra', 'type'],
-      props: {
-        options: [
-          { label: '默认', value: 'default' },
-          { label: '主要', value: 'primary' },
-          { label: '幽灵', value: 'ghost' },
-          { label: '链接', value: 'link' },
-          { label: '文本', value: 'text' },
-        ],
+      render(form: FormInstance) {
+        return <ActionSetting key="ActionSetting" form={form} />;
       },
     },
+    // {
+    //   type: 'Select',
+    //   label: '按钮类型',
+    //   name: ['extra', 'type'],
+    //   props: {
+    //     options: [
+    //       { label: '默认', value: 'default' },
+    //       { label: '主要', value: 'primary' },
+    //       { label: '幽灵', value: 'ghost' },
+    //       { label: '链接', value: 'link' },
+    //       { label: '文本', value: 'text' },
+    //     ],
+    //   },
+    // },
     {
-      type: 'Input',
-      label: '封面（图片地址）',
+      type: 'Variable',
+      label: '封面',
       name: 'cover',
     },
     // {
@@ -86,17 +95,17 @@ export default {
       key: 'meta',
     },
     {
-      type: 'Input',
+      type: 'Variable',
       label: 'Meta头像',
       name: ['meta', 'avatar'],
     },
     {
-      type: 'Input',
+      type: 'Variable',
       label: 'Meta标题',
       name: ['meta', 'title'],
     },
     {
-      type: 'Input',
+      type: 'Variable',
       label: 'Meta描述',
       name: ['meta', 'description'],
     },
@@ -110,10 +119,6 @@ export default {
       },
       size: 'default',
       bordered: true,
-      extra: {
-        text: '更多',
-        type: 'link',
-      },
       meta: {
         title: '低代码搭建平台',
         description: '全栈自研、低代码搭建、逻辑编排、权限控制',

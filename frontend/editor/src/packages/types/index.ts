@@ -288,6 +288,7 @@ export enum FormType {
   Variable = 'Variable',
   VariableSwitch = 'VariableSwitch',
   Icons = 'Icons',
+  Actions = "Actions"
 }
 
 /**
