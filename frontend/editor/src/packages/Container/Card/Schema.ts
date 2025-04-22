@@ -11,16 +11,6 @@ export default {
       key: 'basic',
     },
     {
-      type: 'Variable',
-      label: '标题',
-      name: 'title',
-    },
-    {
-      type: 'Switch',
-      label: '悬浮效果',
-      name: 'hoverable',
-    },
-    {
       type: 'Switch',
       label: '显示边框',
       name: 'bordered',
@@ -37,13 +27,18 @@ export default {
       },
     },
     {
-      type: 'Title',
-      label: '按钮配置（右上角）',
-      key: 'btnConfig',
+      type: 'Switch',
+      label: '显示头部',
+      name: 'header',
+    },
+    {
+      type: 'Variable',
+      label: '头部标题',
+      name: 'title',
     },
     {
       type: 'Input',
-      label: '按钮名称',
+      label: '头部按钮',
       name: ['extra', 'text'],
     },
     {
@@ -61,38 +56,48 @@ export default {
       },
     },
     {
-      type: 'Switch',
-      label: '显示危险',
-      name: ['extra', 'danger'],
-    },
-    {
-      type: 'Title',
-      label: '封面配置',
-      key: 'coverConfig',
-    },
-    {
       type: 'Input',
-      label: '图片地址',
+      label: '封面（图片地址）',
       name: 'cover',
     },
+    // {
+    //   type: 'Switch',
+    //   label: '悬浮效果',
+    //   name: 'hoverable',
+    // },
+    // {
+    //   type: 'Title',
+    //   label: '按钮配置（右上角）',
+    //   key: 'btnConfig',
+    // },
+    // {
+    //   type: 'Switch',
+    //   label: '显示危险',
+    //   name: ['extra', 'danger'],
+    // },
+    // {
+    //   type: 'Title',
+    //   label: '封面配置',
+    //   key: 'coverConfig',
+    // },
     {
-      type: 'Title',
-      label: 'Meta配置',
-      key: 'metaConfig',
+      type: 'Switch',
+      label: '显示内容Meta',
+      key: 'meta',
     },
     {
       type: 'Input',
-      label: '头像地址',
-      name: 'avatar',
+      label: 'Meta头像',
+      name: ['meta', 'avatar'],
     },
     {
       type: 'Input',
-      label: '标题',
+      label: 'Meta标题',
       name: ['meta', 'title'],
     },
     {
       type: 'Input',
-      label: '描述',
+      label: 'Meta描述',
       name: ['meta', 'description'],
     },
   ],
