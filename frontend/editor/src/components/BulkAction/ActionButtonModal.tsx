@@ -1,6 +1,6 @@
-import React, { useImperativeHandle, useState, MutableRefObject, memo } from 'react';
-import { Input, Modal, Form, Select, Switch, Radio } from 'antd';
-import * as icons from '@ant-design/icons';
+import React, { useRef, useImperativeHandle, useState, MutableRefObject, memo } from 'react';
+import { Input, Modal, Form, Switch, Radio } from 'antd';
+import QIconList from '@/components/icons/QIconList';
 import { usePageStore } from '@/stores/pageStore';
 import VariableBind from '../VariableBind/VariableBind';
 
@@ -15,8 +15,8 @@ export interface IModalProp {
 
 const ActionButtonModal = memo((props: IModalProp) => {
   const [visible, setVisible] = useState(false);
-  const [index, setIndex] = useState(0);
   const [form] = Form.useForm();
+  const currentIndex = useRef(0);
 
   const { selectedElement, elementsMap, editTableProps } = usePageStore((state) => ({
     selectedElement: state.selectedElement,
@@ -27,12 +27,14 @@ const ActionButtonModal = memo((props: IModalProp) => {
   // 暴露方法
   useImperativeHandle(props.modalRef, () => ({
     open(index: number) {
+      console.log("index=====", index);
+      
       const values = elementsMap[selectedElement?.id as string];
       form.setFieldsValue({
         danger: false,
         ...values.config.props.bulkActionList[index],
       });
-      setIndex(index);
+      currentIndex.current = index;
       setVisible(true);
     },
   }));
@@ -44,21 +46,20 @@ const ActionButtonModal = memo((props: IModalProp) => {
       editTableProps({
         id: selectedElement?.id,
         type: 'bulkActionList',
-        index,
+        index: currentIndex.current,
         props: values,
       });
-      props.update(values, index);
+      props.update(values, currentIndex.current);
       setVisible(false);
     });
   };
 
   // 关闭
   const handleCancel = () => {
+    form.resetFields();
     setVisible(false);
   };
 
-  // 获取所有的antd图标，动态渲染到下拉框中
-  const iconsList: { [key: string]: any } = icons;
   return (
     <Modal title="操作按钮设置" open={visible} onOk={handleOk} onCancel={handleCancel} width={600} destroyOnClose>
       <Form form={form} labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
@@ -103,22 +104,7 @@ const ActionButtonModal = memo((props: IModalProp) => {
           <Switch />
         </Form.Item>
         <Form.Item label="按钮图标" name="icon">
-          <Select placeholder="请选择菜单图表" showSearch allowClear>
-            {Object.keys(icons)
-              .filter((item) => !['default', 'createFromIconfontCN', 'getTwoToneColor', 'setTwoToneColor', 'IconProvider'].includes(item))
-              .map((key) => {
-                return (
-                  <Select.Option value={key} key={key}>
-                    {React.createElement(iconsList[key], {
-                      style: {
-                        fontSize: '24px',
-                        verticalAlign: 'middle',
-                      },
-                    })}
-                  </Select.Option>
-                );
-              })}
-          </Select>
+          <QIconList />
         </Form.Item>
         <Form.Item name={'authCode'} label="权限标识">
           <Input />
