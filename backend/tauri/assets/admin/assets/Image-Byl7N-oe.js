@@ -1,0 +1,2 @@
+import{r as t,j as p}from"./index-C-r4ksky.js";import{I as i}from"./Page-BnjIyzOh.js";import"./index-Dcx1BRB-.js";import"./index-Duz3xH3k.js";const u=({config:s,onClick:e},a)=>{const[o,r]=t.useState(!0);t.useImperativeHandle(a,()=>({show(){r(!0)},hide(){r(!1)}}));const m=()=>{e==null||e()};return o&&p.jsx(i,{style:s.style,...s.props,onClick:m})},x=t.forwardRef(u);export{x as default};
+//# sourceMappingURL=Image-Byl7N-oe.js.map
