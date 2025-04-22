@@ -1,5 +1,5 @@
-import { memo, useRef } from 'react';
-import { Form, Input, Space, Button, FormInstance } from 'antd';
+import { memo, useRef, ReactNode } from 'react';
+import { Form, Input, Flex, Button, FormInstance } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { cloneDeep } from 'lodash-es';
 import { DeleteOutlined, PlusOutlined, EditOutlined, HolderOutlined } from '@ant-design/icons';
@@ -10,9 +10,15 @@ import { usePageStore } from '@/stores/pageStore';
 import { ComponentType } from '@/packages/types';
 import { createId } from '@/utils/util';
 
+interface DraggableItemProps {
+  index: number;
+  moveItem: (dragIndex: number, hoverIndex: number) => void;
+  children: ReactNode;
+}
+
 // 定义拖拽项组件
-const DraggableItem = ({ index, moveItem, children }) => {
-  const ref = useRef(null);
+const DraggableItem: React.FC<DraggableItemProps> = ({ index, moveItem, children }) =>  {
+  const ref = useRef<HTMLDivElement>(null);
   
   const [{ isDragging }, drag] = useDrag({
     type: 'FORM_ITEM',
@@ -22,7 +28,7 @@ const DraggableItem = ({ index, moveItem, children }) => {
     }),
   });
   
-  const [, drop] = useDrop({
+  const [, drop] = useDrop<{ index: number }, void, unknown>({
     accept: 'FORM_ITEM',
     hover: (item, monitor) => {
       if (!ref.current) {
@@ -40,6 +46,11 @@ const DraggableItem = ({ index, moveItem, children }) => {
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
+
+      if (!clientOffset) {
+        return;
+      }
+
       const hoverClientY = clientOffset.y - hoverBoundingRect.top;
       
       // 向上拖动时，只有当鼠标超过中点时才移动
@@ -55,9 +66,7 @@ const DraggableItem = ({ index, moveItem, children }) => {
       // 执行移动
       moveItem(dragIndex, hoverIndex);
       
-      // 注意：我们在这里修改监视器项的索引！
-      // 通常情况下，最好避免这样的突变，
-      // 但在这里它是必要的，以避免昂贵的索引搜索。
+      // 更新拖拽项的索引
       item.index = hoverIndex;
     },
   });
@@ -163,14 +172,13 @@ const ActionSetting = memo(({ form }: { form: FormInstance }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <>
         <Form.List name={['bulkActionList']}>
           {(fields, { add, remove, move }) => (
             <>
               {fields.map(({ key, name, ...restField }, index) => (
                 <DraggableItem key={key} index={index} moveItem={move}>
-                  <Space align="baseline">
-                    <Form.Item {...restField} name={[name, 'text']}>
+                  <Flex gap={8}>
+                    <Form.Item {...restField} name={[name, 'text']} noStyle>
                       <Input placeholder="请输入按钮名称" onChange={(event) => run(event.target.value, name)} />
                     </Form.Item>
                     <Form.Item name={[name, 'eventName']} hidden>
@@ -181,10 +189,8 @@ const ActionSetting = memo(({ form }: { form: FormInstance }) => {
                     </Form.Item>
                     <EditOutlined onClick={() => handleOpen(name)} />
                     <DeleteOutlined onClick={() => handleDelete(remove, name)} />
-                    <div style={{ cursor: 'grab', padding: '0 8px' }}>
-                      <HolderOutlined />
-                    </div>
-                  </Space>
+                    <HolderOutlined style={{ cursor: 'grab' }} />
+                  </Flex>
                 </DraggableItem>
               ))}
               <Button 
@@ -193,7 +199,6 @@ const ActionSetting = memo(({ form }: { form: FormInstance }) => {
                 ghost 
                 onClick={() => handleCreate(add)} 
                 icon={<PlusOutlined />}
-                style={{ marginTop: '12px' }}
               >
                 新增
               </Button>
@@ -201,7 +206,6 @@ const ActionSetting = memo(({ form }: { form: FormInstance }) => {
           )}
         </Form.List>
         <ActionButtonModal modalRef={modalRef} update={handleUpdate} />
-      </>
     </DndProvider>
   );
 });
