@@ -73,8 +73,8 @@ export default {
     config: {
         props: {
             rowKey: "id",
-            wrap: 'nowrap',
-            justify:"space-between",
+            wrap: 'wrap',
+            justify:"flex-start",
             align: 'center',
             gap: 10,
         },

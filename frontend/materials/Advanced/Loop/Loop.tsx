@@ -22,7 +22,11 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
     const getDataList = async (params: any) => {
         try {
             const res = await handleApi(config.api, params);
-            setDataItems(res.data);
+            if (!Array.isArray(res.data)) {
+                setDataItems([]);
+            } else {
+                setDataItems(res.data);
+            }
         } catch (error) {
             setDataItems([]);
         }
