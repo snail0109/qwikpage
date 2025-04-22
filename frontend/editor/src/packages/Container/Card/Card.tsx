@@ -15,6 +15,7 @@ import { handleActionFlow } from '@/packages/utils/action';
  * @returns
  */
 const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentType, ref: any) => {
+  debugger
   const addChildElements = usePageStore((state) => state.addChildElements);
   const [visible, setVisible] = useState(true);
   // 拖拽接收
@@ -53,15 +54,33 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
     };
   });
 
-  const meta = useMemo(() => config.props.meta, [config.props.meta]);
-  const avatar = useMemo(() => config.props.avatar || undefined, [config.props.avatar]);
-
   const handleOperate = (eventName: string) => {
     const btnEvent = config.events.find((event) => event.eventName === eventName);
     handleActionFlow(btnEvent?.actions, {});
   };
 
   const bulkActionList = config.props.bulkActionList || [];
+
+  const meta = useMemo(() => config.props.meta, [config.props.meta]);
+  const avatar = useMemo(() => config.props.avatar || undefined, [config.props.avatar]);
+
+  // 处理meta.title和meta.description的值为对象的情况
+  const parseMetaValue = (value: any) => {
+    if (typeof value === 'object' && value !== null && 'value' in value) {
+      return value.value; // 如果是 {type: "static", value: ""} 结构，提取 value
+    }
+    return value;
+  };
+
+   // 处理 meta 数据
+   const processedMeta = useMemo(() => {
+    if (!meta) return null;
+    return {
+      ...meta,
+      title: parseMetaValue(meta.title),
+      description: parseMetaValue(meta.description)
+    };
+  }, [meta]);
 
   return (
     visible && (
@@ -93,7 +112,12 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
         onClick={() => onClick?.()}
         ref={drop}
       >
-        {meta.title || meta.description ? <Card.Meta {...meta} avatar={avatar && <Avatar src={avatar} />} /> : null}
+        {config.props.showMeta && (processedMeta?.title || processedMeta?.description) ? (
+          <Card.Meta 
+            {...processedMeta} 
+            avatar={avatar && <Avatar src={avatar} />} 
+          />
+        ) : null}
         {elements?.length ? (
           <MarsRender elements={elements || []} />
         ) : (
