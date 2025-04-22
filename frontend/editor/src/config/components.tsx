@@ -160,11 +160,11 @@ const components = [
                 name: "超链接",
                 type: "Link",
             },
-            // {
-            //   icon: <IconImage />,
-            //   name: '图片',
-            //   type: 'Image',
-            // },
+            {
+              icon: <IconImage />,
+              name: '图片',
+              type: 'Image',
+            },
             // {
             //   icon: <IconTitle />,
             //   name: '标题',
