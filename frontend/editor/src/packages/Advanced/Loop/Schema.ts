@@ -7,9 +7,9 @@ export default {
     attrs: [
         {
             type: "Input",
-            label: "rowKey",
+            label: "唯一性字段名",
             name: ["rowKey"],
-            tooltip: "建议把列表返回的唯一值设置为rowKey",
+            tooltip: "列表返回数据的唯一性字段名, 请确保该字段名在列表数据中唯一",
             props: {
                 placeholder: "eg: id",
             },

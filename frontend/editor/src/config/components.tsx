@@ -73,15 +73,10 @@ const components = [
         hidden: true,
         data: [],
     },
-    {
-        type: "Advanced",
-        title: "高级组件",
-        data: [
-            {
-                icon: <IconLoop />,
-                name: "循环",
-                type: "Loop",
-            },
+    // {
+    //     type: "Advanced",
+    //     title: "高级组件",
+    //     data: [
             // {
             //       icon: <IconSearchForm />,
             //       name: '行内表单',
@@ -92,17 +87,12 @@ const components = [
             //   name: '基础表格',
             //   type: 'MarsTable',
             // },
-        ],
-    },
+        // ],
+    // },
     {
         type: "Container",
         title: "容器组件",
         data: [
-            {
-                icon: <IconCard />,
-                name: "Card容器",
-                type: "Card",
-            },
             {
                 icon: <IconForm />,
                 name: "Form容器",
@@ -455,6 +445,32 @@ const components = [
     //     },
     //   ],
     // },
+    {
+        type: "Advanced",
+        title: "数据展示",
+        data: [
+            {
+                icon: <IconCard />,
+                name: "卡片",
+                type: "Card",
+            },
+            {
+                icon: <IconLoop />,
+                name: "循环",
+                type: "Loop",
+            },
+            // {
+            //       icon: <IconSearchForm />,
+            //       name: '行内表单',
+            //       type: 'SearchForm',
+            //     },
+            // {
+            //   icon: <IconForm />,
+            //   name: '基础表格',
+            //   type: 'MarsTable',
+            // },
+        ],
+    },
 ];
 
 export default components;
