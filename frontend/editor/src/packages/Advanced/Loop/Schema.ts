@@ -81,7 +81,6 @@ export default {
         // 组件样式
         style: {
             backgroundColor: "#fff",
-            padding: "20px",
         },
         events: [],
         api: {
