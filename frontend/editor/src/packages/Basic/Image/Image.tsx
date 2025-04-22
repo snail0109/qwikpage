@@ -10,6 +10,7 @@ import { useState, useImperativeHandle, forwardRef } from 'react';
  */
 const MImage = ({ id, type, config, onClick }: ComponentType, ref: any) => {
   const [visible, setVisible] = useState(true);
+  
   // 对外暴露方法
   useImperativeHandle(ref, () => {
     return {
@@ -24,6 +25,6 @@ const MImage = ({ id, type, config, onClick }: ComponentType, ref: any) => {
   const handleClick = () => {
     onClick?.();
   };
-  return visible && <Image style={config.style} {...config.props} data-id={id} data-type={type} onClick={handleClick} />;
+  return visible && <Image style={config.style} {...config.props} preview={false} data-id={id} data-type={type} onClick={handleClick} />;
 };
 export default forwardRef(MImage);

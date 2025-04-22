@@ -4,11 +4,13 @@ import LoopItemValueContext from "./LoopItemValueContext";
 import { usePageStore } from "@materials/stores/pageStore";
 import { ComponentType } from "@materials/types";
 import MarsRender from "@materials/MarsRender/MarsRender";
+import { Flex } from "antd";
 
 const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref: any) => {
     const [dataItems, setDataItems] = useState([]);
     const [visible, setVisible] = useState(true);
     const contextValue = useContext(LoopItemValueContext);
+    const { rowKey, ...restLayout } = config.props
 
     const variableData = usePageStore((state) => state.page.pageData.variableData);
 
@@ -48,21 +50,24 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
     return (
         visible && (
             <div style={config.style} data-id={id} data-type={type}>
-                {childElements?.length > 0 &&
-                    dataItems.map((itemData, itemIndex) => (
-                        <LoopItemValueContext.Provider
-                            key={itemData[config.props.rowKey || "id"]}
-                            value={{
-                                ...contextValue,
-                                [id]: {
-                                    item: itemData,
-                                    index: itemIndex,
-                                },
-                            }}
-                        >
-                            <MarsRender elements={childElements} />
-                        </LoopItemValueContext.Provider>
-                    ))}
+                {childElements?.length > 0 && (
+                    <Flex style={config.style} {...restLayout}>
+                        {dataItems.map((itemData, itemIndex) => (
+                            <LoopItemValueContext.Provider
+                                key={itemData[rowKey || "id"]}
+                                value={{
+                                    ...contextValue,
+                                    [id]: {
+                                        item: itemData,
+                                        index: itemIndex,
+                                    },
+                                }}
+                            >
+                                <MarsRender elements={childElements} />
+                            </LoopItemValueContext.Provider>
+                        ))}
+                    </Flex>
+                )}
             </div>
         )
     );

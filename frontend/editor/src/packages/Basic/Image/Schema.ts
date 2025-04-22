@@ -11,9 +11,12 @@ export default {
       key: 'basic',
     },
     {
-      type: 'Input',
+      type: 'Variable',
       label: '图片地址',
       name: 'src',
+      props: {
+        placeholder: '请输入图片地址',
+      },
     },
     {
       type: 'InputPx',

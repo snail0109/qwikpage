@@ -14,10 +14,69 @@ export default {
                 placeholder: "eg: id",
             },
         },
+        // 布局配置
+        {
+            type: 'Switch',
+            label: '垂直布局',
+            name: 'vertical',
+          },
+          {
+            type: 'Select',
+            label: '换行方式',
+            name: 'wrap',
+            props: {
+              options: [
+                { value: 'nowrap', label: '不换行' },
+                { value: 'wrap', label: '换行' },
+                { value: 'wrap-reverse', label: '逆换行' },
+              ],
+            },
+          },
+          {
+            type: 'Select',
+            label: '主轴对齐',
+            name: 'justify',
+            props: {
+              options: [
+                { value: 'flex-start', label: '左对齐' },
+                { value: 'flex-end', label: '右对齐' },
+                { value: 'center', label: '居中对齐' },
+                { value: 'space-between', label: '两端对齐' },
+                { value: 'space-around', label: '环绕对齐' },
+                { value: 'space-evenly', label: '均匀对齐' },
+              ],
+            },
+          },
+          {
+            type: 'Select',
+            label: '副轴对齐',
+            name: 'align',
+            props: {
+              options: [
+                { value: 'start', label: '起点对齐' },
+                { value: 'end', label: '终点对齐' },
+                { value: 'center', label: '居中对齐' },
+                { value: 'baseline', label: '文字基线对齐' },
+                { value: 'stretch', label: '拉伸对齐' },
+              ],
+            },
+          },
+          {
+            type: 'InputPx',
+            label: '元素间隙',
+            name: 'gap',
+            props: {
+              placeholder: 'eg: 10',
+            },
+          },
     ],
     config: {
         props: {
             rowKey: "id",
+            wrap: 'nowrap',
+            justify:"space-between",
+            align: 'center',
+            gap: 10,
         },
         // 组件样式
         style: {

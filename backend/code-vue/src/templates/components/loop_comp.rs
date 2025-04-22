@@ -1,22 +1,33 @@
 pub const LOOP_INDEX: &str = r#"
-import { defineComponent, ref, provide, watch, onMounted, computed, inject } from 'vue';
-import { storeToRefs } from 'pinia';
-import appStore from '@/stores';
-import { commonProps } from '@/types';
-import { withInstall } from '@/utils/type';
-import { handleApi } from '@/utils/handleApi';
+import {
+  defineComponent,
+  ref,
+  provide,
+  watch,
+  onMounted,
+  computed,
+  inject,
+} from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/stores";
+import { commonProps } from "@/types";
+import { withInstall } from "@/utils/type";
+import { handleApi } from "@/utils/handleApi";
+import { Row } from "ant-design-vue";
 
 const Loop = defineComponent({
-  name: 'QLoop',
+  name: "QLoop",
   props: commonProps(),
   inheritAttrs: false,
   setup(props, { expose }) {
     const dataItems = ref<any[]>([]);
     const visible = ref(true);
     const parentContext = inject("useLoopItemValueContext", {});
-
+    const { rowKey, ...restLayout } = props.config.props;
     const { pageState } = storeToRefs(appStore.page);
-    const variableData = computed(() => pageState.value.page.pageData.variableData);
+    const variableData = computed(
+      () => pageState.value.page.pageData.variableData
+    );
 
     const getDataList = async (params: any = {}) => {
       try {
@@ -30,7 +41,10 @@ const Loop = defineComponent({
     watch(
       [
         () => props.config.api,
-        () => (props.config.api?.sourceType === 'variable' ? variableData.value : null),
+        () =>
+          props.config.api?.sourceType === "variable"
+            ? variableData.value
+            : null,
       ],
       () => getDataList({}),
       { deep: true }
@@ -60,29 +74,39 @@ const Loop = defineComponent({
       })),
     });
 
-    return () => (
+    return () =>
       visible.value && (
-        <div style={props.config.style} data-id={props.id} data-type={props.type}>
-          {props.elements?.length > 0 &&
-            dataItems.value.map((item, index) => (
-              <LoopItemProvider
-                key={item[props.config.props?.rowKey || 'id']}
-                item={item}
-                index={index}
-                id={props.id}
-                parentContext={parentContext}
-              >
-                <q-render elements={props.elements} />
-              </LoopItemProvider>
-            ))}
+        <div
+          style={props.config.style}
+          data-id={props.id}
+          data-type={props.type}
+        >
+          {props.elements?.length > 0 && (
+            <Row
+              id={props.id}
+              style={props.config.style}
+              {...restLayout}
+            >
+              {dataItems.value.map((item, index) => (
+                <LoopItemProvider
+                  key={item[rowKey || "id"]}
+                  item={item}
+                  index={index}
+                  id={props.id}
+                  parentContext={parentContext}
+                >
+                  <q-render elements={props.elements} />
+                </LoopItemProvider>
+              ))}
+            </Row>
+          )}
         </div>
-      )
-    );
+      );
   },
 });
 
 const LoopItemProvider = defineComponent({
-  name: 'LoopItemProvider',
+  name: "LoopItemProvider",
   props: {
     item: Object,
     index: Number,
