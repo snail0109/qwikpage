@@ -5,7 +5,8 @@ import { get } from 'lodash-es';
 import copy from 'copy-to-clipboard';
 import { usePageStore } from '@/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
-import type { ComponentType } from '@/types';
+import { handleActionFlow } from './action';
+import type { ComponentType, EventType } from '@/types';
 
 /**
  * 判断变量是否为空
@@ -413,4 +414,29 @@ export const isFormPlugin = (element: ComponentType, needJudgeInform?: boolean) 
   }
   return false;
 };
+
+export const createEvents = (events: EventType[]) => {
+  const eventFunction: { [key: string]: (params?: any) => void } = {};
+  // 没有配置事件流，直接返回
+  if (!events?.length) {
+    return eventFunction;
+  }
+  // 把重复的事件push到数组中（一个点击事件，可能有多个事件流）
+  const obj: { [key: string]: any[] } = {};
+  events.forEach((event) => {
+    if (event.actions?.length > 0) {
+      obj[event.eventName] = (obj[event.eventName] || []).concat([event.actions]);
+    }
+  });
+  // 遍历对象，按顺序执行事件流
+  for (const key in obj) {
+    eventFunction[key] = (params: any) => {
+      // 同一个事件：循环执行多个事件流
+      obj[key].forEach((actions) => {
+        handleActionFlow(actions, params);
+      });
+    };
+  }
+  return eventFunction;
+}
 "#;
