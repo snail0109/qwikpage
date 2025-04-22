@@ -1,0 +1,2 @@
+import{r as e,j as t}from"./index-D3YmFJ-6.js";import{af as l,M as p}from"./Page-CkYeX-Xi.js";import"./index-CSSipGLa.js";import"./index-RJFx0ClT.js";const m=({id:n,type:u,config:r,elements:o},a)=>{const[i,s]=e.useState(!0);return e.useImperativeHandle(a,()=>({show(){s(!0)},hide(){s(!1)}})),i&&t.jsx(l,{style:r.style,...r.props,children:t.jsx(p,{elements:o})})},j=e.forwardRef(m);export{j as default};
+//# sourceMappingURL=Col-BzhriG81.js.map

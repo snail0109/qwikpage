@@ -1,0 +1,2 @@
+import{r as t,j as e}from"./index-Bl4jGGme.js";import{b as d,M as l}from"./Page-CzKpb7ef.js";import"./index-ByWPeWpj.js";import"./index-BOBFtjXA.js";const u=({id:a,type:m,config:r,elements:i},n)=>{const[p,s]=t.useState(!0);t.useImperativeHandle(n,()=>({show(){s(!0)},hide(){s(!1)}}));const o=r.props.formItem;return p&&e.jsx(d.Item,{...o,name:o.name||void 0,"data-id":a,"data-type":m,children:e.jsx("span",{style:r.style,children:e.jsx(l,{elements:i||[]})})})},j=t.forwardRef(u);export{j as default};
+//# sourceMappingURL=FormItem-HZOPA0p4.js.map

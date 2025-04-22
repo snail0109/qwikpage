@@ -1,4 +1,5 @@
 pub const LOOP_INDEX: &str = r#"
+
 import {
   defineComponent,
   ref,
@@ -32,27 +33,24 @@ const Loop = defineComponent({
     const getDataList = async (params: any = {}) => {
       try {
         const res = await handleApi(props.config.api, params);
-        dataItems.value = res.data;
+        if (!Array.isArray(res.data)) {
+          dataItems.value = [];
+        } else {
+          dataItems.value = res.data;
+        }
       } catch (error) {
         dataItems.value = [];
       }
     };
 
+    // 计算数据源
     watch(
-      [
-        () => props.config.api,
-        () =>
-          props.config.api?.sourceType === "variable"
-            ? variableData.value
-            : null,
-      ],
-      () => getDataList({}),
-      { deep: true }
+      () => [props.config.api, pageState.value.page.pageData.variableData],
+      () => {
+        getDataList({});
+      },
+      { immediate: true }
     );
-
-    onMounted(() => {
-      getDataList({});
-    });
 
     expose({
       show: () => (visible.value = true),
@@ -82,11 +80,7 @@ const Loop = defineComponent({
           data-type={props.type}
         >
           {props.elements?.length > 0 && (
-            <Row
-              id={props.id}
-              style={props.config.style}
-              {...restLayout}
-            >
+            <Row id={props.id} style={props.config.style} {...restLayout}>
               {dataItems.value.map((item, index) => (
                 <LoopItemProvider
                   key={item[rowKey || "id"]}

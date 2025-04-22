@@ -56,7 +56,11 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
     const getDataList = async (params: any) => {
         try {
             const res = await handleApi(config.api, params);
-            setDataItems(res.data);
+            if (!Array.isArray(res.data)) {
+                setDataItems([]);
+            } else {
+                setDataItems(res.data);
+            }
         } catch (error) {
             setDataItems([]);
         }
@@ -85,11 +89,8 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
         visible && (
             <div style={config.style} data-id={id} data-type={type} ref={drop}>
                 {childElements?.length > 0 ? (
-                    <Flex
-                        style={config.style}
-                        {...restLayout}
-                    >
-                        {dataItems.map((itemData, itemIndex) => (
+                    <Flex style={config.style} {...restLayout}>
+                        {dataItems?.map((itemData, itemIndex) => (
                             <LoopItemValueContext.Provider
                                 key={itemData[rowKey || "id"]}
                                 value={{
