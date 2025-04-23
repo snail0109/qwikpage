@@ -32,6 +32,7 @@ const ActionButtonModal = memo((props: IModalProp) => {
       const values = elementsMap[selectedElement?.id as string];
       form.setFieldsValue({
         danger: false,
+        icon: undefined,
         ...values.config.props.bulkActionList[index],
       });
       currentIndex.current = index;
