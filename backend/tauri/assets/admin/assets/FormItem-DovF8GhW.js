@@ -1,2 +1,0 @@
-import{r as t,j as e}from"./index-D3YmFJ-6.js";import{b as d,M as l}from"./Page-CkYeX-Xi.js";import"./index-CSSipGLa.js";import"./index-RJFx0ClT.js";const u=({id:a,type:m,config:r,elements:i},n)=>{const[p,s]=t.useState(!0);t.useImperativeHandle(n,()=>({show(){s(!0)},hide(){s(!1)}}));const o=r.props.formItem;return p&&e.jsx(d.Item,{...o,name:o.name||void 0,"data-id":a,"data-type":m,children:e.jsx("span",{style:r.style,children:e.jsx(l,{elements:i||[]})})})},j=t.forwardRef(u);export{j as default};
-//# sourceMappingURL=FormItem-DovF8GhW.js.map

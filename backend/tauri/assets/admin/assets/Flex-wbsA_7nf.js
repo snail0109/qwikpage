@@ -1,2 +1,0 @@
-import{r as s,j as t}from"./index-BiXYxb7H.js";import{ag as d,M as l}from"./Page-Cn96wAbp.js";import"./index-DHAREq3b.js";import"./index-DFryk6dR.js";const u=({id:o,type:i,config:a,elements:r},p)=>{const[x,e]=s.useState(!0);return s.useImperativeHandle(p,()=>({show(){e(!0)},hide(){e(!1)}})),x&&t.jsx(d,{style:a.style,...a.props,"data-id":o,"data-type":i,children:r!=null&&r.length?t.jsx(l,{elements:r||[]}):t.jsx(t.Fragment,{})})},c=s.forwardRef(u);export{c as default};
-//# sourceMappingURL=Flex-wbsA_7nf.js.map

@@ -1,2 +1,0 @@
-import{r as e,j as p}from"./index-C-r4ksky.js";import{T as i}from"./Page-BnjIyzOh.js";import"./index-Dcx1BRB-.js";import"./index-Duz3xH3k.js";const a=({config:t},s)=>{const[o,r]=e.useState(!0);return e.useImperativeHandle(s,()=>({show(){r(!0)},hide(){r(!1)}})),o&&p.jsx(i.Title,{style:t.style,...t.props,children:t.props.text})},x=e.forwardRef(a);export{x as default};
-//# sourceMappingURL=Title-DCE4U6nR.js.map

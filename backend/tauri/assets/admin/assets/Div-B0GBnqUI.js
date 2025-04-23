@@ -1,2 +1,0 @@
-import{r as e,j as s}from"./index-D3YmFJ-6.js";import{M as l}from"./Page-CkYeX-Xi.js";import"./index-CSSipGLa.js";import"./index-RJFx0ClT.js";const m=({id:a,type:i,config:t,elements:o},p)=>{const[d,r]=e.useState(!0);return e.useImperativeHandle(p,()=>({show(){r(!0)},hide(){r(!1)}})),d&&s.jsx("div",{style:t.style,...t.props,"data-id":a,"data-type":i,children:s.jsx(l,{elements:o||[]})})},v=e.forwardRef(m);export{v as default};
-//# sourceMappingURL=Div-B0GBnqUI.js.map
