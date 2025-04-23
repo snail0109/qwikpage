@@ -369,7 +369,8 @@ const Header = memo(() => {
                                 color: ["/project/pages", "/resources"].includes(location.pathname) ? "#fff" : "#216EF7",
                             }}
                         />
-                        <span>QwikPage {version}</span>
+                        <span>QwikPage</span>
+                        <span className={styles.version}>{version.match(/^v/i) ? version : `v${version}`}</span>
                     </span>
                     {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
                         <>
