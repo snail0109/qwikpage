@@ -59,7 +59,9 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
             if (!Array.isArray(res.data)) {
                 setDataItems([]);
             } else {
-                setDataItems(res.data);
+                // 设计态只展示两项
+                const data = (res.data || []).slice(0, 2)
+                setDataItems(data);
             }
         } catch (error) {
             setDataItems([]);
