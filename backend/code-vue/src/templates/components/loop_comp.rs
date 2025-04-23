@@ -1,14 +1,5 @@
 pub const LOOP_INDEX: &str = r#"
-
-import {
-  defineComponent,
-  ref,
-  provide,
-  watch,
-  onMounted,
-  computed,
-  inject,
-} from "vue";
+import { defineComponent, ref, provide, watch, inject } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { commonProps } from "@/types";
@@ -23,12 +14,9 @@ const Loop = defineComponent({
   setup(props, { expose }) {
     const dataItems = ref<any[]>([]);
     const visible = ref(true);
-    const parentContext = inject("useLoopItemValueContext", {});
+    const parentContextFunc = inject("useLoopItemValueContext", () => ({}));
     const { rowKey, ...restLayout } = props.config.props;
     const { pageState } = storeToRefs(appStore.page);
-    const variableData = computed(
-      () => pageState.value.page.pageData.variableData
-    );
 
     const getDataList = async (params: any = {}) => {
       try {
@@ -64,14 +52,6 @@ const Loop = defineComponent({
       clearData: () => (dataItems.value = []),
     });
 
-    provide("useLoopItemValueContext", {
-      ...parentContext,
-      [props.id]: computed(() => ({
-        item: dataItems.value,
-        index: 0,
-      })),
-    });
-
     return () =>
       visible.value && (
         <div
@@ -87,7 +67,7 @@ const Loop = defineComponent({
                   item={item}
                   index={index}
                   id={props.id}
-                  parentContext={parentContext}
+                  parentContext={parentContextFunc()}
                 >
                   <q-render elements={props.elements} />
                 </LoopItemProvider>
@@ -108,13 +88,16 @@ const LoopItemProvider = defineComponent({
     parentContext: Object,
   },
   setup(props, { slots }) {
-    provide("useLoopItemValueContext", {
-      ...props.parentContext,
-      [props.id]: computed(() => ({
-        item: props.item,
-        index: props.index,
-      })),
-    });
+    const getLoopContext = () => {
+      return {
+        ...props.parentContext,
+        [props.id]: {
+          item: props.item,
+          index: props.index,
+        },
+      };
+    };
+    provide("useLoopItemValueContext", getLoopContext);
 
     return () => slots.default?.();
   },

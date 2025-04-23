@@ -113,6 +113,7 @@ export function getProjectVariable(name?: string) {
  * @param eventParams 表达式参数，在事件流执行的过程中，如果调用的是脚本运行，则会传入上一个事件流的返回值
  */
 export function renderFormula(formula: string, eventParams?: any) {
+  const loopContext = inject('useLoopItemValueContext', () => ({}));
   try {
     if (!formula) return '';
     // 通过正则获取表单ID
@@ -121,6 +122,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     const originIds: Array<string> = [...new Set(formIds.map((id) => id.split('.')[0]))];
     const fnParams: Array<string> = ['context', 'eventParams'];
 
+    const loopData = loopContext();
     const pageStore = usePageStore();
     const pageData = pageStore.pageState.page.pageData;
     const formData = cloneDeep(pageData.formData || {});
@@ -142,6 +144,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     const context = {
       variable: variableData,
       globalVariable: globalVariableData,
+      forEachValue: loopData,
       eventParams,
       FORMAT,
       ...formData,
