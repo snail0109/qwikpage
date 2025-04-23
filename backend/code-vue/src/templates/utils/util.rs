@@ -1,4 +1,5 @@
 pub const UTIL_INDEX: &str = r#"
+import { inject } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
 import { get } from 'lodash-es';
