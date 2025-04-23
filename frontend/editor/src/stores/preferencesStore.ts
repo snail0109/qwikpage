@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from '@tauri-apps/api/app';
 
 export interface PreferencesState {
     theme: "auto" | "dark" | "light";
@@ -11,6 +12,7 @@ export interface PreferencesState {
     checkUpdate: boolean;
     projectPath: string;
     systemFontFamilys?: string[]; 
+    version: string;
 }
 interface PreferencesStore extends PreferencesState {
     get_preferences: () => Promise<PreferencesState>;
@@ -29,11 +31,13 @@ const usePreferencesStore = create<PreferencesStore>()(
             checkUpdate: true,
             projectPath: "system",
             systemFontFamilys: [],
+            version: "", 
             get_preferences: async () => {
                 try {
                     const preferences: PreferencesState = await invoke("get_preferences");
-                    set(preferences);
-                    return preferences;
+                    const version = await getVersion(); 
+                    set({ ...preferences, version });
+                    return { ...preferences, version };
                 } catch (error) {
                     console.error("初始化配置失败:", error);
                     throw error;

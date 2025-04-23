@@ -24,6 +24,7 @@ import prored from "@/assets/image/header/headerT_red.png";
 import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
 import { EyeOutlined, SaveOutlined, LeftCircleOutlined } from "@ant-design/icons";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import usePreferencesStore from "@/stores/preferencesStore";
 
 const appWebview = getCurrentWebviewWindow();
 
@@ -41,6 +42,7 @@ let currentState = "";
  * 编辑器顶部组件
  */
 const Header = memo(() => {
+    const { version } = usePreferencesStore();
     const [pageFrom, setPageFrom] = useState("projects");
     const navigate = useNavigate();
     const location = useLocation();
@@ -367,7 +369,7 @@ const Header = memo(() => {
                                 color: ["/project/pages", "/resources"].includes(location.pathname) ? "#fff" : "#216EF7",
                             }}
                         />
-                        <span>QwikPage</span>
+                        <span>QwikPage {version}</span>
                     </span>
                     {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
                         <>
