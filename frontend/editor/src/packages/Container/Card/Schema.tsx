@@ -92,7 +92,7 @@ export default {
     {
       type: 'Switch',
       label: '显示内容Meta',
-      name: 'showMeta',
+      name: 'showmeta',
     },
     {
       type: 'Variable',
@@ -120,7 +120,7 @@ export default {
       size: 'default',
       bordered: true,
       header: true,
-      showMeta: true,
+      showmeta: true,
       meta: {
         title: '低代码搭建平台',
         description: '全栈自研、低代码搭建、逻辑编排、权限控制',

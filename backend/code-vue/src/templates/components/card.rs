@@ -95,7 +95,7 @@ const Card = defineComponent({
           }
           onClick={handleClick}
         >
-          {props.config.props.showMeta && (processedMeta.value?.title || processedMeta.value?.description) ? (
+          {props.config.props.showmeta && (processedMeta.value?.title || processedMeta.value?.description) ? (
             <ACard.Meta 
               {...processedMeta.value} 
               avatar={avatar.value && <AAvatar src={avatar.value} />} 

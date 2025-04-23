@@ -117,7 +117,7 @@ const MCard = ({ id, type, config, elements, onClick }: ComponentType, ref: any)
         onClick={handleClick}
         ref={drop}
       >
-        {config.props.showMeta && (processedMeta?.title || processedMeta?.description) ? (
+        {config.props.showmeta && (processedMeta?.title || processedMeta?.description) ? (
           <Card.Meta 
             {...processedMeta} 
             avatar={avatar && <Avatar src={avatar} />} 

@@ -87,7 +87,7 @@ const MCard = ({ config, elements, onClick }: ComponentType, ref: any) => {
         }
         onClick={handleClick}
       >
-        {config.props.showMeta && (processedMeta?.title || processedMeta?.description) ? (
+        {config.props.showmeta && (processedMeta?.title || processedMeta?.description) ? (
           <Card.Meta 
             {...processedMeta} 
             avatar={avatar && <Avatar src={avatar} />} 
