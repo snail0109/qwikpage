@@ -135,9 +135,5 @@ export default {
       value: 'onClick',
       name: '点击卡片事件',
     },
-    {
-      value: 'onClickMore',
-      name: '点击更多事件',
-    },
   ],
 };

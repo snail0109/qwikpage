@@ -32,8 +32,7 @@ const Link = defineComponent({
         <a
           style={props.config.style}
           {...omit(props.config.props, ["script", "text", "hiddenText", 'formItem'])}
-          data-id={props.id}
-          data-type={props.type}
+          id={props.id}
         >
           {text.value}
         </a>

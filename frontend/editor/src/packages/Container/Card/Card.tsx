@@ -15,7 +15,6 @@ import { handleActionFlow } from '@/packages/utils/action';
  * @returns
  */
 const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentType, ref: any) => {
-  debugger
   const addChildElements = usePageStore((state) => state.addChildElements);
   const [visible, setVisible] = useState(true);
   // 拖拽接收
@@ -54,6 +53,10 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
     };
   });
 
+  const handleClick = () => {
+    onClick?.();
+  };
+  
   const handleOperate = (eventName: string) => {
     const btnEvent = config.events.find((event) => event.eventName === eventName);
     handleActionFlow(btnEvent?.actions, {});
@@ -109,7 +112,7 @@ const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentTy
             })}
           </div>)
         }
-        onClick={() => onClick?.()}
+        onClick={handleClick}
         ref={drop}
       >
         {config.props.showMeta && (processedMeta?.title || processedMeta?.description) ? (
