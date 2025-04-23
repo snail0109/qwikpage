@@ -7,7 +7,7 @@ import { commonProps } from "@/types";
 import { omit } from 'lodash-es';
 
 const Image = defineComponent({
-  name: "QText",
+  name: "QImage",
   inheritAttrs: false,
   props: commonProps(),
   setup(props, { attrs, expose }) {
