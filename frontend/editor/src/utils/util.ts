@@ -72,7 +72,7 @@ export const getParentForm = (elementsMap: { [key: string]: ComponentType }, ele
     const { type, name, parentId, remoteUrl, remoteConfigUrl, remoteCssUrl } = targetElement;
     return {
       element: {
-        id,
+        id: inForm as string,
         type,
         name,
         parentId,

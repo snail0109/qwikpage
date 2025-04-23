@@ -1,18 +1,18 @@
 import { getComponent } from "@/packages";
 import { usePageStore } from "@/stores/pageStore";
 import { useDrop } from "react-dnd";
-import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { ComponentType, IDragTargetItem } from "@/packages/types";
 import { useShallow } from "zustand/react/shallow";
 import { handleApi } from "@/packages/utils/handleApi";
-import LoopItemValueContext from "./LoopItemValueContext";
+import LoopItemValueContext, { useLoopItemValueContext } from "@/packages/utils/loopItemValueContext";
 import MarsRender from "@/packages/MarsRender/MarsRender";
 import { Flex } from "antd";
 
 const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref: any) => {
     const [dataItems, setDataItems] = useState([]);
     const [visible, setVisible] = useState(true);
-    const contextValue = useContext(LoopItemValueContext);
+    const loopData = useLoopItemValueContext();
     const { rowKey, ...restLayout } = config.props;
 
     const { addChildElements, variableData } = usePageStore(
@@ -55,7 +55,7 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
     // 列表加载
     const getDataList = async (params: any) => {
         try {
-            const res = await handleApi(config.api, params);
+            const res = await handleApi(config.api, params, loopData);
             if (!Array.isArray(res.data)) {
                 setDataItems([]);
             } else {
@@ -94,7 +94,7 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
                             <LoopItemValueContext.Provider
                                 key={itemData[rowKey || "id"]}
                                 value={{
-                                    ...contextValue,
+                                    ...loopData,
                                     [id]: {
                                         item: itemData,
                                         index: itemIndex,

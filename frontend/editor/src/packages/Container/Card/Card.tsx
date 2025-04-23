@@ -8,6 +8,7 @@ import { usePageStore } from '@/stores/pageStore';
 import QIcon from "@/components/icons/QIcon";
 import { omit } from 'lodash-es';
 import { handleActionFlow } from '@/packages/utils/action';
+import { useLoopItemValueContext } from "@/packages/utils/loopItemValueContext";
 /**
  *
  * @param props 组件本身属性
@@ -15,6 +16,7 @@ import { handleActionFlow } from '@/packages/utils/action';
  * @returns
  */
 const MCard = ({ id, type, config, elements, onClick }: ComponentType, ref: any) => {
+  const loopData = useLoopItemValueContext();
   const addChildElements = usePageStore((state) => state.addChildElements);
   const [visible, setVisible] = useState(true);
   // 拖拽接收
@@ -59,7 +61,7 @@ const MCard = ({ id, type, config, elements, onClick }: ComponentType, ref: any)
   
   const handleOperate = (eventName: string) => {
     const btnEvent = config.events.find((event) => event.eventName === eventName);
-    handleActionFlow(btnEvent?.actions, {});
+    handleActionFlow(btnEvent?.actions, {}, loopData);
   };
 
   const bulkActionList = config.props.bulkActionList || [];

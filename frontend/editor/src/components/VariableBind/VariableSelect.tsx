@@ -33,7 +33,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
   });
 
   /**
-   * 逻辑表达式中，只展示表单和表格对象和不处于表单内的表单控件
+   * 逻辑表达式中，展示表单，表单内的表单项，表单外的表单项，循环项
    * @returns
    */
   const getFormAndTable = useCallback(() => {
@@ -43,6 +43,7 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
       if (id.startsWith('SearchForm_') || id.startsWith('Form_') || id.startsWith('GridForm_') || id.startsWith('MarsTable_')) {
         const { element }: any = getElement(cloneDeep(elements), id);
         if (!element) return;
+        element.name = `${element.name}(${id})`
         element.elements = [];
         list.push(element);
       } else if (formPlugin && elementsMap[id].inForm) {
@@ -79,6 +80,25 @@ const SelectVariableModal = ({ onSelect }: { onSelect: (record: any) => void }, 
         })
         element.name = eleName;
         list.push(element)
+      } else if (elementsMap[id].type === 'Loop') {
+        const { element }: any = getElement(cloneDeep(elements), id);
+        if (!element) return;
+        element.name = `${element.name}(${id})`
+        element.elements = [
+          {
+            id: id + '_value',
+            name: "# 循环项值",
+            type: 'loopItemValue',        
+            val: id,
+          },
+          {
+            id: id + '_index',
+            name: "# 循环项索引",
+            type: 'loopItemIndex',
+            val: id,       
+          }
+        ];
+        list.push(element);
       }
     });
     return list;
@@ -234,6 +254,21 @@ function transformToList(items: Array<any>, variableType: 'project' | 'page') {
     // 选择项目变量
     if (node.type === 'ProjectVariable') {
       form.setFieldValue('expression', `${beforeExpression} context.globalVariable.${node.id}`.trimStart());
+      return;
+    }
+    // 选择表单变量
+    if (node.type === 'EditTable') {
+      const name = elementsMap[node.id]?.config.props.field;
+      if (name) form.setFieldValue('expression', `${beforeExpression} context.${node.parentId}.${name}`.trimStart());
+      return;
+    }
+    // 选择循环项
+    if (node.type === 'loopItemValue') {
+      form.setFieldValue('expression', `${beforeExpression} context.forEachValue.${node.val}.item`.trimStart());
+      return;
+    }
+    if (node.type === 'loopItemIndex') {
+      form.setFieldValue('expression', `${beforeExpression} context.forEachValue.${node.val}.index`.trimStart());
       return;
     }
     // 判断取值方式，如果是表单项，就按照表单的方式取值

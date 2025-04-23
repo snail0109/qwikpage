@@ -14,6 +14,7 @@ import { isNull, loadStyle, renderFormula, isFormPlugin } from '@/packages/utils
 import { omit } from 'lodash-es';
 import { getComponent } from '@/packages/index';
 import ComWrapper from './ComWrapper';
+import { useLoopItemValueContext } from "@/packages/utils/loopItemValueContext";
 import './index.less';
 
 /**
@@ -35,6 +36,7 @@ const MarsRender = memo(({ elements = [] }: { elements: ComItemType[] }) => {
 
 // 渲染物料
 export const Material = memo(({ item }: { item: ComItemType }) => {
+  const loopContextValue = useLoopItemValueContext();
   const [Component, setComponent] = useState<any>(null);
   const [config, setConfig] = useState<ConfigType>();
 
@@ -132,7 +134,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
           config.props[key] = variableObj.value;
         } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
           // 绑定变量时，可能是变量，也可能是绑定某一个表单值
-          config.props[key] = renderFormula(variableObj.value);
+          config.props[key] = renderFormula(variableObj.value, {}, loopContextValue);
         }
       }
     });
@@ -159,7 +161,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
       eventFunction[key] = (params: any) => {
         // 同一个事件：循环执行多个事件流
         obj[key].forEach((actions) => {
-          handleActionFlow(actions, params);
+          handleActionFlow(actions, params, loopContextValue);
         });
       };
     }

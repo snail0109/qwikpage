@@ -3,6 +3,7 @@ import { Form, Select, FormItemProps, SelectProps } from "antd";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { handleApi } from "@/packages/utils/handleApi";
 import { isNotEmpty } from "@/packages/utils/util";
+import { useLoopItemValueContext } from "@/packages/utils/loopItemValueContext";
 import { useFormContext } from "@/packages/utils/context";
 import { usePageStore } from "@/stores/pageStore";
 import { isObject } from "lodash-es";
@@ -26,6 +27,7 @@ export interface IConfig {
  * @returns 返回组件
  */
 const MSelect = ({ id, formItemValue, type, config, onChange }: ComponentType<IConfig>, ref: any) => {
+    const loopData = useLoopItemValueContext();
     const { initValues, getValue, inForm } = useFormContext();
     const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
     const [visible, setVisible] = useState(true);
@@ -61,7 +63,7 @@ const MSelect = ({ id, formItemValue, type, config, onChange }: ComponentType<IC
 
     // 列表加载
     const getDataList = (data: any) => {
-        handleApi(config.api, data).then((res) => {
+        handleApi(config.api, data, loopData).then((res) => {
             if (res?.code === 0) {
                 if (!Array.isArray(res.data)) {
                     console.error("[select]", "data数据格式错误，请检查");

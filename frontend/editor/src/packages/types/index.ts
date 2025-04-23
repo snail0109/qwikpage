@@ -328,3 +328,13 @@ export interface SchemaType {
   // 渲染函数
   render?: (props?: any) => React.ReactNode;
 }
+
+/**
+ * 循环变量类型
+ */
+export interface LoopValueType {
+  [key: string]: {
+    index: string | number;
+    item: any;
+  }
+}

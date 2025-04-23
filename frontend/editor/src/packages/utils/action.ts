@@ -8,6 +8,7 @@ import {
   MethodsAction,
   NotificationAction,
   VariableAction,
+  LoopValueType,
 } from '../types';
 import { isArray, isObject } from 'lodash-es';
 import { getComponentRef } from './useComponentRefs';
@@ -140,13 +141,13 @@ function convertArrayToLinkedList(nodes: any, isSuccessBranch = true) {
  * 必须保证第一个行为执行完以后，再执行第二个行为
  * @param params 事件触发时，组件传递的参数
  */
-export function handleActionFlow(actions: any[] = [], params: any) {
+export function handleActionFlow(actions: any[] = [], params: any, loopData?: LoopValueType) {
   /**
    * 行为数组转换成链表结构
    */
   const nodes = convertArrayToLinkedList(actions);
   if (nodes?.action) {
-    execAction(nodes, params);
+    execAction(nodes, params, loopData);
   }
 }
 
@@ -155,61 +156,61 @@ export function handleActionFlow(actions: any[] = [], params: any) {
  * params是按钮触发是，组件传递的参数
  * action中的data为行为配置中手工配置的参数
  */
-const execAction = (node: any, params: any = {}) => {
+const execAction = (node: any, params: any = {}, loopData?: LoopValueType) => {
   if (!node || !node?.action) return;
   try {
-    const data = mergeParams(node.action.data, params);
+    const data = mergeParams(node.action.data, params, loopData);
     delete node.action.data;
-    node.action = handleParamVariable(node.action, params);
+    node.action = handleParamVariable(node.action, params, loopData);
     if (node.action.actionType === 'methods') {
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'showConfirm') {
-      handleShowConfirm(node, data);
+      handleShowConfirm(node, data, loopData);
     } else if (node.action.actionType === 'message') {
-      handleMessage(node, data);
+      handleMessage(node, data, loopData);
     } else if (node.action.actionType === 'notification') {
-      handleNotification(node, data);
+      handleNotification(node, data, loopData);
     } else if (node.action.actionType === 'request' || node.action.actionType === 'download') {
-      handleRequest(node, data);
+      handleRequest(node, data, loopData);
     } else if (node.action.actionType === 'formReset') {
       node.action.method = 'reset';
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formSubmit') {
       node.action.method = 'submit';
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formValidate') {
       node.action.method = 'validate';
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formAssignment') {
       node.action.method = 'init';
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formGetValue') {
       node.action.method = 'getFormData';
-      handleMethods(node, data);
+      handleMethods(node, data, loopData);
     } else if (['openModal', 'openDrawer'].includes(node.action.actionType)) {
-      handleOpenModal(node, data, 'open');
+      handleOpenModal(node, data, 'open', loopData);
     } else if (['closeModal', 'closeDrawer'].includes(node.action.actionType)) {
-      handleOpenModal(node, data, 'close');
+      handleOpenModal(node, data, 'close', loopData);
     } else if (node.action.actionType === 'jumpLink') {
       handleJumpLink(node, data);
     } else if (node.action.actionType === 'reloadPage') {
       window.location.reload();
     } else if (node.action.actionType === 'variable') {
-      handleVariable(node, data);
+      handleVariable(node, data, loopData);
     } else if (node.action.actionType === 'copy') {
-      handleCopy(node, data);
+      handleCopy(node, data, loopData);
     } else if (node.action.actionType === 'setTimeout') {
-      handleSetTimeout(node, data);
+      handleSetTimeout(node, data, loopData);
     } else if (node.action.actionType === 'visible') {
-      handleVisible(node, data);
+      handleVisible(node, data, loopData);
     } else if (node.action.actionType === 'disable') {
-      handleDisable(node, data);
+      handleDisable(node, data, loopData);
     } else if (node.action.actionType === 'sendMessage') {
-      handleSendMessage(node, data);
+      handleSendMessage(node, data, loopData);
     } else if (node.action.actionType === 'createNode') {
-      handleCreateNode(node, data);
+      handleCreateNode(node, data, loopData);
     } else if (node.action.actionType === 'script') {
-      handleRunScripts(node, data);
+      handleRunScripts(node, data, loopData);
     }
   } catch (error) {
     console.error(`事件流[${node.actionType}执行异常]`, error);
@@ -221,9 +222,9 @@ const execAction = (node: any, params: any = {}) => {
  * @param eventParams 事件行为中配置的参数
  * @param initData 事件触发时，组件传递的参数
  */
-const mergeParams = (eventParams: any = [], initData: any = {}) => {
+const mergeParams = (eventParams: any = [], initData: any = {}, loopData?: LoopValueType) => {
   // 获取行为中配置的静态参数
-  const data = handleArrayVariable(eventParams, initData);
+  const data = handleArrayVariable(eventParams, initData, loopData);
   // 如果行为配置参数为空，而上一个行为返回的数据（initData）为基础类型，则直接返回，因为基础类型没有属性，无法合并。
   if (
     !eventParams?.length &&
@@ -238,13 +239,13 @@ const mergeParams = (eventParams: any = [], initData: any = {}) => {
         data[key] = initData[key];
       }
     });
-  return handleParamVariable(data);
+  return handleParamVariable(data, {}, loopData);
 };
 
 /**
  * 处理组件方法
  */
-async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: any = {}) {
+async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: any = {}, loopData?: LoopValueType) {
   const ref = getComponentRef(action.target);
   // TODO 需要等待组件完全加载后，才可执行(此处有漏洞，如果组件被删除，会一直找不到)
   if (!ref) {
@@ -252,7 +253,7 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
     sessionStorage.setItem('mars-event-flow-wait', '1');
     if (Number(sessionStorage.getItem('mars-event-flow-wait')) < 10) {
       setTimeout(() => {
-        handleMethods({ action, next }, data);
+        handleMethods({ action, next }, data, loopData);
       }, 100);
     } else {
       console.error('组件加载超时，请检查组件是否存在');
@@ -265,22 +266,22 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
     const result = await ref?.[action.method]?.(canRest ? { ...action?.params, ...data } : data);
     if (typeof result === 'boolean') {
       if (result) {
-        execAction(next?.success || next, data);
+        execAction(next?.success || next, data, loopData);
       } else {
-        execAction(next?.fail, data);
+        execAction(next?.fail, data, loopData);
       }
     } else {
       setTimeout(() => {
         // 基础类型不能使用对象合并的方式
         if ((Array.isArray(result) || typeof result !== 'object') && isNotEmpty(result)) {
-          execAction(next?.success || next, result);
+          execAction(next?.success || next, result, loopData);
         } else {
-          execAction(next?.success || next, Object.assign(data, result || {}));
+          execAction(next?.success || next, Object.assign(data, result || {}), loopData);
         }
       });
     }
   } catch (error) {
-    execAction(next?.fail, data);
+    execAction(next?.fail, data, loopData);
     console.error(`【${action.method}】方法调用失败：`, error);
   }
 }
@@ -288,27 +289,27 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
 /**
  * 打开/关闭弹窗
  */
-async function handleOpenModal({ action, next }: ActionNode<MethodsAction>, data: any = {}, type: 'open' | 'close') {
+async function handleOpenModal({ action, next }: ActionNode<MethodsAction>, data: any = {}, type: 'open' | 'close', loopData?: LoopValueType) {
   const ref = getComponentRef(action.target);
   if (type === 'close') ref.close({ ...data });
   if (type === 'open') await ref.open({ ...data });
-  execAction(next?.success || next, data);
+  execAction(next?.success || next, data, loopData);
 }
 
 /**
  * 处理确认框
  */
-const handleShowConfirm = ({ action, next }: ActionNode<ConfirmAction>, data: any) => {
+const handleShowConfirm = ({ action, next }: ActionNode<ConfirmAction>, data: any, loopData?: LoopValueType) => {
   Modal[action.type]?.({
     title: action.title,
     content: action.content,
     okText: action.okText,
     cancelText: action.cancelText,
     onOk: () => {
-      execAction(next?.success || next, data);
+      execAction(next?.success || next, data, loopData);
     },
     onCancel: () => {
-      execAction(next?.fail, data);
+      execAction(next?.fail, data, loopData);
     },
   });
 };
@@ -316,7 +317,7 @@ const handleShowConfirm = ({ action, next }: ActionNode<ConfirmAction>, data: an
 /**
  * 全局提示
  */
-const handleMessage = ({ action, next }: ActionNode<MessageAction>, data: any) => {
+const handleMessage = ({ action, next }: ActionNode<MessageAction>, data: any, loopData?: LoopValueType) => {
   message
     .open({
       type: action.type,
@@ -324,14 +325,14 @@ const handleMessage = ({ action, next }: ActionNode<MessageAction>, data: any) =
       duration: action.duration,
     })
     .then(() => {
-      execAction(next?.success || next, data);
+      execAction(next?.success || next, data, loopData);
     });
 };
 
 /**
  * 消息通知
  */
-const handleNotification = ({ action, next }: ActionNode<NotificationAction>, data: any) => {
+const handleNotification = ({ action, next }: ActionNode<NotificationAction>, data: any, loopData?: LoopValueType) => {
   notification.open({
     type: action.type,
     message: action.message,
@@ -339,18 +340,18 @@ const handleNotification = ({ action, next }: ActionNode<NotificationAction>, da
     placement: action.placement,
     duration: action.duration,
   });
-  execAction(next?.success || next, data);
+  execAction(next?.success || next, data, loopData);
 };
 
 /**
  * 请求处理
  */
-const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any) => {
+const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any, loopData?: LoopValueType) => {
   const res = await handleApi(action, data);
   if (res.code === 0) {
-    execAction(next?.success || next, res);
+    execAction(next?.success || next, res, loopData);
   } else {
-    execAction(next?.fail, res);
+    execAction(next?.fail, res, loopData);
   }
 };
 
@@ -383,7 +384,7 @@ const handleJumpLink = async ({ action, next }: ActionNode<JumpLinkAction>, data
 /**
  * 变量赋值
  */
-const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any) => {
+const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any, loopData?: LoopValueType) => {
   let value = action.assignmentType === 'reset' ? undefined : data[action.name];
   /**
    * 1. 变量重置，清空variableData中的数据
@@ -405,17 +406,17 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any)
     name: action.name,
     value,
   });
-  execAction(next?.success || next, data);
+  execAction(next?.success || next, data, loopData);
 };
 
 /**
  * 复制内容
  */
-const handleCopy = async ({ action, next }: ActionNode<CopyAction>, data: any) => {
+const handleCopy = async ({ action, next }: ActionNode<CopyAction>, data: any, loopData?: LoopValueType) => {
   try {
     const copyContent = renderTemplate(action.content, data || {});
     await copyText(copyContent);
-    execAction(next?.success || next, data);
+    execAction(next?.success || next, data, loopData);
   } catch (error) {
     console.log('执行复制行为：', error);
   }
@@ -424,16 +425,16 @@ const handleCopy = async ({ action, next }: ActionNode<CopyAction>, data: any) =
 /**
  * 定时器
  */
-const handleSetTimeout = async ({ action, next }: ActionNode<{ duration: number }>, data: any) => {
+const handleSetTimeout = async ({ action, next }: ActionNode<{ duration: number }>, data: any, loopData?: LoopValueType) => {
   setTimeout(() => {
-    execAction(next?.success || next, data);
+    execAction(next?.success || next, data, loopData);
   }, action.duration * 1000);
 };
 
 /**
  * 组件显示和隐藏
  */
-const handleVisible = async ({ action, next }: ActionNode<{ target: string; showType: string; showResult: string; expression: any }>, data: any) => {
+const handleVisible = async ({ action, next }: ActionNode<{ target: string; showType: string; showResult: string; expression: any }>, data: any, loopData?: LoopValueType) => {
   const ref = getComponentRef(action.target);
   if (action.showType === 'static') {
     if (action.showResult === 'show') {
@@ -449,7 +450,7 @@ const handleVisible = async ({ action, next }: ActionNode<{ target: string; show
       ref.hide({ ...data });
     }
   }
-  execAction(next?.success || next, data);
+  execAction(next?.success || next, data, loopData);
 };
 
 /**
@@ -458,6 +459,7 @@ const handleVisible = async ({ action, next }: ActionNode<{ target: string; show
 const handleDisable = async (
   { action, next }: ActionNode<{ target: string; disableType: string; disableResult: string; expression: any }>,
   data: any,
+  loopData?: LoopValueType
 ) => {
   const ref = getComponentRef(action.target);
   if (action.disableType === 'static') {
@@ -476,7 +478,7 @@ const handleDisable = async (
       ref.enable({ ...data });
     }
   }
-  execAction(next?.success || next, data);
+  execAction(next?.success || next, data, loopData);
 };
 
 /**
@@ -485,40 +487,41 @@ const handleDisable = async (
 const handleSendMessage = async (
   { action, next }: ActionNode<{ msgType: string; content: string; templateId: string; receiveId: number }>,
   data: any,
+  loopData?: LoopValueType
 ) => {
   const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/sendMessage`, { ...action, variables: data });
   if (res.data.code === 0) {
-    execAction(next?.success || next, res.data.data);
+    execAction(next?.success || next, res.data.data, loopData);
   } else {
-    execAction(next?.fail, res.msg);
+    execAction(next?.fail, res.msg, loopData);
   }
 };
 
 /**
  * 创建知识库副本
  */
-const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number; node_token: string; title: string }>, data: any) => {
+const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number; node_token: string; title: string }>, data: any, loopData?: LoopValueType) => {
   const res = await request.post(`${import.meta.env.VITE_BASE_API}/robot/createNode`, { ...action, variables: data });
   if (res.data.code === 0) {
-    execAction(next?.success || next, res.data.data);
+    execAction(next?.success || next, res.data.data, loopData);
   } else {
-    execAction(next?.fail, res.msg);
+    execAction(next?.fail, res.msg, loopData);
   }
 };
 
 /**
  * 运行脚本
  */
-const handleRunScripts = async ({ action, next }: ActionNode<{ scripts: string }>, data: any) => {
+const handleRunScripts = async ({ action, next }: ActionNode<{ scripts: string }>, data: any, loopData?: LoopValueType) => {
   const result = renderFormula(action.scripts, data);
   if (typeof result === 'boolean') {
     if (result) {
-      execAction(next?.success || next, data);
+      execAction(next?.success || next, data, loopData);
     } else {
-      execAction(next?.fail, data);
+      execAction(next?.fail, data, loopData);
     }
   } else {
     // result 为undfined/null时才用data兜底
-    execAction(next?.success || next, result ?? data);
+    execAction(next?.success || next, result ?? data, loopData);
   }
 };

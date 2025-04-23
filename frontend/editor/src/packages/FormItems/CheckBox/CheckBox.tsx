@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { handleApi } from '@/packages/utils/handleApi';
 import { isNotEmpty } from '@/packages/utils/util';
 import { useFormContext } from '@/packages/utils/context';
+import { useLoopItemValueContext } from "@/packages/utils/loopItemValueContext";
 import { usePageStore } from '@/stores/pageStore';
 import { isObject, isArray } from 'lodash-es';
 
@@ -28,6 +29,7 @@ const MCheckBox = ({ id, type, formItemValue, config, onChange }: ComponentType<
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
+  const loopData = useLoopItemValueContext();
   const { initValues, getValue, inForm } = useFormContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
@@ -52,7 +54,7 @@ const MCheckBox = ({ id, type, formItemValue, config, onChange }: ComponentType<
 
   // 列表加载
   const getDataList = (data: any) => {
-    handleApi(config.api, data).then((res) => {
+    handleApi(config.api, data, loopData).then((res) => {
       if (res?.code === 0) {
         if (!Array.isArray(res.data)) {
           console.error('[checkbox]', 'data数据格式错误，请检查');

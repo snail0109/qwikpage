@@ -3,7 +3,7 @@
  */
 
 import { usePageStore } from '@/stores/pageStore';
-import { ApiConfig } from '../types';
+import { ApiConfig, LoopValueType } from '../types';
 import { ApiType } from "@/packages/types";
 import request from './request';
 import { message } from '@/utils/AntdGlobal';
@@ -21,6 +21,7 @@ import { isPlainObject } from 'lodash-es';
 export const handleApi = async (
   api: ApiConfig & { actionType?: string; filename?: string } = { sourceType: 'json', id: '', source: '', sourceField: '' },
   sendParams: any = {},
+  loopData?: LoopValueType,
 ) => {
   if (api.sourceType === 'json') {
     let renderData = api.source;
@@ -44,7 +45,7 @@ export const handleApi = async (
     const apis = usePageStore.getState().page.pageData.apis;
     const { method, apiUrl, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
     // 处理参数
-    const config: any = mergeParams(method, replaceData, params, sendParams);
+    const config: any = mergeParams(method, replaceData, params, sendParams, loopData);
     // 解析模板字符串：http://api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(apiUrl, sendParams);
     config.url = stgUrl;
@@ -141,8 +142,8 @@ export const handleApi = async (
  * @param sendParams 从事件中传递的参数对象，优先级高于params
  * @returns 合并后的参数对象
  */
-export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 'reserve', params: any = [], sendParams: any) => {
-  const values = handleArrayVariable(params, sendParams);
+export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 'reserve', params: any = [], sendParams: any, loopData?: LoopValueType) => {
+  const values = handleArrayVariable(params, sendParams, loopData);
   let mergeValues: any = {};
   // 参数合并
   if (replaceData === 'merge') {
@@ -178,10 +179,10 @@ export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 're
   }
 };
 
-export const handleApiTest = async (apiTestConfig: ApiType, sendParams: any = {}) => {
+export const handleApiTest = async (apiTestConfig: ApiType, sendParams: any = {}, loopData?: LoopValueType) => {
   const { method, apiUrl, contentType, replaceData, isCors = true, params, result, tips } = apiTestConfig;
   // 处理参数
-  const config: any = mergeParams(method, replaceData, params, sendParams);
+  const config: any = mergeParams(method, replaceData, params, sendParams, loopData);
   // 解析模板字符串：http://api.test.cc/user/${id}
   const stgUrl = renderTemplate(apiUrl, sendParams);
   config.url = stgUrl;
