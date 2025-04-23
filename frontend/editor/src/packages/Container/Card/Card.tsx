@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { ComponentType, IDragTargetItem } from '@/packages/types';
 import { Button, Card, Avatar } from 'antd';
 import { useDrop } from 'react-dnd';
@@ -14,7 +14,7 @@ import { handleActionFlow } from '@/packages/utils/action';
  * @param style 组件样式
  * @returns
  */
-const MCard = ({ id, type, config, elements, onClick, onClickMore }: ComponentType, ref: any) => {
+const MCard = ({ id, type, config, elements, onClick }: ComponentType, ref: any) => {
   const addChildElements = usePageStore((state) => state.addChildElements);
   const [visible, setVisible] = useState(true);
   // 拖拽接收
