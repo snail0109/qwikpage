@@ -50,7 +50,7 @@ const ApiTestModal = (props: any, ref: any) => {
         }}
       >
         <Editor
-          height="calc(100vh - 36px)"
+          height="500px"
           language="json"
           className={styles.dslEditor}
           value={
