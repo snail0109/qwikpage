@@ -471,7 +471,7 @@ const handleDisable = async (
   } else {
     const expression = action.expression ?? {};
     const formula = expression.value;
-    const result = renderFormula(formula);
+    const result = renderFormula(formula, {}, loopData);
     if (result ? true : false) {
       ref.disable({ ...data });
     } else {
@@ -513,7 +513,7 @@ const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number;
  * 运行脚本
  */
 const handleRunScripts = async ({ action, next }: ActionNode<{ scripts: string }>, data: any, loopData?: LoopValueType) => {
-  const result = renderFormula(action.scripts, data);
+  const result = renderFormula(action.scripts, data, loopData);
   if (typeof result === 'boolean') {
     if (result) {
       execAction(next?.success || next, data, loopData);

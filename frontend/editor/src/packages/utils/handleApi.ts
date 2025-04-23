@@ -30,7 +30,7 @@ export const handleApi = async (
         if (api.sourceField.type === 'static') {
           renderData = api.sourceField.value ? get(renderData, api.sourceField.value) : renderData;
         } else {
-          renderData = renderFormula(api.sourceField.value, renderData);
+          renderData = renderFormula(api.sourceField.value, renderData, loopData);
         }
       } else if (typeof api.sourceField === 'string' && api.sourceField) {
         renderData = get(renderData, api.sourceField);
@@ -118,7 +118,7 @@ export const handleApi = async (
       if (api.sourceField.type === 'static') {
         renderData = api.sourceField.value ? get(res, api.sourceField.value) : data;
       } else {
-        renderData = renderFormula(api.sourceField.value, res);
+        renderData = renderFormula(api.sourceField.value, res, loopData);
       }
     } else if (typeof api.sourceField === 'string' && api.sourceField) {
       renderData = get(res, api.sourceField);
@@ -127,7 +127,7 @@ export const handleApi = async (
   } else {
     // 解析动态变量
     if (api.name?.value) {
-      const value = renderFormula(api.name?.value);
+      const value = renderFormula(api.name?.value, {}, loopData);
       return { code: 0, data: value };
     }
     return { code: 0, data: '' };
