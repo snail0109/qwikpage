@@ -22,6 +22,7 @@ impl PageConfig {
         remark: Option<String>,
         page_data: Option<String>,
         project_id: String,
+        version: Option<String>,
     ) -> Page {
         Page {
             id,
@@ -32,6 +33,7 @@ impl PageConfig {
             created_at: get_current_time(),
             updated_at: get_current_time(),
             project_id,
+            version
         }
     }
 
@@ -179,6 +181,7 @@ impl PageConfig {
             params.remark,
             params.page_data,
             params.project_id,
+            params.version
         );
         let page_file = page_dir.join(format!("{}.json", page_id.clone()));
         PageConfig::save(page.clone(), page_file)
@@ -236,6 +239,7 @@ impl PageConfig {
             params.remark,
             Some(source_page.page_data),
             params.project_id.clone(),
+            params.version,
         );
         PageConfig::save(page, new_page_file)
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;

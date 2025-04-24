@@ -15,6 +15,7 @@ pub struct Page {
     pub created_at: String,
     pub updated_at: String,
     pub project_id: String, // 保留冗余，方便查询
+    pub version: Option<String>, 
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

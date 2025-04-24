@@ -17,6 +17,7 @@ pub struct PageAddParams {
     pub page_data: Option<String>,
     #[serde(rename = "projectId")]
     pub project_id: String,
+    pub version: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -29,6 +30,7 @@ pub struct PageUpdateParams {
     pub page_data: Option<String>,
     #[serde(rename = "projectId")]
     pub project_id: String,
+    pub version: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -39,4 +41,5 @@ pub struct PageCopyParams {
     pub remark: Option<String>,
     #[serde(rename = "projectId")]
     pub project_id: String,
+    pub version: Option<String>,
 }
