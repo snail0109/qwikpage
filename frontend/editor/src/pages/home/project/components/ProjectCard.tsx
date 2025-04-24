@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Typography, Avatar, Dropdown, Tooltip, message } from "antd";
+import { Typography, Avatar, Dropdown, Tooltip } from "antd";
 import type { MenuProps } from "antd";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke, convertFileSrc } from "@tauri-apps/api/core";
@@ -20,6 +20,7 @@ import FolderIcon from "@/assets/icons/FolderIcon.svg?react";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 import storage from "@/utils/storage";
+import { message } from '@/utils/AntdGlobal';
 
 const { Paragraph } = Typography;
 
