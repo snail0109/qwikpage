@@ -4,7 +4,7 @@ import type { TabsProps } from "antd";
 import BaseSetting from "./BaseSetting";
 import ReturnStructure from "./ReturnStructure";
 import ReturnTips from "./ReturnTips";
-import ApiTestModal from "./ApiTestModal";
+import ApiTestResult from "./ApiTestResult";
 import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
@@ -20,32 +20,6 @@ interface ParamType {
   value: string | { type: string; value: string };
 }
 
-// 定义简化后的参数类型
-interface SimplifiedParam {
-  key: string;
-  value: string;
-}
-
-// 定义 API 配置类型
-interface ApiConfig {
-  apiUrl: string;
-  method: string;
-  contentType: string;
-  isCors: boolean;
-  params?: ParamType[];
-  id?: string;
-  [key: string]: any;
-}
-
-// 定义请求选项类型
-interface FetchOptions {
-  method: string;
-  headers: Record<string, string>;
-  mode: RequestMode;
-  body?: string | FormData;
-  [key: string]: any;
-}
-
 const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const { apis, addApi, updateApi } = usePageStore((state) => ({
     apis: state.page.pageData.apis,
@@ -55,7 +29,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false); // 添加 loading 状态
-  const apiTestModalRef = useRef<{ showModal: (data?: any) => void }>();
+  const [testResult, setTestResult] = useState<any>(null);
 
   // 初始化接口配置数据
   const initValue = {
@@ -137,11 +111,13 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   function handleCancel() {
     setOpen(false);
     form.resetFields();
+    setTestResult(null); // 重置测试功能里面的数据
   }
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
   const handleRequestTest = async () => {
     setLoading(true); // 开始加载
+    setTestResult(null);
     
     try {
       const apiConfig = form.getFieldsValue();
@@ -153,13 +129,10 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
  
       // 使用 handleApi 发送请求
       const response = await handleApiTest(apiConfig, sendParams);
-        apiTestModalRef.current?.showModal({
-          data: response.data,
-        });
-      
+      setTestResult(response);
     } catch (error: any) {
       console.error("API 测试错误:", error);
-      apiTestModalRef.current?.showModal({
+      setTestResult({
         error: true,
         message: error.message || "请求失败"
       });
@@ -210,11 +183,10 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
             <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
               <Tabs defaultActiveKey="1" items={items} size="small" />
             </Form>
+            {testResult && <ApiTestResult testData={testResult} />}
           </Spin>
         </ConfigProvider>
       </Modal>
-      {/* 接口设置 */}
-      <ApiTestModal ref={apiTestModalRef}></ApiTestModal>
     </>
   );
 };
