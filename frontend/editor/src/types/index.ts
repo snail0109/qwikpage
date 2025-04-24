@@ -39,6 +39,7 @@ export interface IPage {
   pageData?: string,
   updatedAt?: string,
   previewImg?: string,
+  version: string,
 }
 
 

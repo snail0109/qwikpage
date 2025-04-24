@@ -8,6 +8,7 @@ import storage from '@/utils/storage';
 import styles from './index.module.less';
 import { message } from '@/utils/AntdGlobal';
 import ExpandArrowIcon from "@/assets/icons/ExpandArrowIcon.svg?react";
+import usePreferencesStore from "@/stores/preferencesStore";
 
 /**
  * 编辑器顶部工具条
@@ -17,7 +18,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
   const [openAutoSave, setOpenAutoSave] = useState(false);
 
   const timer = useRef<any>(null);
-
+  const { version } = usePreferencesStore();
   const { mode, id, name, path, remark, projectId, pageData, isEdit, setMode, updateEditState, savePageInfo } = usePageStore(
     (state) => ({
       mode: state.mode,
@@ -62,6 +63,7 @@ export default memo(({ canvasWidth, updateCanvas }: { canvasWidth: string; updat
       await pageService.updatePageData({
         id,
         projectId,
+        version,
         pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {}, formItemData: {} }),
       });
       message.success('页面保存成功');

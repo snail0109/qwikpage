@@ -35,7 +35,8 @@ const usePreferencesStore = create<PreferencesStore>()(
             get_preferences: async () => {
                 try {
                     const preferences: PreferencesState = await invoke("get_preferences");
-                    const version = await getVersion(); 
+                    const origVersion = await getVersion();
+                    const version = origVersion.match(/^v/i) ? origVersion : `v${origVersion}`;
                     set({ ...preferences, version });
                     return { ...preferences, version };
                 } catch (error) {

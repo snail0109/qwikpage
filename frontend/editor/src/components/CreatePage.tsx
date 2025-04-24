@@ -5,6 +5,7 @@ import { IPage, IProject } from "@/types";
 import { useSearchParams } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
 import { usePageStore } from "@/stores/pageStore";
+import usePreferencesStore from "@/stores/preferencesStore";
 /**
  * 创建页面
  */
@@ -27,6 +28,7 @@ const CreatePage = (props: IModalProp) => {
     const [projectList, setProjectList] = useState<IProject[]>([]);
     const [searchParams] = useSearchParams();
     const savePageInfo = usePageStore((state) => state.savePageInfo);
+    const { version } = usePreferencesStore();
     // 暴露方法
     useImperativeHandle(props.createRef, () => ({
         async open(action: "create" | "edit" | "copy", record?: IPage) {
@@ -84,15 +86,17 @@ const CreatePage = (props: IModalProp) => {
             setLoading(true);
             try {
                 if (type === "create") {
-                    await pageService.createPageData(params);
+                    await pageService.createPageData({...params, version});
                     message.success("页面创建成功");
                 } else if (type === "edit") {
                     await pageService.updatePageData({
                         ...params,
+                        version,
                         id: recordId,
                     });
                     message.success("页面修改成功");
                     savePageInfo({
+                        version,
                         name: params?.name,
                         remark: params?.remark,
                         projectId: params?.projectId,

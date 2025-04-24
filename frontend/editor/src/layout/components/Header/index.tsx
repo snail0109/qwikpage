@@ -228,6 +228,7 @@ const Header = memo(() => {
                 id: page.id,
                 name,
                 remark,
+                version,
                 pageData: JSON.stringify({ ...pageData, variableData: {}, formData: {}, formItemData: {} }),
                 projectId: page.projectId,
             };
@@ -235,6 +236,7 @@ const Header = memo(() => {
             await pageService.updatePageData(params);
             savePageInfo({
                 ...params,
+                version,
                 pageData: JSON.parse(params.pageData),
             });
             message.success("保存成功");
@@ -311,6 +313,7 @@ const Header = memo(() => {
         setLoading(true);
         try {
             await pageService.updatePageData({
+                version,
                 id: page.id,
                 projectId: page.projectId,
                 pageData: JSON.stringify({ ...page.pageData, variableData: {}, formData: {}, formItemData: {} }),
@@ -370,7 +373,7 @@ const Header = memo(() => {
                             }}
                         />
                         <span>QwikPage</span>
-                        <span className={styles.version}>{version.match(/^v/i) ? version : `v${version}`}</span>
+                        <span className={styles.version}>{version}</span>
                     </span>
                     {/\/editor\/[^/]+\/[^/]+\/edit/.test(location.pathname) && (
                         <>
