@@ -4,10 +4,10 @@
 
 import { usePageStore } from '@/stores/pageStore';
 import { ApiConfig, LoopValueType } from '../types';
-import { ApiType } from "@/packages/types";
+import { ApiType, ApiResponseType } from "@/packages/types";
 import request from './request';
 import { message } from '@/utils/AntdGlobal';
-import { getEnv, handleArrayVariable, renderFormula, renderTemplate } from './util';
+import { handleArrayVariable, renderFormula, renderTemplate, handleApiResponse } from './util';
 import { get } from 'lodash-es';
 import qs from 'qs';
 import { isObject } from 'lodash-es';
@@ -86,44 +86,39 @@ export const handleApi = async (
         data: { code: 500, data: '', msg: error },
       };
     }
-    let res: { [key: string]: any } | any[] = response.data;
+    // let res: { [key: string]: any } | any[] = response.data;
     // 判断是否是数组，如果是数组，则拼接标准结构进行返回，严格意义将，此处必须返回完整结构
-    if (Array.isArray(res) || typeof res === 'string' || typeof res === 'number' || typeof res === 'boolean') {
-      res = { code: 0, data: res, msg: '' };
-    }
-    // 字段映射
-    const code = result.code ? Number(res[result.code] || 0) : 0;
-    const data = result.data ? res[result.data] : res;
-    const msg = result.msg ? res[result.msg] || '' : '';
-    if (code === result.codeValue) {
+    // if (Array.isArray(res) || typeof res === 'string' || typeof res === 'number' || typeof res === 'boolean') {
+    //   res = { code: 0, data: res, msg: '' };
+    // }
+    // // 字段映射
+    // const code = result.code ? Number(res[result.code] || 0) : 0;
+    // const data = result.data ? res[result.data] : res;
+    // const msg = result.msg ? res[result.msg] || '' : '';
+    const { code, msg, data } = handleApiResponse(response, result as ApiResponseType);
+    if (code === 0) {
       // 如果开启了系统提示，则优先使用系统提示
       if (tips?.isSuccess) {
-        msg && message.success(msg);
-      } else if (tips?.success) {
-        // 最后使用自定义错误
-        message.success(tips?.success);
+        message.success(msg || tips?.success);
       }
     } else {
       // 如果开启了系统错误，则优先使用系统报错
-      if (tips?.isError && msg) {
-        message.error(msg);
-      } else if (tips?.fail) {
-        // 最后使用自定义错误
-        message.error(tips?.fail);
+      if (tips?.isError) {
+        message.error(msg || tips?.fail);
       }
     }
     // 根据 sourceField 解析数据
     let renderData = data;
     if (typeof api.sourceField === 'object') {
       if (api.sourceField.type === 'static') {
-        renderData = api.sourceField.value ? get(res, api.sourceField.value) : data;
+        renderData = api.sourceField.value ? get(response.data, api.sourceField.value) : data;
       } else {
-        renderData = renderFormula(api.sourceField.value, res, loopData);
+        renderData = renderFormula(api.sourceField.value, response.data, loopData);
       }
     } else if (typeof api.sourceField === 'string' && api.sourceField) {
-      renderData = get(res, api.sourceField);
+      renderData = get(response.data, api.sourceField);
     }
-    return { code: code === result.codeValue ? 0 : code, data: renderData, originData: data, msg };
+    return { code: code === result.codeValue ? 0 : code, data: renderData, originData: response.data, msg };
   } else {
     // 解析动态变量
     if (api.name?.value) {

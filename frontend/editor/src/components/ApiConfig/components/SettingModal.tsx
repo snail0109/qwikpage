@@ -9,6 +9,7 @@ import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
 import { handleApiTest } from '@/packages/utils/handleApi';
+import { CustomResType } from "@/packages/types";
 
 export type SettingModalProp = {
   update?: (id: string) => void;
@@ -18,6 +19,54 @@ export type SettingModalProp = {
 interface ParamType {
   key: string;
   value: string | { type: string; value: string };
+}
+
+// 自定义响应函数类型
+const responseFuncMap: CustomResType = {
+  statusCode: {
+    type: 'custom',
+    value: `/**
+* 根据状态码判断是否请求成功
+* @param statusCode: 请求状态码
+* @return {boolean}: true 表示请求成功，false 表示请求失败
+*/
+function response(statusCode){
+    return [200, 201, 202, 204, 206].includes(statusCode);
+}`
+  },
+  code: {
+    type: 'custom',
+    value: `/**
+* 根据业务码判断是否请求成功
+* @param resData: 响应数据
+* @return {boolean}: true 表示请求成功，false 表示请求失败
+*/
+function response(resData){
+    return resData.code === 0;
+}`
+  },
+  data: {
+    type: 'custom',
+    value: `/**
+* 返回请求结果数据
+* @param resData: 响应数据
+* @return {object} data: 请求结果数据
+*/
+function response(resData){
+    return resData.data;
+}`
+  },
+  msg: {
+    type: 'function',
+    value: `/**
+* 返回请求提示信息
+* @param resData: 响应数据
+* @return {string} message: 提示信息
+*/
+function response(resData){
+    return resData.msg;
+}`
+  },
 }
 
 const SettingModal = ({ update }: SettingModalProp, ref: any) => {
@@ -40,10 +89,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     replaceData: "merge",
     isCors: true,
     result: {
-      code: "code",
-      data: "data",
-      msg: "msg",
-      codeValue: 0,
+      ...responseFuncMap,
     },
     tips: {
       success: "请求成功",
@@ -52,7 +98,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       isError: true,
     },
   };
-  
+
   useImperativeHandle(ref, () => ({
     showModal: (id?: string) => {
       // 初始化接口配置数据
@@ -88,7 +134,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       children: <ReturnTips />,
     },
   ];
-  
+
   // 保存
   async function handleOk() {
     const valid = await form.validateFields();
@@ -126,7 +172,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
         acc[param.key] = typeof param.value === 'object' ? param.value.value : param.value;
         return acc;
       }, {}) || {};
- 
+
       // 使用 handleApi 发送请求
       const response = await handleApiTest(apiConfig, sendParams);
       setTestResult(response);
@@ -143,9 +189,9 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Button 
-        color="primary" 
-        variant="outlined" 
+      <Button
+        color="primary"
+        variant="outlined"
         onClick={handleRequestTest}
         disabled={loading} // 在加载时禁用按钮
       >

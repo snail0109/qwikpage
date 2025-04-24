@@ -338,3 +338,20 @@ export interface LoopValueType {
     item: any;
   }
 }
+
+export interface CustomResType {
+  [key: string]: {
+    type: string;
+    value: string;
+  }
+}
+/**
+ * api请求响应类型
+ */
+export interface ApiResponseType {
+  statusCode: string | CustomResType | null;
+  code: string | CustomResType | null;
+  data: string | CustomResType | null;
+  msg: string | CustomResType | null;
+  codeValue?: string | number | null;
+}

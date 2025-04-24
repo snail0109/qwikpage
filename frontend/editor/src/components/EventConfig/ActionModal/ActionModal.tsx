@@ -291,8 +291,11 @@ const ActionModal = (props: any, ref: any) => {
       form.setFieldsValue({
         scripts: `/**
 * 触发动作后，会执行该函数
-* 上下文: context
-* 变量: variable
+* 上下文: context = { variable, globalVariable, eventParams, forEachValue }
+* context.variable 页面变量
+* context.globalVariable 项目变量
+* context.eventParams 事件流参数
+* context.forEachValue 循环上下文数据
 * 事件流参数: eventParams
 */
 function run(){

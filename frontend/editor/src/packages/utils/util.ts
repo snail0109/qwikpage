@@ -5,7 +5,7 @@
 import dayjs from 'dayjs';
 import { usePageStore } from '@/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
-import { ComponentType, LoopValueType } from '../types';
+import { ComponentType, LoopValueType, ApiResponseType } from '../types';
 import { get } from 'lodash-es';
 import { cloneDeep } from 'lodash-es';
 import copy from 'copy-to-clipboard';
@@ -479,6 +479,72 @@ export const handleFormatter = (formatter: any) => {
       return val;
     }
   };
+};
+
+/**
+ * 处理 api请求响应
+ * @param {any} response 响应数据
+ * @param {ApiResponseType} resMap 响应结构映射
+ * @return {any} 处理后的响应数据
+ */
+export const handleApiResponse = (response: any = {}, resMap: ApiResponseType) => {
+  const resData: any = {
+    statusCode: true,
+    code: true,
+    data: response.data,
+    msg: '',
+  };
+  Object.keys(resMap).forEach(key => {
+    if (key !== 'codeValue') {
+      const item = resMap[key];
+      let value;
+      if (item && item.type === 'custom' && item.value) {
+        // 解析字符串函数
+        try {
+          const paramName = key === 'statusCode' ? 'statusCode' : 'resData';
+          const paramValue = key === 'statusCode' ? response.status : (response.data || {});
+          const responseFn = new Function(paramName, `return (${item.value})(${paramName});`);
+          value = responseFn(paramValue);
+          if (['statusCode', 'code'].includes(key)) {
+            value = Boolean(value);
+          } else if (key === 'msg') {
+            value = value || '';
+          }
+        } catch (error) {
+          console.error('自定义响应结构解析失败：', error);
+        }
+      } else if (item) {
+        // 直接链式取值
+        try {
+          if (key === 'statusCode') {
+            value = (item || '').split(',').map((v: string) => Number(v)).includes(response.status);
+          } else if (key === 'code') {
+            value = get(response.data || {}, item) === resMap.codeValue;
+          } else if (key === 'data') {
+            value = get(response.data || {}, item) || response.data;
+          } else {
+            value = get(response.data || {}, item) || ''
+          }
+        } catch(error) {
+          console.error('响应结构字段解析失败：', error);
+        }
+      } else {
+        // 没有设置值
+        if (key === 'data') {
+          value = response.data || {};
+        }
+      }
+      resData[key] = value;
+    }
+  });
+  const ifSuccess = !!resData.statusCode && !!resData.code;
+  if (ifSuccess) {
+    resData.code = 0;
+  } else {
+    resData.code = -1;
+  }
+
+  return resData;
 };
 
 /**
