@@ -1,2 +1,0 @@
-import{r as e,j as t}from"./index-M-0U_UV8.js";import{M as n}from"./Page-CwlntO1u.js";import"./index-Cq3R3fqn.js";import"./index-tHo0BjcY.js";const l=({config:s,elements:a},o)=>{const[i,r]=e.useState(!0);return e.useImperativeHandle(o,()=>({show(){r(!0)},hide(){r(!1)}})),i&&t.jsx("div",{style:s.style,children:t.jsx(n,{elements:a})})},f=e.forwardRef(l);export{f as default};
-//# sourceMappingURL=Tab-KV5QiEIm.js.map

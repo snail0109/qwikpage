@@ -22,7 +22,7 @@ interface ParamType {
 }
 
 // 自定义响应函数类型
-const responseFuncMap: CustomResType = {
+export const responseFuncMap: CustomResType = {
   statusCode: {
     type: 'custom',
     value: `/**
@@ -89,7 +89,11 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     replaceData: "merge",
     isCors: true,
     result: {
-      ...responseFuncMap,
+      statusCode: "200,201,202,204,206",
+      code: "code",
+      data: "data",
+      msg: "msg",
+      codeValue: 0,
     },
     tips: {
       success: "请求成功",

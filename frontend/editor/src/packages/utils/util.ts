@@ -496,6 +496,7 @@ export const handleApiResponse = (response: any = {}, resMap: ApiResponseType) =
   };
   Object.keys(resMap).forEach(key => {
     if (key !== 'codeValue') {
+      // @ts-ignore
       const item = resMap[key];
       let value;
       if (item && item.type === 'custom' && item.value) {
