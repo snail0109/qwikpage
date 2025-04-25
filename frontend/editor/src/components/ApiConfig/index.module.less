@@ -18,7 +18,7 @@
   :global {
     .ant-tabs {
       .ant-tabs-tab {
-        font-size: var(--ant-modal-title-font-size);
+        // font-size: var(--ant-modal-title-font-size);
       }
     }
 
@@ -59,4 +59,23 @@
   height: 200px;
   overflow: hidden;
   padding: 5px;
+}
+
+.returnRadioBtn {
+  :global {
+
+    .ant-radio-button-wrapper {
+      background: #f3f3f3 !important;
+      color: #999999 !important;
+    }
+    .ant-radio-button-wrapper-checked {
+      background: #23971F !important;
+      border-color: #23971F !important;
+      color: #ffffff !important;
+    }
+
+    .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+      background-color: #23971F;
+    }
+  }
 }

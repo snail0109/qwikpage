@@ -207,6 +207,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
         </Button>
         {activeTabKey === 'structure' && (
           <Radio.Group
+          className={styles.returnRadioBtn}
             value={configMode}
             onChange={(e) => setConfigMode(e.target.value)}
             optionType="button"
