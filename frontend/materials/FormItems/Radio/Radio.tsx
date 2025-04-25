@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { handleApi } from '@materials/utils/handleApi';
 import { isNotEmpty, isNull } from '@materials/utils/util';
 import { useFormContext } from '@materials/utils/context';
+import { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import { usePageStore } from '@materials/stores/pageStore';
 
 /* 泛型只需要定义组件本身用到的属性，当然也可以不定义，默认为any */
@@ -26,6 +27,7 @@ export interface IConfig {
 const MRadio = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) => {
   const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
   const { initValues } = useFormContext();
+  const loopData = useLoopItemValueContext();
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
@@ -47,7 +49,7 @@ const MRadio = ({ type, config, onChange }: ComponentType<IConfig>, ref: any) =>
 
   // 列表加载
   const getDataList = (data: any) => {
-    handleApi(config.api, data).then((res) => {
+    handleApi(config.api, data, loopData).then((res) => {
       if (res?.code === 0) {
         if (!Array.isArray(res.data)) {
           console.error('[radio]', 'data数据格式错误，请检查');

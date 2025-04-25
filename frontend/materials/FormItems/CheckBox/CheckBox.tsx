@@ -4,6 +4,7 @@ import { ComponentType } from '@materials/types';
 import { handleApi } from '@materials/utils/handleApi';
 import { isNotEmpty } from '@materials/utils/util';
 import { useFormContext } from '@materials/utils/context';
+import { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import { usePageStore } from '@materials/stores/pageStore';
 import { isObject, isArray } from 'lodash-es';
 
@@ -29,6 +30,7 @@ const MCheckBox = ({ id, type, config, formItemValue, onChange }: ComponentType<
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState<boolean | undefined>();
   const { initValues, getValue, inForm } = useFormContext();
+  const loopData = useLoopItemValueContext();
   const variableData = usePageStore((state) => state.page.pageData.variableData);
 
   /**
@@ -52,7 +54,7 @@ const MCheckBox = ({ id, type, config, formItemValue, onChange }: ComponentType<
 
   // 列表加载
   const getDataList = (data: any) => {
-    handleApi(config.api, data).then((res) => {
+    handleApi(config.api, data, loopData).then((res) => {
       if (res?.code === 0) {
         if (!Array.isArray(res.data)) {
           console.error('[checkbox]', 'data数据格式错误，请检查');

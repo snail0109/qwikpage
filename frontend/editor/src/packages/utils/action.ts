@@ -347,7 +347,7 @@ const handleNotification = ({ action, next }: ActionNode<NotificationAction>, da
  * 请求处理
  */
 const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any, loopData?: LoopValueType) => {
-  const res = await handleApi(action, data);
+  const res = await handleApi(action, data, loopData);
   if (res.code === 0) {
     execAction(next?.success || next, res, loopData);
   } else {

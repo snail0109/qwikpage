@@ -3,7 +3,7 @@
  */
 
 import { usePageStore } from '@materials/stores/pageStore';
-import { ApiConfig, ApiResponseType } from '@materials/types';
+import { ApiConfig, ApiResponseType, LoopValueType } from '@materials/types';
 import request from './request';
 import { message } from '@materials/utils/AntdGlobal';
 import { handleArrayVariable, renderFormula, renderTemplate, handleApiResponse } from './util';
@@ -20,6 +20,7 @@ import { isPlainObject } from 'lodash-es';
 export const handleApi = async (
   api: ApiConfig & { actionType?: string; filename?: string } = { sourceType: 'json', id: '', source: '', sourceField: '' },
   sendParams: any = {},
+  loopData?: LoopValueType,
 ) => {
   if (api.sourceType === 'json') {
     let renderData = api.source;
@@ -28,7 +29,7 @@ export const handleApi = async (
         if (api.sourceField.type === 'static') {
           renderData = api.sourceField.value ? get(renderData, api.sourceField.value) : renderData;
         } else {
-          renderData = renderFormula(api.sourceField.value, renderData);
+          renderData = renderFormula(api.sourceField.value, renderData, loopData);
         }
       } else if (typeof api.sourceField === 'string' && api.sourceField) {
         renderData = get(renderData, api.sourceField);
@@ -43,11 +44,12 @@ export const handleApi = async (
     const apis = usePageStore.getState().page.pageData.apis;
     const { method, apiUrl, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
     // 处理参数
-    const config: any = mergeParams(method, replaceData, params, sendParams);
+    const config: any = mergeParams(method, replaceData, params, sendParams, loopData);
     // 解析模板字符串：http://mars-api.marsview.cc/user/${id}
     const stgUrl = renderTemplate(apiUrl, sendParams);
     config.url = stgUrl;
     config.isCors = isCors;
+    config.loopData = loopData;
     let response = null;
     try {
       // 下载接口需要做单独处理，事件行为模块会传递actionType和filename
@@ -120,7 +122,7 @@ export const handleApi = async (
   } else {
     // 解析动态变量
     if (api.name?.value) {
-      const value = renderFormula(api.name?.value);
+      const value = renderFormula(api.name?.value, {}, loopData);
       return { code: 0, data: value };
     }
     return { code: 0, data: '' };
@@ -135,8 +137,8 @@ export const handleApi = async (
  * @param sendParams 从事件中传递的参数对象，优先级高于params
  * @returns 合并后的参数对象
  */
-export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 'reserve', params: any = [], sendParams: any) => {
-  const values = handleArrayVariable(params, sendParams);
+export const mergeParams = (method: string, replaceData: 'merge' | 'cover' | 'reserve', params: any = [], sendParams: any, loopData?: LoopValueType) => {
+  const values = handleArrayVariable(params, sendParams, loopData);
   let mergeValues: any = {};
   // 参数合并
   if (replaceData === 'merge') {

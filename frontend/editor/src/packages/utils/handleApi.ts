@@ -182,6 +182,7 @@ export const handleApiTest = async (apiTestConfig: ApiType, sendParams: any = {}
   const stgUrl = renderTemplate(apiUrl, sendParams);
   config.url = stgUrl;
   config.isCors = isCors;
+  config.loopData = loopData;
   let response = null;
   try {
     if (method === 'GET') {

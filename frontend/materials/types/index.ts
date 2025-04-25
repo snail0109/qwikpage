@@ -242,6 +242,16 @@ export interface PageVariable {
   remark: string;
 }
 
+/**
+  * 循环变量类型
+  */
+export interface LoopValueType {
+  [key: string]: {
+    index: string | number;
+    item: any;
+  }
+}
+
 export interface CustomResType {
   [key: string]: {
     type: string;

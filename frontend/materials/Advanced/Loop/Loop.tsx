@@ -1,6 +1,6 @@
-import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { handleApi } from "@materials/utils/handleApi";
-import LoopItemValueContext from "./LoopItemValueContext";
+import LoopItemValueContext, { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import { usePageStore } from "@materials/stores/pageStore";
 import { ComponentType } from "@materials/types";
 import MarsRender from "@materials/MarsRender/MarsRender";
@@ -9,7 +9,7 @@ import { Flex } from "antd";
 const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref: any) => {
     const [dataItems, setDataItems] = useState([]);
     const [visible, setVisible] = useState(true);
-    const contextValue = useContext(LoopItemValueContext);
+    const loopData = useLoopItemValueContext();
     const { rowKey, ...restLayout } = config.props
 
     const variableData = usePageStore((state) => state.page.pageData.variableData);
@@ -60,7 +60,7 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
                             <LoopItemValueContext.Provider
                                 key={itemData[rowKey || "id"]}
                                 value={{
-                                    ...contextValue,
+                                    ...loopData,
                                     [id]: {
                                         item: itemData,
                                         index: itemIndex,

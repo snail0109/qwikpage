@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { handleApi } from "@materials/utils/handleApi";
 import { isNotEmpty } from "@materials/utils/util";
 import { useFormContext } from "@materials/utils/context";
+import { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import { usePageStore } from "@materials/stores/pageStore";
 import { isObject } from "lodash-es";
 import { isArray } from "lodash-es";
@@ -28,6 +29,7 @@ export interface IConfig {
 const MSelect = ({ id, type, formItemValue, config, onChange }: ComponentType<IConfig>, ref: any) => {
     const [data, setData] = useState<Array<{ label: string; value: any }>>([]);
     const { initValues, getValue, inForm } = useFormContext();
+    const loopData = useLoopItemValueContext();
     const [visible, setVisible] = useState(true);
     const [disabled, setDisabled] = useState<boolean | undefined>();
     const variableData = usePageStore((state) => state.page.pageData.variableData);
@@ -60,7 +62,7 @@ const MSelect = ({ id, type, formItemValue, config, onChange }: ComponentType<IC
 
     // 列表加载
     const getDataList = (data: any) => {
-        handleApi(config.api, data).then((res) => {
+        handleApi(config.api, data, loopData).then((res) => {
             if (res?.code === 0) {
                 if (!Array.isArray(res.data)) {
                     console.error("[select]", "data数据格式错误，请检查");

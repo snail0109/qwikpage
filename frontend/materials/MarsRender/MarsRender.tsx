@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import * as antd from 'antd';
 import * as Plots from '@ant-design/plots';
 import { isNull, loadStyle, renderFormula, isFormPlugin } from '@materials/utils/util';
+import { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import { omit } from 'lodash-es';
 import ComWrapper from './ComWrapper';
 import './index.less';
@@ -19,6 +20,7 @@ let cachedComponents: any = {};
 
 // 渲染物料
 export const Material = memo(({ item }: { item: ComItemType }) => {
+  const loopContextValue = useLoopItemValueContext();
   const [Component, setComponent] = useState<any>(null);
   const [config, setConfig] = useState<ConfigType>();
   const [cached, setCached] = useState(false);
@@ -132,7 +134,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
           config.props[key] = variableObj.value;
         } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
           // 绑定变量时，可能是变量，也可能是绑定某一个表单值
-          config.props[key] = renderFormula(variableObj.value);
+          config.props[key] = renderFormula(variableObj.value, {}, loopContextValue);
         }
       }
     });
@@ -159,7 +161,7 @@ export const Material = memo(({ item }: { item: ComItemType }) => {
       eventFunction[key] = (params: any) => {
         // 同一个事件：循环执行多个事件流
         obj[key].forEach((actions) => {
-          handleActionFlow(actions, params);
+          handleActionFlow(actions, params, loopContextValue);
         });
       };
     }

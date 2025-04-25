@@ -5,7 +5,7 @@
 import dayjs from 'dayjs';
 import { usePageStore } from '@materials/stores/pageStore';
 import { useProjectStore } from '@materials/stores/projectStore';
-import { ComponentType, ApiResponseType } from '@materials/types';
+import { ComponentType, ApiResponseType, LoopValueType } from '@materials/types';
 import { get } from 'lodash-es';
 import { cloneDeep } from 'lodash-es';
 import copy from 'copy-to-clipboard';
@@ -244,7 +244,7 @@ export function createFunction(params: Array<string> | string, body: string) {
  * @param formula 表达式字符串
  * @param eventParams 表达式参数，在事件流执行的过程中，如果调用的是脚本运行，则会传入上一个事件流的返回值
  */
-export function renderFormula(formula: string, eventParams?: any) {
+export function renderFormula(formula: string, eventParams?: any, loopData?: LoopValueType) {
   try {
     if (!formula) return '';
     // 通过正则获取表单ID
@@ -252,6 +252,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     const formIds: Array<string> = formula.match(/([A-Za-z]+_\w+)\.[\w\.]*/g) || [];
     const originIds: Array<string> = [...new Set(formIds.map((id) => id.split('.')[0]))];
     const fnParams: Array<string> = ['context', 'eventParams'];
+    console.log("打印循环数据 loopData：", loopData)
     const {
       page: { pageData },
     } = usePageStore.getState();
@@ -274,6 +275,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     const context = {
       variable: variableData,
       globalVariable: globalVariableData,
+      forEachValue: loopData,
       eventParams,
       FORMAT,
       ...formData,
@@ -352,7 +354,7 @@ export const dateFormat = (list: Array<ComponentType>, values: any) => {
  * 解析参数中包含的变量
  * 1. 组件属性配置中的变量参数
  */
-export const handleParamVariable = (params: any = {}, data?: any) => {
+export const handleParamVariable = (params: any = {}, data?: any, loopData?: LoopValueType) => {
   return Object.keys(params).reduce<any>((prev, cur) => {
     const variableObj = params[cur];
     // 如果组件属性是对象，则判断是静态值还是变量
@@ -362,7 +364,7 @@ export const handleParamVariable = (params: any = {}, data?: any) => {
         prev[cur] = variableObj.value;
       } else if (['variable', 'globalVariable'].includes(variableObj?.type)) {
         // 绑定变量时，可能是变量，也可能是绑定某一个表单值
-        prev[cur] = renderFormula(variableObj.value, data);
+        prev[cur] = renderFormula(variableObj.value, data, loopData);
       } else {
         prev[cur] = variableObj;
       }
@@ -379,7 +381,7 @@ export const handleParamVariable = (params: any = {}, data?: any) => {
  * 2. Http设置中的发送参数
  * 3. 事件行为中的发送参数
  */
-export const handleArrayVariable = (list: any = [], data: any = {}) => {
+export const handleArrayVariable = (list: any = [], data: any = {}, loopData?: LoopValueType) => {
   return list.reduce((prev: any, next: any) => {
     if (next.key) {
       if (typeof next.value === 'string') {
@@ -403,7 +405,7 @@ export const handleArrayVariable = (list: any = [], data: any = {}) => {
           }
         } else {
           // 变量不支持模板字符串语法
-          const result = renderFormula(next.value.value, data);
+          const result = renderFormula(next.value.value, data, loopData);
           prev[next.key] = isNotEmpty(result) ? result : '';
         }
       }

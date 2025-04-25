@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { ComponentType } from '@materials/types';
 import { Button, Card, Avatar } from 'antd';
 import MarsRender from '@materials/MarsRender/MarsRender';
-import { usePageStore } from '@materials/stores/pageStore';
+import { useLoopItemValueContext } from "@materials/utils/loopItemValueContext";
 import QIcon from '@materials/components/icons/QIcon';
 import { omit } from 'lodash-es';
 import { handleActionFlow } from '@materials/utils/action';
@@ -13,6 +13,7 @@ import { handleActionFlow } from '@materials/utils/action';
  * @returns
  */
 const MCard = ({ config, elements, onClick }: ComponentType, ref: any) => {
+  const loopData = useLoopItemValueContext();
   const [visible, setVisible] = useState(true);
  
 
@@ -34,7 +35,7 @@ const MCard = ({ config, elements, onClick }: ComponentType, ref: any) => {
   
   const handleOperate = (eventName: string) => {
     const btnEvent = config.events.find((event) => event.eventName === eventName);
-    handleActionFlow(btnEvent?.actions, {});
+    handleActionFlow(btnEvent?.actions, {}, loopData);
   };
 
   const bulkActionList = config.props.bulkActionList || [];

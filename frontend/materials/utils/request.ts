@@ -17,18 +17,19 @@ const instance = axios.create({
   isCors: true,
 });
 // 请求拦截
-instance.interceptors.request.use((config) => {
+instance.interceptors.request.use((reqConfig) => {
   const {
     headers = [],
     timeout = 8,
     timeoutErrorMessage = '请求超时，请稍后重试',
     requestInterceptor,
   } = usePageStore.getState().page.pageData.interceptor || {};
+  const { loopData = {}, ...config } = reqConfig as any;
   config.timeout = timeout * 1000;
   config.timeoutErrorMessage = timeoutErrorMessage;
   config.headers = {
     ...config.headers,
-    ...handleArrayVariable(headers),
+    ...handleArrayVariable(headers, {}, loopData),
     Accept: 'application/json, text/plain, */*',
     proxyApi: config.isCors ? config.url : '',
   };
