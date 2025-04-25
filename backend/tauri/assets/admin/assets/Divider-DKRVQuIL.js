@@ -1,0 +1,2 @@
+import{r,j as o}from"./index-BHxA8CPI.js";import{ai as a}from"./Page-6AJxU0W_.js";import"./index-l3auhUE2.js";import"./index-C09jrsKX.js";const p=({config:e},s)=>{const[i,t]=r.useState(!0);return r.useImperativeHandle(s,()=>({show(){t(!0)},hide(){t(!1)}})),i&&o.jsx(a,{style:e.style,...e.props,children:e.props.text})},n=r.forwardRef(p);export{n as default};
+//# sourceMappingURL=Divider-DKRVQuIL.js.map
