@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useState, useRef } from "react";
-import { Form, Modal, Tabs, ConfigProvider, Button, Spin } from "antd";
+import { Form, Modal, Tabs, ConfigProvider, Button, Spin, Radio } from "antd";
 import type { TabsProps } from "antd";
 import BaseSetting from "./BaseSetting";
 import ReturnStructure from "./ReturnStructure";
@@ -77,6 +77,8 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   }));
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
+  const [activeTabKey, setActiveTabKey] = useState('base-set');
+  const [configMode, setConfigMode] = useState<'base' | 'advanced'>('base');
   const [loading, setLoading] = useState(false); // 添加 loading 状态
   const [testResult, setTestResult] = useState<any>(null);
 
@@ -129,7 +131,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       key: "structure",
       label: "返回结构设置",
       forceRender: true,
-      children: <ReturnStructure />,
+      children: <ReturnStructure mode={configMode} />,
     },
     {
       key: "tips",
@@ -168,7 +170,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
   const handleRequestTest = async () => {
     setLoading(true); // 开始加载
     setTestResult(null);
-    
+
     try {
       const apiConfig = form.getFieldsValue();
       // 转换参数格式以匹配 handleApi 的要求
@@ -193,14 +195,29 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
 
   const customFooter = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Button
-        color="primary"
-        variant="outlined"
-        onClick={handleRequestTest}
-        disabled={loading} // 在加载时禁用按钮
-      >
-        测试
-      </Button>
+      <div>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={handleRequestTest}
+          disabled={loading} // 在加载时禁用按钮
+          style={{ marginRight: '8px' }}
+        >
+          测试
+        </Button>
+        {activeTabKey === 'structure' && (
+          <Radio.Group
+            value={configMode}
+            onChange={(e) => setConfigMode(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+            options={[
+              { value: 'base', label: '基础' },
+              { value: 'advanced', label: '高级' },
+            ]}
+          />
+        )}
+      </div>
       <div>
         <Button onClick={handleCancel} style={{ marginRight: '8px' }}>
           取消
@@ -227,11 +244,22 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
             token: {
               fontSize: 12,
             },
+            components: {
+              Tabs: {
+                titleFontSize: 14,
+                titleFontSizeSM: 12,
+              },
+            },
           }}
         >
           <Spin spinning={loading} tip="请求测试中...">
             <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
-              <Tabs defaultActiveKey="1" items={items} size="small" />
+              <Tabs defaultActiveKey="1" items={items} onChange={(key) => {
+                setActiveTabKey(key);
+                if (key !== 'structure') {
+                  setConfigMode('base');
+                }
+              }} />
             </Form>
             {testResult && <ApiTestResult testData={testResult} />}
           </Spin>

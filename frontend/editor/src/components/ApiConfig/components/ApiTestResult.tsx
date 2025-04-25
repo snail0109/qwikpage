@@ -50,7 +50,6 @@ const ApiTestResult = ({ testData }: ApiTestResultProps) => {
       <Editor
         height="200px"
         language="json"
-        className={styles.dslEditor}
         value={editorValue}
         theme={theme === "dark" ? "vs-dark" : "vs-light"}
         options={{

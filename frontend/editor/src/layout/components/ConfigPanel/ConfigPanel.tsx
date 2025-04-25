@@ -214,6 +214,7 @@ const ConfigPanel = memo(() => {
         components: {
           Tabs: {
             titleFontSize: 14,
+            titleFontSizeSM: 12,
             horizontalMargin: '0 0 10px 0',
             horizontalItemPadding: '5px 0'
           },
