@@ -252,7 +252,6 @@ export function renderFormula(formula: string, eventParams?: any, loopData?: Loo
     const formIds: Array<string> = formula.match(/([A-Za-z]+_\w+)\.[\w\.]*/g) || [];
     const originIds: Array<string> = [...new Set(formIds.map((id) => id.split('.')[0]))];
     const fnParams: Array<string> = ['context', 'eventParams'];
-    console.log("打印循环数据 loopData：", loopData)
     const {
       page: { pageData },
     } = usePageStore.getState();
