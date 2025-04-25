@@ -1,0 +1,2 @@
+import{r as e,j as s}from"./index-Dn4Hrk5U.js";import{aj as l,M as m}from"./Page-DoCSmETJ.js";import"./index-CFGYR7V9.js";import"./index-GesG8T5k.js";const n=({id:a,type:o,config:t,elements:i},d)=>{const[p,r]=e.useState(!0);return e.useImperativeHandle(d,()=>({show(){r(!0)},hide(){r(!1)}})),p&&s.jsx(l,{style:t.style,...t.props,"data-id":a,"data-type":o,children:s.jsx(m,{elements:i||[]})})},c=e.forwardRef(n);export{c as default};
+//# sourceMappingURL=Grid-BUnuQYFH.js.map
