@@ -1,2 +1,0 @@
-import{r as e,j as o}from"./index-BHxA8CPI.js";import{aj as l,M as m}from"./Page-6AJxU0W_.js";import"./index-l3auhUE2.js";import"./index-C09jrsKX.js";const n=({id:d,type:x,config:t,elements:a},p)=>{var s;const[i,r]=e.useState(!0);e.useImperativeHandle(p,()=>({show(){r(!0)},hide(){r(!1)}}));const u=((s=t.props)==null?void 0:s.gutter)||0;return i&&o.jsx(l,{style:t.style,...t.props,gutter:u,children:o.jsx(m,{elements:a})})},f=e.forwardRef(n);export{f as default};
-//# sourceMappingURL=Row-DxTG9mSq.js.map

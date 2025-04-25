@@ -7,7 +7,7 @@ import copy from 'copy-to-clipboard';
 import { usePageStore } from '@/stores/pageStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { handleActionFlow } from './action';
-import type { ComponentType, EventType } from '@/types';
+import type { ComponentType, EventType, ApiResponseType } from '@/types';
 
 /**
  * 判断变量是否为空
@@ -123,7 +123,7 @@ export function renderFormula(formula: string, eventParams?: any) {
     const originIds: Array<string> = [...new Set(formIds.map((id) => id.split('.')[0]))];
     const fnParams: Array<string> = ['context', 'eventParams'];
 
-    const loopData = loopContext();
+    const loopData = loopContext?.() || {};
     const pageStore = usePageStore();
     const pageData = pageStore.pageState.page.pageData;
     const formData = cloneDeep(pageData.formData || {});
@@ -320,6 +320,75 @@ export const getDateRangeByType = (type: string) => {
     }
     return [dayjs(startDate.toLocaleString()), dayjs(endDate.toLocaleString())];
   }
+};
+
+/**
+ * 处理 api请求响应
+ * @param {any} response 响应数据
+ * @param {ApiResponseType} resMap 响应结构映射
+ * @return {any} 处理后的响应数据
+ */
+export const handleApiResponse = (response: any = {}, resMap: ApiResponseType) => {
+  const resData: any = {
+    statusCode: true,
+    code: true,
+    data: response.data,
+    msg: '',
+  };
+  Object.keys(resMap).forEach(key => {
+    if (key !== 'codeValue') {
+      // @ts-ignore
+      const item = resMap[key];
+      let value;
+      if (item && item.type === 'custom' && item.value) {
+        // 解析字符串函数
+        try {
+          const paramName = key === 'statusCode' ? 'statusCode' : 'resData';
+          const paramValue = key === 'statusCode' ? response.status : (response.data || {});
+          const responseFn = new Function(paramName, `return (${item.value})(${paramName});`);
+          value = responseFn(paramValue);
+          if (['statusCode', 'code'].includes(key)) {
+            value = Boolean(value);
+          } else if (key === 'msg') {
+            value = value || '';
+          }
+        } catch (error) {
+          console.error('自定义响应结构解析失败：', error);
+        }
+        resData[key] = value;
+      } else if (item) {
+        // 直接链式取值
+        try {
+          if (key === 'statusCode') {
+            value = (item || '').split(',').map((v: string) => Number(v)).includes(response.status);
+          } else if (key === 'code') {
+            value = get(response.data || {}, item) === resMap.codeValue;
+          } else if (key === 'data') {
+            value = get(response.data || {}, item) || response.data;
+          } else {
+            value = get(response.data || {}, item) || ''
+          }
+        } catch(error) {
+          console.error('响应结构字段解析失败：', error);
+        }
+        resData[key] = value;
+      } else {
+        // 没有设置值
+        if (key === 'data') {
+          value = response.data || {};
+          resData[key] = value;
+        }
+      }
+    }
+  });
+  const ifSuccess = !!resData.statusCode && !!resData.code;
+  if (ifSuccess) {
+    resData.code = 0;
+  } else {
+    resData.code = -1;
+  }
+
+  return resData;
 };
 
 /**

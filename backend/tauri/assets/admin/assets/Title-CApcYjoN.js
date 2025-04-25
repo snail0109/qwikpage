@@ -1,0 +1,2 @@
+import{r as e,j as p}from"./index-CSJx10CB.js";import{T as i}from"./Page-AgM1Q_RU.js";import"./index-CtUKBulY.js";import"./index-BXL4yTo2.js";const a=({config:t},s)=>{const[o,r]=e.useState(!0);return e.useImperativeHandle(s,()=>({show(){r(!0)},hide(){r(!1)}})),o&&p.jsx(i.Title,{style:t.style,...t.props,children:t.props.text})},x=e.forwardRef(a);export{x as default};
+//# sourceMappingURL=Title-CApcYjoN.js.map

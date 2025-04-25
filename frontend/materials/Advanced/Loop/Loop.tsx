@@ -21,7 +21,7 @@ const Loop = ({ id, type, config, elements: childElements }: ComponentType, ref:
     // 列表加载
     const getDataList = async (params: any) => {
         try {
-            const res = await handleApi(config.api, params);
+            const res = await handleApi(config.api, params, loopData);
             if (!Array.isArray(res.data)) {
                 setDataItems([]);
             } else {
