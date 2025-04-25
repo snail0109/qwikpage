@@ -50,6 +50,7 @@ export const handleApi = async (
     config.url = stgUrl;
     config.isCors = isCors;
     config.loopData = loopData;
+    console.log("API request 发起请求: ", config.url, config)
     let response = null;
     try {
       // 下载接口需要做单独处理，事件行为模块会传递actionType和filename
@@ -81,20 +82,13 @@ export const handleApi = async (
         }
       }
     } catch (error: any) {
+      console.error("API request 请求发生错误: ", config.url, error);
       response = {
         status: 200,
         data: { code: 500, data: '', msg: error },
       };
     }
-    // let res: { [key: string]: any } | any[] = response.data;
-    // // 判断是否是数组，如果是数组，则拼接标准结构进行返回，严格意义将，此处必须返回完整结构
-    // if (Array.isArray(res) || typeof res === 'string' || typeof res === 'number' || typeof res === 'boolean') {
-    //   res = { code: 0, data: res, msg: '' };
-    // }
-    // // 字段映射
-    // const code = result.code ? Number(res[result.code] || 0) : 0;
-    // const data = result.data ? res[result.data] : res;
-    // const msg = result.msg ? res[result.msg] || '' : '';
+    console.log("API request 请求返回的原始数据: ", config.url, response);
     const { code, msg, data } = handleApiResponse(response, result as ApiResponseType);
     if (code === 0) {
       // 如果开启了系统提示，则优先使用系统提示
@@ -118,6 +112,7 @@ export const handleApi = async (
     } else if (typeof api.sourceField === 'string' && api.sourceField) {
       renderData = get(response.data, api.sourceField);
     }
+    console.log("API request 处理后的请求数据: ", config.url, renderData)
     return { code: code === result.codeValue ? 0 : code, data: renderData, originData: response.data, msg };
   } else {
     // 解析动态变量

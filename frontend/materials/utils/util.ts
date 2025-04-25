@@ -526,6 +526,7 @@ export const handleApiResponse = (response: any = {}, resMap: ApiResponseType) =
         } catch (error) {
           console.error('自定义响应结构解析失败：', error);
         }
+        resData[key] = value;
       } else if (item) {
         // 直接链式取值
         try {
@@ -541,13 +542,14 @@ export const handleApiResponse = (response: any = {}, resMap: ApiResponseType) =
         } catch(error) {
           console.error('响应结构字段解析失败：', error);
         }
+        resData[key] = value;
       } else {
         // 没有设置值
         if (key === 'data') {
           value = response.data || {};
+          resData[key] = value;
         }
       }
-      resData[key] = value;
     }
   });
   const ifSuccess = !!resData.statusCode && !!resData.code;

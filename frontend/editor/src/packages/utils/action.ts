@@ -163,6 +163,7 @@ const execAction = (node: any, params: any = {}, loopData?: LoopValueType) => {
     delete node.action.data;
     node.action = handleParamVariable(node.action, params, loopData);
     if (node.action.actionType === 'methods') {
+      console.log("action.handleMethods 执行组件方法 Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'showConfirm') {
       handleShowConfirm(node, data, loopData);
@@ -174,18 +175,23 @@ const execAction = (node: any, params: any = {}, loopData?: LoopValueType) => {
       handleRequest(node, data, loopData);
     } else if (node.action.actionType === 'formReset') {
       node.action.method = 'reset';
+      console.log("action.handleMethods 执行组件方法(表单重置) Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formSubmit') {
       node.action.method = 'submit';
+      console.log("action.handleMethods 执行组件方法(表单提交) Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formValidate') {
       node.action.method = 'validate';
+      console.log("action.handleMethods 执行组件方法(表单校验) Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formAssignment') {
       node.action.method = 'init';
+      console.log("action.handleMethods 执行组件方法(表单赋值) Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (node.action.actionType === 'formGetValue') {
       node.action.method = 'getFormData';
+      console.log("action.handleMethods 执行组件方法(表单取值) Start: ", node.action)
       handleMethods(node, data, loopData);
     } else if (['openModal', 'openDrawer'].includes(node.action.actionType)) {
       handleOpenModal(node, data, 'open', loopData);
@@ -264,6 +270,7 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
     // TODO 需要处理组件方法的参数
     const canRest = isObject(data) && !isArray(data);
     const result = await ref?.[action.method]?.(canRest ? { ...action?.params, ...data } : data);
+    console.log("action.handleMethods 执行组件方法 End: ", result)
     if (typeof result === 'boolean') {
       if (result) {
         execAction(next?.success || next, data, loopData);
@@ -272,6 +279,7 @@ async function handleMethods({ action, next }: ActionNode<MethodsAction>, data: 
       }
     } else {
       setTimeout(() => {
+        console.log("action.handleMethods 执行组件方法 End: ", result)
         // 基础类型不能使用对象合并的方式
         if ((Array.isArray(result) || typeof result !== 'object') && isNotEmpty(result)) {
           execAction(next?.success || next, result, loopData);
@@ -347,7 +355,9 @@ const handleNotification = ({ action, next }: ActionNode<NotificationAction>, da
  * 请求处理
  */
 const handleRequest = async ({ action, next }: ActionNode<ApiConfig>, data: any, loopData?: LoopValueType) => {
+  console.log("action.handleRequest 执行请求 Start: ", action)
   const res = await handleApi(action, data, loopData);
+  console.log("action.handleRequest 执行请求 End: ", res);
   if (res.code === 0) {
     execAction(next?.success || next, res, loopData);
   } else {
@@ -401,7 +411,7 @@ const handleVariable = ({ action, next }: ActionNode<VariableAction>, data: any,
       value = defaultVariable(action.variableType, data);
     }
   }
-  const setVariableFunc = action.variableFrom === 'project'? useProjectStore.getState().setVariableData : usePageStore.getState().setVariableData;
+  const setVariableFunc = action.variableFrom === 'project' ? useProjectStore.getState().setVariableData : usePageStore.getState().setVariableData;
   setVariableFunc({
     name: action.name,
     value,
@@ -513,7 +523,9 @@ const handleCreateNode = async ({ action, next }: ActionNode<{ space_id: number;
  * 运行脚本
  */
 const handleRunScripts = async ({ action, next }: ActionNode<{ scripts: string }>, data: any, loopData?: LoopValueType) => {
+  console.log("action.handleRunScripts 执行脚本 Start: ", action)
   const result = renderFormula(action.scripts, data, loopData);
+  console.log("action.handleRunScripts 执行脚本 End: ", result)
   if (typeof result === 'boolean') {
     if (result) {
       execAction(next?.success || next, data, loopData);
