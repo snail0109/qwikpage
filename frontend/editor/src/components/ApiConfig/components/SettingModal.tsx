@@ -10,7 +10,7 @@ import { usePageStore } from "@/stores/pageStore";
 import { generateUUID } from "@/utils/util";
 import styles from "../index.module.less";
 import { handleApiTest } from '@/packages/utils/handleApi';
-import { CustomResType } from "@/packages/types";
+import { baseReturnMap, responseFuncMap } from '@/constants/apiReturnStructure';
 
 export type SettingModalProp = {
   update?: (id: string) => void;
@@ -20,62 +20,6 @@ export type SettingModalProp = {
 interface ParamType {
   key: string;
   value: string | { type: string; value: string };
-}
-
-// 自定义响应函数类型
-export const responseFuncMap: CustomResType = {
-  statusCode: {
-    type: 'custom',
-    value: `/**
-* 根据状态码判断是否请求成功
-* @param statusCode: 请求状态码
-* @return {boolean}: true 表示请求成功，false 表示请求失败
-*/
-function response(statusCode){
-    return [200, 201, 202, 204, 206].includes(statusCode);
-}`
-  },
-  code: {
-    type: 'custom',
-    value: `/**
-* 根据业务码判断是否请求成功
-* @param resData: 响应数据
-* @return {boolean}: true 表示请求成功，false 表示请求失败
-*/
-function response(resData){
-    return resData.code === 0;
-}`
-  },
-  data: {
-    type: 'custom',
-    value: `/**
-* 返回请求结果数据
-* @param resData: 响应数据
-* @return {object} data: 请求结果数据
-*/
-function response(resData){
-    return resData.data;
-}`
-  },
-  msg: {
-    type: 'function',
-    value: `/**
-* 返回请求提示信息
-* @param resData: 响应数据
-* @return {string} message: 提示信息
-*/
-function response(resData){
-    return resData.msg;
-}`
-  },
-}
-
-export const baseReturnMap = {
-  statusCode: "200,201,202,204,206",
-  code: "code",
-  data: "data",
-  msg: "msg",
-  codeValue: 0,
 }
 
 const SettingModal = ({ update }: SettingModalProp, ref: any) => {
@@ -159,7 +103,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       setOpen(true);
     },
   }));
-
+  
   // 当configMode变化时，更新表单中的result字段
   useEffect(() => {
     if (!open) return;
@@ -204,8 +148,8 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     }, 0);
   }, [configMode, open]);
 
-   // 使用 useDebounceFn 创建防抖函数
-   const { run: handleDataChange } = useDebounceFn(
+  // 使用 useDebounceFn 创建防抖函数
+  const { run: handleDataChange } = useDebounceFn(
     (data: any, mode: 'base' | 'advanced') => {
       console.log(`[防抖] 保存${mode}模式数据:`, data);
       if (mode === 'base') {
@@ -249,12 +193,19 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     const valid = await form.validateFields();
     if (!valid) return;
     const values = form.getFieldsValue();
+    // 如果是高级模式，确保所有必要的字段都有值
+    if (configMode === 'advanced') {
+      values.result = {
+        ...responseFuncMap,
+        ...values.result
+      };
+    }
     // 如果有ID，只需要获取表单值进行合并即可，一定不能用values合并，因为里面包含初始化代码
     if (values.id) {
-      updateApi(form.getFieldsValue());
+      updateApi({ ...values });
     } else {
       const id = generateUUID();
-      addApi({ ...initValue, ...form.getFieldsValue(), id: id });
+      addApi({ ...initValue, ...values, id: id });
     }
     // 确认后，把值回传给父组件
     update?.(values.id);
@@ -271,6 +222,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
     setConfigMode('base');
     setBaseFormData(null);
     setAdvancedFormData(null);
+    setActiveTabKey('base-set');
   }
 
   // 做网络请求测试，拿到数据，填写到之后的弹出框中
@@ -342,7 +294,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
       <Modal
         wrapClassName={styles.apiSettingModal}
         width={"800px"}
-        title="接口配置"
+        title={update ? "编辑接口配置" : "新增接口配置"}
         open={open}
         onCancel={handleCancel}
         footer={customFooter}
@@ -362,7 +314,7 @@ const SettingModal = ({ update }: SettingModalProp, ref: any) => {
         >
           <Spin spinning={loading} tip="请求测试中...">
             <Form form={form} layout="vertical" style={{ maxWidth: 800 }} autoComplete="off">
-              <Tabs defaultActiveKey="1" items={items} onChange={(key) => {
+              <Tabs activeKey={activeTabKey} items={items} onChange={(key) => {
                 setActiveTabKey(key);
               }} />
             </Form>

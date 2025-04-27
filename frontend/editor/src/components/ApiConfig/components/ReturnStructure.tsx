@@ -3,7 +3,7 @@ import { Form, Input, InputNumber, Alert, Col, Row, Tabs } from "antd";
 import Editor, { loader } from "@monaco-editor/react";
 import { usePageStore } from "@/stores/pageStore";
 import styles from "../index.module.less";
-import { baseReturnMap, responseFuncMap } from "./SettingModal";
+import { baseReturnMap, responseFuncMap } from '@/constants/apiReturnStructure';
 
 interface ReturnStructureProps {
   mode: "base" | "advanced";
@@ -135,7 +135,7 @@ const ReturnStructure = function ({ mode, isEdit, onDataChange }: ReturnStructur
           <Form.Item
             label="业务码"
             name={["result", "code"]}
-            tooltip={<p>接口返回业务业务码，默认是：code</p>}
+            tooltip={<p>接口返回业务码，默认是：code</p>}
           >
             <Input 
               placeholder="默认为：code" 

@@ -226,7 +226,8 @@ export interface ApiType {
   isCors: boolean;
   // 字段映射
   result: {
-    code: string; //状态码字段
+    statusCode: string; //状态码字段
+    code: string; //业务码字段
     codeValue: number; //成功对应的值
     data: string; //结果字段
     msg: string; //报错字段
