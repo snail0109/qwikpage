@@ -309,16 +309,16 @@ function transformToList(items: Array<any>, variableType: 'project' | 'page') {
     setVisible(false);
   };
   const fnList: CollapseProps['items'] = [
-    {
-      key: '1',
-      label: '逻辑函数',
-      children: null,
-    },
-    {
-      key: '2',
-      label: '数学函数',
-      children: null,
-    },
+    // {
+    //   key: '1',
+    //   label: '逻辑函数',
+    //   children: null,
+    // },
+    // {
+    //   key: '2',
+    //   label: '数学函数',
+    //   children: null,
+    // },
     {
       key: '3',
       label: '日期函数',
@@ -328,11 +328,11 @@ function transformToList(items: Array<any>, variableType: 'project' | 'page') {
         </ul>
       ),
     },
-    {
-      key: '4',
-      label: '数组函数',
-      children: null,
-    },
+    // {
+    //   key: '4',
+    //   label: '数组函数',
+    //   children: null,
+    // },
   ];
   return (
     <Modal open={visible} onCancel={handleCancel} title="逻辑编辑器" width={1100} onOk={handleSubmit} okText="确认" cancelText="取消">

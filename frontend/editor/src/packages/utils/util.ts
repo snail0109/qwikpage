@@ -274,6 +274,7 @@ export function renderFormula(formula: string, eventParams: any = {}, loopData?:
     const FORMAT = (date: any, fmt: string = 'YYYY-MM-DD HH:mm:ss') => {
       return dayjs(date).format(fmt);
     };
+    // TODO 补充计算函数
     const context = {
       variable: variableData,
       globalVariable: globalVariableData,
