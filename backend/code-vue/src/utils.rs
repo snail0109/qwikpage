@@ -4,6 +4,7 @@ use anyhow::Error;
 use code_core::types::generator::{GeneratedArtifact, GeneratorError, GeneratorOptions};
 use code_core::types::page::{Page, PageData};
 use code_core::types::route::RouteInfo;
+use code_core::pinyin_name;
 use handlebars::Handlebars;
 use serde_json::{self, json};
 use std::fs::{self, File};
@@ -209,8 +210,9 @@ pub fn generate_package_json(
     output_dir: &Path,
     artifacts: &mut Vec<GeneratedArtifact>,
 ) -> Result<(), Error> {
+    let mut name = pinyin_name(options.project_name.clone().as_str()).replace(" ", "");
     let package_json = serde_json::json!({
-        "name": options.project_name,
+        "name": name,
         "version": options.version,
         "scripts": {
             "dev": "vite",
