@@ -63,7 +63,7 @@ const BaseIcon = defineComponent({
         return null;
       }
       const svgHTMLString = renderIconDefinitionToSVGElement(iconsList[props.icon], {
-        extraSVGAttrs: { width: '1em', height: '1em', fill: 'currentColor' },
+        extraSVGAttrs: { fontSize: '18px', verticalAlign: 'middle', fill: 'currentColor', ...(attrs.style || {}) },
       })
       return (
         <span
