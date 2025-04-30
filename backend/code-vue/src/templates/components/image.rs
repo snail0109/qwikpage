@@ -6,6 +6,14 @@ import { withInstall } from "@/utils/type";
 import { commonProps } from "@/types";
 import { omit } from 'lodash-es';
 
+const BASE = import.meta.env.BASE_URL || '/';
+const handleImage = (src: string) => {
+  if (src.startsWith('http')) {
+    const arr = src.split('/');
+    return `${BASE}img/defaultGroup/${arr[arr.length - 1]}`
+  }
+  return `${BASE}img/defaultGroup/${src}`
+}
 const Image = defineComponent({
   name: "QImage",
   inheritAttrs: false,
@@ -22,12 +30,14 @@ const Image = defineComponent({
       show: () => (visible.value = true),
       hide: () => (visible.value = false),
     });
+    const realSrc = handleImage(props.config.props.src);
 
     return () => (
       visible.value && (
         <AImage
           style={props.config.style}
           {...omit(props.config.props, ['formItem'])}
+          src={realSrc}
           onClick={handleClick}
         />
       )

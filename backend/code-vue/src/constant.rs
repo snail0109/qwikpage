@@ -9,22 +9,25 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueJsx(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ mode }) => {
+  return {
+    base:  mode === 'production' ? '/qwikpage-demo/' : '',
+    plugins: [
+      vue(),
+      vueJsx(),
+      vueDevTools(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-  },
-  server: {
-    proxy: {
-      {proxyInfo}
-    }
-  },
+    server: {
+      proxy: {
+        {proxyInfo}
+      }
+    },
+  }
 })
 "#;
 
@@ -287,9 +290,16 @@ pause
 
 "#;
 
-pub const ENV_CONFIG: &str = r#"
+pub const ENV_DEV_CONFIG: &str = r#"
 #接口地址
 VITE_BASE_API=/qwikpageApi
+BASE_URL=/
+"#;
+
+pub const ENV_CONFIG: &str = r#"
+#接口地址
+VITE_BASE_API=/qwikpage-demo/qwikpageApi
+BASE_URL=/qwikpage-demo/
 "#;
 
 pub fn template_config_file() -> FileTemplate {
@@ -306,7 +316,7 @@ pub fn template_app_file() -> FileTemplate {
     }
 }
 
-pub fn template_files() -> [FileTemplate; 9] {
+pub fn template_files() -> [FileTemplate; 10] {
     [
         FileTemplate {
             filename: String::from("tsconfig.node.json"),
@@ -341,7 +351,11 @@ pub fn template_files() -> [FileTemplate; 9] {
             content: String::from(START_WIN_CONFIG),
         },
         FileTemplate {
-            filename: String::from(".env"),
+            filename: String::from(".env.development"),
+            content: String::from(ENV_DEV_CONFIG),
+        },
+        FileTemplate {
+            filename: String::from(".env.production"),
             content: String::from(ENV_CONFIG),
         },
     ]
