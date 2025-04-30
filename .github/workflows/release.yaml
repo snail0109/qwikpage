@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build_time: ${{ steps.get_build_time.outputs.build_time }} # 构建时间
+      version_time: ${{ steps.get_build_time.outputs.version_time }} # 版本时间
     steps:
       - name: 获取构建时间
         id: get_build_time
