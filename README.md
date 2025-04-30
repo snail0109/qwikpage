@@ -75,5 +75,5 @@ pnpm run build:windows # 生成 .exe 文件
 ```bash
 export TAURI_SIGNING_PRIVATE_KEY=
 export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=
-./scripts/release.sh --channel nightly --version "0.0.2"
+./scripts/release.sh --channel nightly --version "0.0.3"
 ```
