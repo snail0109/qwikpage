@@ -33,9 +33,7 @@
         "updater": {
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI2QzlEOTc5MUY1QjY3OApSV1I0dHZXUmw1MXNDd0FaWmFrOHhTSGo3V2pWdkZmbFhuUlBmVEtvRjVQQUdKMXc2ZFRBMVRvTQo=",
             "endpoints": [
-                "https://github.com/dingxyang/qwikpage/releases/latest/download/latest.json",
-                "https://github.com/zhanglingsi1/qwikpage/releases/latest/download/latest.json",
-                "http://47.122.78.114:23432/update/Qwikpage/bin/latest.json"
+                "https://github.com/dingxyang/qwikpage/releases/latest/download/latest.json"
             ]
         }
     }
