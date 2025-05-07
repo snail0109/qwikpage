@@ -83,7 +83,7 @@ pub fn run() {
                 .level(if is_dev() {
                     log::LevelFilter::Trace
                 } else {
-                    log::LevelFilter::Info
+                    log::LevelFilter::Trace
                 })
                 .format(move |out, message, record| {
                     custom_log_out(out, message, record);
