@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Row, Col, Tabs, Collapse, Input, Divider, Empty } from 'antd';
-import { SearchOutlined, UpOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useDebounceFn } from 'ahooks';
 import DragMenuItem from '../DragMenuItem';
 import components, { SysComItem } from '@/config/components';
@@ -91,7 +91,7 @@ const ComponentPanel = () => {
                   width={12}
                   height={12}
                   style={{
-                    transform: isActive ? "rotate(0deg)" : "rotate(-180deg)",
+                    transform: isActive ? "rotate(180deg)" : "rotate(90deg)",
                     transition: "transform 0.3s ease",
                   }}
                 />
