@@ -3,7 +3,7 @@ pub const VIEW_TEMPLATE: &str = r#"
   <q-render :elements="pageState.page.pageData.elements || []"></q-render>
 </template>
 <script setup lang="tsx">
-import { onBeforeMount, onMounted, onUnmounted } from "vue";
+import { ref, onBeforeMount, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { createEvents } from "@/utils/util";
@@ -11,6 +11,7 @@ import { createEvents } from "@/utils/util";
 let eventFunction: { [key: string]: (params?: any) => void } = {};
 const { clearPageInfo, savePageInfo } = appStore.page;
 const { pageState } = storeToRefs(appStore.page);
+{{pageVariables}}
 
 {{ pageInfo }}
 

@@ -10,7 +10,7 @@ use code_core::types::route::RouteInfo;
 use code_core::{pinyin_name, CodeGenerator};
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use utils::{gen_router, gen_view, gen_proxy_config, gen_proxy_config_file, generate_app, generate_package_json, init_dirs, init_files};
+use utils::{gen_router_file, gen_view_file, gen_proxy_config, gen_proxy_config_file, generate_app_vue_file, generate_package_json_file, init_dirs, init_files};
 
 struct VueGenerator {
     page_list: Vec<Page>,
@@ -44,16 +44,22 @@ impl CodeGenerator for VueGenerator {
         init_files(output_dir, &mut artifacts)?;
 
         // 生成package.json
-        generate_package_json(options, output_dir, &mut artifacts)?;
+        generate_package_json_file(options, output_dir, &mut artifacts)?;
 
         // 生成App.vue
-        generate_app(options, output_dir, &mut artifacts)?;
+        generate_app_vue_file(options, output_dir, &mut artifacts)?;
 
         artifacts.extend(self.generate_code()?);
 
         Ok(artifacts)
     }
 
+    /**
+     * 生成页面相关代码
+     * 视图页面
+     * 项目路由信息
+     * 代理配置
+     */
     fn generate_code(&self) -> Result<Vec<GeneratedArtifact>, Error> {
         let output_dir = PathBuf::from(self.output_dir.clone());
         let page_list = self.page_list.clone();
@@ -72,7 +78,7 @@ impl CodeGenerator for VueGenerator {
         println!("route_list: {:?}", route_list.len());
 
         if !route_list.is_empty() {
-            artifacts.push(gen_router(output_dir.clone(), route_list)?);
+            artifacts.push(gen_router_file(output_dir.clone(), route_list)?);
         }
         // if !proxy_map.is_empty() {
             // println!("proxy_map: {:?}", proxy_map);
@@ -81,6 +87,12 @@ impl CodeGenerator for VueGenerator {
         Ok(artifacts)
     }
 
+    /**
+     * 生成页面
+     * 页面名称中文转换成拼音，首字母大写
+     * 页面名称确定后，生成路由配置信息
+     * 
+     */
     fn generate_page(
         &self,
         config: &Page,
@@ -102,7 +114,7 @@ impl CodeGenerator for VueGenerator {
 
         // 处理页面数据
         let file_name = format!("{}.vue", component);
-        let file_result = gen_view(output_dir.clone(), &file_name, config)?;
+        let file_result = gen_view_file(output_dir.clone(), &file_name, config)?;
 
         Ok(GeneratedArtifact {
             file_path: file_result.file_path,

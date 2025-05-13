@@ -15,8 +15,13 @@ use url::Url;
 use crate::constant;
 use crate::templates::{get_components, get_store, get_types, get_utils, get_views, VIEW_TEMPLATE};
 
-// 生成路由文件
-pub fn gen_router(
+/**
+ * 生成路由文件
+ * @param output_dir 生成的目录
+ * @param route_list 路由列表
+ * @return 生成的文件信息
+ */
+pub fn gen_router_file(
     output_dir: PathBuf,
     route_list: Vec<RouteInfo>,
 ) -> Result<GeneratedArtifact, Error> {
@@ -31,7 +36,12 @@ pub fn gen_router(
     write_file(output_dir.join("src/router/index.ts"), &output)
 }
 
-// 根据页面apiConfig 生成proxy配置
+/**
+ * 根据页面apiConfig, 生成代理配置
+ * @param page 页面信息
+ * @param proxy_list 代理配置列表
+ * @returns 代理配置
+ */
 pub fn gen_proxy_config(
     page: &Page,
     proxy_list: &mut Vec<String>,
@@ -62,7 +72,9 @@ pub fn gen_proxy_config(
     })
 }
 
-// 生成proxy config配置文件
+/**
+ * 生成包含 proxy 配置的 vite.config.ts 文件
+ */
 pub fn gen_proxy_config_file(
     output_dir: PathBuf,
     proxy_list: &mut Vec<String>,
@@ -77,8 +89,16 @@ pub fn gen_proxy_config_file(
         content: result,
     })
 }
-// 生成视图内容
-pub fn gen_view(
+
+
+/**
+ * 生成 Vue 页面文件
+ * @param output_dir 输出目录
+ * @param file_name 文件名
+ * @param page 页面信息
+ * @return 生成的文件信息
+ */
+pub fn gen_view_file(
     output_dir: PathBuf,
     file_name: &str,
     page: &Page,
@@ -95,8 +115,38 @@ pub fn gen_view(
     // 将 JSON 转换为字符串
     let page_json = serde_json::to_string_pretty(&frontend_data)
         .map_err(|e| anyhow::anyhow!("序列化失败: {}", e))?;
+
+    // 数据格式变动频繁, 先不限制具体类型, 直接使用 serde_json::Value
+    let page_data: serde_json::Value = serde_json::from_str(&page.page_data).expect("Failed to parse pageData");
+
+    // TODO: 生成 Template
+
+
+    // Vue页面一：处理页面数据
     let replacement = format!("const pageInfo = {};", page_json);
-    let result = VIEW_TEMPLATE.replace("{{ pageInfo }}", &replacement);
+
+    // Vue页面二：处理页面级变量
+    let mut page_variables = String::new();
+    if let Some(variables) = page_data.get("variables").and_then(|v| v.as_array()) {
+        for variable in variables {
+            // 这里需要进一步检查 variable 是否是对象类型
+            if let Some(var_obj) = variable.as_object() {
+                let name = var_obj.get("name")
+                    .and_then(|n| n.as_str())
+                    .unwrap_or_default();
+                
+                let default_value = var_obj.get("defaultValue")
+                    .map(|v| v.to_string())
+                    .unwrap_or_else(|| "null".to_string());
+                
+                page_variables.push_str(&format!("const {} = ref({});\n", name, default_value));
+            }
+        }
+    }
+    
+    let result = VIEW_TEMPLATE
+    .replace("{{pageVariables}}", &page_variables)
+    .replace("{{ pageInfo }}", &replacement);
     write_file(file_path.clone(), &result)?;
     format_vue_file(file_path.clone());
     Ok(GeneratedArtifact {
@@ -192,7 +242,7 @@ pub fn init_files(output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> 
 }
 
 // 生成入口文件App.vue
-pub fn generate_app(options: &GeneratorOptions, output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> Result<(), Error> {
+pub fn generate_app_vue_file(options: &GeneratorOptions, output_dir: &Path, artifacts: &mut Vec<GeneratedArtifact>) -> Result<(), Error> {
     let temp_file = constant::template_app_file();
     let file_path = output_dir.join(&temp_file.filename);
     let result = temp_file.content.replace("{variablesInfo}", options.project_variables.as_deref().unwrap_or("[]"));
@@ -205,7 +255,7 @@ pub fn generate_app(options: &GeneratorOptions, output_dir: &Path, artifacts: &m
     Ok(())
 }
 // 生成 package.json 文件
-pub fn generate_package_json(
+pub fn generate_package_json_file(
     options: &GeneratorOptions,
     output_dir: &Path,
     artifacts: &mut Vec<GeneratedArtifact>,
