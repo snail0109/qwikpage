@@ -90,73 +90,8 @@ pub fn gen_proxy_config_file(
     })
 }
 
-
-/**
- * 生成 Vue 页面文件
- * @param output_dir 输出目录
- * @param file_name 文件名
- * @param page 页面信息
- * @return 生成的文件信息
- */
-pub fn gen_view_file(
-    output_dir: PathBuf,
-    file_name: &str,
-    page: &Page,
-) -> Result<GeneratedArtifact, Error> {
-    let file_path = output_dir.join("src/views").join(file_name);
-    // 创建一个自定义的 JSON 对象
-    let frontend_data = json!({
-        "id": page.id,
-        "name": page.name,
-        "path": page.path,
-        "remark": page.remark,
-        "pageData": page.page_data,
-    });
-    // 将 JSON 转换为字符串
-    let page_json = serde_json::to_string_pretty(&frontend_data)
-        .map_err(|e| anyhow::anyhow!("序列化失败: {}", e))?;
-
-    // 数据格式变动频繁, 先不限制具体类型, 直接使用 serde_json::Value
-    let page_data: serde_json::Value = serde_json::from_str(&page.page_data).expect("Failed to parse pageData");
-
-    // TODO: 生成 Template
-
-
-    // Vue页面一：处理页面数据
-    let replacement = format!("const pageInfo = {};", page_json);
-
-    // Vue页面二：处理页面级变量
-    let mut page_variables = String::new();
-    if let Some(variables) = page_data.get("variables").and_then(|v| v.as_array()) {
-        for variable in variables {
-            // 这里需要进一步检查 variable 是否是对象类型
-            if let Some(var_obj) = variable.as_object() {
-                let name = var_obj.get("name")
-                    .and_then(|n| n.as_str())
-                    .unwrap_or_default();
-                
-                let default_value = var_obj.get("defaultValue")
-                    .map(|v| v.to_string())
-                    .unwrap_or_else(|| "null".to_string());
-                
-                page_variables.push_str(&format!("const {} = ref({});\n", name, default_value));
-            }
-        }
-    }
-    
-    let result = VIEW_TEMPLATE
-    .replace("{{pageVariables}}", &page_variables)
-    .replace("{{ pageInfo }}", &replacement);
-    write_file(file_path.clone(), &result)?;
-    format_vue_file(file_path.clone());
-    Ok(GeneratedArtifact {
-        file_path: file_path.to_string_lossy().to_string(),
-        content: result,
-    })
-}
-
 // 格式化 Vue 文件
-fn format_vue_file(file_path: PathBuf) {
+pub fn format_vue_file(file_path: PathBuf) {
     // 创建一个新线程来处理格式化
     thread::spawn(move || {
         // 使用标准库的 Command

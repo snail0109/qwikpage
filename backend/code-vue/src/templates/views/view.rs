@@ -1,6 +1,6 @@
 pub const VIEW_TEMPLATE: &str = r#"
 <template>
-  <q-render :elements="pageState.page.pageData.elements || []"></q-render>
+  {{vue_template}}
 </template>
 <script setup lang="tsx">
 import { ref, onBeforeMount, onMounted, onUnmounted } from "vue";

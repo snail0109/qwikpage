@@ -1,6 +1,7 @@
 mod constant;
 pub mod templates;
 mod utils;
+mod gen_view_file;
 
 use anyhow::Error;
 use code_core::ffi::result_to_cstring;
@@ -10,7 +11,8 @@ use code_core::types::route::RouteInfo;
 use code_core::{pinyin_name, CodeGenerator};
 use std::ffi::{c_char, CStr};
 use std::path::PathBuf;
-use utils::{gen_router_file, gen_view_file, gen_proxy_config, gen_proxy_config_file, generate_app_vue_file, generate_package_json_file, init_dirs, init_files};
+use utils::{gen_router_file, gen_proxy_config, gen_proxy_config_file, generate_app_vue_file, generate_package_json_file, init_dirs, init_files};
+use gen_view_file::gen_view_file;
 
 struct VueGenerator {
     page_list: Vec<Page>,
