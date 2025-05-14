@@ -48,18 +48,40 @@ pub fn gen_view_file(
             return Err(Error::msg(format!("Failed to parse template data: {}", e)));
         }
     };
-    let vue_template = template_data
+    let mut page_variables = String::new();
+    let mut loop_variables = Vec::new();
+
+    let vue_template_and_vars = template_data
         .components
         .iter()
-        .map(generate_template)
+        .map(|element| generate_template(element, None))
+        .collect::<Vec<_>>();
+
+    let vue_template = vue_template_and_vars
+        .iter()
+        .map(|(tpl, _)| tpl.clone())
         .collect::<Vec<_>>()
         .join("\n");
+
+    for (_, vars) in vue_template_and_vars {
+        loop_variables.extend(vars);
+    }
+
+    // 注入 Loop 相关变量
+    for (var_name, value) in loop_variables {
+        // value 可能是 JSON字符串，去掉多余引号
+        let value_str = if value.starts_with('"') && value.ends_with('"') {
+            &value[1..value.len() - 1]
+        } else {
+            &value
+        };
+        page_variables.push_str(&format!("const {} = ref({});\n", var_name, value_str));
+    }
 
     // Vue页面一：处理页面数据
     let replacement = format!("const pageInfo = {};", page_json);
 
     // Vue页面二：处理页面级变量
-    let mut page_variables = String::new();
     if let Some(variables) = page_data_json.get("variables").and_then(|v| v.as_array()) {
         for variable in variables {
             // 这里需要进一步检查 variable 是否是对象类型
@@ -108,65 +130,122 @@ fn map_type(type_name: &str) -> &str {
         "Switch" => "q-switch",
         "Text" => "q-text",
         "Grid" => "q-grid",
-        "Loop" => "Loop", // 特殊处理
-        other => other,   // fallback
+        "Loop" => "q-flex", // 特殊处理
+        other => other,     // fallback
     }
 }
 
 // 递归生成Vue模板
-fn generate_template(element: &MergedElement) -> String {
+fn generate_template(
+    element: &MergedElement,
+    parent_loop_vfor: Option<(String, String)>,
+) -> (String, Vec<(String, String)>) {
     let indent_str = "  ";
-    if element.type_name == "Loop" {
-        let children: String = element
-            .elements
-            .iter()
-            .map(generate_template)
-            .collect::<Vec<_>>()
-            .join("\n");
-        //  TODO v-for 应该作用在子组件上
-        let loop_expr = element
-            .config
-            .get("expr")
-            .and_then(|v| v.as_str())
-            .unwrap_or("item in items");
-        return format!(
-            "{indent_str}<q-flex v-for=\"{loop_expr}\">\n{children}\n{indent_str}</q-flex>",
-            indent_str = indent_str,
-            loop_expr = loop_expr,
-            children = children
-        );
-    }
     let tag = map_type(&element.type_name);
-    let children: String = element
-        .elements
-        .iter()
-        .map(generate_template)
-        .collect::<Vec<_>>()
-        .join("\n");
+
+    // 处理 v-for 相关属性
+    let mut v_for_attr = String::new();
+    let mut key_attr = String::new();
+
+    // 如果父级是 Loop，当前元素加 v-for
+    if let Some((vfor_expr, key_field)) = parent_loop_vfor {
+        // FIXME
+        v_for_attr = format!(r#" v-for="item in {}""#, vfor_expr);
+        key_attr = format!(r#" :key="item.{}""#, key_field);
+    }
+
+    let mut loop_variables = Vec::new();
+
+    // 如果当前是 Loop 组件，准备传递给子元素的 v-for 信息
+    let mut next_loop_vfor: Option<(String, String)> = None;
+
+    if element.type_name == "Loop" {
+        if let Some(api) = element.config.get("api") {
+            if let Some(source_type) = api.get("sourceType").and_then(|v| v.as_str()) {
+                match source_type {
+                    "json" => {
+                        // 变量名
+                        let loop_var_name = format!("{}ApiSource", element.id);
+                        // 变量值
+                        let source_val = api
+                            .get("source")
+                            .map(|v| v.to_string())
+                            .unwrap_or("[]".to_string());
+                        loop_variables.push((loop_var_name.clone(), source_val.clone()));
+                        next_loop_vfor = Some((loop_var_name.clone(), "id".to_string()));
+                    }
+                    "variable" => {
+                        if let Some(name) = api.get("name") {
+                            if let Some(var_obj) = name.as_object() {
+                                if let Some(Value::String(val)) = var_obj.get("value") {
+                                    // 页面变量 context.variable.
+                                    let last = val.split('.').last().unwrap_or("data").to_string();
+                                    next_loop_vfor = Some((last, "id".to_string()));
+                                    // 循环变量 context.forEachValue.Loop_top.item.cards || []
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        // 取 rowKey 字段
+        if let Some(props) = element.config.get("props") {
+            if let Some(row_key) = props.get("rowKey").and_then(|v| v.as_str()) {
+                if let Some((vfor_expr, _)) = next_loop_vfor {
+                    next_loop_vfor = Some((vfor_expr, row_key.to_string()));
+                }
+            }
+        }
+    }
+
+    let mut children_parts = Vec::new();
+    let mut children_vars = Vec::new();
+    for child in &element.elements {
+        let (child_str, child_vars) = if element.type_name == "Loop" {
+            generate_template(child, next_loop_vfor.clone())
+        } else {
+            generate_template(child, None)
+        };
+        children_parts.push(child_str);
+        children_vars.extend(child_vars);
+    }
+    let children = children_parts.join("\n");
 
     let processed_config = bind_variable_in_config(&element.config);
     let config_js = value_to_js_object_literal(&processed_config);
     let attrs = format!(r#" :config="{}""#, config_js);
     // let evts = events_to_attrs(&element.events);
     let evts = "";
-    if children.is_empty() {
-        format!(
-            "{indent_str}<{tag}{attrs}{evts} />",
-            indent_str = indent_str,
-            tag = tag,
-            attrs = attrs,
-            evts = evts
-        )
-    } else {
-        format!(
-            "{indent_str}<{tag}{attrs}{evts}>\n{children}\n{indent_str}</{tag}>",
-            indent_str = indent_str,
-            tag = tag,
-            attrs = attrs,
-            evts = evts,
-            children = children
-        )
-    }
+    // 返回 (模板字符串, 变量收集)
+    (
+        if children.is_empty() {
+            format!(
+                "{indent_str}<{tag}{attrs}{evts} />",
+                indent_str = indent_str,
+                tag = tag,
+                attrs = attrs,
+                evts = evts
+            )
+        } else {
+            format!(
+                "{indent_str}<{tag}{attrs}{evts}{v_for_attr}{key_attr}>\n{children}\n{indent_str}</{tag}>",
+                indent_str = indent_str,
+                tag = tag,
+                attrs = attrs,
+                evts = evts,
+                v_for_attr = v_for_attr,
+                key_attr = key_attr,
+                children = children
+            )
+        },
+        {
+            let mut all_vars = loop_variables;
+            all_vars.extend(children_vars);
+            all_vars
+        },
+    )
 }
 
 fn value_to_js_object_literal(value: &serde_json::Value) -> String {
@@ -218,13 +297,13 @@ fn extract_prop_value(value: &serde_json::Value) -> serde_json::Value {
                 "variable" | "globalVariable" => {
                     // 用字符串代表 renderFormula(variableObj.value)
                     if let Some(var_val) = obj.get("value") {
-                        // FIXME 
+                        // FIXME
                         serde_json::Value::Null
                     } else {
                         serde_json::Value::Null
                     }
                 }
-                _ => value.clone()
+                _ => value.clone(),
             }
         } else {
             value.clone()
@@ -233,7 +312,6 @@ fn extract_prop_value(value: &serde_json::Value) -> serde_json::Value {
         value.clone()
     }
 }
-
 
 // 递归处理 config
 pub fn bind_variable_in_config(config: &Value) -> Value {
@@ -260,9 +338,7 @@ pub fn bind_variable_in_config(config: &Value) -> Value {
             }
             Value::Object(new_map)
         }
-        Value::Array(arr) => {
-            Value::Array(arr.iter().map(bind_variable_in_config).collect())
-        }
+        Value::Array(arr) => Value::Array(arr.iter().map(bind_variable_in_config).collect()),
         _ => config.clone(),
     }
 }
