@@ -12,7 +12,7 @@ const Form = defineComponent({
   name: 'QForm',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }: any) {
+  setup(props, { attrs, slots, expose }: any) {
     const { onFinish, onChange, ...rest } = attrs;
     const { pageState } = storeToRefs(appStore.page);
     const { setFormData } = appStore.page;
@@ -125,7 +125,7 @@ const Form = defineComponent({
         onFinish={handleFinish}
         onFinishFailed={handleFail}
       >
-        <q-render elements={props.elements || []} />
+        {slots?.default()}
       </AForm>
     );
   }

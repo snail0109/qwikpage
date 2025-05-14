@@ -11,7 +11,7 @@ const Card = defineComponent({
   name: "QCard",
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }: any) {
+  setup(props, { attrs, slots, expose }: any) {
     const { onClick, ...rest } = attrs;
     const visible = ref(true);
     const bulkActionList = computed(() => props.config.props.bulkActionList || []);
@@ -101,7 +101,7 @@ const Card = defineComponent({
               avatar={avatar.value && <AAvatar src={avatar.value} />} 
             />
           ) : null}
-          <q-render elements={props.elements || []} />
+          {slots?.default()}
         </ACard>
       );
   },

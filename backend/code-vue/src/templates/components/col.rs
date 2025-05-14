@@ -8,7 +8,7 @@ const Col = defineComponent({
   name: 'QCol',
   inheritAttrs: false,
   props: commonProps(),
-  setup(props, { attrs, expose }) {
+  setup(props, { attrs, slots, expose }) {
     const visible = ref(true);
 
     const show = () => {
@@ -27,7 +27,7 @@ const Col = defineComponent({
         style={props.config.style}
         {...props.config.props}
       >
-        <q-render elements={props.elements || []} />
+        {slots?.default()}
       </ACol>
     );
   }

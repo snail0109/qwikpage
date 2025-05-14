@@ -4,7 +4,7 @@ use anyhow::Error;
 use code_core::types::generator::GeneratedArtifact;
 use code_core::types::page::{MergedElement, Page};
 use code_core::TemplateData;
-use serde_json::{self, json};
+use serde_json::{self, json, Map, Value};
 
 use crate::templates::VIEW_TEMPLATE;
 use crate::utils::{format_vue_file, write_file};
@@ -115,20 +115,26 @@ fn map_type(type_name: &str) -> &str {
 
 // 递归生成Vue模板
 fn generate_template(element: &MergedElement) -> String {
+    let indent_str = "  ";
     if element.type_name == "Loop" {
         let children: String = element
             .elements
             .iter()
             .map(generate_template)
             .collect::<Vec<_>>()
-            .join("");
+            .join("\n");
         //  TODO v-for 应该作用在子组件上
         let loop_expr = element
             .config
             .get("expr")
             .and_then(|v| v.as_str())
             .unwrap_or("item in items");
-        return format!(r#"<q-flex v-for="{}">{}</q-flex>"#, loop_expr, children);
+        return format!(
+            "{indent_str}<q-flex v-for=\"{loop_expr}\">\n{children}\n{indent_str}</q-flex>",
+            indent_str = indent_str,
+            loop_expr = loop_expr,
+            children = children
+        );
     }
     let tag = map_type(&element.type_name);
     let children: String = element
@@ -136,22 +142,25 @@ fn generate_template(element: &MergedElement) -> String {
         .iter()
         .map(generate_template)
         .collect::<Vec<_>>()
-        .join("");
+        .join("\n");
 
-    let config_js = value_to_js_object_literal(&element.config);
+    let processed_config = bind_variable_in_config(&element.config);
+    let config_js = value_to_js_object_literal(&processed_config);
     let attrs = format!(r#" :config="{}""#, config_js);
     // let evts = events_to_attrs(&element.events);
     let evts = "";
     if children.is_empty() {
         format!(
-            r#"<{tag}{attrs}{evts} />"#,
+            "{indent_str}<{tag}{attrs}{evts} />",
+            indent_str = indent_str,
             tag = tag,
             attrs = attrs,
             evts = evts
         )
     } else {
         format!(
-            r#"<{tag}{attrs}{evts}>{children}</{tag}>"#,
+            "{indent_str}<{tag}{attrs}{evts}>\n{children}\n{indent_str}</{tag}>",
+            indent_str = indent_str,
             tag = tag,
             attrs = attrs,
             evts = evts,
@@ -166,7 +175,7 @@ fn value_to_js_object_literal(value: &serde_json::Value) -> String {
             let mut parts = Vec::new();
             for (k, v) in map {
                 // key 直接输出（假设都是合法 JS 标识符）
-                if k == "scopeCss" || k == "scopeStyle" {
+                if k == "scopeCss" || k == "scopeStyle" || k == "api" || k == "events" {
                     continue; // 跳过 scopeCss 和 scopeStyle
                 }
                 let v_str = value_to_js_object_literal(v);
@@ -199,3 +208,61 @@ fn value_to_js_object_literal(value: &serde_json::Value) -> String {
 //         .collect::<Vec<_>>()
 //         .join("")
 // }
+
+fn extract_prop_value(value: &serde_json::Value) -> serde_json::Value {
+    // 如果是对象且有 type 字段
+    if let serde_json::Value::Object(obj) = value {
+        if let Some(serde_json::Value::String(type_str)) = obj.get("type") {
+            match type_str.as_str() {
+                "static" => obj.get("value").cloned().unwrap_or(serde_json::Value::Null),
+                "variable" | "globalVariable" => {
+                    // 用字符串代表 renderFormula(variableObj.value)
+                    if let Some(var_val) = obj.get("value") {
+                        // FIXME 
+                        serde_json::Value::Null
+                    } else {
+                        serde_json::Value::Null
+                    }
+                }
+                _ => value.clone()
+            }
+        } else {
+            value.clone()
+        }
+    } else {
+        value.clone()
+    }
+}
+
+
+// 递归处理 config
+pub fn bind_variable_in_config(config: &Value) -> Value {
+    match config {
+        Value::Object(map) => {
+            let mut new_map = Map::new();
+            for (k, v) in map {
+                if k == "props" {
+                    // props 是个对象，对每个 value 做 extract_prop_value
+                    if let Value::Object(props_map) = v {
+                        let mut new_props = Map::new();
+                        for (pk, pv) in props_map {
+                            new_props.insert(pk.clone(), extract_prop_value(pv));
+                        }
+                        new_map.insert(k.clone(), Value::Object(new_props));
+                    } else {
+                        // props 不是对象，原样返回
+                        new_map.insert(k.clone(), v.clone());
+                    }
+                } else {
+                    // 递归处理其他字段
+                    new_map.insert(k.clone(), bind_variable_in_config(v));
+                }
+            }
+            Value::Object(new_map)
+        }
+        Value::Array(arr) => {
+            Value::Array(arr.iter().map(bind_variable_in_config).collect())
+        }
+        _ => config.clone(),
+    }
+}
