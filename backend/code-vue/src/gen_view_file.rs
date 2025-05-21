@@ -37,20 +37,23 @@ pub fn gen_view_file(
     // 数据格式变动频繁, 先不限制具体类型, 直接使用 serde_json::Value
     let page_data_json: serde_json::Value =
         serde_json::from_str(&page.page_data).expect("Failed to parse pageData");
-    // TODO: 生成 Template
-    // 处理页面数据
-    let page_data = &page.page_data;
 
     // 合并后的组件
-    let template_data = match TemplateData::from_json(page_data) {
+    let template_data = match TemplateData::from_json(&page.page_data) {
         Ok(data) => data,
         Err(e) => {
             return Err(Error::msg(format!("Failed to parse template data: {}", e)));
         }
     };
+
+    // 页面 ref 变量
     let mut page_variables = String::new();
+    // watch pinia store的变量，修改代码里面 ref 定义的变量
+    let mut watch_variables = String::new();
+    // 循环变量，循环作用在子组件上，需要从父组件传递循环变量
     let mut loop_variables = Vec::new();
 
+    //  Vue 模板 和 变量
     let vue_template_and_vars = template_data
         .components
         .iter()
@@ -76,12 +79,26 @@ pub fn gen_view_file(
             &value
         };
         page_variables.push_str(&format!("const {} = ref({});\n", var_name, value_str));
+        // 生成 watch 代码
+        watch_variables.push_str(&format!(
+            r#"watch(
+  () => pageState.value.page.pageData,
+  (newVal) => {{
+    if (newVal.variableData["{var_name}"]) {{
+      {var_name}.value = newVal.variableData["{var_name}"];
+    }}
+  }},
+  {{ deep: true }}
+);
+"#,
+            var_name = var_name
+        ));
     }
 
-    // Vue页面一：处理页面数据
+    // 处理页面数据
     let replacement = format!("const pageInfo = {};", page_json);
 
-    // Vue页面二：处理页面级变量
+    // 处理页面级变量
     if let Some(variables) = page_data_json.get("variables").and_then(|v| v.as_array()) {
         for variable in variables {
             // 这里需要进一步检查 variable 是否是对象类型
@@ -97,6 +114,20 @@ pub fn gen_view_file(
                     .unwrap_or_else(|| "null".to_string());
 
                 page_variables.push_str(&format!("const {} = ref({});\n", name, default_value));
+                // 生成 watch 代码
+                watch_variables.push_str(&format!(
+                    r#"watch(
+  () => pageState.value.page.pageData,
+  (newVal) => {{
+    if (newVal.variableData["{name}"]) {{
+      {name}.value = newVal.variableData["{name}"];
+    }}
+  }},
+  {{ deep: true }}
+);
+"#,
+                    name = name
+                ));
             }
         }
     }
@@ -104,8 +135,11 @@ pub fn gen_view_file(
     let result = VIEW_TEMPLATE
         .replace("{{vue_template}}", &vue_template)
         .replace("{{pageVariables}}", &page_variables)
+        .replace("{{watch_variables}}", &watch_variables)
         .replace("{{ pageInfo }}", &replacement);
+
     write_file(file_path.clone(), &result)?;
+
     format_vue_file(file_path.clone());
     Ok(GeneratedArtifact {
         file_path: file_path.to_string_lossy().to_string(),
@@ -113,7 +147,7 @@ pub fn gen_view_file(
     })
 }
 
-// 类型映射
+// 组件标签映射
 fn map_type(type_name: &str) -> &str {
     match type_name {
         "Input" => "q-input",
@@ -138,7 +172,7 @@ fn map_type(type_name: &str) -> &str {
 // 递归生成Vue模板
 fn generate_template(
     element: &MergedElement,
-    parent_loop_vfor: Option<(String, String)>,
+    parent_loop_vfor: Option<(String, String, String)>, // (vfor_expr, key_field, item_var)
 ) -> (String, Vec<(String, String)>) {
     let indent_str = "  ";
     let tag = map_type(&element.type_name);
@@ -146,42 +180,58 @@ fn generate_template(
     // 处理 v-for 相关属性
     let mut v_for_attr = String::new();
     let mut key_attr = String::new();
+    let mut item_var = "item".to_string();
 
-    // 如果父级是 Loop，当前元素加 v-for
-    if let Some((vfor_expr, key_field)) = parent_loop_vfor {
-        // FIXME
-        v_for_attr = format!(r#" v-for="item in {}""#, vfor_expr);
-        key_attr = format!(r#" :key="item.{}""#, key_field);
+    // 如果父级是 Loop 循环组件，当前元素加 v-for
+    if let Some((vfor_expr, key_field, parent_item_var)) = parent_loop_vfor {
+        v_for_attr = format!(r#" v-for="{} in {}""#, parent_item_var, vfor_expr);
+        key_attr = format!(r#" :key="{}.{}""#, parent_item_var, key_field);
+        item_var = parent_item_var;
     }
 
     let mut loop_variables = Vec::new();
 
-    // 如果当前是 Loop 组件，准备传递给子元素的 v-for 信息
-    let mut next_loop_vfor: Option<(String, String)> = None;
+    // 如果当前是 Loop 循环组件，准备传递给子元素的 v-for 信息
+    let mut child_element_vfor: Option<(String, String, String)> = None;
 
     if element.type_name == "Loop" {
+        println!("处理循环组件");
         if let Some(api) = element.config.get("api") {
             if let Some(source_type) = api.get("sourceType").and_then(|v| v.as_str()) {
                 match source_type {
                     "json" => {
-                        // 变量名
                         let loop_var_name = format!("{}ApiSource", element.id);
-                        // 变量值
                         let source_val = api
                             .get("source")
                             .map(|v| v.to_string())
                             .unwrap_or("[]".to_string());
                         loop_variables.push((loop_var_name.clone(), source_val.clone()));
-                        next_loop_vfor = Some((loop_var_name.clone(), "id".to_string()));
+                        let item_var_name = format!("{}_item", element.id);
+                        child_element_vfor =
+                            Some((loop_var_name.clone(), "id".to_string(), item_var_name));
                     }
                     "variable" => {
                         if let Some(name) = api.get("name") {
                             if let Some(var_obj) = name.as_object() {
                                 if let Some(Value::String(val)) = var_obj.get("value") {
-                                    // 页面变量 context.variable.
-                                    let last = val.split('.').last().unwrap_or("data").to_string();
-                                    next_loop_vfor = Some((last, "id".to_string()));
-                                    // 循环变量 context.forEachValue.Loop_top.item.cards || []
+                                    let replaced = if val.starts_with("context.variable.") {
+                                        // context.variable.xxx -> xxx
+                                        val.trim_start_matches("context.variable.").to_string()
+                                    } else if val.starts_with("context.forEachValue.") {
+                                        // context.forEachValue.Loop_top.item.cards -> Loop_top_item.cards
+                                        let s = val.trim_start_matches("context.forEachValue.");
+                                        let parts: Vec<&str> = s.split('.').collect();
+                                        if parts.len() >= 3 {
+                                            format!("{}_item.{}", parts[0], parts[2..].join("."))
+                                        } else {
+                                            s.to_string()
+                                        }
+                                    } else {
+                                        val.clone()
+                                    };
+                                    let item_var_name = format!("{}_item", element.id);
+                                    child_element_vfor =
+                                        Some((replaced, "id".to_string(), item_var_name));
                                 }
                             }
                         }
@@ -190,11 +240,14 @@ fn generate_template(
                 }
             }
         }
-        // 取 rowKey 字段
         if let Some(props) = element.config.get("props") {
             if let Some(row_key) = props.get("rowKey").and_then(|v| v.as_str()) {
-                if let Some((vfor_expr, _)) = next_loop_vfor {
-                    next_loop_vfor = Some((vfor_expr, row_key.to_string()));
+                if let Some((vfor_expr, _, item_var_name)) = &child_element_vfor {
+                    child_element_vfor = Some((
+                        vfor_expr.clone(),
+                        row_key.to_string(),
+                        item_var_name.clone(),
+                    ));
                 }
             }
         }
@@ -204,7 +257,7 @@ fn generate_template(
     let mut children_vars = Vec::new();
     for child in &element.elements {
         let (child_str, child_vars) = if element.type_name == "Loop" {
-            generate_template(child, next_loop_vfor.clone())
+            generate_template(child, child_element_vfor.clone())
         } else {
             generate_template(child, None)
         };
@@ -213,12 +266,39 @@ fn generate_template(
     }
     let children = children_parts.join("\n");
 
-    let processed_config = bind_variable_in_config(&element.config);
+    // 处理 config，提取 text 字段
+    let mut processed_config = bind_variable_in_config_with_item(&element.config, &item_var);
+
+    // 提取 text 字段（如果有）
+    let mut text_attr = String::new();
+    if let Some(props) = processed_config.get_mut("props") {
+        if let Some(props_map) = props.as_object_mut() {
+            if let Some(text_value) = props_map.remove("text") {
+                match &text_value {
+                    serde_json::Value::String(s) => {
+                        // 普通字符串，静态属性
+                        text_attr = format!(r#" text="{}""#, s.replace('"', "&quot;"));
+                    }
+                    serde_json::Value::Object(obj) => {
+                        // 对象，变量绑定
+                        if let Some(serde_json::Value::String(var_name)) = obj.get("value") {
+                            text_attr = format!(r#" :text="{}""#, var_name);
+                        }
+                    }
+                    _ => {
+                        // 其他类型，按变量绑定处理
+                        let text_str = value_to_js_object_literal(&text_value);
+                        text_attr = format!(r#" :text="{}""#, text_str);
+                    }
+                }
+            }
+        }
+    }
+
     let config_js = value_to_js_object_literal(&processed_config);
-    let attrs = format!(r#" :config="{}""#, config_js);
-    // let evts = events_to_attrs(&element.events);
+    let attrs = format!(r#"{} :config="{}""#, text_attr, config_js);
     let evts = "";
-    // 返回 (模板字符串, 变量收集)
+
     (
         if children.is_empty() {
             format!(
@@ -249,6 +329,7 @@ fn generate_template(
 }
 
 fn value_to_js_object_literal(value: &serde_json::Value) -> String {
+    println!("value_to_js_object_literal: {:?}", value);
     match value {
         serde_json::Value::Object(map) => {
             let mut parts = Vec::new();
@@ -280,28 +361,36 @@ fn value_to_js_object_literal(value: &serde_json::Value) -> String {
     }
 }
 
-// 事件转Vue绑定
-// fn events_to_attrs(events: &[Event]) -> String {
-//     events.iter()
-//         .map(|e| format!(r#" @{}="{}""#, e.name, e.handler))
-//         .collect::<Vec<_>>()
-//         .join("")
-// }
-
-fn extract_prop_value(value: &serde_json::Value) -> serde_json::Value {
+// 变量名替换
+fn extract_prop_value_with_item(value: &serde_json::Value, item_var: &str) -> serde_json::Value {
+    println!("extract_prop_value_with_item: {:?}", value);
     // 如果是对象且有 type 字段
     if let serde_json::Value::Object(obj) = value {
         if let Some(serde_json::Value::String(type_str)) = obj.get("type") {
             match type_str.as_str() {
                 "static" => obj.get("value").cloned().unwrap_or(serde_json::Value::Null),
                 "variable" | "globalVariable" => {
-                    // 用字符串代表 renderFormula(variableObj.value)
-                    if let Some(var_val) = obj.get("value") {
-                        // FIXME
-                        serde_json::Value::Null
-                    } else {
-                        serde_json::Value::Null
+                    // 保留原始对象，但 value 字段做变量名替换
+                    let mut new_obj = obj.clone();
+                    if let Some(serde_json::Value::String(var_val)) = obj.get("value") {
+                        let replaced = if var_val.starts_with("context.variable.") {
+                            // context.variable.xxx -> xxx
+                            var_val.trim_start_matches("context.variable.").to_string()
+                        } else if var_val.starts_with("context.forEachValue.") {
+                            // context.forEachValue.Loop_top.item.cards -> Loop_top_item.cards
+                            let s = var_val.trim_start_matches("context.forEachValue.");
+                            let parts: Vec<&str> = s.split('.').collect();
+                            if parts.len() >= 3 {
+                                format!("{}_item.{}", parts[0], parts[2..].join("."))
+                            } else {
+                                s.to_string()
+                            }
+                        } else {
+                            var_val.clone()
+                        };
+                        new_obj.insert("value".to_string(), serde_json::Value::String(replaced));
                     }
+                    serde_json::Value::Object(new_obj)
                 }
                 _ => value.clone(),
             }
@@ -314,31 +403,34 @@ fn extract_prop_value(value: &serde_json::Value) -> serde_json::Value {
 }
 
 // 递归处理 config
-pub fn bind_variable_in_config(config: &Value) -> Value {
+pub fn bind_variable_in_config_with_item(config: &Value, item_var: &str) -> Value {
+    println!("bind_variable_in_config_with_item: {:?}", config);
     match config {
         Value::Object(map) => {
             let mut new_map = Map::new();
             for (k, v) in map {
                 if k == "props" {
-                    // props 是个对象，对每个 value 做 extract_prop_value
                     if let Value::Object(props_map) = v {
                         let mut new_props = Map::new();
                         for (pk, pv) in props_map {
-                            new_props.insert(pk.clone(), extract_prop_value(pv));
+                            new_props
+                                .insert(pk.clone(), extract_prop_value_with_item(pv, item_var));
                         }
                         new_map.insert(k.clone(), Value::Object(new_props));
                     } else {
-                        // props 不是对象，原样返回
                         new_map.insert(k.clone(), v.clone());
                     }
                 } else {
-                    // 递归处理其他字段
-                    new_map.insert(k.clone(), bind_variable_in_config(v));
+                    new_map.insert(k.clone(), bind_variable_in_config_with_item(v, item_var));
                 }
             }
             Value::Object(new_map)
         }
-        Value::Array(arr) => Value::Array(arr.iter().map(bind_variable_in_config).collect()),
+        Value::Array(arr) => Value::Array(
+            arr.iter()
+                .map(|v| bind_variable_in_config_with_item(v, item_var))
+                .collect(),
+        ),
         _ => config.clone(),
     }
 }

@@ -3,7 +3,7 @@ pub const VIEW_TEMPLATE: &str = r#"
   {{vue_template}}
 </template>
 <script setup lang="tsx">
-import { ref, onBeforeMount, onMounted, onUnmounted } from "vue";
+import { ref, watch, onBeforeMount, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/stores";
 import { createEvents } from "@/utils/util";
@@ -39,5 +39,7 @@ onUnmounted(() => {
   // 页面卸载
   eventFunction["onDestory"]?.();
 });
+
+{{watch_variables}}
 </script>
 "#;

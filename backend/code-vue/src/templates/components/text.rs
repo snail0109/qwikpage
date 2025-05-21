@@ -8,7 +8,13 @@ import { omit } from 'lodash-es';
 const Text = defineComponent({
   name: "QText",
   inheritAttrs: false,
-  props: commonProps(),
+  props: {
+    ...commonProps(),
+    text: {
+      type: [String, Number],
+      default: ''
+    }
+  },
   setup(props, { attrs, expose }) {
     const { onClick, ...rest } = attrs;
     const visible = ref(true);
@@ -19,7 +25,7 @@ const Text = defineComponent({
     }
     // 监听文本变化
     watch(
-      () => props.config.props?.text,
+      () => props.text,
       (newVal) => {
         text.value = newVal?.toString() || "";
       },
