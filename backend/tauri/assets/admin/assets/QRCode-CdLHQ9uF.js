@@ -1,0 +1,2 @@
+import{r as s,j as d}from"./index-V12QydRc.js";import{o as f,Q as i}from"./Page-BSBWtBnY.js";import"./index-P6jKk8Zo.js";import"./index-B8bl-sjQ.js";const l=({config:t},o)=>{const[a,e]=s.useState(t.props.status),[p,r]=s.useState(!0);s.useImperativeHandle(o,()=>({show(){r(!0)},hide(){r(!1)},changeQRCodeStatus({status:m}){e(m)}})),s.useEffect(()=>{e(t.props.status)},[t.props.status]);const u=f(t.props,["status"]);return p&&d.jsx(i,{style:t.style,...u,status:a})},E=s.forwardRef(l);export{E as default};
+//# sourceMappingURL=QRCode-CdLHQ9uF.js.map

@@ -21,7 +21,7 @@ const instance = axios.create({
 instance.interceptors.request.use((reqConfig) => {
   const {
     headers = [],
-    timeout = 8,
+  timeout = 8,
     timeoutErrorMessage = '请求超时，请稍后重试',
     requestInterceptor,
   } = usePageStore.getState().page.pageData.interceptor || {};

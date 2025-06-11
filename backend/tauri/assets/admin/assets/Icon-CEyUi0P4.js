@@ -1,0 +1,2 @@
+import{r as t,j as o}from"./index-V12QydRc.js";import i from"./QIcon-CS0P3Pp3.js";const u=({config:e,onClick:s},a)=>{const[n,r]=t.useState(!0);t.useImperativeHandle(a,()=>({show(){r(!0)},hide(){r(!1)}}));const p=()=>{s==null||s()};return n&&o.jsx("span",{onClick:p,children:o.jsx(i,{style:e.style,...e.props,name:e.props.icon||"GithubOutlined"})})},m=t.forwardRef(u);export{m as default};
+//# sourceMappingURL=Icon-CEyUi0P4.js.map
