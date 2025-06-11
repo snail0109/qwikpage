@@ -28,6 +28,7 @@ pub struct ProxyRequest {
     target_url: String,
     #[serde(default)]
     data: Option<serde_json::Value>,
+    headers: Option<serde_json::Value>,
 }
 
 // 定义响应类型枚举
@@ -166,6 +167,7 @@ pub async fn proxy_request(
 ) -> Result<(Status, ProxyResponse), Status> {
     let method = proxy_request.method.to_uppercase();
     let target_url = &proxy_request.target_url;
+    let headers = &proxy_request.headers;
 
     log::debug!(
         "TPreviewService::proxy_request(): 转发请求到 {}",
@@ -175,6 +177,25 @@ pub async fn proxy_request(
     // 创建HTTP客户端
     let client = reqwest::Client::new();
 
+    // 构建请求
+    let mut request_builder = client.request(
+        if method == "GET" {
+            reqwest::Method::GET
+        } else {
+            reqwest::Method::POST
+        },
+        target_url,
+    );
+
+    // 只添加 Authorization header
+    if let Some(headers) = headers {
+        if let Some(auth) = headers.get("Authorization") {
+            if let Some(auth_str) = auth.as_str() {
+                request_builder = request_builder.header("Authorization", auth_str);
+            }
+        }
+    }
+
     // 检查HTTP方法，只支持GET和POST
     if method != "GET" && method != "POST" {
         log::error!("不支持的HTTP方法: {}", method);
@@ -183,9 +204,8 @@ pub async fn proxy_request(
 
     // 构建并发送请求
     let response = if method == "GET" {
-        client.get(target_url).send().await
+        request_builder.send().await
     } else {
-        let mut request_builder = client.post(target_url);
 
         if let Some(ct) = content_type {
             request_builder = request_builder.header(reqwest::header::CONTENT_TYPE, ct.to_string());

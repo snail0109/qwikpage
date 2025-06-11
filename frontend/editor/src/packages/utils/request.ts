@@ -43,7 +43,8 @@ instance.interceptors.request.use((reqConfig) => {
     const proxyData = {
       method: originalMethod,
       target_url: originalUrl,
-      data: originalMethod !== 'GET' ? config.data : undefined
+      data: originalMethod !== 'GET' ? config.data : undefined,
+      headers: config.headers
     };
     
     // 修改为代理请求

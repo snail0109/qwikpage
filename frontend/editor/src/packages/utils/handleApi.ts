@@ -43,7 +43,7 @@ export const handleApi = async (
       return { code: 0, data: '' };
     }
     const apis = usePageStore.getState().page.pageData.apis;
-    const { method, apiUrl, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
+    const { headers = {}, method, apiUrl, contentType, replaceData = 'merge', isCors = true, params, result, tips } = apis[api.id] || {};
     // 处理参数
     const config: any = mergeParams(method, replaceData, params, sendParams, loopData);
     // 解析模板字符串：http://api.marsview.cc/user/${id}
@@ -51,6 +51,7 @@ export const handleApi = async (
     config.url = stgUrl;
     config.isCors = isCors;
     config.loopData = loopData;
+    config.headers = headers;
     console.log("API request 发起请求: ", config.url, config)
     let response = null;
     try {
