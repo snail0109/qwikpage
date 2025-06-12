@@ -238,7 +238,7 @@ export interface ApiType {
     isSuccess: boolean; // 是否开启系统成功提示
     isError: boolean; // 是否开启系统错误提示
   };
-  headers: any;
+  headers?: any;
 }
 
 /**
